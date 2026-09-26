@@ -63,7 +63,7 @@ jobs:
           fi
       - name: Upload Storybook coverage
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: storybook-coverage
           path: coverage/storybook/
