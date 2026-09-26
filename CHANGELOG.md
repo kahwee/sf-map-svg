@@ -4,19 +4,16 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 1.3.1 — 2026-09-26
+
+- Rework the GitHub Pages homepage around the lightweight guide map and show the released bundle-size comparison.
+- Load the full neighborhood explorer and schematic BART demo only when visitors request them, keeping unused geography out of the initial page load.
+
+## 1.3.0 — 2026-09-26
+
 - Add a lightweight guide map preset with subpixel overview geography, lazy detailed datasets, curated highways and streets, independent road labels, and smaller consumer bundle size.
 - Curate six guide streets and prioritize their visibility by zoom while preserving road geometry across park fills.
-
-- Validate SVG overlay numeric attributes and add an interactive data-injected entry point so consumers can provide only the geographic datasets they use.
-
-- Make the measures atlas a full-screen map with floating controls, expandable mobile results, touch pan/zoom, overlay tables and sources, and a distraction-free focus view.
-
-- Redesign the measures explorer around visible district maps, side-by-side comparisons, Yes/No and district-color modes, keyboard zoom/pan, district fitting, stable labels, and SVG/CSV exports.
-
-- Add a Pages ballot-measures explorer for certified June 2026 local results, with district comparisons, shareable selections, and official data downloads.
-
-- Build public Pages demos and SVG downloads from the published npm version, with visible release metadata, installation copying, release links, and social previews.
-- Refresh Pages after successful publishing and improve mobile layout and release documentation.
+- Simplify shared neighborhood boundaries while preserving the combined city footprint and recognizable park, coast, and road-crossing geometry.
 
 ## 1.2.0
 
@@ -24,6 +21,11 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 - Add `@kahwee/sf-map-svg/custom-map`, a data-injected renderer entry point that lets consumers bundle only the geographic datasets they provide.
 - Add public styled geographic overlays, explorer theme tokens, configurable labels, and optional controls.
+- Validate SVG overlay numeric attributes and add an interactive data-injected entry point so consumers can provide only the geographic datasets they use.
+- Add a Pages ballot-measures explorer for certified June 2026 local results, district comparisons, shareable selections, and official downloads.
+- Build the Pages demos and SVG downloads from the published npm version, with visible release metadata, installation copying, and release links.
+- Make the measures atlas a full-screen map with side-by-side comparisons, touch navigation, overlay tables and sources, and a focus view.
+- Refresh the Pages layout for mobile and add expandable certified election results with SVG/CSV/JSON exports.
 
 ## 1.1.0
 

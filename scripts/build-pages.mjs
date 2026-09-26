@@ -42,6 +42,7 @@ try {
     base: './',
     resolve: {
       alias: {
+        '@kahwee/sf-map-svg/guide': join(packageRoot, 'dist/src/guide.js'),
         '@kahwee/sf-map-svg/explorer': join(packageRoot, 'dist/src/explorer.js'),
         '@kahwee/sf-map-svg/transit': join(packageRoot, 'dist/src/transit.js'),
         '@kahwee/sf-map-svg': join(packageRoot, 'dist/src/index.js'),

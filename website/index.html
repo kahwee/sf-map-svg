@@ -26,19 +26,29 @@
     <div class="hero-links"><a class="primary" href="#explore">Explore the map ↓</a><a href="#build">Build with it →</a><a href="https://github.com/kahwee/sf-map-svg/releases/tag/v%MAP_VERSION%">What’s new in %MAP_VERSION% ↗</a></div>
   </header>
   <main class="shell">
-    <section class="release-summary" aria-label="Release highlights">
-      <p><strong>One package. Three ways to use it.</strong> Export a crisp SVG, embed a searchable neighborhood map, or add a schematic BART journey. Every demo on this page uses the version shown above.</p>
-      <div class="install"><code id="install-command">pnpm add @kahwee/sf-map-svg@%MAP_VERSION%</code><button id="copy-install" type="button">Copy install</button></div>
-      <p id="copy-status" class="copy-status" role="status"></p>
+    <section class="release-summary" aria-label="What’s new in version %MAP_VERSION%">
+      <div class="release-copy">
+        <p class="eyebrow">New in v%MAP_VERSION%</p>
+        <h2>Start with a 104 KB guide map.</h2>
+        <p>The new guide preset ships only the city geography it needs: SFAR neighborhoods, major parks, BART, and selected roads. Its initial bundle is 103.9 KB gzip, 94.3% smaller than the full interactive entry; detailed geography loads only when requested.</p>
+        <a href="https://github.com/kahwee/sf-map-svg/releases/tag/v%MAP_VERSION%">See the release notes and size report →</a>
+      </div>
+      <div class="release-install">
+        <strong>Use the current release</strong>
+        <p>Every demo here uses the version shown above.</p>
+        <div class="install"><code id="install-command">pnpm add @kahwee/sf-map-svg@%MAP_VERSION%</code><button id="copy-install" type="button">Copy</button></div>
+        <p id="copy-status" class="copy-status" role="status"></p>
+      </div>
     </section>
     <section id="explore" aria-labelledby="map-title">
-      <div class="section-heading"><h2 id="map-title">Your corner of the city</h2><span>Neighborhoods · districts · parks · transit</span></div>
-      <p>Search for a name or select an area. Switch map modes to compare neighborhoods and district boundaries.</p>
+      <div class="section-heading"><h2 id="map-title">Your corner of the city</h2><span>SFAR neighborhoods · parks · BART · selected roads</span></div>
+      <p>Explore the compact guide map. Select a neighborhood on the map, or load the full explorer when you need search and alternate neighborhood definitions.</p>
       <div id="explorer"><p id="loading" role="status">Loading the map…</p></div>
+      <button id="load-full-explorer" class="secondary-action" type="button">Load search and all neighborhood datasets</button>
       <noscript><p>Enable JavaScript to explore, or <a href="./maps/districts.svg">open the district SVG map</a>.</p></noscript>
     </section>
     <section aria-labelledby="ballots-title"><p class="eyebrow">The city, by the numbers</p><h2 id="ballots-title">Explore ballot measure results</h2><p>See the district map, compare ballot measures side by side, and explore certified June 2026 results. Switch between Yes, No, and district colors, then download a map or the vote counts.</p><a class="primary" href="./measures.html">Open the measures explorer →</a></section>
-    <section id="transit-demo" aria-labelledby="transit-title"><h2 id="transit-title">A little motion</h2><p>Follow a schematic journey through San Francisco’s BART stations. Press Play or scrub through the journey. These straight segments illustrate a journey, not actual tracks or live service. <a href="./transit.html">Open the standalone demo ↗</a></p><iframe src="./transit.html" title="Interactive schematic BART animation" loading="lazy" class="transit-frame"></iframe></section>
+    <section id="transit-demo" aria-labelledby="transit-title"><h2 id="transit-title">A little motion</h2><p>Follow a schematic journey through San Francisco’s BART stations. These straight segments illustrate a journey, not actual tracks or live service.</p><div class="transit-preview"><img src="./maps/transit.svg" alt="Preview of San Francisco parks, selected roads, and BART stations" width="800" height="800" loading="lazy"><div><button id="load-transit" class="secondary-action" type="button">Load the interactive journey</button><p><a href="./transit.html">Open the standalone demo ↗</a></p></div></div><div id="transit-frame-mount"></div></section>
     <section id="guide" aria-labelledby="guide-title">
       <h2 id="guide-title">A few ways to explore</h2>
       <div class="cards">
@@ -53,10 +63,12 @@
       <a href="./maps/transit.svg"><img width="800" height="800" src="./maps/transit.svg" alt="San Francisco parks, roads and BART stations" loading="lazy"><h3>Parks & transit ↗</h3></a>
       <a href="./maps/neighborhoods.svg"><img width="800" height="800" src="./maps/neighborhoods.svg" alt="Realtor neighborhood boundaries over pastel districts" loading="lazy"><h3>Neighborhoods ↗</h3></a>
     </div></section>
-    <section id="build" class="build" aria-labelledby="build-title"><div><p class="eyebrow">For your next project</p><h2 id="build-title">Small maps.<br>Room for your ideas.</h2><p>Offline rendering. Bundled geography. No map tiles, API keys, or runtime dependencies.</p><a href="https://github.com/kahwee/sf-map-svg#readme">Read the API documentation →</a></div><pre><code>import { createNeighborhoodExplorer }
-  from '@kahwee/sf-map-svg/explorer';
+    <section id="build" class="build" aria-labelledby="build-title"><div><p class="eyebrow">For your next project</p><h2 id="build-title">Small maps.<br>Room for your ideas.</h2><p>Start with the lightweight guide entry. It excludes historical districts and unused neighborhood datasets; opt into detail only when your map needs it.</p><a href="https://github.com/kahwee/sf-map-svg#readme">Read the API documentation →</a></div><pre><code>import { createGuideMap }
+  from '@kahwee/sf-map-svg/guide';
 
-const map = createNeighborhoodExplorer();
+const map = createGuideMap({
+  layers: { roadLabels: false },
+});
 document.querySelector('#map').append(map);
 
 // Release listeners when removing the map.
