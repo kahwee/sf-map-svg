@@ -1,8 +1,9 @@
-src/data.js
-src/overlays.js
 provenance/
 examples/generated/
 pnpm-lock.yaml
 
 storybook-static/
 *storybook.log
+
+# Geographic coordinate arrays and generated catalog retain deterministic formatting.
+data/*.json

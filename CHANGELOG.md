@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.3.0
+
+- Enable public npm distribution with explicit public registry access.
+
+- Remove realtor boundary sliver overlaps while preserving all 92 neighborhoods and their combined footprint; enforce disjoint interiors in regression tests.
+
+- Use the 92 SFAR realtor neighborhoods by default for map outlines, data lookup, and Storybook. Other source collections remain available.
+
+- Move all geographic data to exported canonical GeoJSON files, preserving district display extras.
+- Expose complete SF Find (117), analysis (41), and realtor (92) neighborhood collections with source-specific canonical names and documented aliases.
+- Add immutable data helpers, exact-name lookup, source-aware search, and a typed geometry export.
+- Split SVG layers from orchestration and reuse projected district paths.
+- Reject longitude values that could overflow SVG coordinates.
+- Add neighborhood explorer stories, JSON downloads, independent overlay stories, and data integrity checks.
+
 ## 0.2.0
 
 - Add optional park and landmark highlights using DataSF property boundaries.

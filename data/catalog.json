@@ -1,0 +1,4699 @@
+{
+  "schemaVersion": 1,
+  "description": "Complete inventories of the three listed neighborhood sources, not a claim that every informal San Francisco neighborhood has one agreed boundary. Canonical names are package display names; sourceName preserves the source label. Aliases aid name lookup and do not establish identical boundaries across sources.",
+  "datasets": [
+    {
+      "id": "coast",
+      "file": "coast.json",
+      "title": "San Francisco display coastline",
+      "featureCount": 1,
+      "definition": {
+        "kind": "display-coast",
+        "description": "Common clipped land mask from the original Site, including Treasure Island and excluding the Farallon Islands."
+      },
+      "sources": [
+        {
+          "id": "land-mask",
+          "title": "Display land mask",
+          "url": "https://data.sf.gov/resource/hcgx-vtsb.geojson",
+          "retrievedAt": "2026-09-25",
+          "licenseUrl": "https://datasf.org/opendata/terms-of-use/"
+        }
+      ]
+    },
+    {
+      "id": "districts-2002",
+      "file": "districts-2002.json",
+      "title": "2002 supervisorial districts",
+      "featureCount": 11,
+      "definition": {
+        "kind": "display-districts",
+        "year": 2002,
+        "description": "District map geometry extracted from the original Site, using a common display coastline. Display extras are separate from primary geometry; not a cadastral map."
+      },
+      "sources": [
+        {
+          "id": "districts-2002",
+          "title": "2002 supervisorial districts",
+          "url": "https://data.sf.gov/resource/qdm2-fi8r.geojson",
+          "retrievedAt": "2026-09-25",
+          "definitionYear": 2002,
+          "licenseUrl": "https://datasf.org/opendata/terms-of-use/"
+        }
+      ]
+    },
+    {
+      "id": "districts-2012",
+      "file": "districts-2012.json",
+      "title": "2012 supervisorial districts",
+      "featureCount": 11,
+      "definition": {
+        "kind": "display-districts",
+        "year": 2012,
+        "description": "District map geometry extracted from the original Site, using a common display coastline. Display extras are separate from primary geometry; not a cadastral map."
+      },
+      "sources": [
+        {
+          "id": "districts-2012",
+          "title": "2012 supervisorial districts",
+          "url": "https://data.sf.gov/resource/keex-zmn4.geojson",
+          "retrievedAt": "2026-09-25",
+          "definitionYear": 2012,
+          "licenseUrl": "https://datasf.org/opendata/terms-of-use/"
+        }
+      ]
+    },
+    {
+      "id": "districts-2022",
+      "file": "districts-2022.json",
+      "title": "2022 supervisorial districts",
+      "featureCount": 11,
+      "definition": {
+        "kind": "display-districts",
+        "year": 2022,
+        "description": "District map geometry extracted from the original Site, using a common display coastline. Display extras are separate from primary geometry; not a cadastral map."
+      },
+      "sources": [
+        {
+          "id": "districts-2022",
+          "title": "2022 supervisorial districts",
+          "url": "https://data.sf.gov/resource/f2zs-jevy.geojson",
+          "retrievedAt": "2026-09-25",
+          "definitionYear": 2022,
+          "licenseUrl": "https://datasf.org/opendata/terms-of-use/"
+        }
+      ]
+    },
+    {
+      "id": "highways",
+      "file": "highways.json",
+      "title": "Highway display geometry",
+      "featureCount": 294,
+      "definition": {
+        "kind": "display-highways",
+        "description": "Original Site highway geometry; not a complete road network."
+      },
+      "sources": [
+        {
+          "id": "streets",
+          "title": "DataSF streets",
+          "url": "https://data.sf.gov/resource/3psu-pn9h.geojson",
+          "retrievedAt": "2026-09-25",
+          "licenseUrl": "https://datasf.org/opendata/terms-of-use/"
+        }
+      ]
+    },
+    {
+      "id": "landmarks",
+      "file": "landmarks.json",
+      "title": "Selected San Francisco parks and landmarks",
+      "featureCount": 6,
+      "definition": {
+        "kind": "park-properties",
+        "description": "Six selected property areas. Golden Gate Park combines sections 1–7. Labels use hand-positioned display anchors."
+      },
+      "sources": [
+        {
+          "id": "rpd-properties",
+          "title": "Recreation and Parks Properties",
+          "url": "https://data.sf.gov/resource/gtr9-ntp6.geojson?$limit=1000",
+          "retrievedAt": "2026-09-25",
+          "licenseUrl": "https://datasf.org/opendata/terms-of-use/"
+        },
+        {
+          "id": "presidio",
+          "title": "Presidio Boundary Polygon",
+          "url": "https://data.sf.gov/resource/jt6f-vx2z.geojson",
+          "retrievedAt": "2026-09-25",
+          "licenseUrl": "https://datasf.org/opendata/terms-of-use/"
+        }
+      ]
+    },
+    {
+      "id": "bart-stations",
+      "file": "bart-stations.json",
+      "title": "San Francisco BART stations",
+      "featureCount": 8,
+      "definition": {
+        "kind": "station-centroids",
+        "description": "Eight station centroids within San Francisco. Entrances, tracks, and other cities are excluded."
+      },
+      "sources": [
+        {
+          "id": "bart-stations",
+          "title": "BART official geospatial data",
+          "url": "https://www.bart.gov/sites/default/files/2025-12/BART-Stations-tracks-entrances-121025.kmz_.zip",
+          "retrievedAt": "2026-09-25",
+          "licenseUrl": "https://www.bart.gov/schedules/developers/geo"
+        }
+      ]
+    },
+    {
+      "id": "sf-find",
+      "file": "neighborhoods.json",
+      "title": "SF Find Neighborhoods",
+      "featureCount": 117,
+      "definition": {
+        "kind": "approximate-neighborhoods",
+        "year": 2006,
+        "description": "General neighborhood locations defined by the Mayor’s Office of Neighborhood Services in 2006. Boundaries are approximate, not hard lines of demarcation."
+      },
+      "sources": [
+        {
+          "id": "sf-find",
+          "title": "SF Find Neighborhoods",
+          "url": "https://data.sf.gov/resource/gfpk-269f.geojson?$limit=500",
+          "retrievedAt": "2026-09-25",
+          "definitionYear": 2006,
+          "licenseUrl": "https://datasf.org/opendata/terms-of-use/"
+        }
+      ]
+    },
+    {
+      "id": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "title": "Analysis Neighborhoods",
+      "featureCount": 41,
+      "definition": {
+        "kind": "census-tract-aggregation",
+        "description": "41 reporting areas created by grouping census tracts using residents’ and real-estate definitions. These are not official neighborhood boundaries and may combine several named neighborhoods."
+      },
+      "sources": [
+        {
+          "id": "analysis",
+          "title": "Analysis Neighborhoods",
+          "url": "https://data.sf.gov/resource/j2bu-swwd.geojson?$limit=100",
+          "retrievedAt": "2026-09-25",
+          "licenseUrl": "https://datasf.org/opendata/terms-of-use/"
+        }
+      ]
+    },
+    {
+      "id": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "title": "Realtor Neighborhoods",
+      "featureCount": 92,
+      "definition": {
+        "kind": "realtor-neighborhoods",
+        "year": 2010,
+        "description": "92 areas based on the August 2010 San Francisco Association of Realtors dataset, with boundary slivers normalized to disjoint interiors. These market-area definitions are not a universal neighborhood consensus."
+      },
+      "sources": [
+        {
+          "id": "realtor",
+          "title": "Realtor Neighborhoods",
+          "url": "https://data.sf.gov/resource/2kjj-ysvr.geojson?$limit=500",
+          "retrievedAt": "2026-09-25",
+          "definitionYear": 2010,
+          "licenseUrl": "https://datasf.org/opendata/terms-of-use/"
+        }
+      ]
+    }
+  ],
+  "neighborhoods": [
+    {
+      "id": "seacliff",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Seacliff",
+      "canonicalName": "Seacliff",
+      "sourceName": "Seacliff",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.49372649999992,
+        37.78351817100008,
+        -122.48370738599994,
+        37.79080370600008
+      ]
+    },
+    {
+      "id": "lake-street",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Lake Street",
+      "canonicalName": "Lake Street",
+      "sourceName": "Lake Street",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.48728636499993,
+        37.783785427000055,
+        -122.47241052999993,
+        37.787346539000055
+      ]
+    },
+    {
+      "id": "presidio-national-park",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Presidio National Park",
+      "canonicalName": "Presidio National Park",
+      "sourceName": "Presidio National Park",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.48598032899991,
+        37.786950053000055,
+        -122.44647351099991,
+        37.811003225000036
+      ]
+    },
+    {
+      "id": "presidio-terrace",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Presidio Terrace",
+      "canonicalName": "Presidio Terrace",
+      "sourceName": "Presidio Terrace",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.47262578999994,
+        37.784715522000056,
+        -122.45917876599992,
+        37.78951190100008
+      ]
+    },
+    {
+      "id": "inner-richmond",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Inner Richmond",
+      "canonicalName": "Inner Richmond",
+      "sourceName": "Inner Richmond",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.4785619299999,
+        37.77286365500004,
+        -122.45837109899992,
+        37.78656813500004
+      ]
+    },
+    {
+      "id": "sutro-heights",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Sutro Heights",
+      "canonicalName": "Sutro Heights",
+      "sourceName": "Sutro Heights",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.51435978599994,
+        37.77500536400004,
+        -122.50267096999994,
+        37.78129638200005
+      ]
+    },
+    {
+      "id": "lincoln-park-ft-miley",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Lincoln Park / Ft. Miley",
+      "canonicalName": "Lincoln Park / Ft. Miley",
+      "sourceName": "Lincoln Park / Ft. Miley",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.5148972319999,
+        37.77787695000006,
+        -122.49332613999991,
+        37.78870387100005
+      ]
+    },
+    {
+      "id": "outer-richmond",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Outer Richmond",
+      "canonicalName": "Outer Richmond",
+      "sourceName": "Outer Richmond",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.51316127599989,
+        37.771331115000066,
+        -122.4777669469999,
+        37.78417398600004
+      ]
+    },
+    {
+      "id": "golden-gate-park",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Golden Gate Park",
+      "canonicalName": "Golden Gate Park",
+      "sourceName": "Golden Gate Park",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.51314054099993,
+        37.763933086000065,
+        -122.45294703399992,
+        37.77475548400008
+      ]
+    },
+    {
+      "id": "presidio-heights",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Presidio Heights",
+      "canonicalName": "Presidio Heights",
+      "sourceName": "Presidio Heights",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.45945744099993,
+        37.785681691000036,
+        -122.44540219699991,
+        37.79214151700006
+      ]
+    },
+    {
+      "id": "laurel-heights-jordan-park",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Laurel Heights / Jordan Park",
+      "canonicalName": "Laurel Heights / Jordan Park",
+      "sourceName": "Laurel Heights / Jordan Park",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.45917876599992,
+        37.78125706000009,
+        -122.4458254359999,
+        37.787261853000075
+      ]
+    },
+    {
+      "id": "lone-mountain",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Lone Mountain",
+      "canonicalName": "Lone Mountain",
+      "sourceName": "Lone Mountain",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.45885866099991,
+        37.772895177000066,
+        -122.4464708299999,
+        37.78243805300008
+      ]
+    },
+    {
+      "id": "anza-vista",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Anza Vista",
+      "canonicalName": "Anza Vista",
+      "sourceName": "Anza Vista",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.4475390589999,
+        37.778622307000035,
+        -122.43874018299994,
+        37.783308487000056
+      ]
+    },
+    {
+      "id": "cow-hollow",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Cow Hollow",
+      "canonicalName": "Cow Hollow",
+      "sourceName": "Cow Hollow",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.44776145299994,
+        37.79469062900006,
+        -122.43694967699992,
+        37.80049532400005
+      ]
+    },
+    {
+      "id": "union-street",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Union Street",
+      "canonicalName": "Union Street",
+      "sourceName": "Union Street",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.43769470599995,
+        37.79594936400008,
+        -122.42379296399992,
+        37.80130371900009
+      ]
+    },
+    {
+      "id": "nob-hill",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Nob Hill",
+      "canonicalName": "Nob Hill",
+      "sourceName": "Nob Hill",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.42010952499993,
+        37.78982993400007,
+        -122.40714880399992,
+        37.79651164400008
+      ]
+    },
+    {
+      "id": "marina",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Marina",
+      "canonicalName": "Marina",
+      "sourceName": "Marina",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.44985111699992,
+        37.79879024500008,
+        -122.4245383249999,
+        37.80883285200008
+      ]
+    },
+    {
+      "id": "telegraph-hill",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Telegraph Hill",
+      "canonicalName": "Telegraph Hill",
+      "sourceName": "Telegraph Hill",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.40852125599991,
+        37.79896930800004,
+        -122.4024206659999,
+        37.805695943000046
+      ]
+    },
+    {
+      "id": "downtown-union-square",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Downtown / Union Square",
+      "canonicalName": "Downtown / Union Square",
+      "sourceName": "Downtown / Union Square",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.41043324499992,
+        37.78328785200006,
+        -122.40196043399993,
+        37.79096861000005
+      ]
+    },
+    {
+      "id": "tenderloin",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Tenderloin",
+      "canonicalName": "Tenderloin",
+      "sourceName": "Tenderloin",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.4213933069999,
+        37.78047851100007,
+        -122.40895215899991,
+        37.78714914200009
+      ]
+    },
+    {
+      "id": "civic-center",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Civic Center",
+      "canonicalName": "Civic Center",
+      "sourceName": "Civic Center",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.42373098399992,
+        37.77303605000009,
+        -122.41251225499991,
+        37.78237894200004
+      ]
+    },
+    {
+      "id": "hayes-valley",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Hayes Valley",
+      "canonicalName": "Hayes Valley",
+      "sourceName": "Hayes Valley",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.43157464199993,
+        37.77418142200008,
+        -122.42259804199995,
+        37.778747371000065
+      ]
+    },
+    {
+      "id": "alamo-square",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Alamo Square",
+      "canonicalName": "Alamo Square",
+      "sourceName": "Alamo Square",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.43836550099991,
+        37.774061645000074,
+        -122.43101153899994,
+        37.77863203700008
+      ]
+    },
+    {
+      "id": "panhandle",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Panhandle",
+      "canonicalName": "Panhandle",
+      "sourceName": "Panhandle",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.45428511699993,
+        37.771021947000065,
+        -122.43742293899993,
+        37.77685588800006
+      ]
+    },
+    {
+      "id": "haight-ashbury",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Haight-Ashbury",
+      "canonicalName": "Haight-Ashbury",
+      "sourceName": "Haight Ashbury",
+      "aliases": [
+        "Haight Ashbury"
+      ],
+      "definitionSource": "sf-find",
+      "nameSources": [
+        "https://www.sftravel.com/neighborhoods"
+      ],
+      "bbox": [
+        -122.45390245499993,
+        37.767006680000065,
+        -122.4434614409999,
+        37.772295289000056
+      ]
+    },
+    {
+      "id": "lower-haight",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Lower Haight",
+      "canonicalName": "Lower Haight",
+      "sourceName": "Lower Haight",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.43761062399994,
+        37.770342896000045,
+        -122.42194124699989,
+        37.77511117900008
+      ]
+    },
+    {
+      "id": "mint-hill",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Mint Hill",
+      "canonicalName": "Mint Hill",
+      "sourceName": "Mint Hill",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.4288021019999,
+        37.769440829000075,
+        -122.42314596499995,
+        37.77295739200008
+      ]
+    },
+    {
+      "id": "duboce-triangle",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Duboce Triangle",
+      "canonicalName": "Duboce Triangle",
+      "sourceName": "Duboce Triangle",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.43684894299992,
+        37.76267070700004,
+        -122.42630943899991,
+        37.77138332900006
+      ]
+    },
+    {
+      "id": "cole-valley",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Cole Valley",
+      "canonicalName": "Cole Valley",
+      "sourceName": "Cole Valley",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.4533522879999,
+        37.764509360000034,
+        -122.44763462799995,
+        37.768864628000074
+      ]
+    },
+    {
+      "id": "rincon-hill",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Rincon Hill",
+      "canonicalName": "Rincon Hill",
+      "sourceName": "Rincon Hill",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.39670517799993,
+        37.783077854000055,
+        -122.38510637899992,
+        37.79138835400005
+      ]
+    },
+    {
+      "id": "south-beach",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "South Beach",
+      "canonicalName": "South Beach",
+      "sourceName": "South Beach",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.39584349899991,
+        37.776499854000065,
+        -122.38435071499993,
+        37.78739009600008
+      ]
+    },
+    {
+      "id": "south-of-market",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "South of Market",
+      "canonicalName": "South of Market",
+      "sourceName": "South of Market",
+      "aliases": [
+        "SoMa"
+      ],
+      "definitionSource": "sf-find",
+      "nameSources": [
+        "https://www.sftravel.com/neighborhoods/soma-yerba-buena"
+      ],
+      "bbox": [
+        -122.42339676099994,
+        37.76905345300008,
+        -122.39272283299994,
+        37.79115280800005
+      ]
+    },
+    {
+      "id": "showplace-square",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Showplace Square",
+      "canonicalName": "Showplace Square",
+      "sourceName": "Showplace Square",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.40973588899993,
+        37.76578329800009,
+        -122.39506054499992,
+        37.77428104000006
+      ]
+    },
+    {
+      "id": "mission-bay",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Mission Bay",
+      "canonicalName": "Mission Bay",
+      "sourceName": "Mission Bay",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.40165667999992,
+        37.764021342000035,
+        -122.38145582599992,
+        37.77885171600008
+      ]
+    },
+    {
+      "id": "yerba-buena-island",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Yerba Buena Island",
+      "canonicalName": "Yerba Buena Island",
+      "sourceName": "Yerba Buena Island",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.37284281899991,
+        37.80702339800007,
+        -122.35884966099991,
+        37.81595007200008
+      ]
+    },
+    {
+      "id": "treasure-island",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Treasure Island",
+      "canonicalName": "Treasure Island",
+      "sourceName": "Treasure Island",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.37912454899993,
+        37.81571079400004,
+        -122.36045796199994,
+        37.83239597600004
+      ]
+    },
+    {
+      "id": "mission-dolores",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Mission Dolores",
+      "canonicalName": "Mission Dolores",
+      "sourceName": "Mission Dolores",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.43102547099994,
+        37.75808875600006,
+        -122.42127172799991,
+        37.76986769700005
+      ]
+    },
+    {
+      "id": "castro",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Castro",
+      "canonicalName": "Castro",
+      "sourceName": "Castro",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.43734236799992,
+        37.75915742300003,
+        -122.4305735669999,
+        37.765867986000046
+      ]
+    },
+    {
+      "id": "outer-sunset",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Outer Sunset",
+      "canonicalName": "Outer Sunset",
+      "sourceName": "Outer Sunset",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.5125482169999,
+        37.73787469500007,
+        -122.47603309899989,
+        37.76544798600008
+      ]
+    },
+    {
+      "id": "parkside",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Parkside",
+      "canonicalName": "Parkside",
+      "sourceName": "Parkside",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.50876360699993,
+        37.73377084200007,
+        -122.47510246999991,
+        37.748647507000044
+      ]
+    },
+    {
+      "id": "stonestown",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Stonestown",
+      "canonicalName": "Stonestown",
+      "sourceName": "Stonestown",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.48139837999992,
+        37.71717386800009,
+        -122.47179743599992,
+        37.73116383000007
+      ]
+    },
+    {
+      "id": "parkmerced",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Parkmerced",
+      "canonicalName": "Parkmerced",
+      "sourceName": "Parkmerced",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.4852289349999,
+        37.71268239500006,
+        -122.47133674499992,
+        37.72741413000006
+      ]
+    },
+    {
+      "id": "lakeshore",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Lakeshore",
+      "canonicalName": "Lakeshore",
+      "sourceName": "Lakeshore",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.50853817799992,
+        37.708089209000036,
+        -122.47121509099992,
+        37.73547528700004
+      ]
+    },
+    {
+      "id": "golden-gate-heights",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Golden Gate Heights",
+      "canonicalName": "Golden Gate Heights",
+      "sourceName": "Golden Gate Heights",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.47681389199994,
+        37.74305181200009,
+        -122.46355449999993,
+        37.76012355000006
+      ]
+    },
+    {
+      "id": "forest-hill",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Forest Hill",
+      "canonicalName": "Forest Hill",
+      "sourceName": "Forest Hill",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.46819318299993,
+        37.74338394500006,
+        -122.4587859419999,
+        37.75365412000008
+      ]
+    },
+    {
+      "id": "west-portal",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "West Portal",
+      "canonicalName": "West Portal",
+      "sourceName": "West Portal",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.47564446799993,
+        37.73462557100004,
+        -122.46368599599992,
+        37.74374940900009
+      ]
+    },
+    {
+      "id": "clarendon-heights",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Clarendon Heights",
+      "canonicalName": "Clarendon Heights",
+      "sourceName": "Clarendon Heights",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.45553738299992,
+        37.753332588000035,
+        -122.44109307199994,
+        37.76100671800009
+      ]
+    },
+    {
+      "id": "midtown-terrace",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Midtown Terrace",
+      "canonicalName": "Midtown Terrace",
+      "sourceName": "Midtown Terrace",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.45644843399992,
+        37.74582583000006,
+        -122.44480802499993,
+        37.75413976600004
+      ]
+    },
+    {
+      "id": "laguna-honda",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Laguna Honda",
+      "canonicalName": "Laguna Honda",
+      "sourceName": "Laguna Honda",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.46525293699995,
+        37.73968664500006,
+        -122.45085298299995,
+        37.75194603600005
+      ]
+    },
+    {
+      "id": "lower-nob-hill",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Lower Nob Hill",
+      "canonicalName": "Lower Nob Hill",
+      "sourceName": "Lower Nob Hill",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.42213520799993,
+        37.785685802000046,
+        -122.40987401699994,
+        37.790880696000045
+      ]
+    },
+    {
+      "id": "upper-market",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Upper Market",
+      "canonicalName": "Upper Market",
+      "sourceName": "Upper Market",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.4497165489999,
+        37.746682787000054,
+        -122.43824612599991,
+        37.75558385900007
+      ]
+    },
+    {
+      "id": "dolores-heights",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Dolores Heights",
+      "canonicalName": "Dolores Heights",
+      "sourceName": "Dolores Heights",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.43279350499989,
+        37.74769585200005,
+        -122.4209640929999,
+        37.76128957200007
+      ]
+    },
+    {
+      "id": "mission",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Mission",
+      "canonicalName": "Mission",
+      "sourceName": "Mission",
+      "aliases": [
+        "Mission District",
+        "The Mission"
+      ],
+      "definitionSource": "sf-find",
+      "nameSources": [
+        "https://www.sftravel.com/neighborhoods/mission-district",
+        "https://www.sftravel.com/neighborhoods"
+      ],
+      "note": "The Mission and Outer Mission are separate named areas. This polygon follows the selected source definition.",
+      "bbox": [
+        -122.42287883299991,
+        37.74801344900004,
+        -122.40524026299994,
+        37.77011144800008
+      ]
+    },
+    {
+      "id": "potrero-hill",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Potrero Hill",
+      "canonicalName": "Potrero Hill",
+      "sourceName": "Potrero Hill",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.4075342289999,
+        37.749126018000084,
+        -122.39141836699991,
+        37.76654457600006
+      ]
+    },
+    {
+      "id": "dogpatch",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Dogpatch",
+      "canonicalName": "Dogpatch",
+      "sourceName": "Dogpatch",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.39274473899991,
+        37.75515488800005,
+        -122.38706585199992,
+        37.764379370000086
+      ]
+    },
+    {
+      "id": "central-waterfront",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Central Waterfront",
+      "canonicalName": "Central Waterfront",
+      "sourceName": "Central Waterfront",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.39728541599993,
+        37.73951135800007,
+        -122.36763102399993,
+        37.764935155000046
+      ]
+    },
+    {
+      "id": "diamond-heights",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Diamond Heights",
+      "canonicalName": "Diamond Heights",
+      "sourceName": "Diamond Heights",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.44778610499992,
+        37.73826575700008,
+        -122.43531551699994,
+        37.748664500000075
+      ]
+    },
+    {
+      "id": "crocker-amazon",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Crocker Amazon",
+      "canonicalName": "Crocker Amazon",
+      "sourceName": "Crocker Amazon",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.4542811259999,
+        37.70822197400008,
+        -122.42335343499991,
+        37.71649933700007
+      ]
+    },
+    {
+      "id": "fairmount",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Fairmount",
+      "canonicalName": "Fairmount",
+      "sourceName": "Fairmount",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.43583957599992,
+        37.73467197800005,
+        -122.42328556099994,
+        37.743295997000075
+      ]
+    },
+    {
+      "id": "peralta-heights",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Peralta Heights",
+      "canonicalName": "Peralta Heights",
+      "sourceName": "Peralta Heights",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.41061909799993,
+        37.74310451000008,
+        -122.40363591999994,
+        37.74926230700004
+      ]
+    },
+    {
+      "id": "holly-park",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Holly Park",
+      "canonicalName": "Holly Park",
+      "sourceName": "Holly Park",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.42672862899991,
+        37.73309184200008,
+        -122.41646198599994,
+        37.74102740700005
+      ]
+    },
+    {
+      "id": "merced-manor",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Merced Manor",
+      "canonicalName": "Merced Manor",
+      "sourceName": "Merced Manor",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.48903252199995,
+        37.73080573000004,
+        -122.47144842599994,
+        37.734706810000034
+      ]
+    },
+    {
+      "id": "balboa-terrace",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Balboa Terrace",
+      "canonicalName": "Balboa Terrace",
+      "sourceName": "Balboa Terrace",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.47179743599992,
+        37.72723776500004,
+        -122.46375547999992,
+        37.733235430000036
+      ]
+    },
+    {
+      "id": "ingleside",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Ingleside",
+      "canonicalName": "Ingleside",
+      "sourceName": "Ingleside",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.47253463499993,
+        37.71787075000009,
+        -122.45104796399994,
+        37.72526570700006
+      ]
+    },
+    {
+      "id": "merced-heights",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Merced Heights",
+      "canonicalName": "Merced Heights",
+      "sourceName": "Merced Heights",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.47263327099989,
+        37.70820248000007,
+        -122.46117040399992,
+        37.71793603500004
+      ]
+    },
+    {
+      "id": "outer-mission",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Outer Mission",
+      "canonicalName": "Outer Mission",
+      "sourceName": "Outer Mission",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "note": "Separate from the Mission. Do not resolve this name to the Mission or infer the broader informal Outer Mission area from this polygon.",
+      "bbox": [
+        -122.46897190599992,
+        37.70820041700006,
+        -122.44370603199991,
+        37.71839560400008
+      ]
+    },
+    {
+      "id": "ingleside-terraces",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Ingleside Terraces",
+      "canonicalName": "Ingleside Terraces",
+      "sourceName": "Ingleside Terraces",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.4723223549999,
+        37.72162376700004,
+        -122.46221250399992,
+        37.731032354000035
+      ]
+    },
+    {
+      "id": "mt-davidson-manor",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Mt. Davidson Manor",
+      "canonicalName": "Mt. Davidson Manor",
+      "sourceName": "Mt. Davidson Manor",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.46668138599989,
+        37.72474884800005,
+        -122.46023446299989,
+        37.73152705400008
+      ]
+    },
+    {
+      "id": "monterey-heights",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Monterey Heights",
+      "canonicalName": "Monterey Heights",
+      "sourceName": "Monterey Heights",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.46467474699995,
+        37.72999311800004,
+        -122.4585018599999,
+        37.737023355000076
+      ]
+    },
+    {
+      "id": "westwood-highlands",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Westwood Highlands",
+      "canonicalName": "Westwood Highlands",
+      "sourceName": "Westwood Highlands",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.45950454099994,
+        37.73083817500009,
+        -122.4534113439999,
+        37.73458091200007
+      ]
+    },
+    {
+      "id": "westwood-park",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Westwood Park",
+      "canonicalName": "Westwood Park",
+      "sourceName": "Westwood Park",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.4621904469999,
+        37.72308024200004,
+        -122.45232786799994,
+        37.73153064600007
+      ]
+    },
+    {
+      "id": "miraloma-park",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Miraloma Park",
+      "canonicalName": "Miraloma Park",
+      "sourceName": "Miraloma Park",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.45754707599991,
+        37.73375047700006,
+        -122.43993438599995,
+        37.74553423700007
+      ]
+    },
+    {
+      "id": "mclaren-park",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "McLaren Park",
+      "canonicalName": "McLaren Park",
+      "sourceName": "McLaren Park",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.42725261499993,
+        37.71035062200008,
+        -122.40802060599992,
+        37.72470958400004
+      ]
+    },
+    {
+      "id": "sunnydale",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Sunnydale",
+      "canonicalName": "Sunnydale",
+      "sourceName": "Sunnydale",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.42455038799994,
+        37.70832825700006,
+        -122.4157417539999,
+        37.71420382100007
+      ]
+    },
+    {
+      "id": "visitacion-valley",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Visitacion Valley",
+      "canonicalName": "Visitacion Valley",
+      "sourceName": "Visitacion Valley",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.4168835509999,
+        37.70832825700006,
+        -122.3989910489999,
+        37.720508679000034
+      ]
+    },
+    {
+      "id": "india-basin",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "India Basin",
+      "canonicalName": "India Basin",
+      "sourceName": "India Basin",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.38792635099992,
+        37.72987387400008,
+        -122.3673971739999,
+        37.74615712700006
+      ]
+    },
+    {
+      "id": "northern-waterfront",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Northern Waterfront",
+      "canonicalName": "Northern Waterfront",
+      "sourceName": "Northern Waterfront",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.40590388599992,
+        37.79587500300005,
+        -122.3929187029999,
+        37.808864982000046
+      ]
+    },
+    {
+      "id": "hunters-point",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Hunters Point",
+      "canonicalName": "Hunters Point",
+      "sourceName": "Hunters Point",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.38961954099995,
+        37.714297996000084,
+        -122.35698198799992,
+        37.73408161600008
+      ]
+    },
+    {
+      "id": "candlestick-point-sra",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Candlestick Point SRA",
+      "canonicalName": "Candlestick Point SRA",
+      "sourceName": "Candlestick Point SRA",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.39849907899992,
+        37.70838459600009,
+        -122.37437190899993,
+        37.72036816000008
+      ]
+    },
+    {
+      "id": "cayuga",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Cayuga",
+      "canonicalName": "Cayuga",
+      "sourceName": "Cayuga",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.44858468899992,
+        37.71359151000007,
+        -122.43538508599994,
+        37.72390940300005
+      ]
+    },
+    {
+      "id": "oceanview",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Oceanview",
+      "canonicalName": "Oceanview",
+      "sourceName": "Oceanview",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.4626396249999,
+        37.710588114000075,
+        -122.44790364799991,
+        37.72308024200004
+      ]
+    },
+    {
+      "id": "apparel-city",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Apparel City",
+      "canonicalName": "Apparel City",
+      "sourceName": "Apparel City",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.40799082699994,
+        37.73541693300007,
+        -122.39970554899992,
+        37.74344975000008
+      ]
+    },
+    {
+      "id": "bernal-heights",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Bernal Heights",
+      "canonicalName": "Bernal Heights",
+      "sourceName": "Bernal Heights",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.4241471549999,
+        37.73216373900004,
+        -122.40595671699992,
+        37.74831671800007
+      ]
+    },
+    {
+      "id": "noe-valley",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Noe Valley",
+      "canonicalName": "Noe Valley",
+      "sourceName": "Noe Valley",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.43877994199994,
+        37.74177193600008,
+        -122.42170442399993,
+        37.75462766600009
+      ]
+    },
+    {
+      "id": "produce-market",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Produce Market",
+      "canonicalName": "Produce Market",
+      "sourceName": "Produce Market",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.40596475899991,
+        37.73884664700006,
+        -122.39218233999992,
+        37.749684622000075
+      ]
+    },
+    {
+      "id": "bayview",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Bayview",
+      "canonicalName": "Bayview",
+      "sourceName": "Bayview",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.40210511999993,
+        37.722431603000075,
+        -122.37910964799994,
+        37.745100998000055
+      ]
+    },
+    {
+      "id": "silver-terrace",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Silver Terrace",
+      "canonicalName": "Silver Terrace",
+      "sourceName": "Silver Terrace",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.40637771099995,
+        37.72778970300004,
+        -122.3906937729999,
+        37.73991773400007
+      ]
+    },
+    {
+      "id": "bret-harte",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Bret Harte",
+      "canonicalName": "Bret Harte",
+      "sourceName": "Bret Harte",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.40078474699993,
+        37.71466371900004,
+        -122.38408586999992,
+        37.72547564900009
+      ]
+    },
+    {
+      "id": "little-hollywood",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Little Hollywood",
+      "canonicalName": "Little Hollywood",
+      "sourceName": "Little Hollywood",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.40544261799994,
+        37.70835527200006,
+        -122.39485787099994,
+        37.71615164800005
+      ]
+    },
+    {
+      "id": "excelsior",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Excelsior",
+      "canonicalName": "Excelsior",
+      "sourceName": "Excelsior",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.4410195619999,
+        37.71314315700005,
+        -122.42184696099991,
+        37.728759936000074
+      ]
+    },
+    {
+      "id": "portola",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Portola",
+      "canonicalName": "Portola",
+      "sourceName": "Portola",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.41720472399993,
+        37.71485596500008,
+        -122.39849927799992,
+        37.735420237000085
+      ]
+    },
+    {
+      "id": "university-mound",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "University Mound",
+      "canonicalName": "University Mound",
+      "sourceName": "University Mound",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.42373998199992,
+        37.721970568000074,
+        -122.41296907999993,
+        37.73222306900004
+      ]
+    },
+    {
+      "id": "st-marys-park",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "St. Marys Park",
+      "canonicalName": "St. Marys Park",
+      "sourceName": "St. Marys Park",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.43589177799993,
+        37.73116853100004,
+        -122.41919402999991,
+        37.736371923000036
+      ]
+    },
+    {
+      "id": "mission-terrace",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Mission Terrace",
+      "canonicalName": "Mission Terrace",
+      "sourceName": "Mission Terrace",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.44789258299994,
+        37.72291330100006,
+        -122.4195832339999,
+        37.73235472300007
+      ]
+    },
+    {
+      "id": "sunnyside",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Sunnyside",
+      "canonicalName": "Sunnyside",
+      "sourceName": "Sunnyside",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.45385559699992,
+        37.72289202400009,
+        -122.43429698199992,
+        37.73542793300004
+      ]
+    },
+    {
+      "id": "glen-park",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Glen Park",
+      "canonicalName": "Glen Park",
+      "sourceName": "Glen Park",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.45162398699989,
+        37.732295287000056,
+        -122.42932407699993,
+        37.746438158000046
+      ]
+    },
+    {
+      "id": "western-addition",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Western Addition",
+      "canonicalName": "Western Addition",
+      "sourceName": "Western Addition",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.4470398069999,
+        37.77580159100006,
+        -122.42335402499992,
+        37.78435505600004
+      ]
+    },
+    {
+      "id": "aquatic-park-ft-mason",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Aquatic Park / Ft. Mason",
+      "canonicalName": "Aquatic Park / Ft. Mason",
+      "sourceName": "Aquatic Park / Ft. Mason",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.43261498899994,
+        37.80326673600007,
+        -122.42017812599994,
+        37.81079766800008
+      ]
+    },
+    {
+      "id": "fishermans-wharf",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Fisherman's Wharf",
+      "canonicalName": "Fisherman's Wharf",
+      "sourceName": "Fishermans Wharf",
+      "aliases": [
+        "Fishermans Wharf"
+      ],
+      "definitionSource": "sf-find",
+      "nameSources": [
+        "https://www.sftravel.com/neighborhoods"
+      ],
+      "bbox": [
+        -122.42288614299991,
+        37.804790307000076,
+        -122.40535724099993,
+        37.811574293000035
+      ]
+    },
+    {
+      "id": "cathedral-hill",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Cathedral Hill",
+      "canonicalName": "Cathedral Hill",
+      "sourceName": "Cathedral Hill",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.42798892699994,
+        37.78019303000008,
+        -122.42043951799991,
+        37.789412061000064
+      ]
+    },
+    {
+      "id": "japantown",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Japantown",
+      "canonicalName": "Japantown",
+      "sourceName": "Japantown",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.43364712399995,
+        37.78329259100008,
+        -122.42610311399994,
+        37.788786894000054
+      ]
+    },
+    {
+      "id": "pacific-heights",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Pacific Heights",
+      "canonicalName": "Pacific Heights",
+      "sourceName": "Pacific Heights",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.44686503799994,
+        37.78743816400004,
+        -122.42213520799993,
+        37.79761658100006
+      ]
+    },
+    {
+      "id": "lower-pacific-heights",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Lower Pacific Heights",
+      "canonicalName": "Lower Pacific Heights",
+      "sourceName": "Lower Pacific Heights",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.4467927799999,
+        37.78248803100007,
+        -122.43291424799992,
+        37.78890628400006
+      ]
+    },
+    {
+      "id": "chinatown",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Chinatown",
+      "canonicalName": "Chinatown",
+      "sourceName": "Chinatown",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.4102635239999,
+        37.79036631100007,
+        -122.40295736099989,
+        37.79786461200007
+      ]
+    },
+    {
+      "id": "polk-gulch",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Polk Gulch",
+      "canonicalName": "Polk Gulch",
+      "sourceName": "Polk Gulch",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.42398214499991,
+        37.789412061000064,
+        -122.41884265199991,
+        37.798971056000084
+      ]
+    },
+    {
+      "id": "north-beach",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "North Beach",
+      "canonicalName": "North Beach",
+      "sourceName": "North Beach",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.41722619399991,
+        37.79553183200005,
+        -122.4004855359999,
+        37.80602771700006
+      ]
+    },
+    {
+      "id": "russian-hill",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Russian Hill",
+      "canonicalName": "Russian Hill",
+      "sourceName": "Russian Hill",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.42510952099991,
+        37.79567005100006,
+        -122.41007596999992,
+        37.80516964900005
+      ]
+    },
+    {
+      "id": "financial-district",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Financial District",
+      "canonicalName": "Financial District",
+      "sourceName": "Financial District",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.40461342099991,
+        37.787450498000055,
+        -122.38930970099995,
+        37.79750801400007
+      ]
+    },
+    {
+      "id": "inner-sunset",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Inner Sunset",
+      "canonicalName": "Inner Sunset",
+      "sourceName": "Inner Sunset",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.47730839499991,
+        37.75825698300008,
+        -122.45770003399991,
+        37.76625560500008
+      ]
+    },
+    {
+      "id": "parnassus-heights",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Parnassus Heights",
+      "canonicalName": "Parnassus Heights",
+      "sourceName": "Parnassus Heights",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.46232841199992,
+        37.75507449600008,
+        -122.45136694099995,
+        37.766374073000065
+      ]
+    },
+    {
+      "id": "forest-knolls",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Forest Knolls",
+      "canonicalName": "Forest Knolls",
+      "sourceName": "Forest Knolls",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.46384212999993,
+        37.75140150000004,
+        -122.45407763899993,
+        37.75915540200009
+      ]
+    },
+    {
+      "id": "buena-vista",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Buena Vista",
+      "canonicalName": "Buena Vista",
+      "sourceName": "Buena Vista",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.44699434299991,
+        37.76178141300005,
+        -122.43562414099989,
+        37.773133492000056
+      ]
+    },
+    {
+      "id": "corona-heights",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Corona Heights",
+      "canonicalName": "Corona Heights",
+      "sourceName": "Corona Heights",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.44335905399993,
+        37.761996605000036,
+        -122.43518796199993,
+        37.76732795800007
+      ]
+    },
+    {
+      "id": "ashbury-heights",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Ashbury Heights",
+      "canonicalName": "Ashbury Heights",
+      "sourceName": "Ashbury Heights",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.45256935299994,
+        37.75857566900004,
+        -122.44583817199992,
+        37.76722025600009
+      ]
+    },
+    {
+      "id": "eureka-valley",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Eureka Valley",
+      "canonicalName": "Eureka Valley",
+      "sourceName": "Eureka Valley",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.44678340399992,
+        37.75410150700009,
+        -122.4321774899999,
+        37.762354747000074
+      ]
+    },
+    {
+      "id": "st-francis-wood",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "St. Francis Wood",
+      "canonicalName": "St. Francis Wood",
+      "sourceName": "St. Francis Wood",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.4715693409999,
+        37.73252279500008,
+        -122.46055185099993,
+        37.74033855600004
+      ]
+    },
+    {
+      "id": "sherwood-forest",
+      "source": "sf-find",
+      "file": "neighborhoods.json",
+      "name": "Sherwood Forest",
+      "canonicalName": "Sherwood Forest",
+      "sourceName": "Sherwood Forest",
+      "aliases": [],
+      "definitionSource": "sf-find",
+      "nameSources": [],
+      "bbox": [
+        -122.46198653699992,
+        37.73298994000004,
+        -122.45170608599994,
+        37.741035486000044
+      ]
+    },
+    {
+      "id": "western-addition",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Western Addition",
+      "canonicalName": "Western Addition",
+      "sourceName": "Western Addition",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.44279300046567,
+        37.77643500023769,
+        -122.42024699960035,
+        37.79037000029706
+      ]
+    },
+    {
+      "id": "west-of-twin-peaks",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "West of Twin Peaks",
+      "canonicalName": "West of Twin Peaks",
+      "sourceName": "West of Twin Peaks",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.47608699953692,
+        37.71717399992926,
+        -122.43242200015634,
+        37.75303900006489
+      ]
+    },
+    {
+      "id": "visitacion-valley",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Visitacion Valley",
+      "canonicalName": "Visitacion Valley",
+      "sourceName": "Visitacion Valley",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.424550000487,
+        37.708327254192966,
+        -122.39832799948861,
+        37.719836999704086
+      ]
+    },
+    {
+      "id": "twin-peaks",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Twin Peaks",
+      "canonicalName": "Twin Peaks",
+      "sourceName": "Twin Peaks",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.46152399961484,
+        37.745534000195306,
+        -122.43883899990259,
+        37.75904499988456
+      ]
+    },
+    {
+      "id": "south-of-market",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "South of Market",
+      "canonicalName": "South of Market",
+      "sourceName": "South of Market",
+      "aliases": [
+        "SoMa"
+      ],
+      "definitionSource": "analysis",
+      "nameSources": [
+        "https://www.sftravel.com/neighborhoods/soma-yerba-buena"
+      ],
+      "bbox": [
+        -122.41870400041417,
+        37.76924399995716,
+        -122.39274999947901,
+        37.785743999673485
+      ]
+    },
+    {
+      "id": "treasure-island",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Treasure Island",
+      "canonicalName": "Treasure Island",
+      "sourceName": "Treasure Island",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.37912454354516,
+        37.80700597589435,
+        -122.35884965637779,
+        37.833297639488315
+      ]
+    },
+    {
+      "id": "presidio-heights",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Presidio Heights",
+      "canonicalName": "Presidio Heights",
+      "sourceName": "Presidio Heights",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.45947599998611,
+        37.781257000272284,
+        -122.44279300046567,
+        37.791878999765764
+      ]
+    },
+    {
+      "id": "presidio",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Presidio",
+      "canonicalName": "Presidio",
+      "sourceName": "Presidio",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.48594298908101,
+        37.786782000397565,
+        -122.44629999989722,
+        37.81102540188696
+      ]
+    },
+    {
+      "id": "potrero-hill",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Potrero Hill",
+      "canonicalName": "Potrero Hill",
+      "sourceName": "Potrero Hill",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.40649299998017,
+        37.749432999581174,
+        -122.37920185443839,
+        37.76725500010047
+      ]
+    },
+    {
+      "id": "portola",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Portola",
+      "canonicalName": "Portola",
+      "sourceName": "Portola",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.4217529998151,
+        37.71618300028485,
+        -122.3988630003274,
+        37.737966000134165
+      ]
+    },
+    {
+      "id": "pacific-heights",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Pacific Heights",
+      "canonicalName": "Pacific Heights",
+      "sourceName": "Pacific Heights",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.4467279995703,
+        37.784827000053326,
+        -122.42232900025733,
+        37.796691000098924
+      ]
+    },
+    {
+      "id": "outer-richmond",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Outer Richmond",
+      "canonicalName": "Outer Richmond",
+      "sourceName": "Outer Richmond",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.51494757950903,
+        37.770761071253034,
+        -122.47171099971595,
+        37.786315000362784
+      ]
+    },
+    {
+      "id": "outer-mission",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Outer Mission",
+      "canonicalName": "Outer Mission",
+      "sourceName": "Outer Mission",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "note": "Separate from the Mission. Do not resolve this name to the Mission or infer the broader informal Outer Mission area from this polygon.",
+      "bbox": [
+        -122.46893899975552,
+        37.708207307808344,
+        -122.42611499951167,
+        37.73508199997301
+      ]
+    },
+    {
+      "id": "sunset-parkside",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Sunset/Parkside",
+      "canonicalName": "Sunset/Parkside",
+      "sourceName": "Sunset/Parkside",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.51247227575938,
+        37.72879699968676,
+        -122.47485700042661,
+        37.76548599963957
+      ]
+    },
+    {
+      "id": "oceanview-merced-ingleside",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Oceanview/Merced/Ingleside",
+      "canonicalName": "Oceanview/Merced/Ingleside",
+      "sourceName": "Oceanview/Merced/Ingleside",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.47265499958948,
+        37.70823199960126,
+        -122.44787799956123,
+        37.725270000446294
+      ]
+    },
+    {
+      "id": "north-beach",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "North Beach",
+      "canonicalName": "North Beach",
+      "sourceName": "North Beach",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.4208120192032,
+        37.79706500039374,
+        -122.40039906822602,
+        37.81201579009311
+      ]
+    },
+    {
+      "id": "noe-valley",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Noe Valley",
+      "canonicalName": "Noe Valley",
+      "sourceName": "Noe Valley",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.44739899962886,
+        37.7415340001127,
+        -122.42132799967008,
+        37.75663099970136
+      ]
+    },
+    {
+      "id": "lone-mountain-usf",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Lone Mountain/USF",
+      "canonicalName": "Lone Mountain/USF",
+      "sourceName": "Lone Mountain/USF",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.45885900004808,
+        37.771929999718,
+        -122.44092200041324,
+        37.782885000120665
+      ]
+    },
+    {
+      "id": "lincoln-park",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Lincoln Park",
+      "canonicalName": "Lincoln Park",
+      "sourceName": "Lincoln Park",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.5107810002677,
+        37.78062699973755,
+        -122.49301800040364,
+        37.788703873424964
+      ]
+    },
+    {
+      "id": "seacliff",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Seacliff",
+      "canonicalName": "Seacliff",
+      "sourceName": "Seacliff",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.49349099991439,
+        37.78349799972452,
+        -122.47235200015005,
+        37.790838978027715
+      ]
+    },
+    {
+      "id": "nob-hill",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Nob Hill",
+      "canonicalName": "Nob Hill",
+      "sourceName": "Nob Hill",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.42277800010044,
+        37.7866189995935,
+        -122.40714900033723,
+        37.799095999949856
+      ]
+    },
+    {
+      "id": "mission-bay",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Mission Bay",
+      "canonicalName": "Mission Bay",
+      "sourceName": "Mission Bay",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.40498999944751,
+        37.76437899995063,
+        -122.3814558268399,
+        37.78293893433924
+      ]
+    },
+    {
+      "id": "mission",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Mission",
+      "canonicalName": "Mission",
+      "sourceName": "Mission",
+      "aliases": [
+        "Mission District",
+        "The Mission"
+      ],
+      "definitionSource": "analysis",
+      "nameSources": [
+        "https://www.sftravel.com/neighborhoods/mission-district",
+        "https://www.sftravel.com/neighborhoods"
+      ],
+      "note": "The Mission and Outer Mission are separate named areas. This polygon follows the selected source definition.",
+      "bbox": [
+        -122.42694800056495,
+        37.74782999973639,
+        -122.40297799990577,
+        37.77564499965146
+      ]
+    },
+    {
+      "id": "russian-hill",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Russian Hill",
+      "canonicalName": "Russian Hill",
+      "sourceName": "Russian Hill",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.42667099967395,
+        37.792174999748426,
+        -122.41228300033903,
+        37.81187907507314
+      ]
+    },
+    {
+      "id": "marina",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Marina",
+      "canonicalName": "Marina",
+      "sourceName": "Marina",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.44958399963814,
+        37.79470600008707,
+        -122.42360100041957,
+        37.81079185354666
+      ]
+    },
+    {
+      "id": "lakeshore",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Lakeshore",
+      "canonicalName": "Lakeshore",
+      "sourceName": "Lakeshore",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.50853817985781,
+        37.70813199967893,
+        -122.47121500015237,
+        37.735564999723735
+      ]
+    },
+    {
+      "id": "tenderloin",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Tenderloin",
+      "canonicalName": "Tenderloin",
+      "sourceName": "Tenderloin",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.42156999955779,
+        37.77514700013959,
+        -122.4073370005528,
+        37.78829299997248
+      ]
+    },
+    {
+      "id": "mclaren-park",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "McLaren Park",
+      "canonicalName": "McLaren Park",
+      "sourceName": "McLaren Park",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.42730599969283,
+        37.710102000094125,
+        -122.40666500014113,
+        37.724710000383446
+      ]
+    },
+    {
+      "id": "japantown",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Japantown",
+      "canonicalName": "Japantown",
+      "sourceName": "Japantown",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.44318300014781,
+        37.78288500012065,
+        -122.42468700019211,
+        37.78712999986136
+      ]
+    },
+    {
+      "id": "inner-sunset",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Inner Sunset",
+      "canonicalName": "Inner Sunset",
+      "sourceName": "Inner Sunset",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.47730799991515,
+        37.74864800039568,
+        -122.44634300019517,
+        37.76637399965159
+      ]
+    },
+    {
+      "id": "hayes-valley",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Hayes Valley",
+      "canonicalName": "Hayes Valley",
+      "sourceName": "Hayes Valley",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.44148799989664,
+        37.769307000353685,
+        -122.41925600041813,
+        37.78007499991484
+      ]
+    },
+    {
+      "id": "haight-ashbury",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Haight-Ashbury",
+      "canonicalName": "Haight-Ashbury",
+      "sourceName": "Haight Ashbury",
+      "aliases": [
+        "Haight Ashbury"
+      ],
+      "definitionSource": "analysis",
+      "nameSources": [
+        "https://www.sftravel.com/neighborhoods"
+      ],
+      "bbox": [
+        -122.45390200025867,
+        37.76147799958168,
+        -122.4315699996006,
+        37.773757000284476
+      ]
+    },
+    {
+      "id": "golden-gate-park",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Golden Gate Park",
+      "canonicalName": "Golden Gate Park",
+      "sourceName": "Golden Gate Park",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.5131467441666,
+        37.763586015947254,
+        -122.44073499971395,
+        37.774755000061795
+      ]
+    },
+    {
+      "id": "inner-richmond",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Inner Richmond",
+      "canonicalName": "Inner Richmond",
+      "sourceName": "Inner Richmond",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.47262599987117,
+        37.77313900031373,
+        -122.45837100043094,
+        37.78971100039204
+      ]
+    },
+    {
+      "id": "glen-park",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Glen Park",
+      "canonicalName": "Glen Park",
+      "sourceName": "Glen Park",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.45162400011145,
+        37.73317599979696,
+        -122.42328600002556,
+        37.74659600030652
+      ]
+    },
+    {
+      "id": "financial-district-south-beach",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Financial District/South Beach",
+      "canonicalName": "Financial District/South Beach",
+      "sourceName": "Financial District/South Beach",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.40878600019867,
+        37.77885199978907,
+        -122.38434124452131,
+        37.80602241353753
+      ]
+    },
+    {
+      "id": "excelsior",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Excelsior",
+      "canonicalName": "Excelsior",
+      "sourceName": "Excelsior",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.4542809997927,
+        37.708223555113804,
+        -122.41445999966336,
+        37.732016000203544
+      ]
+    },
+    {
+      "id": "chinatown",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Chinatown",
+      "canonicalName": "Chinatown",
+      "sourceName": "Chinatown",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.41290800040426,
+        37.79204299983456,
+        -122.40014900001545,
+        37.80218399966503
+      ]
+    },
+    {
+      "id": "castro-upper-market",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Castro/Upper Market",
+      "canonicalName": "Castro/Upper Market",
+      "sourceName": "Castro/Upper Market",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.44791500056903,
+        37.75543399997017,
+        -122.42554999976474,
+        37.76960300010809
+      ]
+    },
+    {
+      "id": "bernal-heights",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Bernal Heights",
+      "canonicalName": "Bernal Heights",
+      "sourceName": "Bernal Heights",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.42857300021538,
+        37.731548999777644,
+        -122.4035610005543,
+        37.74947499978333
+      ]
+    },
+    {
+      "id": "bayview-hunters-point",
+      "source": "analysis",
+      "file": "neighborhoods-analysis.json",
+      "name": "Bayview Hunters Point",
+      "canonicalName": "Bayview Hunters Point",
+      "sourceName": "Bayview Hunters Point",
+      "aliases": [],
+      "definitionSource": "analysis",
+      "nameSources": [],
+      "bbox": [
+        -122.4070520004777,
+        37.7083520497599,
+        -122.35696687665975,
+        37.75318612930513
+      ]
+    },
+    {
+      "id": "alamo-square",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Alamo Square",
+      "canonicalName": "Alamo Square",
+      "sourceName": "Alamo Square",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "6e",
+      "realtorDistrict": "District 6 - Central North",
+      "bbox": [
+        -122.43867122231956,
+        37.774044328330085,
+        -122.42948394891741,
+        37.77927771863689
+      ]
+    },
+    {
+      "id": "anza-vista",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Anza Vista",
+      "canonicalName": "Anza Vista",
+      "sourceName": "Anza Vista",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "6a",
+      "realtorDistrict": "District 6 - Central North",
+      "bbox": [
+        -122.44753905927386,
+        37.77871724490486,
+        -122.43890760984469,
+        37.78329099034325
+      ]
+    },
+    {
+      "id": "balboa-terrace",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Balboa Terrace",
+      "canonicalName": "Balboa Terrace",
+      "sourceName": "Balboa Terrace",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "4a",
+      "realtorDistrict": "District 4 - Twin Peaks West",
+      "bbox": [
+        -122.47222715581353,
+        37.728278183688076,
+        -122.46450886214802,
+        37.73315196472005
+      ]
+    },
+    {
+      "id": "bayview",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Bayview",
+      "canonicalName": "Bayview",
+      "sourceName": "Bayview",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "10a",
+      "realtorDistrict": "District 10 - Southeast",
+      "bbox": [
+        -122.40809576761198,
+        37.71466372002355,
+        -122.37766359432486,
+        37.7502633777501
+      ]
+    },
+    {
+      "id": "bernal-heights",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Bernal Heights",
+      "canonicalName": "Bernal Heights",
+      "sourceName": "Bernal Heights",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "9a",
+      "realtorDistrict": "District 9 - Central East",
+      "bbox": [
+        -122.43609272934812,
+        37.73108140791741,
+        -122.40375492236231,
+        37.74919006373567
+      ]
+    },
+    {
+      "id": "buena-vista-park-ashbury-heights",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Buena Vista Park/Ashbury Heights",
+      "canonicalName": "Buena Vista Park/Ashbury Heights",
+      "sourceName": "Buena Vista Park/Ashbury Heights",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "5f",
+      "realtorDistrict": "District 5 - Central",
+      "bbox": [
+        -122.44814916956209,
+        37.76169026503655,
+        -122.43562414065005,
+        37.771160889406325
+      ]
+    },
+    {
+      "id": "central-richmond",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Central Richmond",
+      "canonicalName": "Central Richmond",
+      "sourceName": "Central Richmond",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "1a",
+      "realtorDistrict": "District 1 - Northwest",
+      "bbox": [
+        -122.49250213036368,
+        37.77212335067067,
+        -122.47176292780193,
+        37.78433849035578
+      ]
+    },
+    {
+      "id": "central-sunset",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Central Sunset",
+      "canonicalName": "Central Sunset",
+      "sourceName": "Central Sunset",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "2e",
+      "realtorDistrict": "District 2 - Central West",
+      "bbox": [
+        -122.49601311039903,
+        37.75143630744246,
+        -122.47645645481239,
+        37.76553718248277
+      ]
+    },
+    {
+      "id": "clarendon-heights",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Clarendon Heights",
+      "canonicalName": "Clarendon Heights",
+      "sourceName": "Clarendon Heights",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "5h",
+      "realtorDistrict": "District 5 - Central",
+      "bbox": [
+        -122.45369908664235,
+        37.756568827571314,
+        -122.44455825291045,
+        37.761007670210965
+      ]
+    },
+    {
+      "id": "corona-heights",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Corona Heights",
+      "canonicalName": "Corona Heights",
+      "sourceName": "Corona Heights",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "5g",
+      "realtorDistrict": "District 5 - Central",
+      "bbox": [
+        -122.44671534794368,
+        37.75832871538972,
+        -122.43531760159159,
+        37.767232071625756
+      ]
+    },
+    {
+      "id": "cow-hollow",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Cow Hollow",
+      "canonicalName": "Cow Hollow",
+      "sourceName": "Cow Hollow",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "7d",
+      "realtorDistrict": "District 7 - North",
+      "bbox": [
+        -122.44782391476224,
+        37.794243088346285,
+        -122.42357742264433,
+        37.80135065698598
+      ]
+    },
+    {
+      "id": "crocker-amazon",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Crocker Amazon",
+      "canonicalName": "Crocker Amazon",
+      "sourceName": "Crocker Amazon",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "10b",
+      "realtorDistrict": "District 10 - Southeast",
+      "bbox": [
+        -122.45466503820039,
+        37.708241057469515,
+        -122.42335343596608,
+        37.7164249181952
+      ]
+    },
+    {
+      "id": "diamond-heights",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Diamond Heights",
+      "canonicalName": "Diamond Heights",
+      "sourceName": "Diamond Heights",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "4b",
+      "realtorDistrict": "District 4 - Twin Peaks West",
+      "bbox": [
+        -122.45193573405659,
+        37.73799831345146,
+        -122.43570906355829,
+        37.74711452182731
+      ]
+    },
+    {
+      "id": "downtown",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Downtown",
+      "canonicalName": "Downtown",
+      "sourceName": "Downtown",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "8a",
+      "realtorDistrict": "District 8 - Northeast",
+      "bbox": [
+        -122.42054721334033,
+        37.78328785293043,
+        -122.40343080112505,
+        37.79212007191527
+      ]
+    },
+    {
+      "id": "duboce-triangle",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Duboce Triangle",
+      "canonicalName": "Duboce Triangle",
+      "sourceName": "Duboce Triangle",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "5j",
+      "realtorDistrict": "District 5 - Central",
+      "bbox": [
+        -122.43579421319502,
+        37.76256143337743,
+        -122.42607144211354,
+        37.76976225029873
+      ]
+    },
+    {
+      "id": "eureka-valley-dolores-heights",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Eureka Valley / Dolores Heights",
+      "canonicalName": "Eureka Valley / Dolores Heights",
+      "sourceName": "Eureka Valley / Dolores Heights",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "5k",
+      "realtorDistrict": "District 5 - Central",
+      "bbox": [
+        -122.44498763449846,
+        37.754095058216805,
+        -122.4209640925655,
+        37.76750445952229
+      ]
+    },
+    {
+      "id": "excelsior",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Excelsior",
+      "canonicalName": "Excelsior",
+      "sourceName": "Excelsior",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "10c",
+      "realtorDistrict": "District 10 - Southeast",
+      "bbox": [
+        -122.44121260230055,
+        37.710101860358854,
+        -122.4191314649574,
+        37.731967850999105
+      ]
+    },
+    {
+      "id": "financial-district-barbary-coast",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Financial District/Barbary Coast",
+      "canonicalName": "Financial District/Barbary Coast",
+      "sourceName": "Financial District/Barbary Coast",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "8b",
+      "realtorDistrict": "District 8 - Northeast",
+      "bbox": [
+        -122.40876046653038,
+        37.78764184853344,
+        -122.39291871417208,
+        37.800181251223826
+      ]
+    },
+    {
+      "id": "yerba-buena",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Yerba Buena",
+      "canonicalName": "Yerba Buena",
+      "sourceName": "Yerba Buena",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "9g",
+      "realtorDistrict": "District 9 - Central East",
+      "bbox": [
+        -122.40806654668077,
+        37.778176253334465,
+        -122.39277107469594,
+        37.79309708320577
+      ]
+    },
+    {
+      "id": "forest-hill",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Forest Hill",
+      "canonicalName": "Forest Hill",
+      "sourceName": "Forest Hill",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "4c",
+      "realtorDistrict": "District 4 - Twin Peaks West",
+      "bbox": [
+        -122.46819318300649,
+        37.74354470948539,
+        -122.45855110681573,
+        37.752853745828666
+      ]
+    },
+    {
+      "id": "forest-hills-extension",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Forest Hills Extension",
+      "canonicalName": "Forest Hills Extension",
+      "sourceName": "Forest Hills Extension",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "4j",
+      "realtorDistrict": "District 4 - Twin Peaks West",
+      "bbox": [
+        -122.46338152976408,
+        37.740626232344276,
+        -122.45166591788387,
+        37.747395712828194
+      ]
+    },
+    {
+      "id": "forest-knolls",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Forest Knolls",
+      "canonicalName": "Forest Knolls",
+      "sourceName": "Forest Knolls",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "4d",
+      "realtorDistrict": "District 4 - Twin Peaks West",
+      "bbox": [
+        -122.4637836334732,
+        37.75131418816236,
+        -122.4520990700169,
+        37.76347916907323
+      ]
+    },
+    {
+      "id": "glen-park",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Glen Park",
+      "canonicalName": "Glen Park",
+      "sourceName": "Glen Park",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "5a",
+      "realtorDistrict": "District 5 - Central",
+      "bbox": [
+        -122.44640535677203,
+        37.73106468494428,
+        -122.42311699837332,
+        37.74259564745658
+      ]
+    },
+    {
+      "id": "golden-gate-heights",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Golden Gate Heights",
+      "canonicalName": "Golden Gate Heights",
+      "sourceName": "Golden Gate Heights",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "2a",
+      "realtorDistrict": "District 2 - Central West",
+      "bbox": [
+        -122.47372884132193,
+        37.743395851587344,
+        -122.46465823548256,
+        37.75922054941404
+      ]
+    },
+    {
+      "id": "golden-gate-park",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Golden Gate Park",
+      "canonicalName": "Golden Gate Park",
+      "sourceName": "Golden Gate Park",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": null,
+      "realtorDistrict": "None",
+      "bbox": [
+        -122.51314608794141,
+        37.76398115044797,
+        -122.4407351473943,
+        37.77465521991592
+      ]
+    },
+    {
+      "id": "haight-ashbury",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Haight-Ashbury",
+      "canonicalName": "Haight-Ashbury",
+      "sourceName": "Haight Ashbury",
+      "aliases": [
+        "Haight Ashbury"
+      ],
+      "definitionSource": "realtor",
+      "nameSources": [
+        "https://www.sftravel.com/neighborhoods"
+      ],
+      "sourceCode": "5b",
+      "realtorDistrict": "District 5 - Central",
+      "bbox": [
+        -122.45400863075233,
+        37.76687212530553,
+        -122.43716166191143,
+        37.774044356977896
+      ]
+    },
+    {
+      "id": "hayes-valley",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Hayes Valley",
+      "canonicalName": "Hayes Valley",
+      "sourceName": "Hayes Valley",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "6b",
+      "realtorDistrict": "District 6 - Central North",
+      "bbox": [
+        -122.43774490824637,
+        37.769173296826985,
+        -122.4206992088222,
+        37.77989010574677
+      ]
+    },
+    {
+      "id": "hunters-point",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Hunters Point",
+      "canonicalName": "Hunters Point",
+      "sourceName": "Hunters Point",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "10j",
+      "realtorDistrict": "District 10 - Southeast",
+      "bbox": [
+        -122.38887156948537,
+        37.71275175319809,
+        -122.35696603928594,
+        37.75094078786451
+      ]
+    },
+    {
+      "id": "ingleside",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Ingleside",
+      "canonicalName": "Ingleside",
+      "sourceName": "Ingleside",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "3h",
+      "realtorDistrict": "District 3 - Southwest",
+      "bbox": [
+        -122.46228026875752,
+        37.71615265125842,
+        -122.44785857266535,
+        37.72516769336712
+      ]
+    },
+    {
+      "id": "ingleside-heights",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Ingleside Heights",
+      "canonicalName": "Ingleside Heights",
+      "sourceName": "Ingleside Heights",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "3g",
+      "realtorDistrict": "District 3 - Southwest",
+      "bbox": [
+        -122.47290309254795,
+        37.7081978627014,
+        -122.46256211902981,
+        37.718079586526365
+      ]
+    },
+    {
+      "id": "ingleside-terrace",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Ingleside Terrace",
+      "canonicalName": "Ingleside Terrace",
+      "sourceName": "Ingleside Terrace",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "4e",
+      "realtorDistrict": "District 4 - Twin Peaks West",
+      "bbox": [
+        -122.4727347668461,
+        37.72154177796359,
+        -122.46226421561128,
+        37.73108398319953
+      ]
+    },
+    {
+      "id": "inner-mission",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Inner Mission",
+      "canonicalName": "Inner Mission",
+      "sourceName": "Inner Mission",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "9c",
+      "realtorDistrict": "District 9 - Central East",
+      "bbox": [
+        -122.42260196157943,
+        37.74801221451992,
+        -122.40287181990234,
+        37.77084163048742
+      ]
+    },
+    {
+      "id": "inner-parkside",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Inner Parkside",
+      "canonicalName": "Inner Parkside",
+      "sourceName": "Inner Parkside",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "2g",
+      "realtorDistrict": "District 2 - Central West",
+      "bbox": [
+        -122.47645645481239,
+        37.737337900069484,
+        -122.47024235398374,
+        37.75240367953772
+      ]
+    },
+    {
+      "id": "inner-richmond",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Inner Richmond",
+      "canonicalName": "Inner Richmond",
+      "sourceName": "Inner Richmond",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "1b",
+      "realtorDistrict": "District 1 - Northwest",
+      "bbox": [
+        -122.47257887748734,
+        37.773030601612625,
+        -122.45853536367638,
+        37.78567105535099
+      ]
+    },
+    {
+      "id": "inner-sunset",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Inner Sunset",
+      "canonicalName": "Inner Sunset",
+      "sourceName": "Inner Sunset",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "2f",
+      "realtorDistrict": "District 2 - Central West",
+      "bbox": [
+        -122.47748629004172,
+        37.75225711662538,
+        -122.45744204892688,
+        37.766367696785416
+      ]
+    },
+    {
+      "id": "jordan-park-laurel-heights",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Jordan Park / Laurel Heights",
+      "canonicalName": "Jordan Park / Laurel Heights",
+      "sourceName": "Jordan Park / Laurel Heights",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "1c",
+      "realtorDistrict": "District 1 - Northwest",
+      "bbox": [
+        -122.45935440148142,
+        37.781427659004706,
+        -122.44583390155395,
+        37.78712943658231
+      ]
+    },
+    {
+      "id": "lake-street",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Lake Street",
+      "canonicalName": "Lake Street",
+      "sourceName": "Lake Street",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "1d",
+      "realtorDistrict": "District 1 - Northwest",
+      "bbox": [
+        -122.48753512021274,
+        37.78367082072118,
+        -122.45936376610078,
+        37.788710825680184
+      ]
+    },
+    {
+      "id": "monterey-heights",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Monterey Heights",
+      "canonicalName": "Monterey Heights",
+      "sourceName": "Monterey Heights",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "4m",
+      "realtorDistrict": "District 4 - Twin Peaks West",
+      "bbox": [
+        -122.4642083336834,
+        37.72991416009837,
+        -122.45821577277785,
+        37.73586066275157
+      ]
+    },
+    {
+      "id": "lake-shore",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Lake Shore",
+      "canonicalName": "Lake Shore",
+      "sourceName": "Lake Shore",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "3a",
+      "realtorDistrict": "District 3 - Southwest",
+      "bbox": [
+        -122.50851342409379,
+        37.70808933741858,
+        -122.47132782066096,
+        37.735290830229545
+      ]
+    },
+    {
+      "id": "lakeside",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Lakeside",
+      "canonicalName": "Lakeside",
+      "sourceName": "Lakeside",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "3e",
+      "realtorDistrict": "District 3 - Southwest",
+      "bbox": [
+        -122.47548805226396,
+        37.71710810106956,
+        -122.47201550458028,
+        37.73490375068127
+      ]
+    },
+    {
+      "id": "lone-mountain",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Lone Mountain",
+      "canonicalName": "Lone Mountain",
+      "sourceName": "Lone Mountain",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "1g",
+      "realtorDistrict": "District 1 - Northwest",
+      "bbox": [
+        -122.45905552257352,
+        37.774171336119,
+        -122.4466271959363,
+        37.78256869927378
+      ]
+    },
+    {
+      "id": "lower-pacific-heights",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Lower Pacific Heights",
+      "canonicalName": "Lower Pacific Heights",
+      "sourceName": "Lower Pacific Heights",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "6f",
+      "realtorDistrict": "District 6 - Central North",
+      "bbox": [
+        -122.44687689809386,
+        37.78255237264454,
+        -122.42340359321868,
+        37.790045882961984
+      ]
+    },
+    {
+      "id": "marina",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Marina",
+      "canonicalName": "Marina",
+      "sourceName": "Marina",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "7a",
+      "realtorDistrict": "District 7 - North",
+      "bbox": [
+        -122.44985740999277,
+        37.79879024552636,
+        -122.42432188697882,
+        37.80922661958935
+      ]
+    },
+    {
+      "id": "merced-heights",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Merced Heights",
+      "canonicalName": "Merced Heights",
+      "sourceName": "Merced Heights",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "3b",
+      "realtorDistrict": "District 3 - Southwest",
+      "bbox": [
+        -122.47288110530756,
+        37.717934953630674,
+        -122.46224354199435,
+        37.72161264401317
+      ]
+    },
+    {
+      "id": "merced-manor",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Merced Manor",
+      "canonicalName": "Merced Manor",
+      "sourceName": "Merced Manor",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "3f",
+      "realtorDistrict": "District 3 - Southwest",
+      "bbox": [
+        -122.48203548536475,
+        37.731016479660745,
+        -122.47502688939022,
+        37.73482070363988
+      ]
+    },
+    {
+      "id": "midtown-terrace",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Midtown Terrace",
+      "canonicalName": "Midtown Terrace",
+      "sourceName": "Midtown Terrace",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "4f",
+      "realtorDistrict": "District 4 - Twin Peaks West",
+      "bbox": [
+        -122.46144778206897,
+        37.74553423745075,
+        -122.44484358207109,
+        37.75730795046545
+      ]
+    },
+    {
+      "id": "south-beach",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "South Beach",
+      "canonicalName": "South Beach",
+      "sourceName": "South Beach",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "9h",
+      "realtorDistrict": "District 9 - Central East",
+      "bbox": [
+        -122.39941569666738,
+        37.77168628063243,
+        -122.38434221075084,
+        37.79620550131177
+      ]
+    },
+    {
+      "id": "miraloma-park",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Miraloma Park",
+      "canonicalName": "Miraloma Park",
+      "sourceName": "Miraloma Park",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "4h",
+      "realtorDistrict": "District 4 - Twin Peaks West",
+      "bbox": [
+        -122.46025272705042,
+        37.733700407019846,
+        -122.44258516865123,
+        37.7455832612576
+      ]
+    },
+    {
+      "id": "mission-bay",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Mission Bay",
+      "canonicalName": "Mission Bay",
+      "sourceName": "Mission Bay",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "9d",
+      "realtorDistrict": "District 9 - Central East",
+      "bbox": [
+        -122.401656681104,
+        37.76408203379666,
+        -122.38145651681116,
+        37.776747547037935
+      ]
+    },
+    {
+      "id": "mission-dolores",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Mission Dolores",
+      "canonicalName": "Mission Dolores",
+      "sourceName": "Mission Dolores",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "5m",
+      "realtorDistrict": "District 5 - Central",
+      "bbox": [
+        -122.42894856643086,
+        37.758184909065605,
+        -122.42142304241023,
+        37.771885644144966
+      ]
+    },
+    {
+      "id": "mission-terrace",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Mission Terrace",
+      "canonicalName": "Mission Terrace",
+      "sourceName": "Mission Terrace",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "10h",
+      "realtorDistrict": "District 10 - Southeast",
+      "bbox": [
+        -122.44821196484676,
+        37.7164249181952,
+        -122.42827986478919,
+        37.732261770986064
+      ]
+    },
+    {
+      "id": "mount-davidson-manor",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Mount Davidson Manor",
+      "canonicalName": "Mount Davidson Manor",
+      "sourceName": "Mount Davidson Manor",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "4r",
+      "realtorDistrict": "District 4 - Twin Peaks West",
+      "bbox": [
+        -122.46781914427183,
+        37.72482688645692,
+        -122.45919836765657,
+        37.73220849554402
+      ]
+    },
+    {
+      "id": "noe-valley",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Noe Valley",
+      "canonicalName": "Noe Valley",
+      "sourceName": "Noe Valley",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "5c",
+      "realtorDistrict": "District 5 - Central",
+      "bbox": [
+        -122.44495997112915,
+        37.741504882292695,
+        -122.42128445976344,
+        37.75526822252006
+      ]
+    },
+    {
+      "id": "north-beach",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "North Beach",
+      "canonicalName": "North Beach",
+      "sourceName": "North Beach",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "8d",
+      "realtorDistrict": "District 8 - Northeast",
+      "bbox": [
+        -122.41729456221492,
+        37.79730258209654,
+        -122.40876046653038,
+        37.805924016556226
+      ]
+    },
+    {
+      "id": "north-panhandle",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "North Panhandle",
+      "canonicalName": "North Panhandle",
+      "sourceName": "North Panhandle",
+      "aliases": [
+        "NoPa",
+        "North of the Panhandle"
+      ],
+      "definitionSource": "realtor",
+      "nameSources": [
+        "https://www.sftravel.com/article/where-to-eat-drink-san-franciscos-nopa"
+      ],
+      "sourceCode": "6f",
+      "realtorDistrict": "District 6 - Central North",
+      "bbox": [
+        -122.45474482330424,
+        37.77193815668964,
+        -122.43774491408783,
+        37.779782258762644
+      ]
+    },
+    {
+      "id": "north-waterfront",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "North Waterfront",
+      "canonicalName": "North Waterfront",
+      "sourceName": "North Waterfront",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "8h",
+      "realtorDistrict": "District 8 - Northeast",
+      "bbox": [
+        -122.4228860267291,
+        37.798540648672464,
+        -122.39543903830372,
+        37.811573987414484
+      ]
+    },
+    {
+      "id": "oceanview",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Oceanview",
+      "canonicalName": "Oceanview",
+      "sourceName": "Oceanview",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "3j",
+      "realtorDistrict": "District 3 - Southwest",
+      "bbox": [
+        -122.46264042262872,
+        37.71056766502881,
+        -122.45056446016577,
+        37.718172380651865
+      ]
+    },
+    {
+      "id": "outer-mission",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Outer Mission",
+      "canonicalName": "Outer Mission",
+      "sourceName": "Outer Mission",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "note": "Separate from the Mission. Do not resolve this name to the Mission or infer the broader informal Outer Mission area from this polygon.",
+      "sourceCode": "10d",
+      "realtorDistrict": "District 10 - Southeast",
+      "bbox": [
+        -122.4689433129016,
+        37.70820343967353,
+        -122.44121260230055,
+        37.721324050963155
+      ]
+    },
+    {
+      "id": "outer-parkside",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Outer Parkside",
+      "canonicalName": "Outer Parkside",
+      "sourceName": "Outer Parkside",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "2b",
+      "realtorDistrict": "District 2 - Central West",
+      "bbox": [
+        -122.51053857808378,
+        37.73357244166887,
+        -122.49384381490337,
+        37.75143630744246
+      ]
+    },
+    {
+      "id": "outer-richmond",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Outer Richmond",
+      "canonicalName": "Outer Richmond",
+      "sourceName": "Outer Richmond",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "1e",
+      "realtorDistrict": "District 1 - Northwest",
+      "bbox": [
+        -122.51206811565089,
+        37.771238665077774,
+        -122.49167862383683,
+        37.78167796095147
+      ]
+    },
+    {
+      "id": "outer-sunset",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Outer Sunset",
+      "canonicalName": "Outer Sunset",
+      "sourceName": "Outer Sunset",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "2c",
+      "realtorDistrict": "District 2 - Central West",
+      "bbox": [
+        -122.51257479359846,
+        37.75075416642503,
+        -122.49509068938967,
+        37.764716027259276
+      ]
+    },
+    {
+      "id": "pacific-heights",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Pacific Heights",
+      "canonicalName": "Pacific Heights",
+      "sourceName": "Pacific Heights",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "7b",
+      "realtorDistrict": "District 7 - North",
+      "bbox": [
+        -122.44783765694018,
+        37.78712943658231,
+        -122.42209284331348,
+        37.79764388241733
+      ]
+    },
+    {
+      "id": "parkside",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Parkside",
+      "canonicalName": "Parkside",
+      "sourceName": "Parkside",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "2d",
+      "realtorDistrict": "District 2 - Central West",
+      "bbox": [
+        -122.49509068938967,
+        37.73663577281499,
+        -122.47545951206368,
+        37.75225711662538
+      ]
+    },
+    {
+      "id": "cole-valley-parnassus-heights",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Cole Valley/Parnassus Heights",
+      "canonicalName": "Cole Valley/Parnassus Heights",
+      "sourceName": "Cole Valley/Parnassus Heights",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "5e",
+      "realtorDistrict": "District 5 - Central",
+      "bbox": [
+        -122.45764041769685,
+        37.75941740982032,
+        -122.4462668376385,
+        37.7687288921369
+      ]
+    },
+    {
+      "id": "pine-lake-park",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Pine Lake Park",
+      "canonicalName": "Pine Lake Park",
+      "sourceName": "Pine Lake Park",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "3c",
+      "realtorDistrict": "District 3 - Southwest",
+      "bbox": [
+        -122.49404883399835,
+        37.733722583777144,
+        -122.47529229047902,
+        37.73778356736691
+      ]
+    },
+    {
+      "id": "portola",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Portola",
+      "canonicalName": "Portola",
+      "sourceName": "Portola",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "10f",
+      "realtorDistrict": "District 10 - Southeast",
+      "bbox": [
+        -122.42360042244889,
+        37.71800030262489,
+        -122.40042859392003,
+        37.735250604277574
+      ]
+    },
+    {
+      "id": "potrero-hill",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Potrero Hill",
+      "canonicalName": "Potrero Hill",
+      "sourceName": "Potrero Hill",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "9e",
+      "realtorDistrict": "District 9 - Central East",
+      "bbox": [
+        -122.40800720350637,
+        37.74919006373567,
+        -122.3912364105724,
+        37.77181712531102
+      ]
+    },
+    {
+      "id": "presidio",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Presidio",
+      "canonicalName": "Presidio",
+      "sourceName": "Presidio",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": null,
+      "realtorDistrict": "None",
+      "bbox": [
+        -122.48598032904145,
+        37.78679057763948,
+        -122.44647351097322,
+        37.811025341980574
+      ]
+    },
+    {
+      "id": "presidio-heights",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Presidio Heights",
+      "canonicalName": "Presidio Heights",
+      "sourceName": "Presidio Heights",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "7c",
+      "realtorDistrict": "District 7 - North",
+      "bbox": [
+        -122.4636401433985,
+        37.78554103570935,
+        -122.44687689809386,
+        37.79188809128603
+      ]
+    },
+    {
+      "id": "russian-hill",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Russian Hill",
+      "canonicalName": "Russian Hill",
+      "sourceName": "Russian Hill",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "8e",
+      "realtorDistrict": "District 8 - Northeast",
+      "bbox": [
+        -122.42683007161793,
+        37.79587171955688,
+        -122.41204693321063,
+        37.81079356156483
+      ]
+    },
+    {
+      "id": "saint-francis-wood",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Saint Francis Wood",
+      "canonicalName": "Saint Francis Wood",
+      "sourceName": "Saint Francis Wood",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "4g",
+      "realtorDistrict": "District 4 - Twin Peaks West",
+      "bbox": [
+        -122.4721125581976,
+        37.73192882620766,
+        -122.45918413814113,
+        37.74064709802605
+      ]
+    },
+    {
+      "id": "sea-cliff",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Sea Cliff",
+      "canonicalName": "Sea Cliff",
+      "sourceName": "Sea Cliff",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "1f",
+      "realtorDistrict": "District 1 - Northwest",
+      "bbox": [
+        -122.49372649951677,
+        37.783431495086084,
+        -122.48370738554217,
+        37.79080370693447
+      ]
+    },
+    {
+      "id": "silver-terrace",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Silver Terrace",
+      "canonicalName": "Silver Terrace",
+      "sourceName": "Silver Terrace",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "10g",
+      "realtorDistrict": "District 10 - Southeast",
+      "bbox": [
+        -122.40676152080185,
+        37.72673470494329,
+        -122.39222093494193,
+        37.74004247445554
+      ]
+    },
+    {
+      "id": "south-of-market",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "South of Market",
+      "canonicalName": "South of Market",
+      "sourceName": "South of Market",
+      "aliases": [
+        "SoMa"
+      ],
+      "definitionSource": "realtor",
+      "nameSources": [
+        "https://www.sftravel.com/neighborhoods/soma-yerba-buena"
+      ],
+      "sourceCode": "9f",
+      "realtorDistrict": "District 9 - Central East",
+      "bbox": [
+        -122.4233967611567,
+        37.76889245613037,
+        -122.39498148052718,
+        37.783991486613594
+      ]
+    },
+    {
+      "id": "stonestown",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Stonestown",
+      "canonicalName": "Stonestown",
+      "sourceName": "Stonestown",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "3d",
+      "realtorDistrict": "District 3 - Southwest",
+      "bbox": [
+        -122.48655207266424,
+        37.711826928383445,
+        -122.47141195783664,
+        37.73031649248243
+      ]
+    },
+    {
+      "id": "sunnyside",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Sunnyside",
+      "canonicalName": "Sunnyside",
+      "sourceName": "Sunnyside",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "4s",
+      "realtorDistrict": "District 4 - Twin Peaks West",
+      "bbox": [
+        -122.45350532726793,
+        37.7230759053462,
+        -122.43672921349126,
+        37.734279632956216
+      ]
+    },
+    {
+      "id": "telegraph-hill",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Telegraph Hill",
+      "canonicalName": "Telegraph Hill",
+      "sourceName": "Telegraph Hill",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "8g",
+      "realtorDistrict": "District 8 - Northeast",
+      "bbox": [
+        -122.41041847309549,
+        37.79772322245175,
+        -122.40237202140196,
+        37.806324901932214
+      ]
+    },
+    {
+      "id": "twin-peaks",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Twin Peaks",
+      "canonicalName": "Twin Peaks",
+      "sourceName": "Twin Peaks",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "5d",
+      "realtorDistrict": "District 5 - Central",
+      "bbox": [
+        -122.44961845626065,
+        37.7471100739247,
+        -122.4409987577039,
+        37.758334074000075
+      ]
+    },
+    {
+      "id": "van-ness-civic-center",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Van Ness/Civic Center",
+      "canonicalName": "Van Ness/Civic Center",
+      "sourceName": "Van Ness/Civic Center",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "8f",
+      "realtorDistrict": "District 8 - Northeast",
+      "bbox": [
+        -122.42519847787507,
+        37.77400984621274,
+        -122.4114702900714,
+        37.790478475401166
+      ]
+    },
+    {
+      "id": "visitacion-valley",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Visitacion Valley",
+      "canonicalName": "Visitacion Valley",
+      "sourceName": "Visitacion Valley",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "10e",
+      "realtorDistrict": "District 10 - Southeast",
+      "bbox": [
+        -122.42455038827921,
+        37.708333303167485,
+        -122.39854402955272,
+        37.72176877006564
+      ]
+    },
+    {
+      "id": "west-portal",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "West Portal",
+      "canonicalName": "West Portal",
+      "sourceName": "West Portal",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "4t",
+      "realtorDistrict": "District 4 - Twin Peaks West",
+      "bbox": [
+        -122.47545951206368,
+        37.73482070363988,
+        -122.45936519154593,
+        37.74384542575499
+      ]
+    },
+    {
+      "id": "western-addition",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Western Addition",
+      "canonicalName": "Western Addition",
+      "sourceName": "Western Addition",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "6d",
+      "realtorDistrict": "District 6 - Central North",
+      "bbox": [
+        -122.43963780318538,
+        37.77750542996215,
+        -122.42365701408083,
+        37.785321205737624
+      ]
+    },
+    {
+      "id": "westwood-highlands",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Westwood Highlands",
+      "canonicalName": "Westwood Highlands",
+      "sourceName": "Westwood Highlands",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "4p",
+      "realtorDistrict": "District 4 - Twin Peaks West",
+      "bbox": [
+        -122.46043533123925,
+        37.7307208453589,
+        -122.45263139463538,
+        37.73785490007482
+      ]
+    },
+    {
+      "id": "westwood-park",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Westwood Park",
+      "canonicalName": "Westwood Park",
+      "sourceName": "Westwood Park",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "4r",
+      "realtorDistrict": "District 4 - Twin Peaks West",
+      "bbox": [
+        -122.46010614394402,
+        37.72322820358706,
+        -122.4524671922265,
+        37.731414261155955
+      ]
+    },
+    {
+      "id": "lincoln-park",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Lincoln Park",
+      "canonicalName": "Lincoln Park",
+      "sourceName": "Lincoln Park",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": null,
+      "realtorDistrict": "None",
+      "bbox": [
+        -122.51494807968153,
+        37.771142644893146,
+        -122.49237515676829,
+        37.78870391031204
+      ]
+    },
+    {
+      "id": "sherwood-forest",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Sherwood Forest",
+      "canonicalName": "Sherwood Forest",
+      "sourceName": "Sherwood Forest",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "4k",
+      "realtorDistrict": "District 4 - Twin Peaks West",
+      "bbox": [
+        -122.46154157146869,
+        37.73405481116024,
+        -122.45366627969614,
+        37.73937495885103
+      ]
+    },
+    {
+      "id": "tenderloin",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Tenderloin",
+      "canonicalName": "Tenderloin",
+      "sourceName": "Tenderloin",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "8j",
+      "realtorDistrict": "District 8 - Northeast",
+      "bbox": [
+        -122.41943368974073,
+        37.78041603354223,
+        -122.40895215892962,
+        37.78620266469722
+      ]
+    },
+    {
+      "id": "central-waterfront-dogpatch",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Central Waterfront/Dogpatch",
+      "canonicalName": "Central Waterfront/Dogpatch",
+      "sourceName": "Central Waterfront/Dogpatch",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "9j",
+      "realtorDistrict": "District 9 - Central East",
+      "bbox": [
+        -122.39274473980682,
+        37.74992393621098,
+        -122.37596430273567,
+        37.764935037292815
+      ]
+    },
+    {
+      "id": "candlestick-point",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Candlestick Point",
+      "canonicalName": "Candlestick Point",
+      "sourceName": "Candlestick Point",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "10m",
+      "realtorDistrict": "District 10 - Southeast",
+      "bbox": [
+        -122.39723169386033,
+        37.70838541008486,
+        -122.3743722288201,
+        37.720362897732045
+      ]
+    },
+    {
+      "id": "bayview-heights",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Bayview Heights",
+      "canonicalName": "Bayview Heights",
+      "sourceName": "Bayview Heights",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "10k",
+      "realtorDistrict": "District 10 - Southeast",
+      "bbox": [
+        -122.40123910034444,
+        37.71405554977644,
+        -122.39179118173888,
+        37.72381031005719
+      ]
+    },
+    {
+      "id": "little-hollywood",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Little Hollywood",
+      "canonicalName": "Little Hollywood",
+      "sourceName": "Little Hollywood",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "10n",
+      "realtorDistrict": "District 10 - Southeast",
+      "bbox": [
+        -122.40530815042038,
+        37.70837376899371,
+        -122.39498956137085,
+        37.71590432729235
+      ]
+    },
+    {
+      "id": "nob-hill",
+      "source": "realtor",
+      "file": "neighborhoods-realtor.json",
+      "name": "Nob Hill",
+      "canonicalName": "Nob Hill",
+      "sourceName": "Nob Hill",
+      "aliases": [],
+      "definitionSource": "realtor",
+      "nameSources": [],
+      "sourceCode": "8c",
+      "realtorDistrict": "District 8 - Northeast",
+      "bbox": [
+        -122.42322064206442,
+        37.79028229471971,
+        -122.40762472531307,
+        37.79772322245175
+      ]
+    }
+  ]
+}

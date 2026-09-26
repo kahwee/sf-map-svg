@@ -26,7 +26,7 @@ Write `svg` to a `.svg` file or embed it in your page. For Astro, render it with
 | ------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | `year`              | `2022`              | District boundaries: `2002`, `2012`, or `2022`                                                                             |
 | `districtLines`     | `true`              | Supervisorial district outlines                                                                                            |
-| `neighborhoodLines` | `false`             | Dashed SF Find neighborhood outlines                                                                                       |
+| `neighborhoodLines` | `false`             | Dashed SFAR realtor neighborhood outlines                                                                                  |
 | `districtFills`     | `true`              | Original Site’s eleven muted district colors                                                                               |
 | `districtLabels`    | `true`              | District number badges                                                                                                     |
 | `highways`          | `false`             | Original Site’s highway geometry                                                                                           |
@@ -39,21 +39,17 @@ Write `svg` to a `.svg` file or embed it in your page. For Astro, render it with
 | `title`             | `San Francisco map` | Accessible SVG title                                                                                                       |
 | `idPrefix`          | Unique per process  | Set explicitly for deterministic output or independent server renders                                                      |
 
-For a plain outline map, set `districtFills: false`. Neighborhood areas are approximate **2006 SF Find areas**, not legal boundaries or a historical layer matched to the district year. See [SOURCES.md](SOURCES.md).
+For a plain outline map, set `districtFills: false`. Neighborhood areas are **August 2010 SFAR realtor areas**, not legal boundaries or a historical layer matched to the district year. See [SOURCES.md](SOURCES.md).
 
 `createSFMap(options)` returns `{ svg, project, viewBox }`. `project([longitude, latitude])` gives matching SVG coordinates for custom overlays. Named exports also include `districtYears`, `districtColors`, and `neighborhoodNames`.
 
-## Private installation
-
-The repository is private. You can install directly from GitHub with an authenticated SSH key:
+## Installation
 
 ```sh
-pnpm add git+ssh://git@github.com/kahwee/sf-map-svg.git#v0.2.0
+pnpm add @kahwee/sf-map-svg
 ```
 
-A private release also contains the package archive and ready-to-use SVG files.
-
-The package is distributed through the **private GitHub repository and its releases**. npm registry publication is disabled with `private: true` in `package.json`.
+The package is published publicly on npm. Geographic JSON files are included in the package. See `LICENSE` and `SOURCES.md` for software and source-data rights.
 
 ## Development
 
@@ -63,7 +59,7 @@ pnpm test
 pnpm demo
 ```
 
-Open `examples/generated/index.html` to compare district and neighborhood maps. Generated SVG files are there too. See [CONTRIBUTING.md](CONTRIBUTING.md) for source structure, checks and release steps. GitHub Actions runs validation; releases are published only to this private GitHub repository.
+Open `examples/generated/index.html` to compare district and neighborhood maps. Generated SVG files are there too. See [CONTRIBUTING.md](CONTRIBUTING.md) for source structure, checks and release steps. GitHub Actions runs validation; npm releases use public access.
 
 The package uses a small Mercator SVG renderer while retaining the Site’s boundary geometry, coastline, palette, district labels, and highway data.
 
@@ -115,6 +111,23 @@ pnpm storybook        # http://127.0.0.1:6006
 pnpm build-storybook  # static output in storybook-static/
 ```
 
-Eight stories cover the default map, landmarks and BART, neighborhoods, outlines, historical district years, custom markers, and a custom palette. Controls edit map options live; the Docs tab shows usage examples. Storybook and Vite are development dependencies only and are excluded from the package archive. Development requires Node 22.12+ and pnpm 12. Only esbuild's dependency build script is enabled in `pnpm-workspace.yaml`.
+Map stories cover the default map, combined and independent landmark/BART layers, neighborhoods, outlines, historical district years, custom markers, a custom palette, and a narrow map. The Data / Neighborhood explorer adds examples for comparing Mission, Outer Mission, SoMa, and NoPa across source definitions. Controls edit map options live; the Docs tab shows usage examples. Storybook and Vite are development dependencies only and are excluded from the package archive. Development requires Node 22.12+ and pnpm 12. Only esbuild's dependency build script is enabled in `pnpm-workspace.yaml`.
 
 Dependabot checks npm dependencies and GitHub Actions weekly, grouping Storybook updates. CI validates formatting, SVG tests, generated examples, Storybook builds, and package creation on Node 22 and 26. Dependency PRs require review; updates are not merged automatically.
+
+## Accessible JSON data and neighborhood lookup
+
+All map geometry is available through stable JSON package exports. There are three district files (2002, 2012, 2022), the full 117 SF Find neighborhoods, 41 analysis neighborhoods, 92 realtor-defined areas, and separate coastline, highway, landmark, and BART files. Neighborhood records include a canonical display name, exact source name, stable ID, aliases where documented, source definition, and full polygon geometry.
+
+```js
+import neighborhoods from '@kahwee/sf-map-svg/data/neighborhoods-realtor.json' with { type: 'json' };
+import districts2022 from '@kahwee/sf-map-svg/data/districts-2022.json' with { type: 'json' };
+import { getNeighborhood, searchNeighborhoods } from '@kahwee/sf-map-svg/data';
+
+const mission = getNeighborhood('Inner Mission');
+const outerMission = getNeighborhood('Outer Mission');
+const nopa = getNeighborhood('NoPa', { source: 'realtor' });
+const matchingDefinitions = searchNeighborhoods('mission');
+```
+
+These are 250 **source-specific definitions**, not 250 distinct neighborhoods. Canonical names are package display names, and boundaries reflect each documented source rather than a claimed universal consensus. Mission and Outer Mission remain distinct. JSON files are the source of truth used by the renderer; the default map and lookup use the 92 SFAR realtor neighborhoods. See [the data API guide](data/README.md) for all filenames, schema, lookup rules, source comparisons, and custom SVG overlays. Storybook provides downloadable JSON files beside its neighborhood examples.

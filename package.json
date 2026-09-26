@@ -1,6 +1,6 @@
 {
   "name": "@kahwee/sf-map-svg",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Offline SVG maps of San Francisco with district boundaries, parks, landmarks, and BART stations.",
   "type": "module",
   "main": "./src/index.js",
@@ -9,13 +9,23 @@
     ".": {
       "types": "./src/index.d.ts",
       "import": "./src/index.js"
+    },
+    "./data": {
+      "types": "./data/index.d.ts",
+      "import": "./data/index.js"
+    },
+    "./data/*.json": "./data/*.json",
+    "./geometry": {
+      "types": "./src/geometry.d.ts",
+      "import": "./src/geometry.js"
     }
   },
   "files": [
     "src",
     "README.md",
     "SOURCES.md",
-    "LICENSE"
+    "LICENSE",
+    "data"
   ],
   "sideEffects": false,
   "scripts": {
@@ -23,10 +33,14 @@
     "demo": "node examples/build.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check": "pnpm format:check && pnpm test",
+    "check": "pnpm format:check && pnpm data:check && pnpm typecheck && pnpm test",
     "prepublishOnly": "pnpm check",
     "storybook": "storybook dev -p 6006 --host 127.0.0.1 --no-open",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "data:catalog": "node scripts/build-data-catalog.mjs",
+    "data:check": "node scripts/build-data-catalog.mjs --check",
+    "typecheck": "tsc",
+    "data:normalize-realtor": "node scripts/normalize-realtor.mjs"
   },
   "repository": {
     "type": "git",
@@ -41,8 +55,10 @@
     "@storybook/addon-docs": "^10.6.0",
     "@storybook/html-vite": "^10.6.0",
     "@xmldom/xmldom": "^0.9.12",
+    "polygon-clipping": "^0.15.7",
     "prettier": "^3.9.9",
     "storybook": "^10.6.0",
+    "typescript": "^7.0.2",
     "vite": "^8.3.1"
   },
   "homepage": "https://github.com/kahwee/sf-map-svg#readme",
@@ -56,5 +72,8 @@
     "districts",
     "geojson"
   ],
-  "private": true
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
 }

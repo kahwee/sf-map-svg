@@ -1,14 +1,22 @@
 const number = (value) => Number(value.toFixed(2));
 
 export function rawProject([longitude, latitude]) {
-  if (!Number.isFinite(longitude) || !Number.isFinite(latitude) || Math.abs(latitude) >= 90)
+  if (
+    !Number.isFinite(longitude) ||
+    Math.abs(longitude) > 180 ||
+    !Number.isFinite(latitude) ||
+    Math.abs(latitude) >= 90
+  )
     throw new RangeError(
-      'Coordinates must be finite [longitude, latitude], with latitude between -90 and 90.',
+      'Coordinates must be finite [longitude, latitude], with longitude from -180 to 180 and latitude strictly between -90 and 90.',
     );
-  return [
+  const point = [
     (longitude * Math.PI) / 180,
     -Math.log(Math.tan(Math.PI / 4 + (latitude * Math.PI) / 360)),
   ];
+  if (!point.every(Number.isFinite))
+    throw new RangeError('Coordinates are too close to a pole for Mercator projection.');
+  return point;
 }
 export function positions(geometry) {
   if (!geometry) return [];
