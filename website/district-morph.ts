@@ -98,23 +98,12 @@ export function createDistrictMorph(fromSvg: SVGSVGElement, toSvg: SVGSVGElement
       path.setAttribute('stroke-linecap', 'round');
       path.setAttribute('vector-effect', 'non-scaling-stroke');
       svg.append(path);
-      const alignedTo = start && end ? align(from, to) : to;
-      const fromPath = pathData(from, alignedTo, 0);
-      const toPath = pathData(from, alignedTo, 1);
-      path.setAttribute('d', fromPath);
-      path.style.setProperty('--morph-from', `path("${fromPath}")`);
-      path.style.setProperty('--morph-to', `path("${toPath}")`);
-      morphs.push({ path, from, to: alignedTo });
+      morphs.push({ path, from, to: start && end ? align(from, to) : to });
     }
   }
   layer.append(svg);
   return {
     layer,
-    supportsCssMorph:
-      typeof CSS !== 'undefined' && CSS.supports?.('d', 'path("M0,0L1,1Z")') === true,
-    startCssMorph() {
-      layer.classList.add('is-active');
-    },
     update(progress: number) {
       for (const morph of morphs)
         morph.path.setAttribute('d', pathData(morph.from, morph.to, progress));

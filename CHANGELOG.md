@@ -4,6 +4,10 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 1.3.6 — 2026-09-26
+
+- Simplify district history playback to one JavaScript morph implementation, removing the larger CSS animation and fallback branch while preserving the moving boundaries and reduced-motion switch.
+
 ## 1.3.5 — 2026-09-26
 
 - Animate district boundary morphs with CSS path transitions and coordinated CSS fades on supported browsers, retaining a JavaScript fallback and reduced-motion instant switch.
