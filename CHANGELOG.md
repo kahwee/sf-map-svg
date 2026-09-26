@@ -4,6 +4,10 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 1.3.3 — 2026-09-26
+
+- Draw each historical district map’s actual boundary lines during the GitHub Pages playback, with a reduced-motion instant switch.
+
 ## 1.3.2 — 2026-09-26
 
 - Rebuild GitHub Pages as a civic atlas led by interactive June 2026 ballot measure results, with district selection and clear citywide outcomes.

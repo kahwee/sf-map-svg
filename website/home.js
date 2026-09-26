@@ -19,9 +19,7 @@ let district = 0;
 let resultSvg;
 let currentYear = 2022;
 let currentHistoryLayer;
-let activeAnimation;
-let activeSweepAnimation;
-let activeSweep;
+let activeAnimations = [];
 let playbackToken = 0;
 let transitionToken = 0;
 let playing = false;
@@ -204,10 +202,8 @@ async function transitionToYear(year, animate = true) {
   const source = await loadYear(year);
   if (request !== transitionToken) return false;
   if (year === currentYear && currentHistoryLayer) return true;
-  activeAnimation?.cancel();
-  activeAnimation = undefined;
-  activeSweepAnimation?.cancel();
-  activeSweep?.remove();
+  for (const animation of activeAnimations) animation.cancel();
+  activeAnimations = [];
   const next = historyLayer(source);
   if (!currentHistoryLayer || !animate || reducedMotion.matches) {
     $('history-map').replaceChildren(next);
@@ -216,34 +212,49 @@ async function transitionToYear(year, animate = true) {
     updateHistoryLabel();
     return true;
   }
-  $('history-status').textContent = `Revealing ${year} boundaries`;
+  $('history-status').textContent = `Drawing ${year} boundaries`;
   $('history-map').append(next);
-  const sweep = element('div', undefined, 'history-sweep');
-  sweep.setAttribute('aria-hidden', 'true');
-  $('history-map').append(sweep);
-  activeSweep = sweep;
-  activeAnimation = next.animate(
-    [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }],
-    { duration: 1050, easing: 'cubic-bezier(.45, 0, .18, 1)', fill: 'forwards' },
-  );
-  activeSweepAnimation = sweep.animate(
-    [
-      { transform: 'translateX(0)' },
-      { transform: `translateX(${$('history-map').clientWidth}px)` },
-    ],
-    { duration: 1050, easing: 'cubic-bezier(.45, 0, .18, 1)', fill: 'forwards' },
-  );
+  const outlines = [...next.querySelectorAll('[data-layer="district-lines"] path')];
+  const animations = [
+    next.animate([{ opacity: 0 }, { opacity: 1 }], {
+      duration: 500,
+      easing: 'ease-out',
+      fill: 'forwards',
+    }),
+  ];
+  for (const [index, path] of outlines.entries()) {
+    const length = Math.max(1, path.getTotalLength());
+    path.style.strokeDasharray = `${length}px ${length}px`;
+    path.style.strokeDashoffset = `${length}px`;
+    path.style.stroke = '#216c70';
+    path.style.strokeWidth = '2.4px';
+    path.style.strokeLinecap = 'round';
+    animations.push(
+      path.animate([{ strokeDashoffset: `${length}px` }, { strokeDashoffset: '0px' }], {
+        duration: 1100,
+        delay: 160 + index * 55,
+        easing: 'cubic-bezier(.42, 0, .24, 1)',
+        fill: 'forwards',
+      }),
+    );
+  }
+  activeAnimations = animations;
   try {
-    await Promise.all([activeAnimation.finished, activeSweepAnimation.finished]);
+    await Promise.all(animations.map((animation) => animation.finished));
   } catch {
     next.remove();
-    sweep.remove();
-    updateHistoryLabel();
+    if (request === transitionToken) updateHistoryLabel();
     return false;
   }
-  activeAnimation = undefined;
-  activeSweepAnimation = undefined;
-  activeSweep = undefined;
+  if (activeAnimations === animations) activeAnimations = [];
+  for (const animation of animations) animation.cancel();
+  for (const path of outlines) {
+    path.style.removeProperty('stroke-dasharray');
+    path.style.removeProperty('stroke-dashoffset');
+    path.style.removeProperty('stroke');
+    path.style.removeProperty('stroke-width');
+    path.style.removeProperty('stroke-linecap');
+  }
   $('history-map').replaceChildren(next);
   currentHistoryLayer = next;
   currentYear = year;
@@ -255,12 +266,8 @@ function stopPlayback() {
   playbackToken++;
   transitionToken++;
   playing = false;
-  activeAnimation?.cancel();
-  activeSweepAnimation?.cancel();
-  activeSweep?.remove();
-  activeAnimation = undefined;
-  activeSweepAnimation = undefined;
-  activeSweep = undefined;
+  for (const animation of activeAnimations) animation.cancel();
+  activeAnimations = [];
   $('history-play').textContent = 'Play the change ▶';
   $('history-play').setAttribute('aria-label', 'Play district boundary history');
 }
