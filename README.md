@@ -43,28 +43,12 @@ For a plain outline map, set `districtFills: false`. Neighborhood areas are appr
 The repository is private. You can install directly from GitHub with an authenticated SSH key:
 
 ```sh
-pnpm add git+ssh://git@github.com/kahwee/sf-map-svg.git#v0.1.0
+pnpm add git+ssh://git@github.com/kahwee/sf-map-svg.git#v0.1.1
 ```
 
 A private release also contains the package archive and ready-to-use SVG files.
 
-### npmjs (publication pending)
-
-Version 0.1.1 targets **npmjs with restricted access**. Once published, authenticate with an account that has access:
-
-```sh
-pnpm login --registry=https://registry.npmjs.org
-pnpm add @kahwee/sf-map-svg@0.1.1
-```
-
-For CI, provide a read-only npm token through a secret and use:
-
-```ini
-@kahwee:registry=https://registry.npmjs.org
-//registry.npmjs.org/:_authToken=${NPM_TOKEN}
-```
-
-Never commit the token. Private npm packages require an eligible paid npm account. See [the release workflow](CONTRIBUTING.md#private-npm-releases) for publishing and verification.
+The package is distributed through the **private GitHub repository and its releases**. npm registry publication is disabled with `private: true` in `package.json`.
 
 ## Development
 
@@ -74,6 +58,6 @@ pnpm test
 pnpm demo
 ```
 
-Open `examples/generated/index.html` to compare district and neighborhood maps. Generated SVG files are there too. See [CONTRIBUTING.md](CONTRIBUTING.md) for source structure, checks and release steps. GitHub Actions runs validation; private npm publication is performed locally.
+Open `examples/generated/index.html` to compare district and neighborhood maps. Generated SVG files are there too. See [CONTRIBUTING.md](CONTRIBUTING.md) for source structure, checks and release steps. GitHub Actions runs validation; releases are published only to this private GitHub repository.
 
-The original renderer and its source manifest are retained under `provenance/sites/` for traceability; they are excluded from the published package. The package uses a small Mercator SVG renderer while retaining the Site’s boundary geometry, coastline, palette, district labels, and highway data.
+The package uses a small Mercator SVG renderer while retaining the Site’s boundary geometry, coastline, palette, district labels, and highway data.

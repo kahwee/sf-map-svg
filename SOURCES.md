@@ -1,13 +1,8 @@
 # Geometry and provenance
 
-## Extracted Site
+## Map extraction
 
-- Title: San Francisco District Map
-- Source: https://sf-district-map.kah.chatgpt.site
-- Version: 6
-- Extracted: September 25, 2026
-
-The original Site implementation is excluded from public distribution. District geometry, coast, label anchors, highway geometry, and the pastel district palette were extracted from that source. UI controls, animation morph rings, and ballot overlays are not part of this SVG package.
+District geometry, coast, label anchors, highway geometry, and the pastel district palette were extracted from the San Francisco District Map on September 25, 2026. Only map rendering and public geographic data are distributed. Site account identifiers, original application code, and ballot overlays are excluded.
 
 ## Districts and coastline
 

@@ -8,7 +8,8 @@
 - Remove invalid XML control characters from user-supplied labels.
 - Specify even-odd clipping for coastline holes.
 - Standardize formatting and document contribution and private release workflows.
-- Target npmjs for restricted package publication.
+- Distribute through private GitHub releases; disable npm publication.
+- Exclude original Site application code and internal source identifiers.
 
 ## 0.1.0
 

@@ -30,10 +30,6 @@
     "type": "git",
     "url": "git+https://github.com/kahwee/sf-map-svg.git"
   },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "restricted"
-  },
   "license": "UNLICENSED",
   "engines": {
     "node": ">=22"
@@ -53,5 +49,6 @@
     "maps",
     "districts",
     "geojson"
-  ]
+  ],
+  "private": true
 }
