@@ -117,3 +117,8 @@ export interface NeighborhoodExplorerElement extends HTMLElement {
   getSelectedMarker(): MapMarker | null;
   destroy(): void;
 }
+
+/** Paused-by-default schematic BART animation with keyboard-operable controls. */
+export interface TransitAnimationElement extends HTMLElement {
+  destroy(): void;
+}

@@ -311,3 +311,16 @@ The build bundles local assets into `pages-dist/` with relative URLs for GitHubâ
 ## License and attribution
 
 MIT-licensed software, originally extracted from KahWeeâ€™s San Francisco District Map. Geographic data retains its source terms and attribution requirements; see [LICENSE](LICENSE) and [SOURCES.md](SOURCES.md). Neighborhood definitions vary by source and are not legal boundaries or a claim of universal consensus.
+
+### Schematic transit animation
+
+```js
+import { createTransitAnimation } from '@kahwee/sf-map-svg/transit';
+const animation = createTransitAnimation();
+document.querySelector('#transit').append(animation);
+// On removal: animation.destroy();
+```
+
+This optional browser component starts paused, with Play/Pause and a keyboard-accessible journey slider. A loop lasts 28 seconds; timing is illustrative. It connects the bundled official BART station centroids with straight segments, not actual tracks or live service. It pauses when the page is hidden. No autoplay means reduced-motion users can inspect the static map or scrub manually. Existing map defaults are unchanged.
+
+Embed the Pages demo with `<iframe src="https://kahwee.github.io/sf-map-svg/transit.html" title="Schematic BART journey" loading="lazy" style="width:100%;height:clamp(650px, calc(100vw + 240px), 930px);border:0"></iframe>`.

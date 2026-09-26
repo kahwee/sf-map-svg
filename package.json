@@ -26,6 +26,10 @@
     "./interactive": {
       "types": "./dist/src/interactive.d.ts",
       "import": "./dist/src/interactive.js"
+    },
+    "./transit": {
+      "types": "./dist/src/transit.d.ts",
+      "import": "./dist/src/transit.js"
     }
   },
   "files": [
