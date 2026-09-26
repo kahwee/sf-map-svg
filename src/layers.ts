@@ -89,7 +89,12 @@ export function markers(items: readonly MapMarker[], { project, colors }: LayerC
 }
 
 export function keyRoads(items: readonly KeyRoad[], { idPrefix, path, colors }: LayerContext) {
-  return `<g data-layer="key-roads" clip-path="url(#${idPrefix}-coast)">${items.map((road) => `<path data-key-road="${escapeXml(road.id)}" d="${path(road.geometry)}" ${stroke(colors.road, 1)}><title>${escapeXml(road.name)}</title></path>`).join('')}</g>`;
+  return `<g data-layer="key-roads" clip-path="url(#${idPrefix}-coast)">${items
+    .map((road) => {
+      const level = road.level === 'secondary' ? 'secondary' : 'primary';
+      return `<path data-key-road="${escapeXml(road.id)}" data-key-road-level="${level}" d="${path(road.geometry)}" ${stroke(colors.road, 1)}><title>${escapeXml(road.name)}</title></path>`;
+    })
+    .join('')}</g>`;
 }
 export function keyRoadLabels(items: readonly KeyRoad[], { project }: LayerContext) {
   return `<g data-layer="key-road-labels" ${overlayLabel} fill="#77736b">${items

@@ -103,6 +103,7 @@ export interface LandmarkProperties {
 
 export interface KeyRoadProperties {
   readonly name: string;
+  readonly level?: 'primary' | 'secondary';
   readonly sourceNames: readonly string[];
   readonly label: Position;
   readonly segmentIds: readonly string[];

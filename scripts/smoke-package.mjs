@@ -52,6 +52,7 @@ import * as geometry from '@kahwee/sf-map-svg/geometry';
 import { createNeighborhoodExplorer } from '@kahwee/sf-map-svg/explorer';
 import { createInteractiveSFMap } from '@kahwee/sf-map-svg/interactive';
 import { createInteractiveSFMapWithData } from '@kahwee/sf-map-svg/interactive-data';
+import { createGuideMap, guideMapData, loadGuideDetailedData } from '@kahwee/sf-map-svg/guide';
 import realtor from '@kahwee/sf-map-svg/data/neighborhoods-realtor.json' with { type: 'json' };
 assert.match(renderSFMap({ landmarks: true, bartStations: true }), /<svg/);
 assert.equal(neighborhoods.features.length, 92);
@@ -61,6 +62,9 @@ assert(Object.keys(geometry).length > 0);
 assert.equal(typeof createNeighborhoodExplorer, 'function');
 assert.equal(typeof createInteractiveSFMap, 'function');
 assert.equal(typeof createInteractiveSFMapWithData, 'function');
+assert.equal(typeof createGuideMap, 'function');
+assert.equal(typeof loadGuideDetailedData, 'function');
+assert.equal(guideMapData.neighborhoods.realtor.features.length, 92);
 console.log('Installed package entrypoints, JSON, rendering, aliases, and explorer import passed.');
 `,
   );
@@ -73,6 +77,7 @@ import { getNeighborhood, type NeighborhoodSource } from '@kahwee/sf-map-svg/dat
 import { createNeighborhoodExplorer } from '@kahwee/sf-map-svg/explorer';
 import { createInteractiveSFMap } from '@kahwee/sf-map-svg/interactive';
 import { createInteractiveSFMapWithData, type InteractiveSFMapData } from '@kahwee/sf-map-svg/interactive-data';
+import { createGuideMap, guideMapData, loadGuideDetailedData } from '@kahwee/sf-map-svg/guide';
 import * as geometry from '@kahwee/sf-map-svg/geometry';
 const options: SFMapOptions = { width: 390, landmarks: true, bartStations: true };
 const source: NeighborhoodSource = 'realtor';
@@ -82,6 +87,7 @@ const explorer: typeof createNeighborhoodExplorer = createNeighborhoodExplorer;
 void [svg, name, explorer, geometry, createInteractiveSFMap];
 const injected: InteractiveSFMapData = { map: { coast: { type: 'Polygon', coordinates: [] } }, neighborhoods: {} };
 void [createInteractiveSFMapWithData, injected];
+void [createGuideMap, loadGuideDetailedData, guideMapData];
 `,
   );
   execFileSync(

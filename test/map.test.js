@@ -212,7 +212,7 @@ test('key roads are an optional layer independent of highways', () => {
   const roads = Array.from(document.getElementsByTagName('path')).filter((p) =>
     p.hasAttribute('data-key-road'),
   );
-  assert.equal(roads.length, 9);
+  assert.equal(roads.length, 6);
   for (const road of roads) {
     assert.equal(road.getAttribute('stroke'), '#123456');
     assert.match(road.getAttribute('d'), /^M/);
@@ -221,6 +221,51 @@ test('key roads are an optional layer independent of highways', () => {
   assert.ok(svg.includes('Market St'));
   assert.ok(svg.includes('The Embarcadero'));
   assert.ok(!svg.includes('data-layer="highways"'));
+  const geometryWithoutLabels = renderSFMap({ keyRoads: true, roadLabels: false });
+  assert.ok(geometryWithoutLabels.includes('data-layer="key-roads"'));
+  assert.ok(!geometryWithoutLabels.includes('data-layer="key-road-labels"'));
+  const labelsWithoutGeometry = renderSFMap({ keyRoads: false, roadLabels: true });
+  assert.ok(!labelsWithoutGeometry.includes('data-layer="key-roads"'));
+  assert.ok(labelsWithoutGeometry.includes('data-layer="key-road-labels"'));
+});
+
+test('custom road hierarchy cannot inject SVG attributes', () => {
+  const svg = createSFMapWithData(
+    { districtFills: false, districtLines: false, keyRoads: true, roadLabels: false },
+    {
+      coast: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [-123, 37],
+            [-122, 37],
+            [-122, 38],
+            [-123, 38],
+            [-123, 37],
+          ],
+        ],
+      },
+      keyRoads: [
+        {
+          id: 'road',
+          name: 'Road',
+          level: 'primary" onload="alert(1)',
+          sourceNames: [],
+          label: [-122.5, 37.5],
+          segmentIds: [],
+          geometry: {
+            type: 'LineString',
+            coordinates: [
+              [-123, 37],
+              [-122, 38],
+            ],
+          },
+        },
+      ],
+    },
+  ).svg;
+  assert.match(svg, /data-key-road-level="primary"/);
+  assert.doesNotMatch(svg, /onload=/);
 });
 
 test('master label switch hides text without removing map symbols or accessible titles', () => {

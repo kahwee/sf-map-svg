@@ -34,6 +34,7 @@ export interface LandmarkData {
 export interface KeyRoadData {
   id: string;
   name: string;
+  level?: 'primary' | 'secondary';
   sourceNames: readonly string[];
   label: Position;
   segmentIds: readonly string[];
@@ -109,6 +110,7 @@ export function createSFMapWithData(options: SFMapOptions, data: SFMapData) {
     title = 'San Francisco map',
     idPrefix = `sf-map-${++sequence}`,
   } = options;
+  const roadLabels = options.roadLabels ?? keyRoads;
   if (
     ![width, height, padding].every(Number.isFinite) ||
     width <= 0 ||
@@ -161,7 +163,7 @@ export function createSFMapWithData(options: SFMapOptions, data: SFMapData) {
         }))
       : [];
   const parts = [
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" role="img" aria-labelledby="${idPrefix}-title" data-sf-map="" data-year="${year}" style="max-width:100%;height:auto"><title id="${idPrefix}-title">${escapeXml(title)}</title><desc>San Francisco supervisorial district boundaries (${year}).${neighborhoodLines ? ' Dashed lines show SFAR realtor neighborhood areas, defined in August 2010.' : ''}${landmarks ? ' Highlighted areas show six parks and landmarks.' : ''}${keyRoads ? ' Thin gray lines show nine selected road corridors.' : ''}${bartStations ? ' Rings mark the eight San Francisco BART stations.' : ''} Geometry from DataSF${bartStations ? ' and BART' : ''}. See package SOURCES.md.</desc><defs><clipPath id="${idPrefix}-coast"><path d="${coastPath}" fill-rule="evenodd" clip-rule="evenodd"/></clipPath></defs><rect width="${width}" height="${height}" fill="${escapeXml(colors.water)}"/><g data-layer="geography"><path data-layer="coast" d="${coastPath}" fill="${escapeXml(colors.land)}" fill-rule="evenodd"/>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" role="img" aria-labelledby="${idPrefix}-title" data-sf-map="" data-year="${year}" style="max-width:100%;height:auto"><title id="${idPrefix}-title">${escapeXml(title)}</title><desc>San Francisco supervisorial district boundaries (${year}).${neighborhoodLines ? ' Dashed lines show SFAR realtor neighborhood areas, defined in August 2010.' : ''}${landmarks ? ' Highlighted areas show six parks and landmarks.' : ''}${keyRoads ? ' Thin gray lines show selected road corridors.' : ''}${bartStations ? ' Rings mark the eight San Francisco BART stations.' : ''} Geometry from DataSF${bartStations ? ' and BART' : ''}. See package SOURCES.md.</desc><defs><clipPath id="${idPrefix}-coast"><path d="${coastPath}" fill-rule="evenodd" clip-rule="evenodd"/></clipPath></defs><rect width="${width}" height="${height}" fill="${escapeXml(colors.water)}"/><g data-layer="geography"><path data-layer="coast" d="${coastPath}" fill="${escapeXml(colors.land)}" fill-rule="evenodd"/>`,
   ];
   // Explicit drawing order keeps optional overlays and user markers predictable.
   if (districtFills) parts.push(layers.districtFills(districtPaths, context));
@@ -173,7 +175,7 @@ export function createSFMapWithData(options: SFMapOptions, data: SFMapData) {
   parts.push(`<path data-layer="coastline" d="${coastPath}" ${stroke(colors.district, 0.65)}/>`);
   if (labels && districtLabels) parts.push(layers.districtLabels(districts, context));
   if (labels && landmarks) parts.push(layers.landmarkLabels(landmarkData, context));
-  if (labels && keyRoads) parts.push(layers.keyRoadLabels(roadData, context));
+  if (labels && roadLabels) parts.push(layers.keyRoadLabels(roadData, context));
   if (bartStations) parts.push(layers.bartStations(stationData, context));
   for (const overlay of options.overlays ?? []) {
     if (!overlay.id || !/^[A-Za-z0-9_-]+$/.test(overlay.id))

@@ -78,7 +78,11 @@ The cleanup retains all 92 identities, names, and source codes. It uses no round
 
 ## Key road landmarks
 
-Downloaded September 26, 2026 (UTC; September 25 in San Francisco) from [DataSF Streets – Active and Retired](https://data.sf.gov/resource/3psu-pn9h.geojson), filtering `active = true` and exact source street names. `data/key-roads.json` groups 724 source segments into nine named corridors, preserving every source coordinate and CNN segment ID. Geary St and Geary Blvd are grouped under the Geary Blvd display label. These are geographic orientation features, not a complete network or vehicle-access guidance. Label anchors select existing source vertices near editorial targets. Regenerate with `node scripts/import-key-roads.mjs` then `pnpm data:catalog`. The full query and retrieval date are embedded in the JSON. DataSF terms apply.
+Downloaded September 26, 2026 (UTC; September 25 in San Francisco) from [DataSF Streets – Active and Retired](https://data.sf.gov/resource/3psu-pn9h.geojson), filtering `active = true` and exact source street names. `data/key-roads.json` groups 513 source segments into six explicitly selected streets: Market, Van Ness, Geary, Lombard, 19th Avenue, and the Embarcadero, preserving source coordinates and CNN segment IDs. Geary St and Geary Blvd are grouped under the Geary Blvd display label. These are geographic orientation features, not a complete network or vehicle-access guidance. Label anchors select existing source vertices near editorial targets. Regenerate with `node scripts/import-key-roads.mjs` then `pnpm data:catalog`. The full query and retrieval date are embedded in the JSON. DataSF terms apply.
+
+## Lightweight guide geometry
+
+On September 26, 2026, `pnpm data:guide` generated `data/guide/*.json` from the canonical coastline, SFAR neighborhood, park, highway, selected-street, and BART files above. The overview omits unused properties and simplifies lines at subpixel tolerance for an approximately 800px city map. Realtor boundaries are simplified as shared arcs and reused on adjacent polygons. Coastline and park overview polygons are simplified independently while preserving ring closure. The guide preset keeps US 101, I-280, Highway 1 and the six named orientation streets. Detailed selected geography loads only when requested. Derived files retain source metadata and source dates; no new geographic source is asserted.
 
 ## June 2026 ballot measures explorer
 

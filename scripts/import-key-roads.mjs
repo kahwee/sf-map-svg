@@ -2,15 +2,12 @@ import { writeFile } from 'node:fs/promises';
 
 // Label targets only choose an existing source vertex; road geometry is never drawn by hand.
 const roads = [
-  ['market', 'Market St', ['MARKET ST'], [-122.42, 37.776]],
-  ['mission', 'Mission St', ['MISSION ST'], [-122.425, 37.735]],
-  ['geary', 'Geary Blvd', ['GEARY BLVD', 'GEARY ST'], [-122.47, 37.78]],
-  ['van-ness', 'Van Ness Ave', ['VAN NESS AVE'], [-122.424, 37.797]],
-  ['19th-avenue', '19th Ave', ['19TH AVE'], [-122.475, 37.746]],
-  ['sunset', 'Sunset Blvd', ['SUNSET BLVD'], [-122.495, 37.748]],
-  ['embarcadero', 'The Embarcadero', ['THE EMBARCADERO'], [-122.404, 37.806]],
-  ['columbus', 'Columbus Ave', ['COLUMBUS AVE'], [-122.412, 37.8]],
-  ['divisadero', 'Divisadero St', ['DIVISADERO ST'], [-122.44, 37.788]],
+  ['market', 'Market St', ['MARKET ST'], [-122.42, 37.776], 'primary'],
+  ['geary', 'Geary Blvd', ['GEARY BLVD', 'GEARY ST'], [-122.47, 37.78], 'primary'],
+  ['van-ness', 'Van Ness Ave', ['VAN NESS AVE'], [-122.424, 37.797], 'primary'],
+  ['lombard', 'Lombard St', ['LOMBARD ST'], [-122.423, 37.801], 'secondary'],
+  ['19th-avenue', '19th Ave', ['19TH AVE'], [-122.475, 37.746], 'primary'],
+  ['embarcadero', 'The Embarcadero', ['THE EMBARCADERO'], [-122.404, 37.806], 'primary'],
 ];
 const url = new URL('https://data.sf.gov/resource/3psu-pn9h.geojson');
 url.searchParams.set(
@@ -26,7 +23,7 @@ const response = await fetch(url);
 if (!response.ok) throw new Error(`Source request failed: ${response.status}`);
 const source = await response.json();
 if (source.features.length >= 5000) throw new Error('Source pagination required');
-const features = roads.map(([id, name, names, target]) => {
+const features = roads.map(([id, name, names, target, level]) => {
   const segments = source.features.filter((f) => names.includes(f.properties.streetname));
   if (!segments.length) throw new Error(`Missing road: ${name}`);
   const coordinates = segments.flatMap(({ geometry: g }) => {
@@ -48,6 +45,7 @@ const features = roads.map(([id, name, names, target]) => {
     ],
     properties: {
       name,
+      level,
       sourceNames: names,
       label,
       segmentIds: segments.map((f) => f.properties.cnn),
@@ -64,7 +62,7 @@ const data = {
   definition: {
     kind: 'selected-road-centerlines',
     description:
-      'Nine selected road corridors for orientation, using active DataSF street segments. Geary St and Geary Blvd form one corridor. Not a complete road network or a claim of vehicle access.',
+      'Six selected road corridors for orientation, using active DataSF street segments. Geary St and Geary Blvd form one corridor. Not a complete road network or a claim of vehicle access.',
   },
   sources: [
     {

@@ -4,6 +4,9 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Add a lightweight guide map preset with subpixel overview geography, lazy detailed datasets, curated highways and streets, independent road labels, and smaller consumer bundle size.
+- Curate six guide streets and prioritize their visibility by zoom while preserving road geometry across park fills.
+
 - Validate SVG overlay numeric attributes and add an interactive data-injected entry point so consumers can provide only the geographic datasets they use.
 
 - Make the measures atlas a full-screen map with floating controls, expandable mobile results, touch pan/zoom, overlay tables and sources, and a distraction-free focus view.

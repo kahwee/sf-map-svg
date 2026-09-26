@@ -23,6 +23,7 @@ Use Node 22.12+ for server-side rendering. Browser components need a DOM and a b
 | Neighborhood explorer | `@kahwee/sf-map-svg/explorer` | Search, source selection, map controls, GeoJSON downloads |
 | Interactive map | `@kahwee/sf-map-svg/interactive` | Embeddable map and controls without the explorer sidebar |
 | Data-injected interactive map | `@kahwee/sf-map-svg/interactive-data` | Interactive shell without bundled geographic JSON |
+| Lightweight guide map | `@kahwee/sf-map-svg/guide` | Curated overview geography, with detailed data loaded explicitly |
 | Animated transit demo | `@kahwee/sf-map-svg/transit` | Optional, schematic BART journey with playback controls |
 | Geographic data | `@kahwee/sf-map-svg/data` | Source-aware lookup and canonical GeoJSON |
 
@@ -58,6 +59,32 @@ The same split is available for browser controls with
 you want available. This keeps alternative neighborhood sources, unused district vintages,
 and optional layers out of that entry's bundle. The normal `/interactive` entry retains its
 built-in datasets and synchronous source switching.
+
+For the curated guide map, import `@kahwee/sf-map-svg/guide`. Its overview preset contains
+only the simplified coastline, SFAR areas, major parks, BART points, US 101 / I-280 /
+Highway 1, and Market, Van Ness, Geary, Lombard, 19th Avenue, and the Embarcadero. It does
+not import historical districts, other neighborhood sources, or the full street network.
+Collision-filtered neighborhood labels are enabled by default. Road geometry and road labels
+have independent `layers.keyRoads` and `layers.roadLabels` controls. Lombard geometry and its
+label appear after 1.8× zoom; major street labels can appear at city scale in a smaller type size.
+
+```ts
+import { createGuideMap, loadGuideDetailedData } from '@kahwee/sf-map-svg/guide';
+import { createInteractiveSFMapWithData } from '@kahwee/sf-map-svg/interactive-data';
+
+const map = createGuideMap({ layers: { roadLabels: false } });
+document.querySelector('#map')!.append(map);
+
+// Load only when the user asks for closer geographic detail.
+const detailedData = await loadGuideDetailedData();
+const detailedMap = createInteractiveSFMapWithData(detailedData, {
+  mode: 'neighborhoods',
+  layers: { highways: true, keyRoads: true, roadLabels: true },
+});
+```
+
+Run `pnpm data:guide` to rebuild the subpixel overview geometries from canonical files.
+`docs/guide-bundle-report.md` records compressed bundle sizes and verifies the included data.
 
 ```js
 import coast from '@kahwee/sf-map-svg/data/coast.json' with { type: 'json' };
@@ -103,7 +130,8 @@ Embed the returned SVG markup directly in a page; in Astro, use `<div set:html={
 | `width`, `height` | `800`, `800` | SVG viewBox and intrinsic size |
 | `padding` | `28` | Space around the coast |
 | `markers` | `[]` | Points with `id`, `lng`, `lat`, optional `label`, `color`, `selected` |
-| `keyRoads` | `false` | Nine selected road corridors and names for orientation |
+| `keyRoads` | `false` | Six selected street corridors: Market, Van Ness, Geary, Lombard, 19th Avenue, and the Embarcadero |
+| `roadLabels` | Same as `keyRoads` | Road labels independently of their geometry |
 | `colors` | Built-in palette | Override `water`, `land`, `district`, `neighborhood`, `highway`, `road`, `park`, `landmark`, `bart`, `label`, `marker`, `selected` |
 | `title` | `San Francisco map` | Accessible SVG title |
 | `idPrefix` | Unique per process | Set explicitly for deterministic output or independent server renders |
@@ -114,7 +142,7 @@ For a plain outline map, set `districtFills: false`. Neighborhood areas are **Au
 
 Use `theme: 'transit'` for pale water, ivory land, green parks, and blue BART symbols. Custom `colors` override the preset. Park and station overlays represent current source geography, independently of the district year; stations outside San Francisco, including Daly City, are excluded.
 
-`keyRoads: true` adds Market, Mission, Geary, Van Ness, 19th Avenue, Sunset, The Embarcadero, Columbus, and Divisadero using DataSF centerlines. These are orientation features, not routing guidance.
+`keyRoads: true` adds the six curated orientation streets using DataSF centerlines. These are orientation features, not routing guidance. The lightweight guide shows primary corridors at city scale and Lombard after zooming.
 
 
 ## Neighborhood explorer
@@ -192,9 +220,9 @@ aliases. Import types including `InteractiveSFMapOptions`, `InteractiveSFMapElem
 | `source` | `realtor` | `realtor`, `sf-find`, or `analysis`; explicit source recommended for reusable integrations |
 | `theme` | `transit` | `transit` or `districts` |
 | `year` | `2022` | District vintage: 2002, 2012, or 2022 |
-| `layers` | Mode defaults | Independent booleans: `districtFills`, `districtLines`, `districtLabels`, `neighborhoodLines`, `neighborhoodLabels`, `landmarks`, `bartStations`, `highways`, `keyRoads` |
+| `layers` | Mode defaults | Independent booleans: `districtFills`, `districtLines`, `districtLabels`, `neighborhoodLines`, `neighborhoodLabels`, `landmarks`, `bartStations`, `highways`, `keyRoads` (geometry), `roadLabels` |
 | `labels` | `true` | Master visible-text switch; accessible descriptions and station symbols remain |
-| `labelSize` | `{ min: 11, max: 12 }` | Screen-pixel range, 8–32 allowed. Nominal sizes are 11 for roads and 12 otherwise, clamped to this range; sizes never grow with zoom |
+| `labelSize` | `{ min: 11, max: 12 }` | Neighborhood and other labels use this screen-pixel range (8–32 allowed); road labels stay smaller at 9px, capped by `max`. Sizes never grow with zoom |
 | `selectableNeighborhoods` | `true` | Enables pointer/keyboard selection; false retains geography and labels |
 | `neighborhood` | Unset | Initial name, alias, or ID in the selected source |
 | `fitPadding` | `24` | Screen pixels, number or `{ top, right, bottom, left }`, used by selection and geometry fitting after mounting |

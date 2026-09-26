@@ -36,6 +36,7 @@ export interface SFMapOptions {
   labels?: boolean;
   highways?: boolean;
   keyRoads?: boolean;
+  roadLabels?: boolean;
   landmarks?: boolean;
   bartStations?: boolean;
   markers?: MapMarker[];
@@ -80,6 +81,7 @@ export interface InteractiveLayers {
   bartStations?: boolean;
   highways?: boolean;
   keyRoads?: boolean;
+  roadLabels?: boolean;
 }
 export interface NeighborhoodSelection {
   id: string;

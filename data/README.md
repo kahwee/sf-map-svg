@@ -16,7 +16,7 @@ The renderer, `neighborhoods` convenience export, and `getNeighborhood` default 
 | `neighborhoods-realtor.json`  | All 92 SFAR areas in the August 2010 dataset                        |
 | `coast.json`                  | The renderer's common display coastline                             |
 | `highways.json`               | The original map's highway geometry                                 |
-| `key-roads.json` | Nine selected road corridors with source segment IDs and label anchors |
+| `key-roads.json` | Six selected orientation streets with source segment IDs and label anchors |
 | `landmarks.json`              | Six selected park/landmark property areas                           |
 | `bart-stations.json`          | Eight San Francisco station points                                  |
 | `catalog.json`                | Dataset index and searchable neighborhood metadata without geometry |
@@ -99,6 +99,12 @@ Edit the canonical JSON only. Keep coordinate precision and source labels; recor
 The 92 realtor neighborhoods have disjoint interiors. Shared borders and corner points are allowed. The source contained tiny overlapping boundary slivers; the normalized JSON assigns each such area once using stable-ID order, preserving the combined footprint without rounding or buffering. `topology` records this processing. This guarantee applies within the realtor collection; alternative neighborhood sources and district/park layers describe different concepts and must not be treated as additional mutually exclusive neighborhoods.
 
 Run `pnpm data:normalize-realtor` when updating realtor geometry, then `pnpm data:catalog` and `pnpm check`. Cleanup aborts if it would erase a neighborhood, leave overlapping interiors, or change the combined footprint. Tests reject any nonempty polygon intersection; they do not excuse small slivers with an area threshold.
+
+## Lightweight guide preset
+
+Import `@kahwee/sf-map-svg/guide` for the guide preset. It statically imports only a simplified coastline, simplified SFAR neighborhoods, six major park outlines, selected US 101 / I-280 / Highway 1 segments, six curated streets, and eight BART points. It does not import historical districts, alternate neighborhood sources, or the full catalog. `createGuideMap()` uses this overview by default. `loadGuideDetailedData()` explicitly loads detailed versions of those same selected datasets; it does not add historical or alternative datasets. Regenerate derived geometry with `pnpm data:guide` after updating canonical source files.
+
+Neighborhood overview boundaries use a shared coordinate graph: connected boundary arcs are simplified once and retained vertices are applied to all adjacent polygons. The 0.00009 degree tolerance is approximately subpixel at an 800px city map; overview coastline and park geometry use similarly subpixel tolerances. Roads crossing park polygons remain separate overlays and are drawn above park fills. Detailed collections retain their canonical source coordinates.
 
 ## Election result snapshots (Pages only)
 

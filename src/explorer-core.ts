@@ -33,6 +33,7 @@ interface LabelItem {
   point: [number, number];
   name: string;
   kind: string;
+  level?: 'primary' | 'secondary';
 }
 
 const svgNS = 'http://www.w3.org/2000/svg';
@@ -271,6 +272,7 @@ export function createNeighborhoodExplorerCore(
     ['districts', 'Districts'],
     ['basemap', 'Basemap'],
   ] as const) {
+    if (value === 'districts' && !data.districts?.[year]) continue;
     const option = element('option', title);
     option.value = value;
     modeSelect.append(option);
@@ -346,6 +348,7 @@ export function createNeighborhoodExplorerCore(
       districtFills: true,
       highways: enabled('highways'),
       keyRoads: enabled('keyRoads'),
+      roadLabels: false,
       landmarks: enabled('landmarks'),
       bartStations: false,
     },
@@ -424,9 +427,10 @@ export function createNeighborhoodExplorerCore(
     station.node.append(title);
     stations.append(station.node);
   }
-  const roadItems = (enabled('keyRoads') ? (data.map.keyRoads ?? []) : []).map((feature) => ({
+  const roadItems = (enabled('roadLabels') ? (data.map.keyRoads ?? []) : []).map((feature) => ({
     point: map.project(feature.label),
     name: feature.name,
+    level: feature.level ?? 'primary',
     kind: 'road',
   }));
   const parkItems = (enabled('landmarks') ? (data.map.landmarks ?? []) : []).map((feature) => ({
@@ -600,6 +604,8 @@ export function createNeighborhoodExplorerCore(
     labelLayer.replaceChildren();
     const unit = view[2] / width,
       zoom = 800 / view[2];
+    for (const road of svg.querySelectorAll<SVGPathElement>('[data-key-road-level="secondary"]'))
+      road.style.display = zoom >= 1.8 ? '' : 'none';
     for (const station of stationItems) station.node.setAttribute('r', String(4.5 * unit));
     for (const item of markerItems) {
       item.dot.setAttribute(
@@ -637,7 +643,7 @@ export function createNeighborhoodExplorerCore(
           (width >= 550 && park.name === 'Presidio'),
       ),
     );
-    if (zoom >= 1.8) candidates.push(...roadItems);
+    candidates.push(...roadItems.filter((road) => road.level === 'primary' || zoom >= 1.8));
     if (enabled('neighborhoodLabels'))
       candidates.push(
         ...items
@@ -653,10 +659,10 @@ export function createNeighborhoodExplorerCore(
           })),
       );
     const measured = candidates.map((item) => {
-      const fontSize = Math.max(
-        minLabelSize,
-        Math.min(maxLabelSize, item.kind === 'road' ? 11 : 12),
-      );
+      const fontSize =
+        item.kind === 'road'
+          ? Math.min(9, maxLabelSize)
+          : Math.max(minLabelSize, Math.min(maxLabelSize, 12));
       const node = svgElement('text', {
         'font-size': fontSize * unit,
         'font-weight': item.kind.startsWith('selected') || item.kind === 'district' ? 700 : 550,
@@ -1068,6 +1074,8 @@ export function createNeighborhoodExplorerCore(
     if (destroyed) return;
     if (!['neighborhoods', 'districts', 'basemap'].includes(next))
       throw new RangeError(`Unknown map mode: ${next}`);
+    if (next === 'districts' && !data.districts?.[year])
+      throw new RangeError(`No ${year} district dataset was supplied.`);
     mode = next;
     modeSelect.value = mode;
     root.dataset.mode = mode;
