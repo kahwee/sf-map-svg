@@ -45,6 +45,8 @@ test('every layer combination produces valid XML with resolvable clip paths', ()
         year,
         neighborhoodLines,
         highways: true,
+        landmarks: true,
+        bartStations: true,
         title: 'Park\u0000 & <city>',
         markers: [{ id: 'a"<&', lng: -122.4, lat: 37.77, label: '<hello> & friends' }],
       });
@@ -60,4 +62,32 @@ test('every layer combination produces valid XML with resolvable clip paths', ()
       assert.equal(document.getElementsByTagName('script').length, 0);
     }
   }
+});
+
+test('landmarks and BART are independent optional geographic overlays', () => {
+  const baseline = renderSFMap();
+  assert.ok(!baseline.includes('data-layer="landmarks"'));
+  assert.ok(!baseline.includes('data-layer="bart-stations"'));
+  const parks = renderSFMap({ landmarks: true });
+  assert.equal((parks.match(/data-landmark=/g) ?? []).length, 6);
+  assert.ok(parks.includes('Golden Gate Park'));
+  const document = new DOMParser().parseFromString(parks, 'image/svg+xml');
+  const parkPaths = Array.from(document.getElementsByTagName('path')).filter((p) =>
+    p.hasAttribute('data-landmark'),
+  );
+  assert.equal(parkPaths.length, 6);
+  for (const park of parkPaths) {
+    assert.match(park.getAttribute('d'), /^M/);
+    assert.ok(!/NaN|Infinity/.test(park.getAttribute('d')));
+  }
+  assert.ok(!parks.includes('data-layer="bart-stations"'));
+  const map = createSFMap({ bartStations: true, colors: { bart: '#123456' } });
+  assert.equal((map.svg.match(/data-bart-station=/g) ?? []).length, 8);
+  assert.ok(!map.svg.includes('data-layer="landmarks"'));
+  assert.ok(!map.svg.includes('Daly City'));
+  const [x, y] = map
+    .project([-122.3969009943399, 37.79285391372556])
+    .map((v) => Number(v.toFixed(2)));
+  assert.ok(map.svg.includes(`data-bart-station="embarcadero" transform="translate(${x},${y})"`));
+  assert.ok(map.svg.includes('stroke="#123456"'));
 });

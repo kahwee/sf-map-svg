@@ -1,11 +1,12 @@
 # Working on SF Map SVG
 
-Use pnpm 12 (declared in `package.json`) and Node 22 or newer.
+Use pnpm 12 (declared in `package.json`) and Node 22.12 or newer.
 
 ```sh
-pnpm install --frozen-lockfile --ignore-scripts
+pnpm install --frozen-lockfile
 pnpm check
 pnpm demo
+pnpm build-storybook
 ```
 
 ## Source layout
@@ -31,3 +32,9 @@ For rendering changes, inspect the example page on desktop and at 390 px. Run `p
 4. Tag the reviewed commit and create a private GitHub release with the package archive and map SVG examples.
 
 Keep `private: true` in the package manifest to prevent accidental npm publication. Never include credentials, site account identifiers, original site application files, or unrelated YorkSF content. Only the map renderer, public geometry, tests, examples, and supporting documentation belong here.
+
+## Interactive examples and dependency updates
+
+Run `pnpm storybook` and edit `stories/SFMap.stories.js`. Keep Stories using the public API so examples exercise the same renderer consumers use. Add stories for new layers or substantial options. Do not reuse a fixed `idPrefix` across stories because Docs renders several maps on one page.
+
+Dependabot proposes weekly npm and GitHub Actions updates. Keep Storybook packages on matching versions and review the CI results before merging. `pnpm audit` checks known advisories. The package must retain zero runtime dependencies.

@@ -1,4 +1,5 @@
 import data from './data.js';
+import { landmarks as landmarkData, bartStations as stationData } from './overlays.js';
 import { rawProject, positions, geometryPath } from './geometry.js';
 
 // The common coast is immutable: compute its Mercator bounds once per module.
@@ -29,6 +30,9 @@ const defaults = {
   district: '#71838a',
   neighborhood: '#8c9195',
   highway: '#bd8b73',
+  park: '#b2cfaa',
+  landmark: '#3e6346',
+  bart: '#24789a',
   label: '#304958',
   marker: '#245b61',
   selected: '#f04f32',
@@ -55,6 +59,8 @@ export function createSFMap(options = {}) {
     districtFills = true,
     districtLabels = true,
     highways = false,
+    landmarks = false,
+    bartStations = false,
     markers = [],
     title = 'San Francisco map',
     idPrefix = `sf-map-${++sequence}`,
@@ -93,11 +99,15 @@ export function createSFMap(options = {}) {
   const stroke = (color, weight) =>
     `fill="none" stroke="${escape(color)}" stroke-width="${weight}" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"`;
   const parts = [
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" role="img" aria-labelledby="${idPrefix}-title" data-sf-map="" data-year="${year}" style="max-width:100%;height:auto"><title id="${idPrefix}-title">${escape(title)}</title><desc>San Francisco supervisorial district boundaries (${year}).${neighborhoodLines ? ' Dashed lines show approximate SF Find neighborhood areas, defined in 2006.' : ''} Geometry from DataSF. See package SOURCES.md.</desc><defs><clipPath id="${idPrefix}-coast"><path d="${coastPath}" fill-rule="evenodd" clip-rule="evenodd"/></clipPath></defs><rect width="${width}" height="${height}" fill="${escape(colors.water)}"/><g data-layer="geography"><path data-layer="coast" d="${coastPath}" fill="${escape(colors.land)}" fill-rule="evenodd"/>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" role="img" aria-labelledby="${idPrefix}-title" data-sf-map="" data-year="${year}" style="max-width:100%;height:auto"><title id="${idPrefix}-title">${escape(title)}</title><desc>San Francisco supervisorial district boundaries (${year}).${neighborhoodLines ? ' Dashed lines show approximate SF Find neighborhood areas, defined in 2006.' : ''}${landmarks ? ' Green areas highlight six parks and landmarks.' : ''}${bartStations ? ' Blue rings mark the eight San Francisco BART stations.' : ''} Geometry from DataSF${bartStations ? ' and BART' : ''}. See package SOURCES.md.</desc><defs><clipPath id="${idPrefix}-coast"><path d="${coastPath}" fill-rule="evenodd" clip-rule="evenodd"/></clipPath></defs><rect width="${width}" height="${height}" fill="${escape(colors.water)}"/><g data-layer="geography"><path data-layer="coast" d="${coastPath}" fill="${escape(colors.land)}" fill-rule="evenodd"/>`,
   ];
   if (districtFills)
     parts.push(
       `<g data-layer="district-fills" clip-path="url(#${idPrefix}-coast)">${districts.map((d) => `<path data-district="${d.id}" d="${districtPath(d)}" fill="${districtColors[d.id - 1]}" fill-rule="evenodd"/>`).join('')}</g>`,
+    );
+  if (landmarks)
+    parts.push(
+      `<g data-layer="landmarks" clip-path="url(#${idPrefix}-coast)">${landmarkData.map((landmark) => `<path data-landmark="${landmark.id}" d="${path(landmark.geometry)}" fill="${escape(colors.park)}" fill-rule="evenodd"><title>${escape(landmark.name)}</title></path>`).join('')}</g>`,
     );
   if (highways)
     parts.push(
@@ -121,6 +131,25 @@ export function createSFMap(options = {}) {
         .map((d) => {
           const [x, y] = project(d.label).map(number);
           return `<g transform="translate(${x},${y})"><circle r="10" fill="#ffffff" fill-opacity=".9"/><text dy=".35em">${d.id}</text></g>`;
+        })
+        .join('')}</g>`,
+    );
+  const overlayLabel = `font-family="system-ui,sans-serif" font-size="12" font-weight="600" stroke="#f8faf4" stroke-width="3" stroke-linejoin="round" paint-order="stroke"`;
+  if (landmarks)
+    parts.push(
+      `<g data-layer="landmark-labels" ${overlayLabel} fill="${escape(colors.landmark)}">${landmarkData
+        .map((landmark) => {
+          const [x, y] = project(landmark.label);
+          return `<text x="${number(x + landmark.offset[0])}" y="${number(y + landmark.offset[1])}" text-anchor="${landmark.anchor}" dominant-baseline="middle">${escape(landmark.name)}</text>`;
+        })
+        .join('')}</g>`,
+    );
+  if (bartStations)
+    parts.push(
+      `<g data-layer="bart-stations">${stationData
+        .map((station) => {
+          const [x, y] = project(station.coordinates).map(number);
+          return `<g data-bart-station="${station.id}" transform="translate(${x},${y})"><title>${escape(station.name)} BART station</title><circle r="5" fill="#fff" stroke="${escape(colors.bart)}" stroke-width="2.5"/><circle r="1.5" fill="${escape(colors.bart)}"/><text x="10" y="4" ${overlayLabel} fill="${escape(colors.bart)}">${escape(station.name)}</text></g>`;
         })
         .join('')}</g>`,
     );
