@@ -1,6 +1,7 @@
 import type { Bounds, NeighborhoodFeature, NeighborhoodSource } from '../data/index.js';
 import {
   bartStations,
+  districtMaps,
   getNeighborhood,
   keyRoads,
   landmarks,
@@ -16,9 +17,13 @@ import {
   projectedBounds,
 } from './explorer-layout.js';
 import { geometryPath } from './geometry.js';
-import { createSFMap } from './index.js';
+import { createSFMap, districtColors } from './index.js';
+
+export type ExplorerMode = 'neighborhoods' | 'districts';
 
 export interface NeighborhoodExplorerOptions {
+  mode?: ExplorerMode;
+  labels?: boolean;
   source?: NeighborhoodSource;
   /** Canonical name, source name, alias, or stable ID in the selected source. */
   neighborhood?: string;
@@ -29,6 +34,10 @@ export interface NeighborhoodExplorerElement extends HTMLElement {
   selectNeighborhood(name: string): boolean;
   /** Switch definitions, clear selection, and reset to city view. */
   setSource(source: NeighborhoodSource): void;
+  /** Switch between neighborhood definitions and supervisorial districts. */
+  setMode(mode: ExplorerMode): void;
+  /** Show or hide all map text labels; station rings remain visible. */
+  setLabels(visible: boolean): void;
   resetView(): void;
   /** Multiply zoom, clamped to 1–12×. */
   zoomBy(factor: number): void;
@@ -77,9 +86,14 @@ function svgElement<K extends keyof SVGElementTagNameMap>(
 /** Create an offline, browser-only neighborhood explorer. Call destroy() before disposal. */
 export function createNeighborhoodExplorer({
   source = 'realtor',
+  mode = 'neighborhoods',
+  labels = true,
   neighborhood,
   year = 2022,
 }: NeighborhoodExplorerOptions = {}): NeighborhoodExplorerElement {
+  if (mode !== 'neighborhoods' && mode !== 'districts')
+    throw new RangeError(`Unknown map mode: ${mode}`);
+  if (typeof labels !== 'boolean') throw new TypeError('Labels must be a boolean.');
   if (!Object.hasOwn(neighborhoodCollections, source))
     throw new RangeError(`Unknown neighborhood source: ${source}`);
   if (neighborhood === '') neighborhood = undefined;
@@ -106,6 +120,7 @@ export function createNeighborhoodExplorer({
   style.textContent = `
 .sf-explorer{container:sf-neighborhood-explorer / inline-size;font:14px/1.5 system-ui,sans-serif;color:#18364f;background:#fff;border:1px solid #cedae3;border-radius:14px;overflow:hidden;max-width:1120px;margin:auto;box-shadow:0 8px 32px #18364f08}
 .sf-explorer *{box-sizing:border-box}
+.sf-explorer [hidden]{display:none!important}
 .sf-explorer h2,.sf-explorer p{margin:0}
 .sf-explorer button,.sf-explorer input,.sf-explorer select,.sf-explorer a{font:inherit}
 .sf-explorer button,.sf-explorer select,.sf-explorer input{color:inherit;border:1px solid #c7d5df;border-radius:7px;background:#fff;min-height:44px;padding:9px 12px}
@@ -170,12 +185,23 @@ export function createNeighborhoodExplorer({
   root.append(style);
   const header = element('header', '', 'sf-explorer-header');
   header.append(
-    element('h2', 'San Francisco neighborhoods'),
+    element('h2', 'Explore San Francisco'),
     element('p', 'Explore the city, from familiar names to the places in between.'),
   );
   root.append(header);
   const body = element('div', '', 'sf-explorer-body');
   const panel = element('div', '', 'sf-explorer-panel');
+  const modeLabel = element('label', 'Map mode');
+  const modeSelect = element('select');
+  for (const [value, title] of [
+    ['neighborhoods', 'Neighborhoods'],
+    ['districts', 'Districts'],
+  ] as const) {
+    const option = element('option', title);
+    option.value = value;
+    modeSelect.append(option);
+  }
+  modeLabel.append(modeSelect);
   const sourceLabel = element('label', 'Neighborhood definitions');
   const sourceSelect = element('select');
   for (const [value, title] of Object.entries(sourceNames)) {
@@ -197,7 +223,7 @@ export function createNeighborhoodExplorer({
   results.setAttribute('aria-label', 'Matching neighborhoods');
   results.setAttribute('role', 'group');
   const detail = element('div', '', 'sf-explorer-detail');
-  panel.append(sourceLabel, searchLabel, count, results);
+  panel.append(modeLabel, sourceLabel, searchLabel, count, results);
   const column = element('div', '', 'sf-explorer-map-column');
   const toolbar = element('div', '', 'sf-explorer-toolbar');
   toolbar.setAttribute('aria-label', 'Map controls');
@@ -230,7 +256,8 @@ export function createNeighborhoodExplorer({
     year,
     theme: 'transit',
     districtLabels: false,
-    districtLines: false,
+    districtLines: true,
+    districtFills: true,
     highways: true,
     keyRoads: true,
     landmarks: true,
@@ -250,6 +277,24 @@ export function createNeighborhoodExplorer({
   svg.querySelector('[data-layer="key-road-labels"]')?.remove();
   const geography = svg.querySelector('[data-layer="geography"]');
   if (!geography) throw new Error('The renderer did not produce a geography layer.');
+  const districtLayers = Array.from(
+    svg.querySelectorAll<SVGGElement>(
+      '[data-layer="district-fills"], [data-layer="district-lines"]',
+    ),
+  );
+  for (const path of svg.querySelectorAll<SVGPathElement>(
+    '[data-layer="district-fills"] path[data-district]',
+  )) {
+    const color = districtColors[Number(path.dataset.district) - 1];
+    if (color) path.setAttribute('fill', color);
+  }
+  const districtItems: LabelItem[] = districtMaps[year].features.flatMap((feature) =>
+    feature.properties.labelPoints.map((point) => ({
+      point: map.project(point),
+      name: String(feature.properties.district),
+      kind: 'district',
+    })),
+  );
   const areas = svgElement('g', { 'data-layer': 'explorer-neighborhoods' });
   const stations = svgElement('g', { 'data-layer': 'explorer-bart' });
   const labelLayer = svgElement('g', {
@@ -314,6 +359,7 @@ export function createNeighborhoodExplorer({
   zoomControls.append(zoomText);
   const zoomIn = button('+', 'Zoom in', () => zoomBy(1.5));
   button('Reset', 'Reset map to city view', resetView);
+  const labelsButton = button('Labels', 'Show map labels', () => setLabels(!labels));
   for (const [symbol, label, dx, dy] of [
     ['←', 'Pan west', -1, 0],
     ['↑', 'Pan north', 0, -1],
@@ -358,26 +404,32 @@ export function createNeighborhoodExplorer({
     const unit = view[2] / width,
       zoom = 800 / view[2];
     for (const station of stationItems) station.node.setAttribute('r', String(4.5 * unit));
+    if (!labels) {
+      root.dataset.visibleLabels = '0';
+      return;
+    }
     const selectedItem = items.find((item) => item.feature === selected);
     const candidates: LabelItem[] = [];
-    if (selectedItem?.point)
-      candidates.push({
-        ...selectedItem,
-        point: selectedItem.point,
-        name: selectedItem.feature.properties.canonicalName,
-        kind: 'selected',
-      });
-    if (zoom >= 1.8) candidates.push(...stationItems);
-    candidates.push(
-      ...parkItems.filter(
-        (park) =>
-          zoom >= 1.8 ||
-          park.name === 'Golden Gate Park' ||
-          (width >= 550 && park.name === 'Presidio'),
-      ),
-    );
-    if (zoom >= 1.8) candidates.push(...roadItems);
-    if (zoom >= (width < 500 ? 2.5 : 1.7))
+    if (mode === 'districts') {
+      candidates.push(...districtItems);
+    } else {
+      if (selectedItem?.point)
+        candidates.push({
+          ...selectedItem,
+          point: selectedItem.point,
+          name: selectedItem.feature.properties.canonicalName,
+          kind: 'selected',
+        });
+      if (zoom >= 1.8) candidates.push(...stationItems);
+      candidates.push(
+        ...parkItems.filter(
+          (park) =>
+            zoom >= 1.8 ||
+            park.name === 'Golden Gate Park' ||
+            (width >= 550 && park.name === 'Presidio'),
+        ),
+      );
+      if (zoom >= 1.8) candidates.push(...roadItems);
       candidates.push(
         ...items
           .filter(
@@ -391,10 +443,11 @@ export function createNeighborhoodExplorer({
             kind: 'neighborhood',
           })),
       );
+    }
     const measured = candidates.map((item) => {
       const node = svgElement('text', {
         'font-size': (item.kind === 'road' ? 11 : 12) * unit,
-        'font-weight': item.kind === 'selected' ? 700 : 550,
+        'font-weight': item.kind === 'selected' || item.kind === 'district' ? 700 : 550,
         fill: item.kind === 'park' ? '#426641' : item.kind === 'road' ? '#77736b' : '#163d61',
         stroke: '#ffffff',
         'stroke-width': 3 * unit,
@@ -445,6 +498,19 @@ export function createNeighborhoodExplorer({
   function updateDetail() {
     releaseDownloads();
     detail.replaceChildren();
+    if (mode === 'districts') {
+      const collection = districtMaps[year];
+      detail.append(
+        element('h3', `${year} supervisorial districts`),
+        element(
+          'p',
+          'Eleven districts, identified by number. Switch to Neighborhoods to explore familiar place names.',
+        ),
+        downloadLink('Download district GeoJSON', collection, `districts-${year}.geojson`),
+        element('p', collection.definition.description),
+      );
+      return;
+    }
     const collection = neighborhoodCollections[source];
     detail.append(
       element('h3', selected ? selected.properties.canonicalName : 'Explore all neighborhoods'),
@@ -507,6 +573,7 @@ export function createNeighborhoodExplorer({
   function selectNeighborhood(name: string) {
     const feature = getNeighborhood(name, { source });
     if (!feature) return false;
+    if (mode !== 'neighborhoods') setMode('neighborhoods');
     selected = feature;
     for (const item of items) {
       const active = item.feature === selected;
@@ -562,8 +629,49 @@ export function createNeighborhoodExplorer({
     updateResults();
     updateDetail();
     resetView();
-    status.textContent = `${sourceNames[source]}. Select a neighborhood to begin.`;
+    status.textContent =
+      mode === 'districts'
+        ? `${year} supervisorial districts. Numbers identify each district.`
+        : `${sourceNames[source]}. Select a neighborhood to begin.`;
   }
+  function setMode(next: ExplorerMode) {
+    if (next !== 'neighborhoods' && next !== 'districts')
+      throw new RangeError(`Unknown map mode: ${next}`);
+    mode = next;
+    modeSelect.value = mode;
+    root.dataset.mode = mode;
+    root.setAttribute('aria-label', `San Francisco ${mode} explorer`);
+    svg.setAttribute(
+      'aria-label',
+      `${mode === 'districts' ? 'District' : 'Neighborhood'} map. Use map controls to explore.`,
+    );
+    const districts = mode === 'districts';
+    for (const node of [sourceLabel, searchLabel, count, results]) node.hidden = districts;
+    areas.style.display = districts ? 'none' : '';
+    for (const layer of districtLayers) layer.style.display = districts ? '' : 'none';
+    updateDetail();
+    resetView();
+    status.textContent = districts
+      ? `${year} supervisorial districts. Numbers identify each district.`
+      : selected
+        ? `${selected.properties.canonicalName} selected. ${sourceNames[source]}.`
+        : `${sourceNames[source]}. Select a neighborhood to begin.`;
+  }
+  function setLabels(visible: boolean) {
+    if (typeof visible !== 'boolean') throw new TypeError('Labels must be a boolean.');
+    labels = visible;
+    labelsButton.setAttribute('aria-pressed', String(labels));
+    root.dataset.labels = String(labels);
+    if (!labels) {
+      labelLayer.replaceChildren();
+      root.dataset.visibleLabels = '0';
+    }
+    scheduleLabels();
+  }
+  listen(modeSelect, 'change', () => {
+    const next = modeSelect.value;
+    if (next === 'neighborhoods' || next === 'districts') setMode(next);
+  });
   listen(search, 'input', updateResults);
   listen(search, 'keydown', (event) => {
     if (event.key === 'Enter') {
@@ -635,6 +743,8 @@ export function createNeighborhoodExplorer({
   const explorer = Object.assign(root, {
     selectNeighborhood,
     setSource,
+    setMode,
+    setLabels,
     resetView,
     zoomBy,
     destroy() {
@@ -645,7 +755,14 @@ export function createNeighborhoodExplorer({
       releaseDownloads();
     },
   });
+  const initialMode = mode;
   setSource(source);
   if (neighborhood !== undefined) selectNeighborhood(neighborhood);
+  setMode(initialMode);
+  if (initialMode === 'neighborhoods' && selected) {
+    const selectedItem = items.find((item) => item.feature === selected);
+    if (selectedItem) setView(fitBounds(selectedItem.bounds));
+  }
+  setLabels(labels);
   return explorer;
 }

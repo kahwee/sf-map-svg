@@ -76,6 +76,7 @@ export function createSFMap(options: SFMapOptions = {}) {
     neighborhoodLines = false,
     districtFills = true,
     districtLabels = true,
+    labels = true,
     highways = false,
     keyRoads = false,
     landmarks = false,
@@ -119,7 +120,7 @@ export function createSFMap(options: SFMapOptions = {}) {
   const path = (geometry: Geometry | null | undefined) => geometryPath(geometry, project);
   const coastPath = path(data.coast);
   const districts = data.districts[year];
-  const context = { project, path, colors, idPrefix, theme };
+  const context = { project, path, colors, idPrefix, theme, labels };
   const districtPaths =
     districtFills || districtLines
       ? districts.map((d) => ({
@@ -139,9 +140,9 @@ export function createSFMap(options: SFMapOptions = {}) {
   if (neighborhoodLines) parts.push(layers.neighborhoods(data.neighborhoods, context));
   if (districtLines) parts.push(layers.districtLines(districtPaths, context));
   parts.push(`<path data-layer="coastline" d="${coastPath}" ${stroke(colors.district, 0.65)}/>`);
-  if (districtLabels) parts.push(layers.districtLabels(districts, context));
-  if (landmarks) parts.push(layers.landmarkLabels(landmarkData, context));
-  if (keyRoads) parts.push(layers.keyRoadLabels(roadData, context));
+  if (labels && districtLabels) parts.push(layers.districtLabels(districts, context));
+  if (labels && landmarks) parts.push(layers.landmarkLabels(landmarkData, context));
+  if (labels && keyRoads) parts.push(layers.keyRoadLabels(roadData, context));
   if (bartStations) parts.push(layers.bartStations(stationData, context));
   parts.push(layers.markers(markers, context), '</g></svg>');
   return {

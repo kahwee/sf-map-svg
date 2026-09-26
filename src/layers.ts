@@ -5,6 +5,7 @@ import type { BartStation, KeyRoad, Landmark } from './overlays.js';
 import type { MapMarker, SFMapOptions } from './types.js';
 
 interface LayerContext {
+  labels: boolean;
   theme: NonNullable<SFMapOptions['theme']>;
   idPrefix: string;
   colors: Required<NonNullable<SFMapOptions['colors']>>;
@@ -67,11 +68,14 @@ export function landmarkLabels(items: readonly Landmark[], { project, colors }: 
     })
     .join('')}</g>`;
 }
-export function bartStations(items: readonly BartStation[], { project, colors }: LayerContext) {
+export function bartStations(
+  items: readonly BartStation[],
+  { project, colors, labels }: LayerContext,
+) {
   return `<g data-layer="bart-stations">${items
     .map((station) => {
       const [x, y] = project(station.coordinates).map(number);
-      return `<g data-bart-station="${escapeXml(station.id)}" transform="translate(${x},${y})"><title>${escapeXml(station.name)} BART station</title><circle r="5" fill="#fff" stroke="${escapeXml(colors.bart)}" stroke-width="2.5"/><circle r="1.5" fill="${escapeXml(colors.bart)}"/><text x="10" y="4" ${overlayLabel} fill="${escapeXml(colors.bart)}">${escapeXml(station.name)}</text></g>`;
+      return `<g data-bart-station="${escapeXml(station.id)}" transform="translate(${x},${y})"><title>${escapeXml(station.name)} BART station</title><circle r="5" fill="#fff" stroke="${escapeXml(colors.bart)}" stroke-width="2.5"/><circle r="1.5" fill="${escapeXml(colors.bart)}"/>${labels ? `<text x="10" y="4" ${overlayLabel} fill="${escapeXml(colors.bart)}">${escapeXml(station.name)}</text>` : ''}</g>`;
     })
     .join('')}</g>`;
 }

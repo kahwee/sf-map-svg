@@ -29,6 +29,7 @@ Write `svg` to a `.svg` file or embed it in your page. For Astro, render it with
 | `neighborhoodLines` | `false`             | Dashed SFAR realtor neighborhood outlines                                                                                  |
 | `theme` | `'districts'` | Use `'transit'` for pale blue water, ivory land, green parks, and blue BART symbols; custom `colors` still take precedence |
 | `districtFills`     | `true`              | Original Site’s eleven muted district colors                                                                               |
+| `labels` | `true` | Master switch for visible map text; symbols and accessible titles remain |
 | `districtLabels`    | `true`              | District number badges                                                                                                     |
 | `highways`          | `false`             | Original Site’s highway geometry                                                                                           |
 | `landmarks`         | `false`             | Golden Gate Park, Presidio, Lincoln Park, Twin Peaks, Dolores Park, and McLaren Park                                       |
@@ -169,3 +170,16 @@ Software is licensed under MIT. Geographic datasets retain their source terms an
 The library is authored in strict TypeScript 7. Run `pnpm build` to compile JavaScript and declarations into `dist/`. JavaScript consumers require no TypeScript runtime. `pnpm format` applies Biome formatting and safe lint fixes; `pnpm check` checks Biome, data, source and consumer types, and tests.
 
 Enable `keyRoads: true` for Market, Mission, Geary, Van Ness, 19th Avenue, Sunset, The Embarcadero, Columbus, and Divisadero. These use active DataSF centerlines, not invented routes. The explorer reveals road names as you zoom. Import `keyRoads` from the data entry point or `data/key-roads.json` for geometry, source segment IDs, and label anchors.
+
+### Map modes and labels
+
+The interactive explorer includes a map-mode selector and a Labels toggle. `mode: 'districts'` shows numbered supervisorial districts; `mode: 'neighborhoods'` shows names from the selected neighborhood source (SFAR realtor by default). Labels are collision-filtered and remain about 12 screen pixels through map zoom and resize; more names fit as you zoom in. Road labels use 11 pixels.
+
+```js
+const explorer = createNeighborhoodExplorer({ mode: 'districts', labels: true });
+explorer.setLabels(false);
+explorer.setMode('neighborhoods');
+explorer.setLabels(true);
+```
+
+`renderSFMap({ labels: false })` also hides all visible text while retaining station symbols and accessible titles. Standalone SVGs are static images; the interactive explorer provides the constant-size labels during map zoom.
