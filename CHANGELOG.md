@@ -4,6 +4,11 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 1.5.2 — 2026-09-26
+
+- Run every Storybook story as a Chromium/Vitest browser check and publish an LCOV and JSON coverage artifact for the renderer, with baseline regression thresholds.
+- Require the browser and coverage check before npm publishing or Pages deployment.
+
 ## 1.5.1 — 2026-09-26
 
 - Run focused Storybook 10 browser interactions and accessibility checks in CI and before npm publishing, covering overlapping markers, route overlays, and keyboard selection.

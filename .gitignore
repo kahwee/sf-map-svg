@@ -4,6 +4,7 @@ examples/generated/
 .env*
 
 storybook-static/
+coverage/
 *storybook.log
 
 dist/

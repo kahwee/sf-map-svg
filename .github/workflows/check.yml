@@ -45,4 +45,26 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm test:stories
+      - run: pnpm test:stories:coverage
+      - name: Summarize Storybook coverage
+        if: always()
+        run: |
+          if [ -f coverage/storybook/coverage-summary.json ]; then
+            node --input-type=module >> "$GITHUB_STEP_SUMMARY" <<'JS'
+          import { readFileSync } from 'node:fs';
+          const { total } = JSON.parse(readFileSync('coverage/storybook/coverage-summary.json', 'utf8'));
+          console.log('### Storybook renderer coverage');
+          console.log('| Metric | Covered |');
+          console.log('| --- | ---: |');
+          for (const metric of ['statements', 'branches', 'functions', 'lines']) {
+            console.log(`| ${metric} | ${total[metric].pct}% |`);
+          }
+          JS
+          fi
+      - name: Upload Storybook coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-coverage
+          path: coverage/storybook/
+          if-no-files-found: ignore

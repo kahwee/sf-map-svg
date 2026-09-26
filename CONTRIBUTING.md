@@ -9,6 +9,7 @@ pnpm demo
 pnpm build-storybook
 pnpm exec playwright install chromium
 pnpm test:stories
+pnpm test:stories:coverage
 ```
 
 ## Source layout
@@ -48,7 +49,7 @@ This npm-side trust configuration must match the workflow identity. The workflow
 To release:
 
 1. Update the version and changelog.
-2. Run `pnpm check`, `pnpm demo`, `pnpm build-storybook`, `pnpm test:stories`, and `pnpm test:package`.
+2. Run `pnpm check`, `pnpm demo`, `pnpm build-storybook`, `pnpm test:stories:coverage`, and `pnpm test:package`.
 3. Review and push the changes, tag the reviewed commit as `v<version>`, and publish its GitHub release.
 4. Inspect the publish workflow result, verify the registry version, and install that version in a clean project. A manual dispatch with the same tag can retry a failed attempt; npm rejects republishing an existing version.
 
@@ -56,7 +57,9 @@ To release:
 
 ## Interactive examples and dependency updates
 
-Run `pnpm storybook` and edit `stories/SFMap.stories.js`. Keep Stories using the public API so examples exercise the same renderer consumers use. Add stories for new layers or substantial options. Do not reuse a fixed `idPrefix` across stories because Docs renders several maps on one page. Storybook 10 runs Chromium interaction checks through Vitest; tag focused stories with `ci` and add a `play` function for behavior that needs browser coverage. The accessible guide story checks route overlays, overlapping marker selection, and keyboard input. Run `pnpm exec playwright install chromium` once locally before `pnpm test:stories`.
+Run `pnpm storybook` and edit `stories/SFMap.stories.js`. Keep stories using the public API so examples exercise the same renderer consumers use. Add stories for new layers or substantial options. Do not reuse a fixed `idPrefix` across stories because Docs renders several maps on one page. Storybook 10 and Vitest run every story as a Chromium rendering check; add a `play` function for behavior that needs interaction coverage. The accessible guide story checks route overlays, overlapping marker selection, and keyboard input. Run `pnpm exec playwright install chromium` once locally before `pnpm test:stories`.
+
+`pnpm test:stories:coverage` writes JSON summary and LCOV reports to `coverage/storybook/`. Coverage includes library code in `src/` and excludes stories, generated files, and geographic JSON. It measures code reached by Storybook browser checks; Node tests still run separately through `pnpm test`. The coverage floor is deliberately below the current browser baseline to catch large regressions without presenting this as complete library coverage. GitHub CI uploads the report as an artifact even if a browser check fails. npm publishing and Pages deployment also require this check to pass.
 
 Dependabot proposes weekly npm and GitHub Actions updates. Keep Storybook packages on matching versions and review the CI results before merging. Run `pnpm audit` to check known advisories and `pnpm outdated` to review available updates. React, Vitest, and Playwright are development dependencies for Storybook testing; the published package must retain zero runtime dependencies.
 

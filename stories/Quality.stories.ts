@@ -37,7 +37,6 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const OverlappingMarkersAndRoute: Story = {
-  tags: ['ci'],
   parameters: { a11y: { test: 'error' } },
   play: async ({ canvasElement, userEvent }) => {
     const map = canvasElement.querySelector<InteractiveSFMapElement>('.sf-explorer');

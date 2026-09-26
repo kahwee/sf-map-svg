@@ -60,7 +60,7 @@ jobs:
       - run: pnpm demo
       - run: pnpm build-storybook
       - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm test:stories
+      - run: pnpm test:stories:coverage
       - name: Pack and test the exact archive to publish
         run: |
           mkdir -p "$RUNNER_TEMP/package"
