@@ -4,6 +4,8 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Make the measures atlas a full-screen map with floating controls, expandable mobile results, touch pan/zoom, overlay tables and sources, and a distraction-free focus view.
+
 - Redesign the measures explorer around visible district maps, side-by-side comparisons, Yes/No and district-color modes, keyboard zoom/pan, district fitting, stable labels, and SVG/CSV exports.
 
 - Add a Pages ballot-measures explorer for certified June 2026 local results, with district comparisons, shareable selections, and official data downloads.

@@ -33,6 +33,7 @@ const measureById = (id) => election.measures.find((m) => m.id === id);
 const areaVotes = (m) =>
   state.district ? m.districts.find((d) => d.district === state.district) : m.citywide;
 const areaName = () => (state.district ? `District ${state.district}` : 'All San Francisco');
+$('inspector').open = matchMedia('(min-width: 900px)').matches;
 const cards = new Map();
 for (const m of election.measures) {
   const card = node('button', undefined, 'measure-card');
@@ -61,6 +62,70 @@ for (let d = 1; d <= 11; d++) $('district').add(new Option(`District ${d}`, Stri
 $('workbook').href = election.source;
 $('certification').href = election.certificationSource;
 
+function enableGestures(svg) {
+  const pointers = new Map();
+  let previous = null;
+  let moved = false;
+  let origin = null;
+  const gesture = () => {
+    const points = [...pointers.values()];
+    return {
+      x: points.reduce((sum, p) => sum + p.x, 0) / points.length,
+      y: points.reduce((sum, p) => sum + p.y, 0) / points.length,
+      distance:
+        points.length > 1 ? Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y) : 0,
+    };
+  };
+  svg.addEventListener('pointerdown', (event) => {
+    if (event.button !== 0) return;
+    pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (pointers.size === 1) {
+      moved = false;
+      origin = { x: event.clientX, y: event.clientY };
+    }
+    previous = gesture();
+  });
+  svg.addEventListener('pointermove', (event) => {
+    if (!pointers.has(event.pointerId)) return;
+    pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    const next = gesture();
+    if (
+      !moved &&
+      (pointers.size > 1 || Math.hypot(event.clientX - origin.x, event.clientY - origin.y) > 5)
+    ) {
+      moved = true;
+      svg.setPointerCapture(event.pointerId);
+    }
+    if (moved) {
+      const scale = svg.getScreenCTM().a;
+      if (next.distance && previous.distance) zoom(next.distance / previous.distance);
+      setViewport([
+        viewport[0] - (next.x - previous.x) / scale,
+        viewport[1] - (next.y - previous.y) / scale,
+        viewport[2],
+      ]);
+    }
+    previous = next;
+  });
+  const end = (event) => {
+    pointers.delete(event.pointerId);
+    if (svg.hasPointerCapture(event.pointerId)) svg.releasePointerCapture(event.pointerId);
+    previous = pointers.size ? gesture() : null;
+  };
+  svg.addEventListener('pointerup', end);
+  svg.addEventListener('pointercancel', end);
+  svg.addEventListener('lostpointercapture', (event) => pointers.delete(event.pointerId));
+  svg.addEventListener(
+    'click',
+    (event) => {
+      if (moved) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    },
+    true,
+  );
+}
 function makeMap(hostId, prefix) {
   const host = $(hostId);
   host.innerHTML = renderSFMap({
@@ -70,12 +135,14 @@ function makeMap(hostId, prefix) {
     colors: { water: '#edf4f4' },
   });
   const svg = host.querySelector('svg');
+  svg.style.height = '100%';
   svg.setAttribute('role', 'group');
   svg.setAttribute(
     'aria-label',
     'District map. Select a district; focus the map and use arrow keys to pan, plus or minus to zoom, Home to reset.',
   );
   svg.setAttribute('tabindex', '0');
+  enableGestures(svg);
   const paths = [...svg.querySelectorAll('[data-layer="district-fills"] path')];
   const originalColors = new Map(
     paths.map((path) => [path.dataset.district, path.getAttribute('fill')]),
@@ -213,6 +280,8 @@ function renderInspector(m, comparison) {
     ['Overvotes', votes.overvotes],
   ])
     details.append(node('dt', label), node('dd', format.format(value)));
+  $('selection-label').textContent = areaName();
+  $('selection-share').textContent = `${percent(yes)} Yes`;
   $('area-summary').replaceChildren(heading, big, context, bar, labels, details);
   $('fit-district').disabled = !state.district;
   $('measure-title').textContent = `${m.id} · ${m.title}`;
@@ -251,8 +320,9 @@ function renderTable(m, comparison) {
       button.addEventListener('click', () => {
         state.district = row.district;
         update();
+        $('results-dialog').close();
+        $('inspector').open = true;
         $('district').focus({ preventScroll: true });
-        $('map-workspace').scrollIntoView({ block: 'start' });
       });
       th.append(button);
       tr.append(th);
@@ -311,7 +381,7 @@ function update(writeUrl = true) {
       : 'linear-gradient(to right,#f0f4e8,#256967)';
   $('map-hint').textContent = state.district
     ? `District ${state.district} selected. Focus the map and use arrow keys to pan.`
-    : 'Click a district to inspect it. Tab + Enter works too.';
+    : 'Tap a district · Drag to pan · Pinch or + to zoom';
   renderInspector(m, comparison);
   renderTable(m, comparison);
   labelSizes();
@@ -327,6 +397,11 @@ function update(writeUrl = true) {
     history.replaceState(null, '', `#${params}`);
   }
 }
+$('focus-map').addEventListener('click', () => {
+  const focused = document.body.classList.toggle('map-focused');
+  $('focus-map').setAttribute('aria-pressed', String(focused));
+  $('focus-map').textContent = focused ? 'Show panels ↗' : 'Focus map ⛶';
+});
 $('district').addEventListener('change', () => {
   state.district = Number($('district').value);
   update();
@@ -409,7 +484,19 @@ $('export-svg').addEventListener('click', () => {
 });
 for (const link of document.querySelectorAll('a[href^="#"]')) {
   link.addEventListener('click', (event) => {
-    const target = document.querySelector(link.getAttribute('href'));
+    const href = link.getAttribute('href');
+    const dialog =
+      href === '#district-table'
+        ? $('results-dialog')
+        : href === '#sources'
+          ? $('sources-dialog')
+          : null;
+    if (dialog) {
+      event.preventDefault();
+      dialog.showModal();
+      return;
+    }
+    const target = document.querySelector(href);
     if (!target) return;
     event.preventDefault();
     target.setAttribute('tabindex', '-1');
