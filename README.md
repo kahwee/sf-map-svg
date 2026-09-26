@@ -2,7 +2,7 @@
 
 ![District fills, optional neighborhood boundaries, and plain outlines](docs/map-preview.png)
 
-Private package extracted from KahWee’s **San Francisco District Map** Site. Draws a self-contained SVG with bundled geometry and no runtime dependencies, tiles, WebGL, or network requests.
+An MIT-licensed package extracted from KahWee’s **San Francisco District Map** Site. Draws a self-contained SVG with bundled geometry and no runtime dependencies, tiles, WebGL, or network requests.
 
 ```js
 import { renderSFMap, createSFMap } from '@kahwee/sf-map-svg';
@@ -183,3 +183,162 @@ explorer.setLabels(true);
 ```
 
 `renderSFMap({ labels: false })` also hides all visible text while retaining station symbols and accessible titles. Standalone SVGs are static images; the interactive explorer provides the constant-size labels during map zoom.
+
+## Reusable interactive map
+
+The new `@kahwee/sf-map-svg/interactive` entry point provides a map, accessible controls, and
+attribution without the explorer's search sidebar or detail panel. It does not change URLs,
+load articles, apply editorial filters, or navigate. Importing the static entry point does not
+import this interactive runtime. Both paths retain zero runtime dependencies.
+
+```js
+import { createInteractiveSFMap } from '@kahwee/sf-map-svg/interactive';
+
+const map = createInteractiveSFMap({
+  mode: 'neighborhoods',
+  source: 'analysis', // 'sf-find' and 'realtor' are also available
+  theme: 'transit',
+  labelSize: { min: 12, max: 15 },
+  layers: { districtFills: false, districtLines: false, districtLabels: false },
+});
+document.querySelector('#map').append(map);
+map.addEventListener('neighborhoodchange', ({ detail }) => {
+  // On clear: id, name, and feature are null. source always identifies the dataset.
+  console.log(detail.id, detail.name, detail.source);
+});
+map.selectNeighborhood('Mission', { fit: false });
+const selection = map.getSelection(); // { id, name, source, feature } or null
+map.selectNeighborhood(null);
+```
+
+`createInteractiveSFMap()` defaults to `mode: 'basemap'`: no district or neighborhood layers.
+Parks, roads, and stations are initially enabled and can be disabled independently. The existing
+`createNeighborhoodExplorer()` and static APIs retain their realtor/district defaults. The
+source option only chooses a definition collection; it does not make that collection visible
+in basemap mode. Editorial groupings belong to the consumer and are never treated as geographic
+aliases. Import types including `InteractiveSFMapOptions`, `InteractiveSFMapElement`,
+`MapViewport`, `MapPadding`, and `NeighborhoodSelection` from the interactive entry point.
+
+| Option | Default | Behavior |
+| --- | --- | --- |
+| `mode` | `basemap` (interactive), `neighborhoods` (explorer) | `basemap`, `districts`, or `neighborhoods`; establishes layer defaults |
+| `source` | `realtor` | `realtor`, `sf-find`, or `analysis`; explicit source recommended for reusable integrations |
+| `theme` | `transit` | `transit` or `districts` |
+| `year` | `2022` | District vintage: 2002, 2012, or 2022 |
+| `layers` | Mode defaults | Independent booleans: `districtFills`, `districtLines`, `districtLabels`, `neighborhoodLines`, `neighborhoodLabels`, `landmarks`, `bartStations`, `highways`, `keyRoads` |
+| `labels` | `true` | Master visible-text switch; accessible descriptions and station symbols remain |
+| `labelSize` | `{ min: 11, max: 12 }` | Screen-pixel range, 8–32 allowed. Nominal sizes are 11 for roads and 12 otherwise, clamped to this range; sizes never grow with zoom |
+| `selectableNeighborhoods` | `true` | Enables pointer/keyboard selection; false retains geography and labels |
+| `neighborhood` | Unset | Initial name, alias, or ID in the selected source |
+| `fitPadding` | `24` | Screen pixels, number or `{ top, right, bottom, left }`, used by selection and geometry fitting after mounting |
+| `markers` | `[]` | Supplied `MapMarker` records with unique, nonempty IDs; no content fetching |
+| `markerRadius` / `markerHitSize` | `6` / `44` | Screen-pixel visible radius and tap-target diameter, independent of zoom; selected radius grows by 2px |
+| `markerColor` / `selectedMarkerColor` | `#245b61` / `#f04f32` | Default marker colors; individual `marker.color` overrides the unselected color |
+| `onMarkerActivate` | Unset | Called when a non-null marker selection changes, including programmatic changes |
+
+Explicit layer options override mode defaults even after `setMode()`. District fills, outlines,
+and badges can therefore be composed with neighborhood names without requiring district
+labels. Descriptions identify only displayed boundary layers, their source and available
+vintage; analysis data is described as census-tract-based reporting areas, without inventing a
+boundary year. The downloadable source metadata remains available in the full explorer.
+
+Labels use measured screen-space collision boxes. Selected marker and neighborhood names
+come first, then district labels, stations, parks, roads, and neighborhoods in descending area
+order with stable ID tie-breaking. Station and marker symbols reserve space. Roads and station
+names appear at 1.8× zoom; city view keeps park labels sparse. Labels outside the viewport or
+without room are suppressed, including a selected label too wide to fit. Selection names remain
+available in the native chooser and through events. The label range is separate from SVG user
+units used by the static renderer.
+
+### Viewport and controlled selection
+
+```js
+const saved = map.getViewport(); // copied [x, y, size] in the 800×800 projected map
+map.zoomBy(2);
+map.panBy(30, 0); // move view east by 30 screen pixels
+map.setViewport(saved);
+map.resetView();
+map.fitGeometry({
+  type: 'MultiPoint',
+  coordinates: places.map(({ lng, lat }) => [lng, lat]),
+}, { top: 24, right: 24, bottom: 80, left: 24 });
+map.addEventListener('viewportchange', ({ detail }) => saveInYourState(detail.viewport));
+```
+
+Call `fitGeometry` after mounting in a visible container. It accepts WGS84 GeoJSON geometry,
+including `Point`, `MultiPoint`, and `GeometryCollection`, and rejects empty geometry or
+impossible padding. Views are constrained to the city extent and 1–12× zoom. Consequently,
+padding is best-effort near city edges or for extents larger than the map; a single point fits
+at maximum zoom. This is an SF map, not a world map. Resizing keeps the projected view and
+recomputes screen sizes; call `fitGeometry` again if a new container size needs different fitting.
+Initial neighborhood fitting before mounting uses the explorer's proportional padding.
+
+`selectNeighborhood(nameOrIdOrNull, { fit: false })` and `selectMarker(idOrNull, { fit: false })`
+allow external state to drive selection without moving the viewport. They return false for
+unknown identities. `getSelection()` and `getSelectedMarker()` read current selection.
+`setSource(source)` clears neighborhood selection and resets the view, emitting a clear event
+when needed. `setMode(mode)` resets the viewport. Repeating the same viewport or selection
+emits no change event, avoiding state feedback loops. All events bubble. Call `destroy()`
+before removing the element to release listeners, observers, frames, and download URLs.
+
+### Dense markers
+
+```js
+const map = createInteractiveSFMap({ markers: places });
+document.querySelector('#map').append(map);
+map.addEventListener('markerchange', ({ detail }) => {
+  // { id, marker }, both null when cleared. Render your own content panel here.
+  renderSelection(detail.marker);
+});
+map.setMarkers(updatedPlaces);
+map.selectMarker('place-id');
+```
+
+Every supplied marker remains in the native chooser, even when positions coincide or markers
+are outside the current view. Pointer and keyboard activation select and fit a marker; markers
+also have individual keyboard stops. This is the accessible-choice alternative to clustering:
+no counts are estimated and no supplied markers are silently dropped. The chooser count is
+the supplied collection size. Replacing markers retains the selected ID when present, otherwise
+uses an explicitly selected marker or clears selection. Large hit targets can overlap; use the
+chooser to reach obscured markers. Automated clustering is not included in this release.
+
+### Gesture policy and keyboard access
+
+- **Default touch:** one finger scrolls the page; pinch zooms the browser. Map buttons and
+  native choosers work without engaging map gestures.
+- **Touch navigation:** explicitly enable the visible button (or `setTouchNavigation(true)`).
+  One finger pans the map; two fingers pan and pinch around their midpoint. The button becomes
+  **Done: page scrolling**. Use it or Escape to return to page gestures. The page remains
+  scrollable outside the canvas, and Tab can leave it. Changing mode during an active gesture
+  takes effect after fingers are lifted.
+- **Mouse:** drag pans; Ctrl/⌘ + wheel zooms. Ordinary wheel scrolling remains page scrolling.
+- **Keyboard:** focus the map, then arrows pan, +/− zoom, Home resets, and Escape exits touch
+  navigation. Tab reaches controls, the neighborhood chooser, one neighborhood path, and markers.
+  On a neighborhood path, `[` / `]` moves through source features and Enter/Space selects.
+  The native chooser is also available for areas outside the current view.
+- Pointer cancellation, loss of capture, window blur, and resizing cancel active gestures.
+  There is no animated camera or inertia. Button transitions are disabled with reduced motion.
+
+### Examples and verification
+
+Run `pnpm demo` and serve the repository root. `examples/generated/index.html` covers static
+maps, `explorer.html` covers the full explorer, and `interactive.html` covers independently
+controlled neighborhood selection, 36 overlapping sample markers, and fit/save/restore hooks.
+Storybook **Maps / Reusable interactive map** includes both themes, selectable neighborhoods,
+independent layers, dense markers, and a 390px example.
+
+With that server running, the browser regression checks can be run through the installed CLI:
+
+```sh
+agent-browser skills get core --full
+agent-browser --session sf-map-check open http://127.0.0.1:8765/examples/generated/interactive.html
+agent-browser --session sf-map-check eval "import('/scripts/check-interactive-browser.mjs').then(m => m.checkInteractiveBrowser())"
+agent-browser --session sf-map-check close
+```
+
+These checks cover actual browser layout, both themes, narrow/wide containers, label collisions,
+zoom extremes, keyboard selection, cancellation logic, viewport state, marker reachability, and
+teardown. Physical iOS Safari and Android Chrome verification remains required before a release:
+check page scroll and browser pinch in default mode; map pan and pinch in engaged mode; lift one
+finger; interrupt/cancel; rotate; use Done; verify scrolling resumes. Desktop automation and
+synthetic pointer tests do not establish physical-device compatibility.
