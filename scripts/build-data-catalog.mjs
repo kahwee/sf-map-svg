@@ -7,6 +7,7 @@ const files = [
   'districts-2012',
   'districts-2022',
   'highways',
+  'key-roads',
   'landmarks',
   'bart-stations',
   'neighborhoods',

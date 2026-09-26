@@ -8,6 +8,7 @@ import districts2002 from './districts-2002.json' with { type: 'json' };
 import districts2012 from './districts-2012.json' with { type: 'json' };
 import districts2022 from './districts-2022.json' with { type: 'json' };
 import highwayData from './highways.json' with { type: 'json' };
+import roadData from './key-roads.json' with { type: 'json' };
 import landmarkData from './landmarks.json' with { type: 'json' };
 import sfFind from './neighborhoods.json' with { type: 'json' };
 import analysis from './neighborhoods-analysis.json' with { type: 'json' };
@@ -17,6 +18,7 @@ import type {
   DistrictProperties,
   Feature,
   FeatureCollection,
+  KeyRoadProperties,
   LandmarkProperties,
   NeighborhoodProperties,
   NeighborhoodSource,
@@ -99,3 +101,5 @@ export function searchNeighborhoods(query = '', { source }: { source?: Neighborh
       ),
   );
 }
+
+export const keyRoads = deepFreeze(roadData as unknown as FeatureCollection<KeyRoadProperties>);

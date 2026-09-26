@@ -63,3 +63,19 @@ test('screen labels prioritize selected areas, avoid collisions, and stay inside
 test('explorer module imports on the server but requires a document to mount', () => {
   assert.throws(() => createNeighborhoodExplorer(), /browser document/);
 });
+
+test('labels reserve space around station symbols even when station text is hidden', () => {
+  const labels = layoutLabels(
+    [
+      { id: 'neighborhood', x: 90, y: 50, textWidth: 40 },
+      { id: 'station', x: 100, y: 50, textWidth: 50, offset: 11 },
+    ],
+    390,
+    390,
+    [[94, 44, 106, 56]],
+  );
+  assert.deepEqual(
+    labels.map((label) => label.id),
+    ['station'],
+  );
+});

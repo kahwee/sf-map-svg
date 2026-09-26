@@ -8,6 +8,7 @@ export interface MapMarker {
   color?: string;
 }
 export interface SFMapOptions {
+  theme?: 'districts' | 'transit';
   width?: number;
   height?: number;
   padding?: number;
@@ -17,6 +18,7 @@ export interface SFMapOptions {
   districtFills?: boolean;
   districtLabels?: boolean;
   highways?: boolean;
+  keyRoads?: boolean;
   landmarks?: boolean;
   bartStations?: boolean;
   markers?: MapMarker[];
@@ -29,6 +31,7 @@ export interface SFMapOptions {
       | 'district'
       | 'neighborhood'
       | 'highway'
+      | 'road'
       | 'park'
       | 'landmark'
       | 'bart'

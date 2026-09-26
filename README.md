@@ -27,6 +27,7 @@ Write `svg` to a `.svg` file or embed it in your page. For Astro, render it with
 | `year`              | `2022`              | District boundaries: `2002`, `2012`, or `2022`                                                                             |
 | `districtLines`     | `true`              | Supervisorial district outlines                                                                                            |
 | `neighborhoodLines` | `false`             | Dashed SFAR realtor neighborhood outlines                                                                                  |
+| `theme` | `'districts'` | Use `'transit'` for pale blue water, ivory land, green parks, and blue BART symbols; custom `colors` still take precedence |
 | `districtFills`     | `true`              | Original Site’s eleven muted district colors                                                                               |
 | `districtLabels`    | `true`              | District number badges                                                                                                     |
 | `highways`          | `false`             | Original Site’s highway geometry                                                                                           |
@@ -35,7 +36,8 @@ Write `svg` to a `.svg` file or embed it in your page. For Astro, render it with
 | `width`, `height`   | `800`, `800`        | SVG viewBox and intrinsic size                                                                                             |
 | `padding`           | `28`                | Space around the coast                                                                                                     |
 | `markers`           | `[]`                | Points with `id`, `lng`, `lat`, optional `label`, `color`, `selected`                                                      |
-| `colors`            | Built-in palette    | Override `water`, `land`, `district`, `neighborhood`, `highway`, `park`, `landmark`, `bart`, `label`, `marker`, `selected` |
+| `keyRoads` | `false` | Nine selected road corridors and names for orientation |
+| `colors`            | Built-in palette    | Override `water`, `land`, `district`, `neighborhood`, `highway`, `road`, `park`, `landmark`, `bart`, `label`, `marker`, `selected` |
 | `title`             | `San Francisco map` | Accessible SVG title                                                                                                       |
 | `idPrefix`          | Unique per process  | Set explicitly for deterministic output or independent server renders                                                      |
 
@@ -62,6 +64,8 @@ pnpm demo
 Open `examples/generated/index.html` to compare district and neighborhood maps. Generated SVG files are there too. See [CONTRIBUTING.md](CONTRIBUTING.md) for source structure, checks and release steps. GitHub Actions runs validation; npm releases use public access.
 
 The package uses a small Mercator SVG renderer while retaining the Site’s boundary geometry, coastline, palette, district labels, and highway data.
+
+The `theme: 'transit'` preset borrows the clear visual hierarchy of [BART’s system map](https://www.bart.gov/system-map), retaining geographic positions. It uses a quiet, single-color land fill instead of district colors. The neighborhood explorer uses this preset.
 
 Enable `landmarks`, `bartStations`, and `highways` together for the featured example. Park fills use `colors.park`, park labels use `colors.landmark`, and station rings and labels use `colors.bart`. These current geographic overlays are independent of the district year; BART stations are city-only (Daly City is outside the map). Station positions are geographic points, not a route diagram.
 
@@ -163,3 +167,5 @@ Software is licensed under MIT. Geographic datasets retain their source terms an
 ## TypeScript development
 
 The library is authored in strict TypeScript 7. Run `pnpm build` to compile JavaScript and declarations into `dist/`. JavaScript consumers require no TypeScript runtime. `pnpm format` applies Biome formatting and safe lint fixes; `pnpm check` checks Biome, data, source and consumer types, and tests.
+
+Enable `keyRoads: true` for Market, Mission, Geary, Van Ness, 19th Avenue, Sunset, The Embarcadero, Columbus, and Divisadero. These use active DataSF centerlines, not invented routes. The explorer reveals road names as you zoom. Import `keyRoads` from the data entry point or `data/key-roads.json` for geometry, source segment IDs, and label anchors.

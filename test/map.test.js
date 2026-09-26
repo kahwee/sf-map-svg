@@ -134,3 +134,37 @@ test('optional layers work independently and preserve unique district IDs', () =
     }
   }
 });
+
+test('transit custom land color cannot inject SVG attributes', () => {
+  const color = 'red" onpointerover="alert(1)';
+  const document = new DOMParser().parseFromString(
+    renderSFMap({ theme: 'transit', colors: { land: color } }),
+    'image/svg+xml',
+  );
+  const fills = Array.from(document.getElementsByTagName('path')).filter(
+    (path) => path.parentNode.getAttribute('data-layer') === 'district-fills',
+  );
+  assert.equal(fills.length, 11);
+  for (const path of fills) {
+    assert.equal(path.getAttribute('fill'), color);
+    assert.equal(path.hasAttribute('onpointerover'), false);
+  }
+});
+
+test('key roads are an optional layer independent of highways', () => {
+  assert.ok(!renderSFMap().includes('data-layer="key-roads"'));
+  const svg = renderSFMap({ keyRoads: true, colors: { road: '#123456' } });
+  const document = new DOMParser().parseFromString(svg, 'image/svg+xml');
+  const roads = Array.from(document.getElementsByTagName('path')).filter((p) =>
+    p.hasAttribute('data-key-road'),
+  );
+  assert.equal(roads.length, 9);
+  for (const road of roads) {
+    assert.equal(road.getAttribute('stroke'), '#123456');
+    assert.match(road.getAttribute('d'), /^M/);
+    assert.ok(!/NaN|Infinity/.test(road.getAttribute('d')));
+  }
+  assert.ok(svg.includes('Market St'));
+  assert.ok(svg.includes('The Embarcadero'));
+  assert.ok(!svg.includes('data-layer="highways"'));
+});

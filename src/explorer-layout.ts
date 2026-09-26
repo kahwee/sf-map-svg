@@ -74,6 +74,7 @@ export function layoutLabels<T extends LabelCandidate>(
   candidates: readonly T[],
   width: number,
   height: number,
+  obstacles: readonly Bounds[] = [],
 ): PlacedLabel<T>[] {
   const placed: PlacedLabel<T>[] = [];
   for (const candidate of candidates) {
@@ -89,8 +90,8 @@ export function layoutLabels<T extends LabelCandidate>(
       const box: Bounds = [left - 3, top - 3, left + textWidth + 3, top + textHeight + 3];
       if (box[0] < 2 || box[1] < 2 || box[2] > width - 2 || box[3] > height - 2) continue;
       if (
-        placed.some(
-          ({ box: b }) => box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1],
+        [...obstacles, ...placed.map((item) => item.box)].some(
+          (b) => box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1],
         )
       )
         continue;
