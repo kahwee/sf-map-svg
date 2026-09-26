@@ -206,3 +206,60 @@ footer {
     font-size: 11px;
   }
 }
+
+.release-badge {
+  display: inline-block;
+  background: #e6eddd;
+  border: 1px solid #cdd8bd;
+  border-radius: 24px;
+  padding: 9px 14px;
+  font-size: 13px;
+  text-decoration: none;
+}
+.release-summary {
+  border-block: 1px solid #cdd8d1;
+  padding-block: 20px;
+}
+.release-summary p {
+  max-width: 760px;
+}
+.install {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.install code {
+  overflow-wrap: anywhere;
+  font-size: 14px;
+}
+.install button {
+  font: inherit;
+  color: inherit;
+  background: white;
+  border: 1px solid #b8c9bd;
+  border-radius: 8px;
+  min-height: 44px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+.install button:focus-visible {
+  outline: 3px solid #a85036;
+  outline-offset: 3px;
+}
+.copy-status {
+  min-height: 1.65em;
+  margin-bottom: 0;
+  font-size: 13px;
+}
+.transit-frame {
+  width: 100%;
+  height: clamp(650px, calc(100vw + 240px), 930px);
+  border: 0;
+}
+.previews img {
+  height: auto;
+}
+.build > * {
+  min-width: 0;
+}

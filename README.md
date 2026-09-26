@@ -1,5 +1,7 @@
 # San Francisco SVG maps
 
+[![npm version](https://img.shields.io/npm/v/@kahwee/sf-map-svg)](https://www.npmjs.com/package/@kahwee/sf-map-svg)
+
 [Explore the live map](https://kahwee.github.io/sf-map-svg/) · [Data guide](data/README.md) · [Geographic sources](SOURCES.md) · [Contributing](CONTRIBUTING.md)
 
 Self-contained SVG maps of San Francisco, with precise coastlines, soft district colors, parks, roads, BART stations, and searchable neighborhoods. Render static SVGs in Node or add an interactive map to a browser. All geometry is bundled; there are no runtime dependencies, map tiles, API keys, or external data requests.
@@ -19,6 +21,7 @@ Use Node 22.12+ for server-side rendering. Browser components need a DOM and a b
 | Static SVG | `@kahwee/sf-map-svg` | SVG markup, projection helpers, optional layers |
 | Neighborhood explorer | `@kahwee/sf-map-svg/explorer` | Search, source selection, map controls, GeoJSON downloads |
 | Interactive map | `@kahwee/sf-map-svg/interactive` | Embeddable map and controls without the explorer sidebar |
+| Animated transit demo | `@kahwee/sf-map-svg/transit` | Optional, schematic BART journey with playback controls |
 | Geographic data | `@kahwee/sf-map-svg/data` | Source-aware lookup and canonical GeoJSON |
 
 ## Render a static map
@@ -301,12 +304,15 @@ synthetic pointer tests do not establish physical-device compatibility.
 The [live explorer](https://kahwee.github.io/sf-map-svg/) provides neighborhood search, 2022 district views, SVG examples, and GeoJSON downloads. Its source is in `website/` and uses the public explorer API.
 
 ```sh
-pnpm build:pages
+pnpm build:pages             # local preview
+pnpm build:pages --released  # use the current npm release
 python3 -m http.server 8765 --directory pages-dist
 # Open http://localhost:8765
 ```
 
-The build bundles local assets into `pages-dist/` with relative URLs for GitHub’s project path. `.github/workflows/pages.yml` validates and deploys pushes to `main` using GitHub Actions. It does not publish npm packages or releases.
+The build bundles assets into `pages-dist/` with relative URLs for GitHub’s project path. Local builds use the working package; deployed builds use npm’s latest stable package for both browser components and SVG downloads. The page shows that version and links to its release notes. `pages-dist/release.json` records the build’s version and source.
+
+`.github/workflows/pages.yml` validates and deploys on pushes to `main` and after successful npm publishing. Release-triggered builds wait for registry processing before using the newly published version. Pages deployment does not publish npm packages or releases.
 
 ## License and attribution
 

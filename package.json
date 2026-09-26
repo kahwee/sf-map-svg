@@ -56,7 +56,7 @@
     "build": "node scripts/build.mjs",
     "lint": "biome check .",
     "prepack": "pnpm build",
-    "build:pages": "pnpm demo && node scripts/build-pages.mjs"
+    "build:pages": "pnpm build && node scripts/build-pages.mjs"
   },
   "repository": {
     "type": "git",

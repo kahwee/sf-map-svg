@@ -2,6 +2,9 @@ name: Deploy map explorer
 on:
   push:
     branches: [main]
+  workflow_run:
+    workflows: [Publish npm package]
+    types: [completed]
   workflow_dispatch:
 permissions:
   contents: read
@@ -10,9 +13,12 @@ concurrency:
   cancel-in-progress: false
 jobs:
   build:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
       - uses: pnpm/action-setup@v6
         with:
           version: 12.0.0
@@ -22,7 +28,22 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
-      - run: pnpm build:pages
+      - name: Wait for the published version
+        if: github.event_name == 'workflow_run'
+        env:
+          RELEASE_COMMIT: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          version=$(git show "$RELEASE_COMMIT:package.json" | node -p 'JSON.parse(require("fs").readFileSync(0,"utf8")).version')
+          for attempt in $(seq 1 20); do
+            if npm view "@kahwee/sf-map-svg@$version" version >/dev/null 2>&1; then
+              echo "PAGES_VERSION=$version" >> "$GITHUB_ENV"
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "npm has not exposed $version yet; rerun this workflow after registry processing."
+          exit 1
+      - run: pnpm build:pages --released
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:

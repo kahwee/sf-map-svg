@@ -4,6 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Explore San Francisco neighborhoods, historic districts, parks and BART in a lightweight, open-source SVG map. Download maps and geographic data.">
+  <link rel="canonical" href="https://kahwee.github.io/sf-map-svg/">
+  <meta property="og:title" content="San Francisco, in SVG — open-source maps">
+  <meta property="og:description" content="Explore 92 neighborhoods, download a map, or build your own. Offline SVG maps with no API keys or runtime dependencies.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kahwee.github.io/sf-map-svg/">
+  <meta property="og:image" content="https://kahwee.github.io/sf-map-svg/social-preview.png">
+  <meta name="twitter:card" content="summary_large_image">
   <title>San Francisco, in SVG</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="./style.css">
@@ -13,18 +20,24 @@
   <header class="shell">
     <nav aria-label="Main navigation"><a class="brand" href="./">SF / SVG</a><div><a href="#guide">How to use</a><a href="https://github.com/kahwee/sf-map-svg">GitHub ↗</a></div></nav>
     <p class="eyebrow">A little map. A city to explore.</p>
+    <a class="release-badge" href="https://www.npmjs.com/package/@kahwee/sf-map-svg/v/%MAP_VERSION%">%RELEASE_LABEL% ↗</a>
     <h1>San Francisco,<br>in SVG.</h1>
     <p class="intro">Find a neighborhood. Follow a district line. Get to know the city through a map you can make your own.</p>
-    <div class="hero-links"><a class="primary" href="#explore">Explore the map ↓</a><a href="#build">Build with it →</a></div>
+    <div class="hero-links"><a class="primary" href="#explore">Explore the map ↓</a><a href="#build">Build with it →</a><a href="https://github.com/kahwee/sf-map-svg/releases/tag/v%MAP_VERSION%">What’s new in %MAP_VERSION% ↗</a></div>
   </header>
   <main class="shell">
+    <section class="release-summary" aria-label="Release highlights">
+      <p><strong>One package. Three ways to use it.</strong> Export a crisp SVG, embed a searchable neighborhood map, or add a schematic BART journey. Every demo on this page uses the version shown above.</p>
+      <div class="install"><code id="install-command">pnpm add @kahwee/sf-map-svg@%MAP_VERSION%</code><button id="copy-install" type="button">Copy install</button></div>
+      <p id="copy-status" class="copy-status" role="status"></p>
+    </section>
     <section id="explore" aria-labelledby="map-title">
       <div class="section-heading"><h2 id="map-title">Your corner of the city</h2><span>Neighborhoods · districts · parks · transit</span></div>
       <p>Search for a name or select an area. Switch map modes to compare neighborhoods and district boundaries.</p>
       <div id="explorer"><p id="loading" role="status">Loading the map…</p></div>
       <noscript><p>Enable JavaScript to explore, or <a href="./maps/districts.svg">open the district SVG map</a>.</p></noscript>
     </section>
-    <section aria-labelledby="transit-title"><h2 id="transit-title">A little motion</h2><p>Follow a schematic journey through San Francisco’s BART stations. Press Play or scrub through the journey.</p><iframe src="./transit.html" title="Interactive schematic BART animation" loading="lazy" style="width:100%;height:clamp(650px, calc(100vw + 240px), 930px);border:0"></iframe></section>
+    <section id="transit-demo" aria-labelledby="transit-title"><h2 id="transit-title">A little motion</h2><p>Follow a schematic journey through San Francisco’s BART stations. Press Play or scrub through the journey. These straight segments illustrate a journey, not actual tracks or live service. <a href="./transit.html">Open the standalone demo ↗</a></p><iframe src="./transit.html" title="Interactive schematic BART animation" loading="lazy" class="transit-frame"></iframe></section>
     <section id="guide" aria-labelledby="guide-title">
       <h2 id="guide-title">A few ways to explore</h2>
       <div class="cards">
@@ -35,9 +48,9 @@
       <p class="source-note">Neighborhood names and boundaries vary by source. The default is the 92 SFAR realtor areas from August 2010; these are not universal or legal boundaries. Parks use actual property boundaries. <a href="https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md">Read the geographic sources →</a></p>
     </section>
     <section aria-labelledby="maps-title"><h2 id="maps-title">Take a map with you</h2><p>Open a self-contained SVG, then save it for your own project.</p><div class="cards previews">
-      <a href="./maps/districts.svg"><img src="./maps/districts.svg" alt="Pastel map of San Francisco’s 11 supervisorial districts" loading="lazy"><h3>Districts ↗</h3></a>
-      <a href="./maps/transit.svg"><img src="./maps/transit.svg" alt="San Francisco parks, roads and BART stations" loading="lazy"><h3>Parks & transit ↗</h3></a>
-      <a href="./maps/neighborhoods.svg"><img src="./maps/neighborhoods.svg" alt="Realtor neighborhood boundaries over pastel districts" loading="lazy"><h3>Neighborhoods ↗</h3></a>
+      <a href="./maps/districts.svg"><img width="800" height="800" src="./maps/districts.svg" alt="Pastel map of San Francisco’s 11 supervisorial districts" loading="lazy"><h3>Districts ↗</h3></a>
+      <a href="./maps/transit.svg"><img width="800" height="800" src="./maps/transit.svg" alt="San Francisco parks, roads and BART stations" loading="lazy"><h3>Parks & transit ↗</h3></a>
+      <a href="./maps/neighborhoods.svg"><img width="800" height="800" src="./maps/neighborhoods.svg" alt="Realtor neighborhood boundaries over pastel districts" loading="lazy"><h3>Neighborhoods ↗</h3></a>
     </div></section>
     <section id="build" class="build" aria-labelledby="build-title"><div><p class="eyebrow">For your next project</p><h2 id="build-title">Small maps.<br>Room for your ideas.</h2><p>Offline rendering. Bundled geography. No map tiles, API keys, or runtime dependencies.</p><a href="https://github.com/kahwee/sf-map-svg#readme">Read the API documentation →</a></div><pre><code>import { createNeighborhoodExplorer }
   from '@kahwee/sf-map-svg/explorer';

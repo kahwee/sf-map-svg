@@ -1,4 +1,4 @@
-import { createTransitAnimation } from '../src/transit.ts';
+import { createTransitAnimation } from '@kahwee/sf-map-svg/transit';
 
 const map = createTransitAnimation();
 document.querySelector('#transit').append(map);

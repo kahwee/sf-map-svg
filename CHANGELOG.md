@@ -4,6 +4,9 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Build public Pages demos and SVG downloads from the published npm version, with visible release metadata, installation copying, release links, and social previews.
+- Refresh Pages after successful publishing and improve mobile layout and release documentation.
+
 ## 1.1.0
 
 ### Added
