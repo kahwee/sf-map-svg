@@ -1,0 +1,98 @@
+.examples {
+  padding-top: 52px;
+  padding-bottom: 72px;
+}
+.examples .eyebrow {
+  margin: 0;
+}
+.examples h1 {
+  font-size: clamp(42px, 6vw, 74px);
+  margin: 12px 0;
+}
+.examples .lede {
+  font-size: 19px;
+  max-width: 680px;
+}
+.example-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 34px 0;
+}
+.example-grid a {
+  display: flex;
+  flex-direction: column;
+  min-height: 260px;
+  padding: 24px;
+  border: 1px solid #d9e2da;
+  background: white;
+  border-radius: 18px;
+  text-decoration: none;
+}
+.example-grid a:hover {
+  border-color: #6c9d8e;
+  background: #f4f8f3;
+}
+.example-grid span {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #668079;
+  font-weight: 700;
+}
+.example-grid h2 {
+  font-size: 26px;
+  line-height: 1.15;
+  letter-spacing: -0.04em;
+  margin: 26px 0 10px;
+}
+.example-grid p {
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 0 0 24px;
+}
+.example-grid strong {
+  margin-top: auto;
+  font-size: 14px;
+}
+.example-foot {
+  font-size: 13px;
+  color: #62736d;
+}
+.skip {
+  position: absolute;
+  left: -9999px;
+}
+.skip:focus {
+  left: 16px;
+  top: 16px;
+  background: white;
+  padding: 10px;
+}
+@media (max-width: 900px) {
+  .example-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  header nav {
+    padding-block: 14px;
+  }
+  header nav div a:not(:first-child),
+  header nav > a:last-child {
+    display: none;
+  }
+  .example-grid {
+    grid-template-columns: 1fr;
+  }
+  .example-grid a {
+    min-height: 210px;
+  }
+  .examples {
+    padding-inline: 18px;
+    padding-top: 24px;
+  }
+  .examples .lede {
+    font-size: 16px;
+  }
+}

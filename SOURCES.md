@@ -1,5 +1,15 @@
 # Geometry and provenance
 
+## California propositions in San Francisco
+
+Downloaded September 26, 2026 from the San Francisco Department of Elections' [final November 5, 2024 results](https://sfelections.org/results/20241105w/detail.html):
+
+- [Certified district statement of vote workbook](https://www.sfelections.org/results/20241105/data/20241203/dsov.xlsx), SHA-256 `9bf9c7d767273e73b3cdf5b98086412cbe354b0928ee6abb0e379deb0353c403`
+- [Certification letter](https://www.sfelections.org/results/20241105/data/20241203/CertificationLetterNov52024.pdf)
+- [California Secretary of State statewide Statement of Vote](https://www.sos.ca.gov/elections/prior-elections/statewide-election-results/general-election-nov-5-2024/statement-vote) for statewide context
+
+`data/propositions/2024-11-05.json` contains Yes and No counts for all ten state propositions, grouped by San Francisco supervisorial district. The short titles are editorial navigation labels. `scripts/import-2024-propositions.py` reads the final workbook's proposition sheets and checks that all eleven district totals sum exactly to its San Francisco citywide totals. Yes share divides Yes by Yes plus No, excluding undervotes and overvotes. The data describes where ballots were cast within San Francisco, not individual voters or statewide outcomes. Its 2022 district geography matches the election's district vintage.
+
 ## Map extraction
 
 District geometry, coast, label anchors, highway geometry, and the pastel district palette were extracted from the San Francisco District Map on September 25, 2026. Only map rendering and public geographic data are distributed. Site account identifiers, original application code, and ballot overlays are excluded.

@@ -4,6 +4,11 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 1.4.1 — 2026-09-26
+
+- Add a task-based example gallery and code recipes, with clearer routes among the Pages atlas, local measures, district history, transit, and lightweight map.
+- Add a California proposition explorer using certified November 2024 Yes and No votes for all eleven San Francisco supervisorial districts; publish its sourced JSON and reproducible import script.
+
 ## 1.4.0 — 2026-09-26
 
 - Split geographic convenience exports into independent data modules, so metadata search and SFAR-only lookup avoid unrelated JSON.

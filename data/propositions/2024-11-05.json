@@ -1,0 +1,660 @@
+{
+  "electionDate": "2024-11-05",
+  "districtYear": 2022,
+  "scope": "Votes cast in San Francisco by supervisorial district; not statewide totals",
+  "source": "https://www.sfelections.org/results/20241105/data/20241203/dsov.xlsx",
+  "certification": "https://www.sfelections.org/results/20241105/data/20241203/CertificationLetterNov52024.pdf",
+  "method": "Yes share = Yes / (Yes + No). Undervotes and overvotes excluded. District counts sum to certified SF citywide totals.",
+  "propositions": [
+    {
+      "number": 2,
+      "title": "Public school and community college bonds",
+      "citywide": {
+        "yes": 290905,
+        "no": 91500
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 27162,
+          "no": 9485
+        },
+        {
+          "district": 2,
+          "yes": 29538,
+          "no": 9874
+        },
+        {
+          "district": 3,
+          "yes": 23569,
+          "no": 7173
+        },
+        {
+          "district": 4,
+          "yes": 23402,
+          "no": 12734
+        },
+        {
+          "district": 5,
+          "yes": 27098,
+          "no": 4771
+        },
+        {
+          "district": 6,
+          "yes": 19662,
+          "no": 5605
+        },
+        {
+          "district": 7,
+          "yes": 28986,
+          "no": 11285
+        },
+        {
+          "district": 8,
+          "yes": 41244,
+          "no": 8050
+        },
+        {
+          "district": 9,
+          "yes": 28911,
+          "no": 6091
+        },
+        {
+          "district": 10,
+          "yes": 20700,
+          "no": 6928
+        },
+        {
+          "district": 11,
+          "yes": 20633,
+          "no": 9504
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "title": "Constitutional right to marriage",
+      "citywide": {
+        "yes": 327877,
+        "no": 59058
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 31058,
+          "no": 5947
+        },
+        {
+          "district": 2,
+          "yes": 36344,
+          "no": 3871
+        },
+        {
+          "district": 3,
+          "yes": 27107,
+          "no": 4082
+        },
+        {
+          "district": 4,
+          "yes": 27074,
+          "no": 9220
+        },
+        {
+          "district": 5,
+          "yes": 28799,
+          "no": 3570
+        },
+        {
+          "district": 6,
+          "yes": 22232,
+          "no": 3482
+        },
+        {
+          "district": 7,
+          "yes": 34126,
+          "no": 6525
+        },
+        {
+          "district": 8,
+          "yes": 47564,
+          "no": 2685
+        },
+        {
+          "district": 9,
+          "yes": 30889,
+          "no": 4504
+        },
+        {
+          "district": 10,
+          "yes": 21432,
+          "no": 6337
+        },
+        {
+          "district": 11,
+          "yes": 21252,
+          "no": 8835
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "title": "Climate and water infrastructure bonds",
+      "citywide": {
+        "yes": 307522,
+        "no": 76512
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 28675,
+          "no": 8106
+        },
+        {
+          "district": 2,
+          "yes": 31811,
+          "no": 8014
+        },
+        {
+          "district": 3,
+          "yes": 25101,
+          "no": 5804
+        },
+        {
+          "district": 4,
+          "yes": 25067,
+          "no": 11124
+        },
+        {
+          "district": 5,
+          "yes": 28160,
+          "no": 3920
+        },
+        {
+          "district": 6,
+          "yes": 20897,
+          "no": 4530
+        },
+        {
+          "district": 7,
+          "yes": 30882,
+          "no": 9508
+        },
+        {
+          "district": 8,
+          "yes": 43481,
+          "no": 6100
+        },
+        {
+          "district": 9,
+          "yes": 30200,
+          "no": 4943
+        },
+        {
+          "district": 10,
+          "yes": 21587,
+          "no": 6071
+        },
+        {
+          "district": 11,
+          "yes": 21661,
+          "no": 8392
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "title": "Local infrastructure bond threshold",
+      "citywide": {
+        "yes": 236111,
+        "no": 142165
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 21285,
+          "no": 14786
+        },
+        {
+          "district": 2,
+          "yes": 22462,
+          "no": 16473
+        },
+        {
+          "district": 3,
+          "yes": 19845,
+          "no": 10842
+        },
+        {
+          "district": 4,
+          "yes": 16734,
+          "no": 18883
+        },
+        {
+          "district": 5,
+          "yes": 24301,
+          "no": 7355
+        },
+        {
+          "district": 6,
+          "yes": 16875,
+          "no": 8303
+        },
+        {
+          "district": 7,
+          "yes": 21842,
+          "no": 17864
+        },
+        {
+          "district": 8,
+          "yes": 34230,
+          "no": 14378
+        },
+        {
+          "district": 9,
+          "yes": 25174,
+          "no": 9522
+        },
+        {
+          "district": 10,
+          "yes": 17246,
+          "no": 10134
+        },
+        {
+          "district": 11,
+          "yes": 16117,
+          "no": 13625
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "title": "Involuntary servitude in prisons",
+      "citywide": {
+        "yes": 250157,
+        "no": 123922
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 23169,
+          "no": 12498
+        },
+        {
+          "district": 2,
+          "yes": 25448,
+          "no": 13174
+        },
+        {
+          "district": 3,
+          "yes": 19993,
+          "no": 10057
+        },
+        {
+          "district": 4,
+          "yes": 19040,
+          "no": 16019
+        },
+        {
+          "district": 5,
+          "yes": 24124,
+          "no": 7287
+        },
+        {
+          "district": 6,
+          "yes": 16613,
+          "no": 8192
+        },
+        {
+          "district": 7,
+          "yes": 24842,
+          "no": 14513
+        },
+        {
+          "district": 8,
+          "yes": 37597,
+          "no": 10847
+        },
+        {
+          "district": 9,
+          "yes": 25716,
+          "no": 8762
+        },
+        {
+          "district": 10,
+          "yes": 17237,
+          "no": 9767
+        },
+        {
+          "district": 11,
+          "yes": 16378,
+          "no": 12806
+        }
+      ]
+    },
+    {
+      "number": 32,
+      "title": "Minimum wage increase",
+      "citywide": {
+        "yes": 271306,
+        "no": 110945
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 24903,
+          "no": 11680
+        },
+        {
+          "district": 2,
+          "yes": 25648,
+          "no": 13838
+        },
+        {
+          "district": 3,
+          "yes": 21414,
+          "no": 9358
+        },
+        {
+          "district": 4,
+          "yes": 21652,
+          "no": 14387
+        },
+        {
+          "district": 5,
+          "yes": 25729,
+          "no": 6196
+        },
+        {
+          "district": 6,
+          "yes": 18161,
+          "no": 7251
+        },
+        {
+          "district": 7,
+          "yes": 26793,
+          "no": 13411
+        },
+        {
+          "district": 8,
+          "yes": 38587,
+          "no": 10522
+        },
+        {
+          "district": 9,
+          "yes": 28015,
+          "no": 6980
+        },
+        {
+          "district": 10,
+          "yes": 20114,
+          "no": 7547
+        },
+        {
+          "district": 11,
+          "yes": 20290,
+          "no": 9775
+        }
+      ]
+    },
+    {
+      "number": 33,
+      "title": "Local rent control authority",
+      "citywide": {
+        "yes": 161551,
+        "no": 217308
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 14831,
+          "no": 21424
+        },
+        {
+          "district": 2,
+          "yes": 13367,
+          "no": 25703
+        },
+        {
+          "district": 3,
+          "yes": 13998,
+          "no": 16813
+        },
+        {
+          "district": 4,
+          "yes": 12623,
+          "no": 23061
+        },
+        {
+          "district": 5,
+          "yes": 16725,
+          "no": 14989
+        },
+        {
+          "district": 6,
+          "yes": 11398,
+          "no": 13747
+        },
+        {
+          "district": 7,
+          "yes": 14589,
+          "no": 25179
+        },
+        {
+          "district": 8,
+          "yes": 21011,
+          "no": 27691
+        },
+        {
+          "district": 9,
+          "yes": 18391,
+          "no": 16231
+        },
+        {
+          "district": 10,
+          "yes": 11731,
+          "no": 15593
+        },
+        {
+          "district": 11,
+          "yes": 12887,
+          "no": 16877
+        }
+      ]
+    },
+    {
+      "number": 34,
+      "title": "Prescription drug revenue spending",
+      "citywide": {
+        "yes": 172688,
+        "no": 191865
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 15862,
+          "no": 18914
+        },
+        {
+          "district": 2,
+          "yes": 19588,
+          "no": 17817
+        },
+        {
+          "district": 3,
+          "yes": 14861,
+          "no": 14429
+        },
+        {
+          "district": 4,
+          "yes": 16841,
+          "no": 17382
+        },
+        {
+          "district": 5,
+          "yes": 14267,
+          "no": 16234
+        },
+        {
+          "district": 6,
+          "yes": 13269,
+          "no": 10940
+        },
+        {
+          "district": 7,
+          "yes": 17694,
+          "no": 20614
+        },
+        {
+          "district": 8,
+          "yes": 18886,
+          "no": 28097
+        },
+        {
+          "district": 9,
+          "yes": 12997,
+          "no": 20583
+        },
+        {
+          "district": 10,
+          "yes": 13910,
+          "no": 12527
+        },
+        {
+          "district": 11,
+          "yes": 14513,
+          "no": 14328
+        }
+      ]
+    },
+    {
+      "number": 35,
+      "title": "Medi-Cal funding",
+      "citywide": {
+        "yes": 290384,
+        "no": 80795
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 27103,
+          "no": 8314
+        },
+        {
+          "district": 2,
+          "yes": 27943,
+          "no": 10178
+        },
+        {
+          "district": 3,
+          "yes": 23365,
+          "no": 6343
+        },
+        {
+          "district": 4,
+          "yes": 25828,
+          "no": 9102
+        },
+        {
+          "district": 5,
+          "yes": 26318,
+          "no": 4800
+        },
+        {
+          "district": 6,
+          "yes": 19801,
+          "no": 4859
+        },
+        {
+          "district": 7,
+          "yes": 28976,
+          "no": 10154
+        },
+        {
+          "district": 8,
+          "yes": 37927,
+          "no": 9981
+        },
+        {
+          "district": 9,
+          "yes": 28325,
+          "no": 5785
+        },
+        {
+          "district": 10,
+          "yes": 21718,
+          "no": 5141
+        },
+        {
+          "district": 11,
+          "yes": 23080,
+          "no": 6138
+        }
+      ]
+    },
+    {
+      "number": 36,
+      "title": "Penalties for theft and drug crimes",
+      "citywide": {
+        "yes": 241916,
+        "no": 136902
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 23147,
+          "no": 13116
+        },
+        {
+          "district": 2,
+          "yes": 27713,
+          "no": 11314
+        },
+        {
+          "district": 3,
+          "yes": 20738,
+          "no": 9879
+        },
+        {
+          "district": 4,
+          "yes": 25945,
+          "no": 10169
+        },
+        {
+          "district": 5,
+          "yes": 17541,
+          "no": 13997
+        },
+        {
+          "district": 6,
+          "yes": 17422,
+          "no": 7778
+        },
+        {
+          "district": 7,
+          "yes": 26090,
+          "no": 13761
+        },
+        {
+          "district": 8,
+          "yes": 26301,
+          "no": 22067
+        },
+        {
+          "district": 9,
+          "yes": 17949,
+          "no": 16545
+        },
+        {
+          "district": 10,
+          "yes": 17910,
+          "no": 9469
+        },
+        {
+          "district": 11,
+          "yes": 21160,
+          "no": 8807
+        }
+      ]
+    }
+  ]
+}

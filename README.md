@@ -2,11 +2,20 @@
 
 [![npm version](https://img.shields.io/npm/v/@kahwee/sf-map-svg)](https://www.npmjs.com/package/@kahwee/sf-map-svg)
 
-[Explore the live map](https://kahwee.github.io/sf-map-svg/) · [Data guide](data/README.md) · [Geographic sources](SOURCES.md) · [Contributing](CONTRIBUTING.md)
+[Live atlas](https://kahwee.github.io/sf-map-svg/) · [Example gallery](https://kahwee.github.io/sf-map-svg/examples.html) · [Code recipes](docs/EXAMPLES.md) · [Data guide](data/README.md) · [Sources](SOURCES.md) · [Contributing](CONTRIBUTING.md)
 
 Self-contained SVG maps of San Francisco, with precise coastlines, soft district colors, parks, roads, BART stations, and searchable neighborhoods. Render static SVGs in Node or add an interactive map to a browser. All geometry is bundled; there are no runtime dependencies, map tiles, API keys, or external data requests.
 
 ![San Francisco district maps with optional neighborhood boundaries](docs/map-preview.png)
+
+## Choose a starting point
+
+| Goal | Example | API |
+| --- | --- | --- |
+| Explore real election data | [California propositions by SF district](https://kahwee.github.io/sf-map-svg/propositions.html) or [local measures](https://kahwee.github.io/sf-map-svg/measures.html) | `custom-map` |
+| Make a small interactive city map | [Neighborhood guide](https://kahwee.github.io/sf-map-svg/#explore-more-title) | `/guide` |
+| Render a static or custom SVG | [Code recipes](docs/EXAMPLES.md) | Root or `/custom-map` |
+| Animate a route | [BART journey](https://kahwee.github.io/sf-map-svg/transit.html) | `/transit` or overlays |
 
 ## Install
 

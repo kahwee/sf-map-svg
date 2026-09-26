@@ -1,0 +1,87 @@
+# Examples
+
+[Live example gallery](https://kahwee.github.io/sf-map-svg/examples.html) · [California propositions](https://kahwee.github.io/sf-map-svg/propositions.html) · [Local measures](https://kahwee.github.io/sf-map-svg/measures.html) · [Source data](../SOURCES.md)
+
+Choose by task. All snippets use the public package API; browser examples need a DOM and a bundler that supports JSON imports.
+
+| I want to… | Start here |
+| --- | --- |
+| Render an SVG on a server | [Static map](#static-svg) |
+| Add a small map to a browser | [Lightweight guide](#lightweight-interactive-guide) |
+| Bundle only selected geography | [Selected data](#selected-geography) |
+| Draw a route over the city | [Route overlay](#route-overlay) |
+| Explore real election votes | [California propositions](#california-propositions-by-sf-district) |
+
+## Static SVG
+
+```ts
+import { writeFile } from 'node:fs/promises';
+import { renderSFMap } from '@kahwee/sf-map-svg';
+
+const svg = renderSFMap({
+  year: 2022,
+  landmarks: true,
+  bartStations: true,
+  idPrefix: 'example',
+});
+await writeFile('districts.svg', svg);
+```
+
+The root entry includes the built-in geography for convenience. See the [full option list](../README.md#static-options).
+
+## Lightweight interactive guide
+
+```ts
+import { createGuideMap } from '@kahwee/sf-map-svg/guide';
+
+const map = createGuideMap({ layers: { roadLabels: false } });
+document.querySelector('#map')?.append(map);
+```
+
+The guide includes selected coast, SFAR neighborhoods, parks, roads, and stations. Detailed geography loads only when explicitly requested; see the [guide recipe](../README.md#render-a-static-map).
+
+## Selected geography
+
+```ts
+import { createInteractiveSFMapWithData } from '@kahwee/sf-map-svg/interactive-data';
+import coast from '@kahwee/sf-map-svg/data/coast.json' with { type: 'json' };
+import realtor from '@kahwee/sf-map-svg/data/neighborhoods-realtor.json' with { type: 'json' };
+
+const map = createInteractiveSFMapWithData(
+  {
+    map: { coast: coast.features[0].geometry },
+    neighborhoods: { realtor },
+  },
+  { mode: 'neighborhoods', layers: { highways: false, keyRoads: false } },
+);
+document.querySelector('#map')?.append(map);
+```
+
+This imports one neighborhood definition source. To omit its geometry too, import catalog metadata alone from `/data/catalog`.
+
+## Route overlay
+
+```ts
+import { createGuideMap } from '@kahwee/sf-map-svg/guide';
+
+const map = createGuideMap();
+document.querySelector('#map')?.append(map);
+map.setOverlays([{
+  id: 'trip',
+  label: 'Example route',
+  geometry: {
+    type: 'LineString',
+    coordinates: [[-122.4194, 37.7749], [-122.3981, 37.7936]],
+  },
+  stroke: '#a85036',
+  strokeWidth: 3,
+}]);
+```
+
+Coordinates are WGS84 `[longitude, latitude]`. The overlay follows pan and zoom. The [BART journey](https://kahwee.github.io/sf-map-svg/transit.html) is a separate schematic motion example.
+
+## California propositions by SF district
+
+[Open the interactive explorer](https://kahwee.github.io/sf-map-svg/propositions.html). It uses the public `custom-map` renderer with only the 2022 district and coast datasets and colors each district from the [certified results JSON](../data/propositions/2024-11-05.json). The JSON includes all ten statewide propositions on the November 2024 ballot, with Yes and No counts for each of San Francisco's eleven supervisorial districts. Its scope is SF votes, not statewide totals or voter demographics.
+
+The [import script](../scripts/import-2024-propositions.py) checks each district sum against the official citywide count. [Geographic and election sources](../SOURCES.md) explain the provenance.

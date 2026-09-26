@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Explore certified 2024 California proposition votes in San Francisco's eleven supervisorial districts.">
+  <link rel="canonical" href="https://kahwee.github.io/sf-map-svg/propositions.html">
+  <title>California propositions in San Francisco · SF / SVG</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./style.css"><link rel="stylesheet" href="./propositions.css">
+</head>
+<body>
+  <a class="skip" href="#explorer">Skip to proposition explorer</a>
+  <header class="shell"><nav aria-label="Main navigation"><a class="brand" href="./">SF / SVG</a><div><a href="./">Atlas home</a><a href="./measures.html">SF local measures</a><a href="./examples.html">All examples</a></div><a href="https://github.com/kahwee/sf-map-svg">GitHub ↗</a></nav></header>
+  <main class="shell prop-main" id="explorer">
+    <div class="prop-intro"><p class="eyebrow">November 5, 2024 · Certified SF results</p><h1>California props by SF district.</h1><p>Pick a proposition and compare Yes votes across San Francisco’s eleven supervisorial districts.</p><p class="scope"><strong>SF votes only.</strong> This map does not show statewide totals or individual voters.</p></div>
+    <section aria-label="Choose a proposition" class="prop-picker"><label for="proposition">California proposition</label><select id="proposition"></select><span id="city-share"></span></section>
+    <div class="prop-grid"><section class="prop-map-panel" aria-label="Proposition vote map"><div class="panel-heading"><div><p class="eyebrow">2022 district boundaries</p><h2 id="map-title">Yes vote share</h2></div><button type="button" id="clear-district" hidden>Show all districts</button></div><div id="prop-map" class="prop-map"><p role="status">Loading map…</p></div><div class="map-key"><span id="legend-low">Lower Yes share</span><span class="map-ramp" aria-hidden="true"></span><span id="legend-high">Higher Yes share</span></div><p class="map-note">Colors rescale for each proposition. Select a numbered district; keyboard: Tab, then Enter.</p></section><section class="prop-results" aria-labelledby="results-title"><div class="panel-heading"><div><p class="eyebrow">Compare places</p><h2 id="results-title">Where Yes votes varied</h2></div></div><p id="selection" aria-live="polite"></p><div id="district-list" class="district-list"></div></section></div>
+    <section class="prop-method" aria-labelledby="method-title"><div><p class="eyebrow">Source and method</p><h2 id="method-title">Read the numbers</h2><p>Yes share is Yes divided by Yes plus No. Undervotes and overvotes are excluded. District totals were checked against the certified San Francisco citywide totals. These are votes cast in each district, not a demographic profile of its residents.</p></div><div class="source-actions"><a href="https://www.sfelections.org/results/20241105/data/20241203/dsov.xlsx">Certified district workbook ↗</a><a href="https://www.sfelections.org/results/20241105/data/20241203/CertificationLetterNov52024.pdf">Certification letter ↗</a><a href="./data/propositions/2024-11-05.json" download>Download results JSON ↓</a><a href="https://www.sos.ca.gov/elections/prior-elections/statewide-election-results/general-election-nov-5-2024/statement-vote">California statewide results ↗</a><p>Map renderer %RELEASE_LABEL%. Results are a separate JSON download.</p></div></section>
+  </main><footer class="shell"><span>SF / SVG · %RELEASE_LABEL%</span><a href="./examples.html">More examples</a><a href="https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md">Data sources</a></footer>
+  <script type="module" src="./propositions.js"></script>
+</body></html>

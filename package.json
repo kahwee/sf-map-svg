@@ -1,6 +1,6 @@
 {
   "name": "@kahwee/sf-map-svg",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Offline SVG maps of San Francisco with district boundaries, parks, landmarks, and BART stations.",
   "type": "module",
   "main": "./dist/src/index.js",
@@ -102,6 +102,7 @@
   },
   "files": [
     "dist",
+    "docs/EXAMPLES.md",
     "README.md",
     "SOURCES.md",
     "LICENSE"
