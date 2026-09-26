@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.1
 
 - Migrate library source to strict TypeScript 7 with generated JavaScript and declarations.
 - Replace Prettier with Biome formatting, import organization, and recommended lint rules.
