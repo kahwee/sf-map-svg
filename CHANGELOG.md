@@ -4,6 +4,11 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 1.3.8 — 2026-09-26
+
+- Give the district map a clear, dedicated viewing area on mobile by shrinking the election and measure controls and moving the map legend below the map.
+- Replace the oversized mobile focus button with a compact icon while keeping its accessible name and a 44px touch target.
+
 ## 1.3.7 — 2026-09-26
 
 - Expand the GitHub Pages measure explorer to 44 local measures across November 2002, November 2012, November 2022, and June 2026, covering all three supported district map years.

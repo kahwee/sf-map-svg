@@ -647,42 +647,47 @@ tbody tr[data-selected="true"] {
 }
 @media (max-width: 899px) {
   .atlas-header {
-    left: 12px;
-    right: 12px;
-    top: max(12px, env(safe-area-inset-top));
-    gap: 12px;
-    padding: 12px;
+    left: 8px;
+    right: 8px;
+    top: max(8px, env(safe-area-inset-top));
+    gap: 10px;
+    padding: 8px 10px;
   }
   .atlas-header .brand {
     font-size: 10px;
     white-space: nowrap;
   }
   .atlas-title h1 {
-    font-size: 20px;
+    font-size: 17px;
   }
   .atlas-title p {
     font-size: 10px;
   }
   .measure-strip {
-    left: 12px;
-    right: 12px;
-    top: 182px;
+    left: 8px;
+    right: 8px;
+    top: 145px;
     width: auto;
-    max-height: 92px;
+    max-height: 52px;
     display: flex;
     overflow-x: auto;
     overflow-y: hidden;
     gap: 5px;
   }
   .election-controls {
-    left: 12px;
-    right: 12px;
-    top: 88px;
+    left: 8px;
+    right: 8px;
+    top: 64px;
     width: auto;
     grid-template-columns: 1fr 1fr;
     align-items: end;
-    gap: 7px;
-    padding: 8px;
+    gap: 4px 7px;
+    padding: 6px 8px;
+  }
+  .election-controls input,
+  .election-controls select {
+    min-height: 32px;
+    padding: 5px 7px;
   }
   #measure-count {
     grid-column: 1 / -1;
@@ -691,17 +696,17 @@ tbody tr[data-selected="true"] {
     display: flex;
     flex-direction: column;
     justify-content: start;
-    gap: 6px;
-    padding: 8px 4px;
+    gap: 3px;
+    padding: 4px;
     text-align: center;
-    flex: 0 0 106px;
-    min-height: 84px;
-    max-height: 84px;
+    flex: 0 0 96px;
+    min-height: 48px;
+    max-height: 48px;
   }
   .measure-letter {
-    width: 26px;
-    height: 26px;
-    font-size: 15px;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
   }
   .card-title {
     font-size: 10px;
@@ -716,19 +721,24 @@ tbody tr[data-selected="true"] {
     display: none;
   }
   .map-settings {
-    left: 12px;
-    top: 280px;
+    left: 8px;
+    top: 198px;
     bottom: auto;
-    width: 140px;
-    max-height: calc(100dvh - 300px);
+    width: 112px;
+    max-height: calc(100dvh - 212px);
     overflow-y: auto;
   }
   .map-settings[open] {
-    width: min(280px, calc(100vw - 24px));
+    width: min(280px, calc(100vw - 16px));
   }
   .map-settings summary {
-    padding: 12px;
-    font-size: 12px;
+    min-height: 44px;
+    align-items: center;
+    padding: 9px;
+    font-size: 11px;
+  }
+  .maps {
+    inset: 242px 0 130px;
   }
   .maps.is-comparing {
     grid-template-columns: 1fr;
@@ -744,39 +754,51 @@ tbody tr[data-selected="true"] {
     font-size: 10px;
   }
   .maps:not(.is-comparing) figcaption {
-    top: auto;
-    bottom: 230px;
-  }
-  .maps.is-comparing {
-    padding: 175px 0 220px;
+    top: 8px;
+    bottom: auto;
   }
   .maps.is-comparing figcaption {
     bottom: 8px;
   }
   #focus-map {
-    right: 12px;
-    top: 280px;
+    right: 8px;
+    top: 198px;
     bottom: auto;
+    width: 44px;
+    min-height: 44px;
+    padding: 0;
+    font-size: 0;
+  }
+  #focus-map::after {
+    content: "⛶";
+    font-size: 20px;
+  }
+  .map-focused .maps {
+    inset: 0;
   }
   .map-focused .maps.is-comparing {
-    padding: 40px 0 100px;
+    inset: 40px 0 100px;
   }
   .map-focused #focus-map {
     top: max(12px, env(safe-area-inset-top));
   }
+  .map-focused #focus-map::after {
+    content: "×";
+  }
   .map-focused .maps:not(.is-comparing) figcaption {
+    top: auto;
     bottom: 120px;
   }
   .inspector {
     top: auto;
-    right: 12px;
-    left: 12px;
+    right: 8px;
+    left: 8px;
     bottom: max(58px, calc(env(safe-area-inset-bottom) + 46px));
     width: auto;
     max-height: min(65dvh, 580px);
   }
   .inspector summary {
-    padding: 12px 14px;
+    padding: 9px 11px;
   }
   .expand-label {
     width: auto;
@@ -786,23 +808,40 @@ tbody tr[data-selected="true"] {
     padding-top: 6px;
   }
   .map-bottom {
-    bottom: max(125px, calc(env(safe-area-inset-bottom) + 113px));
+    bottom: max(111px, calc(env(safe-area-inset-bottom) + 99px));
     width: max-content;
-    gap: 8px;
-    padding: 8px;
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+  }
+  .map-bottom .zoom-controls {
+    display: none;
   }
   .map-focused .map-bottom {
     bottom: max(16px, env(safe-area-inset-bottom));
+    padding: 8px;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    background: var(--glass);
+  }
+  .map-focused .map-bottom .zoom-controls {
+    display: flex;
   }
   .legend {
+    position: static;
+    transform: none;
+    padding: 5px 8px;
+    border-radius: 8px;
+    background: var(--glass);
+    font-size: 10px;
+  }
+  .map-focused .legend {
     position: absolute;
     left: 50%;
     bottom: 100%;
     transform: translateX(-50%);
-    padding: 7px 10px;
     border-radius: 8px 8px 0 0;
-    background: var(--glass);
-    font-size: 10px;
   }
   .legend > div {
     width: 80px;
@@ -835,7 +874,7 @@ tbody tr[data-selected="true"] {
     overflow: auto;
   }
 }
-@media (max-height: 600px) and (max-width: 899px) {
+@media (max-height: 600px) and (max-width: 899px) and (orientation: landscape) {
   .atlas-header {
     right: auto;
     padding: 8px 12px;
@@ -860,6 +899,12 @@ tbody tr[data-selected="true"] {
   .map-settings {
     top: 220px;
     max-height: calc(100dvh - 140px);
+  }
+  .maps {
+    inset: 0 0 0 180px;
+  }
+  .map-focused .maps {
+    inset: 0;
   }
   .inspector {
     left: auto;

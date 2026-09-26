@@ -488,6 +488,7 @@ $('measure-search').addEventListener('input', filterCards);
 $('focus-map').addEventListener('click', () => {
   const focused = document.body.classList.toggle('map-focused');
   $('focus-map').setAttribute('aria-pressed', String(focused));
+  $('focus-map').setAttribute('aria-label', focused ? 'Show panels' : 'Focus map');
   $('focus-map').textContent = focused ? 'Show panels ↗' : 'Focus map ⛶';
 });
 $('district').addEventListener('change', () => {
