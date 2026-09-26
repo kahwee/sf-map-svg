@@ -1,0 +1,68 @@
+name: Publish npm package
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing stable release tag (for example v0.4.0)
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: npm-publish
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'kahwee/sf-map-svg' && (github.event_name == 'workflow_dispatch' || github.event.release.prerelease == false)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
+    steps:
+      - name: Require a stable version tag
+        run: |
+          if [[ ! "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo 'Publishing requires a stable vMAJOR.MINOR.PATCH tag.' >&2
+            exit 1
+          fi
+      - uses: actions/checkout@v7
+        with:
+          ref: refs/tags/${{ github.event.release.tag_name || inputs.tag }}
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 12.0.0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Match package metadata to the release
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import { execFileSync } from 'node:child_process';
+          import pkg from './package.json' with { type: 'json' };
+          const [major, minor, patch] = execFileSync('npm', ['--version'], { encoding: 'utf8' }).trim().split('.').map(Number);
+          assert(major > 11 || (major === 11 && (minor > 5 || (minor === 5 && patch >= 1))), 'Trusted publishing requires npm 11.5.1 or newer');
+          assert.equal(process.env.RELEASE_TAG, `v${pkg.version}`);
+          assert.equal(pkg.name, '@kahwee/sf-map-svg');
+          assert.equal(pkg.license, 'MIT');
+          assert.equal(pkg.publishConfig.access, 'public');
+          assert.equal(pkg.publishConfig.registry, 'https://registry.npmjs.org/');
+          JS
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      - run: pnpm demo
+      - run: pnpm build-storybook
+      - name: Pack and test the exact archive to publish
+        run: |
+          mkdir -p "$RUNNER_TEMP/package"
+          pnpm pack --pack-destination "$RUNNER_TEMP/package"
+          pnpm test:package --archive "$RUNNER_TEMP"/package/*.tgz
+      - name: Publish with npm trusted publishing
+        run: npm publish "$RUNNER_TEMP"/package/*.tgz --access public --ignore-scripts

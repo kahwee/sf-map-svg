@@ -131,3 +131,30 @@ const matchingDefinitions = searchNeighborhoods('mission');
 ```
 
 These are 250 **source-specific definitions**, not 250 distinct neighborhoods. Canonical names are package display names, and boundaries reflect each documented source rather than a claimed universal consensus. Mission and Outer Mission remain distinct. JSON files are the source of truth used by the renderer; the default map and lookup use the 92 SFAR realtor neighborhoods. See [the data API guide](data/README.md) for all filenames, schema, lookup rules, source comparisons, and custom SVG overlays. Storybook provides downloadable JSON files beside its neighborhood examples.
+
+## Interactive neighborhood explorer
+
+The browser explorer includes canonical-name and alias search, source selection, neighborhood outlines, zoom controls, and GeoJSON downloads. SFAR realtor definitions are selected by default; SF Find and analysis neighborhoods remain separate choices.
+
+```js
+import { createNeighborhoodExplorer } from '@kahwee/sf-map-svg/explorer';
+
+const explorer = createNeighborhoodExplorer({ source: 'realtor' });
+document.querySelector('#map').append(explorer);
+explorer.selectNeighborhood('NoPa');
+
+// Before removing the component, release its observers and event listeners.
+// explorer.destroy();
+```
+
+Call this browser-only factory after a DOM is available. Importing it does not mount anything. Options include `source`, an optional initial `neighborhood` name or alias, and district `year`. The returned element also exposes `setSource(source)`, `zoomBy(factor)`, and `resetView()`.
+
+Selected downloads are one-feature GeoJSON FeatureCollections retaining source attribution and boundary-processing metadata.
+
+At city scale, labels stay sparse. Zooming reveals neighborhood and BART names, with label sizing and collision checks based on the visible viewport. Station points remain visible. The static `renderSFMap` API keeps its existing labels and defaults.
+
+Run `pnpm demo`, serve the repository root over HTTP, and open `examples/generated/explorer.html`. Storybook includes city, selected neighborhood, alternative-source, and mobile examples.
+
+## License
+
+Software is licensed under MIT. Geographic datasets retain their source terms and attribution requirements; see [SOURCES.md](SOURCES.md).
