@@ -233,25 +233,48 @@ async function transitionToYear(year, animate = true) {
   $('history-map').append(next, morph.layer);
   const completed = await new Promise((resolve) => {
     let frame;
+    let timer;
     let settled = false;
     let started;
     let transition;
+    const onEnd = (event) => {
+      if (event.target === next && event.animationName === 'history-map-enter') finish(true);
+    };
     const finish = (value) => {
       if (settled) return;
       settled = true;
       cancelAnimationFrame(frame);
+      clearTimeout(timer);
+      next.removeEventListener('animationend', onEnd);
       if (activeTransition === transition) activeTransition = undefined;
       fromLines.style.removeProperty('opacity');
       toLines.style.removeProperty('opacity');
       fromLabels.style.removeProperty('opacity');
       toLabels.style.removeProperty('opacity');
       next.style.removeProperty('opacity');
+      next.classList.remove('history-enter');
+      fromLabels.classList.remove('history-label-exit');
+      toLabels.classList.remove('history-label-enter');
+      toLines.classList.remove('history-lines-enter');
       morph.layer.remove();
       if (!value) next.remove();
       resolve(value);
     };
     transition = { cancel: () => finish(false) };
     activeTransition = transition;
+    if (morph.supportsCssMorph) {
+      morph.layer.classList.add('history-morph-css');
+      next.classList.add('history-enter');
+      fromLabels.classList.add('history-label-exit');
+      toLabels.classList.add('history-label-enter');
+      toLines.classList.add('history-lines-enter');
+      next.addEventListener('animationend', onEnd);
+      const firstPath = morph.layer.querySelector('path');
+      if (firstPath) getComputedStyle(firstPath).getPropertyValue('d');
+      frame = requestAnimationFrame(() => morph.startCssMorph());
+      timer = setTimeout(() => finish(true), 1700);
+      return;
+    }
     const tick = (time) => {
       started ??= time;
       const progress = Math.min(1, (time - started) / 1550);

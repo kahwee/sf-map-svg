@@ -4,6 +4,10 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 1.3.5 — 2026-09-26
+
+- Animate district boundary morphs with CSS path transitions and coordinated CSS fades on supported browsers, retaining a JavaScript fallback and reduced-motion instant switch.
+
 ## 1.3.4 — 2026-09-26
 
 - Morph matched district outlines between historical maps on GitHub Pages, restoring moving boundaries in place of the 1.3.3 line trace.
