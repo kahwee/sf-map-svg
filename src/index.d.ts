@@ -17,12 +17,24 @@ export interface SFMapOptions {
   districtFills?: boolean;
   districtLabels?: boolean;
   highways?: boolean;
+  landmarks?: boolean;
+  bartStations?: boolean;
   markers?: MapMarker[];
   title?: string;
   idPrefix?: string;
   colors?: Partial<
     Record<
-      'water' | 'land' | 'district' | 'neighborhood' | 'highway' | 'label' | 'marker' | 'selected',
+      | 'water'
+      | 'land'
+      | 'district'
+      | 'neighborhood'
+      | 'highway'
+      | 'park'
+      | 'landmark'
+      | 'bart'
+      | 'label'
+      | 'marker'
+      | 'selected',
       string
     >
   >;

@@ -1,4 +1,8 @@
 src/data.js
+src/overlays.js
 provenance/
 examples/generated/
 pnpm-lock.yaml
+
+storybook-static/
+*storybook.log

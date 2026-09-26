@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.0
+
+- Add optional park and landmark highlights using DataSF property boundaries.
+- Add all eight San Francisco BART stations using official station coordinates.
+- Add overlay color options, TypeScript declarations, source records, and SVG checks.
+- Add Storybook 10.6 with eight interactive examples and API controls.
+- Add usage examples, contributor instructions, and AGENTS.md.
+- Update GitHub Actions and validate Storybook and package builds on Node 22 and 26.
+- Configure weekly Dependabot updates for development dependencies and Actions.
+- Keep existing layer defaults unchanged, runtime dependencies at zero, and distribution private.
+
 ## 0.1.1
 
 - Separate geometry and projection helpers from SVG layer rendering.

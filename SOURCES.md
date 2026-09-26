@@ -32,3 +32,20 @@ The Mayor’s Office of Neighborhood Services defined these areas in **2006** fo
 Source geometry is provided by the City and County of San Francisco through DataSF, subject to the source datasets’ terms: https://datasf.org/opendata/terms-of-use/
 
 Private package licensing does not change rights in the underlying public data. Retain source attribution when redistributing maps or data.
+
+## Parks and landmark areas
+
+Downloaded September 25, 2026:
+
+- Recreation and Parks Properties: https://data.sf.gov/resource/gtr9-ntp6.geojson?$limit=1000
+- Presidio boundary: https://data.sf.gov/resource/jt6f-vx2z.geojson
+
+`src/overlays.js` retains full source coordinates for six selected landmark areas. Golden Gate Park combines property sections 1–7 into one MultiPolygon; section boundaries are not stroked. Lincoln Park, John McLaren Park, Mission Dolores Park, and Twin Peaks use their named RPD properties. The Presidio uses its separate boundary dataset. Label anchors and offsets are hand-positioned for city-scale legibility. These are property areas, not neighborhood approximations, and do not vary with the district year.
+
+## BART stations
+
+Downloaded September 25, 2026 from BART's [geospatial data page](https://www.bart.gov/schedules/developers/geo):
+
+- Official station-centroid KML archive: https://www.bart.gov/sites/default/files/2025-12/BART-Stations-tracks-entrances-121025.kmz_.zip
+
+The `BART Station` folder supplies names and unrounded longitude/latitude for the eight San Francisco stations: Embarcadero, Montgomery St, Powell St, Civic Center/UN Plaza, 16th St/Mission, 24th St/Mission, Glen Park, and Balboa Park. Entrances, tracks, and stations outside city limits are excluded. Station locations are a current overlay, not historical station inventories matched to each district year. BART data retains its source rights independently of the package license.
