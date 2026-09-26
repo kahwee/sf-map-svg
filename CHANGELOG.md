@@ -4,6 +4,8 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Add a Pages ballot-measures explorer for certified June 2026 local results, with district comparisons, shareable selections, and official data downloads.
+
 - Build public Pages demos and SVG downloads from the published npm version, with visible release metadata, installation copying, release links, and social previews.
 - Refresh Pages after successful publishing and improve mobile layout and release documentation.
 

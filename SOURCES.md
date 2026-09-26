@@ -79,3 +79,16 @@ The cleanup retains all 92 identities, names, and source codes. It uses no round
 ## Key road landmarks
 
 Downloaded September 26, 2026 (UTC; September 25 in San Francisco) from [DataSF Streets – Active and Retired](https://data.sf.gov/resource/3psu-pn9h.geojson), filtering `active = true` and exact source street names. `data/key-roads.json` groups 724 source segments into nine named corridors, preserving every source coordinate and CNN segment ID. Geary St and Geary Blvd are grouped under the Geary Blvd display label. These are geographic orientation features, not a complete network or vehicle-access guidance. Label anchors select existing source vertices near editorial targets. Regenerate with `node scripts/import-key-roads.mjs` then `pnpm data:catalog`. The full query and retrieval date are embedded in the JSON. DataSF terms apply.
+
+## June 2026 ballot measures explorer
+
+Downloaded September 26, 2026 from the San Francisco Department of Elections:
+
+- Final district workbook: https://sfelections.org/results/20260602/data/20260625/dsov.xlsx
+- Citywide summary, official measure titles, ballot questions, and thresholds: https://sfelections.org/results/20260602/index.html
+- Certification dated June 25, 2026: https://sfelections.org/results/20260602/data/20260625/CertificationLetterJun22026.pdf
+- Final report index: https://sfelections.org/results/20260602w/detail.html
+
+`data/elections/2026-06-02.json` contains Measures A–D, their citywide counts, and the 11 `SUP DIST n - Total` rows from workbook sheets 20–23. Each row retains its worksheet row number; metadata retains the workbook SHA-256. `scripts/import-election-results.py` extracts these with openpyxl (ingestion only), checks all district sums including under/overvotes, and cross-checks Yes/No citywide counts against the official HTML summary. Rerun with the downloaded workbook and summary paths. No original Site ballot overlays are reused.
+
+The Pages-only explorer calculates Yes / (Yes + No), excluding under/overvotes. Measure A uses the two-thirds threshold; B–D use a strict majority, as stated in the official summary. These are citywide outcomes, not district-level passage decisions. District counts are reported directly by Elections, not spatially assigned to neighborhoods. The existing 2022 district display map is reused unchanged. Election JSON is a separate website dataset, not a new npm package API; no live service or forthcoming-election coverage is claimed.

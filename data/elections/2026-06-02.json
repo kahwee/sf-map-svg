@@ -1,0 +1,426 @@
+{
+  "electionDate": "2026-06-02",
+  "electionName": "June 2, 2026 · Consolidated Statewide Direct Primary",
+  "certifiedDate": "2026-06-25",
+  "downloadedDate": "2026-09-26",
+  "source": "https://sfelections.org/results/20260602/data/20260625/dsov.xlsx",
+  "summarySource": "https://sfelections.org/results/20260602/index.html",
+  "certificationSource": "https://sfelections.org/results/20260602/data/20260625/CertificationLetterJun22026.pdf",
+  "sourceSha256": "1103791ffe31599fe3a7a4c40d4a7c3492189dc3bd5ce2f992b5e1307e6286fe",
+  "geography": "2022 supervisorial districts; district totals are reported directly by the Department of Elections.",
+  "method": "Yes share = Yes / (Yes + No). Undervotes and overvotes are excluded from the denominator. Election Day and Vote by Mail are combined in the source total rows.",
+  "measures": [
+    {
+      "id": "A",
+      "title": "Earthquake Safety and Emergency Response Bond",
+      "sourceSheet": "Sheet20",
+      "sourceUrl": "https://sfelections.org/results/20260602/index.html#a_english_19",
+      "threshold": "two-thirds",
+      "citywide": {
+        "yes": 203479,
+        "no": 48620,
+        "undervotes": 19303,
+        "overvotes": 53
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 20152,
+          "no": 5243,
+          "undervotes": 1571,
+          "overvotes": 7,
+          "sourceRow": 83
+        },
+        {
+          "district": 2,
+          "yes": 20318,
+          "no": 4619,
+          "undervotes": 2423,
+          "overvotes": 5,
+          "sourceRow": 87
+        },
+        {
+          "district": 3,
+          "yes": 15800,
+          "no": 3345,
+          "undervotes": 1786,
+          "overvotes": 4,
+          "sourceRow": 91
+        },
+        {
+          "district": 4,
+          "yes": 16713,
+          "no": 7531,
+          "undervotes": 2891,
+          "overvotes": 2,
+          "sourceRow": 95
+        },
+        {
+          "district": 5,
+          "yes": 18317,
+          "no": 2473,
+          "undervotes": 1523,
+          "overvotes": 2,
+          "sourceRow": 99
+        },
+        {
+          "district": 6,
+          "yes": 12663,
+          "no": 2313,
+          "undervotes": 1279,
+          "overvotes": 4,
+          "sourceRow": 103
+        },
+        {
+          "district": 7,
+          "yes": 21669,
+          "no": 6488,
+          "undervotes": 1776,
+          "overvotes": 8,
+          "sourceRow": 107
+        },
+        {
+          "district": 8,
+          "yes": 32117,
+          "no": 4421,
+          "undervotes": 2015,
+          "overvotes": 6,
+          "sourceRow": 111
+        },
+        {
+          "district": 9,
+          "yes": 20247,
+          "no": 3426,
+          "undervotes": 1442,
+          "overvotes": 7,
+          "sourceRow": 115
+        },
+        {
+          "district": 10,
+          "yes": 12570,
+          "no": 3694,
+          "undervotes": 1242,
+          "overvotes": 3,
+          "sourceRow": 119
+        },
+        {
+          "district": 11,
+          "yes": 12913,
+          "no": 5067,
+          "undervotes": 1355,
+          "overvotes": 5,
+          "sourceRow": 123
+        }
+      ]
+    },
+    {
+      "id": "B",
+      "title": "Lifetime Term Limits for Mayor and Members of the Board of Supervisors",
+      "sourceSheet": "Sheet21",
+      "sourceUrl": "https://sfelections.org/results/20260602/index.html#a_english_20",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 132273,
+        "no": 117133,
+        "undervotes": 21983,
+        "overvotes": 66
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 13184,
+          "no": 11952,
+          "undervotes": 1832,
+          "overvotes": 5,
+          "sourceRow": 83
+        },
+        {
+          "district": 2,
+          "yes": 14725,
+          "no": 9950,
+          "undervotes": 2682,
+          "overvotes": 8,
+          "sourceRow": 87
+        },
+        {
+          "district": 3,
+          "yes": 10905,
+          "no": 7993,
+          "undervotes": 2034,
+          "overvotes": 3,
+          "sourceRow": 91
+        },
+        {
+          "district": 4,
+          "yes": 13359,
+          "no": 10625,
+          "undervotes": 3150,
+          "overvotes": 3,
+          "sourceRow": 95
+        },
+        {
+          "district": 5,
+          "yes": 10484,
+          "no": 10049,
+          "undervotes": 1778,
+          "overvotes": 4,
+          "sourceRow": 99
+        },
+        {
+          "district": 6,
+          "yes": 9136,
+          "no": 5704,
+          "undervotes": 1415,
+          "overvotes": 4,
+          "sourceRow": 103
+        },
+        {
+          "district": 7,
+          "yes": 14505,
+          "no": 13390,
+          "undervotes": 2035,
+          "overvotes": 11,
+          "sourceRow": 107
+        },
+        {
+          "district": 8,
+          "yes": 16550,
+          "no": 19565,
+          "undervotes": 2434,
+          "overvotes": 10,
+          "sourceRow": 111
+        },
+        {
+          "district": 9,
+          "yes": 10443,
+          "no": 12975,
+          "undervotes": 1698,
+          "overvotes": 6,
+          "sourceRow": 115
+        },
+        {
+          "district": 10,
+          "yes": 9061,
+          "no": 7038,
+          "undervotes": 1403,
+          "overvotes": 7,
+          "sourceRow": 119
+        },
+        {
+          "district": 11,
+          "yes": 9921,
+          "no": 7892,
+          "undervotes": 1522,
+          "overvotes": 5,
+          "sourceRow": 123
+        }
+      ]
+    },
+    {
+      "id": "C",
+      "title": "Decreases to Business Taxes",
+      "sourceSheet": "Sheet22",
+      "sourceUrl": "https://sfelections.org/results/20260602/index.html#a_english_21",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 83625,
+        "no": 162208,
+        "undervotes": 25521,
+        "overvotes": 101
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 8438,
+          "no": 16248,
+          "undervotes": 2281,
+          "overvotes": 6,
+          "sourceRow": 83
+        },
+        {
+          "district": 2,
+          "yes": 9994,
+          "no": 14269,
+          "undervotes": 3092,
+          "overvotes": 10,
+          "sourceRow": 87
+        },
+        {
+          "district": 3,
+          "yes": 7173,
+          "no": 11483,
+          "undervotes": 2266,
+          "overvotes": 13,
+          "sourceRow": 91
+        },
+        {
+          "district": 4,
+          "yes": 8156,
+          "no": 15297,
+          "undervotes": 3673,
+          "overvotes": 11,
+          "sourceRow": 95
+        },
+        {
+          "district": 5,
+          "yes": 6608,
+          "no": 13697,
+          "undervotes": 2003,
+          "overvotes": 7,
+          "sourceRow": 99
+        },
+        {
+          "district": 6,
+          "yes": 5830,
+          "no": 8807,
+          "undervotes": 1618,
+          "overvotes": 4,
+          "sourceRow": 103
+        },
+        {
+          "district": 7,
+          "yes": 8939,
+          "no": 18506,
+          "undervotes": 2481,
+          "overvotes": 15,
+          "sourceRow": 107
+        },
+        {
+          "district": 8,
+          "yes": 10289,
+          "no": 25444,
+          "undervotes": 2813,
+          "overvotes": 13,
+          "sourceRow": 111
+        },
+        {
+          "district": 9,
+          "yes": 6320,
+          "no": 16917,
+          "undervotes": 1880,
+          "overvotes": 5,
+          "sourceRow": 115
+        },
+        {
+          "district": 10,
+          "yes": 5651,
+          "no": 10220,
+          "undervotes": 1632,
+          "overvotes": 6,
+          "sourceRow": 119
+        },
+        {
+          "district": 11,
+          "yes": 6227,
+          "no": 11320,
+          "undervotes": 1782,
+          "overvotes": 11,
+          "sourceRow": 123
+        }
+      ]
+    },
+    {
+      "id": "D",
+      "title": "Increases to Business Tax Based on Comparison of Top Executive's Pay to Employee’s Pay",
+      "sourceSheet": "Sheet23",
+      "sourceUrl": "https://sfelections.org/results/20260602/index.html#a_english_22",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 118802,
+        "no": 132959,
+        "undervotes": 19629,
+        "overvotes": 65
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 11628,
+          "no": 13628,
+          "undervotes": 1713,
+          "overvotes": 4,
+          "sourceRow": 83
+        },
+        {
+          "district": 2,
+          "yes": 8477,
+          "no": 16274,
+          "undervotes": 2612,
+          "overvotes": 2,
+          "sourceRow": 87
+        },
+        {
+          "district": 3,
+          "yes": 8929,
+          "no": 10414,
+          "undervotes": 1588,
+          "overvotes": 4,
+          "sourceRow": 91
+        },
+        {
+          "district": 4,
+          "yes": 11050,
+          "no": 13043,
+          "undervotes": 3036,
+          "overvotes": 8,
+          "sourceRow": 95
+        },
+        {
+          "district": 5,
+          "yes": 11608,
+          "no": 9263,
+          "undervotes": 1440,
+          "overvotes": 4,
+          "sourceRow": 99
+        },
+        {
+          "district": 6,
+          "yes": 6953,
+          "no": 8137,
+          "undervotes": 1168,
+          "overvotes": 1,
+          "sourceRow": 103
+        },
+        {
+          "district": 7,
+          "yes": 11531,
+          "no": 16489,
+          "undervotes": 1908,
+          "overvotes": 13,
+          "sourceRow": 107
+        },
+        {
+          "district": 8,
+          "yes": 17053,
+          "no": 19323,
+          "undervotes": 2174,
+          "overvotes": 9,
+          "sourceRow": 111
+        },
+        {
+          "district": 9,
+          "yes": 13984,
+          "no": 9683,
+          "undervotes": 1447,
+          "overvotes": 8,
+          "sourceRow": 115
+        },
+        {
+          "district": 10,
+          "yes": 8233,
+          "no": 8045,
+          "undervotes": 1223,
+          "overvotes": 8,
+          "sourceRow": 119
+        },
+        {
+          "district": 11,
+          "yes": 9356,
+          "no": 8660,
+          "undervotes": 1320,
+          "overvotes": 4,
+          "sourceRow": 123
+        }
+      ]
+    }
+  ]
+}

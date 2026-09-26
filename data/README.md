@@ -99,3 +99,7 @@ Edit the canonical JSON only. Keep coordinate precision and source labels; recor
 The 92 realtor neighborhoods have disjoint interiors. Shared borders and corner points are allowed. The source contained tiny overlapping boundary slivers; the normalized JSON assigns each such area once using stable-ID order, preserving the combined footprint without rounding or buffering. `topology` records this processing. This guarantee applies within the realtor collection; alternative neighborhood sources and district/park layers describe different concepts and must not be treated as additional mutually exclusive neighborhoods.
 
 Run `pnpm data:normalize-realtor` when updating realtor geometry, then `pnpm data:catalog` and `pnpm check`. Cleanup aborts if it would erase a neighborhood, leave overlapping interiors, or change the combined footprint. Tests reject any nonempty polygon intersection; they do not excuse small slivers with an area threshold.
+
+## Election result snapshots (Pages only)
+
+`elections/2026-06-02.json` holds certified local-measure results for the June 2026 Pages explorer. It contains four measures, citywide counts, and eleven supervisorial district totals per measure, plus source URLs, workbook checksum, and source row references. It is not a GeoJSON collection or a public npm export. It does not change the default SFAR neighborhood dataset. See `SOURCES.md` and `scripts/import-election-results.py` for extraction and validation.

@@ -330,3 +330,7 @@ document.querySelector('#transit').append(animation);
 This optional browser component starts paused, with Play/Pause and a keyboard-accessible journey slider. A loop lasts 28 seconds; timing is illustrative. It connects the bundled official BART station centroids with straight segments, not actual tracks or live service. It pauses when the page is hidden. No autoplay means reduced-motion users can inspect the static map or scrub manually. Existing map defaults are unchanged.
 
 Embed the Pages demo with `<iframe src="https://kahwee.github.io/sf-map-svg/transit.html" title="Schematic BART journey" loading="lazy" style="width:100%;height:clamp(650px, calc(100vw + 240px), 930px);border:0"></iframe>`.
+
+## Ballot measures explorer
+
+[Explore June 2026 ballot measures](https://kahwee.github.io/sf-map-svg/measures.html): certified local Measures A–D, citywide outcomes, a district Yes-share map, all-district comparison table, shareable views, and downloadable JSON. The page uses the released map renderer and separately bundled official election results. It is an archive, not a live results service or voting guide. Methodology and source links are available on the page and in [SOURCES.md](SOURCES.md).

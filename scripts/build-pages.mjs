@@ -44,6 +44,7 @@ try {
       alias: {
         '@kahwee/sf-map-svg/explorer': join(packageRoot, 'dist/src/explorer.js'),
         '@kahwee/sf-map-svg/transit': join(packageRoot, 'dist/src/transit.js'),
+        '@kahwee/sf-map-svg': join(packageRoot, 'dist/src/index.js'),
       },
     },
     plugins: [
@@ -56,7 +57,9 @@ try {
     build: {
       outDir: '../pages-dist',
       emptyOutDir: true,
-      rollupOptions: { input: ['website/index.html', 'website/transit.html'] },
+      rollupOptions: {
+        input: ['website/index.html', 'website/transit.html', 'website/measures.html'],
+      },
     },
   });
   const { renderSFMap } = await import(pathToFileURL(join(packageRoot, 'dist/src/index.js')).href);
@@ -76,6 +79,8 @@ try {
   })) {
     await writeFile(`pages-dist/maps/${name}.svg`, renderSFMap({ ...options, idPrefix: name }));
   }
+  await mkdir('pages-dist/data', { recursive: true });
+  await cp('data/elections/2026-06-02.json', 'pages-dist/data/measures-2026-06-02.json');
   await cp('docs/map-preview.png', 'pages-dist/social-preview.png');
   await writeFile(
     'pages-dist/release.json',
