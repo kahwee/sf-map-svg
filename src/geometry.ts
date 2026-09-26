@@ -1,6 +1,9 @@
-const number = (value) => Number(value.toFixed(2));
+import type { Geometry, Position } from '../data/types.js';
+export type Project = (position: Position) => [number, number];
 
-export function rawProject([longitude, latitude]) {
+const number = (value: number) => Number(value.toFixed(2));
+
+export function rawProject([longitude, latitude]: Position): [number, number] {
   if (
     !Number.isFinite(longitude) ||
     Math.abs(longitude) > 180 ||
@@ -10,7 +13,7 @@ export function rawProject([longitude, latitude]) {
     throw new RangeError(
       'Coordinates must be finite [longitude, latitude], with longitude from -180 to 180 and latitude strictly between -90 and 90.',
     );
-  const point = [
+  const point: [number, number] = [
     (longitude * Math.PI) / 180,
     -Math.log(Math.tan(Math.PI / 4 + (latitude * Math.PI) / 360)),
   ];
@@ -18,22 +21,29 @@ export function rawProject([longitude, latitude]) {
     throw new RangeError('Coordinates are too close to a pole for Mercator projection.');
   return point;
 }
-export function positions(geometry) {
+export function positions(geometry: Geometry | null | undefined): Position[] {
   if (!geometry) return [];
-  if (geometry.type === 'GeometryCollection') return geometry.geometries.flatMap(positions);
-  const result = [];
-  const walk = (coordinates) => {
-    if (typeof coordinates[0] === 'number') result.push(coordinates);
-    else coordinates.forEach(walk);
-  };
-  walk(geometry.coordinates);
-  return result;
+  switch (geometry.type) {
+    case 'Point':
+      return [geometry.coordinates];
+    case 'LineString':
+    case 'MultiPoint':
+      return [...geometry.coordinates];
+    case 'Polygon':
+    case 'MultiLineString':
+      return geometry.coordinates.flat();
+    case 'MultiPolygon':
+      return geometry.coordinates.flat(2);
+    case 'GeometryCollection':
+      return geometry.geometries.flatMap(positions);
+  }
 }
-export function geometryPath(geometry, project) {
+export function geometryPath(geometry: Geometry | null | undefined, project: Project): string {
   if (!geometry) return '';
-  const line = (ring) =>
+  const line = (ring: readonly Position[]) =>
     ring.map((p, i) => `${i ? 'L' : 'M'}${project(p).map(number).join(',')}`).join('');
-  const polygon = (rings) => rings.map((ring) => `${line(ring)}Z`).join('');
+  const polygon = (rings: readonly (readonly Position[])[]) =>
+    rings.map((ring) => `${line(ring)}Z`).join('');
   switch (geometry.type) {
     case 'Polygon':
       return polygon(geometry.coordinates);

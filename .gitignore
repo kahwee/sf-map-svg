@@ -5,3 +5,5 @@ examples/generated/
 
 storybook-static/
 *storybook.log
+
+dist/

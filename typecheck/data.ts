@@ -3,11 +3,13 @@ import {
   catalog,
   districtMaps,
   getNeighborhood,
-  searchNeighborhoods,
   type NeighborhoodSource,
+  searchNeighborhoods,
 } from '@kahwee/sf-map-svg/data';
+import rawNeighborhoods from '@kahwee/sf-map-svg/data/neighborhoods-realtor.json' with {
+  type: 'json',
+};
 import { geometryPath } from '@kahwee/sf-map-svg/geometry';
-import rawNeighborhoods from '@kahwee/sf-map-svg/data/neighborhoods-realtor.json' with { type: 'json' };
 
 const source: NeighborhoodSource = 'realtor';
 const mission = getNeighborhood('Inner Mission', { source });
@@ -32,6 +34,7 @@ const count: number = catalog.neighborhoods.length;
 void [name, count];
 
 import { createNeighborhoodExplorer } from '@kahwee/sf-map-svg/explorer';
+
 const explorer = createNeighborhoodExplorer({ source: 'realtor', neighborhood: 'NoPa' });
 explorer.selectNeighborhood('Outer Mission');
 explorer.setSource('analysis');

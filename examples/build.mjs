@@ -1,5 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises';
-import { renderSFMap } from '../src/index.js';
+import { renderSFMap } from '../dist/src/index.js';
+
 const target = new URL('./generated/', import.meta.url);
 await mkdir(target, { recursive: true });
 const variants = [
@@ -17,5 +18,5 @@ await writeFile(
 
 await writeFile(
   new URL('explorer.html', target),
-  `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>San Francisco neighborhood explorer</title><style>body{margin:0;padding:clamp(12px,3vw,36px);background:#f7f5ef;color:#193c40;font:16px system-ui}main{max-width:1200px;margin:auto}a{color:inherit}header{margin-bottom:20px}h1{font-size:clamp(24px,4vw,36px);margin:12px 0 8px}p{color:#536466}#explorer{min-height:400px}</style><main><header><a href="index.html">← All map examples</a><h1>Find your San Francisco.</h1><p>Explore neighborhood boundaries, discover local names, and take the data with you.</p></header><div id="explorer"></div></main><script type="module">import { createNeighborhoodExplorer } from '../../src/explorer.js'; document.querySelector('#explorer').append(createNeighborhoodExplorer());</script></html>`,
+  `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>San Francisco neighborhood explorer</title><style>body{margin:0;padding:clamp(12px,3vw,36px);background:#f7f5ef;color:#193c40;font:16px system-ui}main{max-width:1200px;margin:auto}a{color:inherit}header{margin-bottom:20px}h1{font-size:clamp(24px,4vw,36px);margin:12px 0 8px}p{color:#536466}#explorer{min-height:400px}</style><main><header><a href="index.html">← All map examples</a><h1>Find your San Francisco.</h1><p>Explore neighborhood boundaries, discover local names, and take the data with you.</p></header><div id="explorer"></div></main><script type="module">import { createNeighborhoodExplorer } from '../../dist/src/explorer.js'; document.querySelector('#explorer').append(createNeighborhoodExplorer());</script></html>`,
 );

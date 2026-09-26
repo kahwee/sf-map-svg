@@ -1,19 +1,52 @@
-import { createSFMap } from './index.js';
-import { geometryPath } from './geometry.js';
+import type { Bounds, NeighborhoodFeature, NeighborhoodSource } from '../data/index.js';
 import {
-  neighborhoodCollections,
-  getNeighborhood,
-  searchNeighborhoods,
   bartStations,
+  getNeighborhood,
   landmarks,
+  neighborhoodCollections,
+  searchNeighborhoods,
 } from '../data/index.js';
+import type { View } from './explorer-layout.js';
 import {
-  projectedBounds,
-  interiorAnchor,
   clampView,
   fitBounds,
+  interiorAnchor,
   layoutLabels,
+  projectedBounds,
 } from './explorer-layout.js';
+import { geometryPath } from './geometry.js';
+import { createSFMap } from './index.js';
+
+export interface NeighborhoodExplorerOptions {
+  source?: NeighborhoodSource;
+  /** Canonical name, source name, alias, or stable ID in the selected source. */
+  neighborhood?: string;
+  year?: 2002 | 2012 | 2022;
+}
+export interface NeighborhoodExplorerElement extends HTMLElement {
+  /** Select and fit a neighborhood; returns false when no exact name or alias matches. */
+  selectNeighborhood(name: string): boolean;
+  /** Switch definitions, clear selection, and reset to city view. */
+  setSource(source: NeighborhoodSource): void;
+  resetView(): void;
+  /** Multiply zoom, clamped to 1–12×. */
+  zoomBy(factor: number): void;
+  /** Release listeners, animation frames, resize observer, and download URLs. */
+  destroy(): void;
+}
+
+interface NeighborhoodItem {
+  feature: NeighborhoodFeature;
+  node: SVGPathElement;
+  bounds: Bounds;
+  point: [number, number] | undefined;
+  area: number;
+}
+interface LabelItem {
+  point: [number, number];
+  name: string;
+  kind: string;
+}
 
 const svgNS = 'http://www.w3.org/2000/svg';
 const sourceNames = {
@@ -21,20 +54,31 @@ const sourceNames = {
   'sf-find': 'SF Find · 117 areas',
   analysis: 'City analysis · 41 areas',
 };
-function element(tag, text, className) {
+function element<K extends keyof HTMLElementTagNameMap>(
+  tag: K,
+  text?: string,
+  className?: string,
+): HTMLElementTagNameMap[K] {
   const node = document.createElement(tag);
   if (text) node.textContent = text;
   if (className) node.className = className;
   return node;
 }
-function svgElement(tag, attributes = {}) {
+function svgElement<K extends keyof SVGElementTagNameMap>(
+  tag: K,
+  attributes: Record<string, string | number> = {},
+): SVGElementTagNameMap[K] {
   const node = document.createElementNS(svgNS, tag);
   for (const [key, value] of Object.entries(attributes)) node.setAttribute(key, String(value));
   return node;
 }
 
 /** Create an offline, browser-only neighborhood explorer. Call destroy() before disposal. */
-export function createNeighborhoodExplorer({ source = 'realtor', neighborhood, year = 2022 } = {}) {
+export function createNeighborhoodExplorer({
+  source = 'realtor',
+  neighborhood,
+  year = 2022,
+}: NeighborhoodExplorerOptions = {}): NeighborhoodExplorerElement {
   if (!Object.hasOwn(neighborhoodCollections, source))
     throw new RangeError(`Unknown neighborhood source: ${source}`);
   if (neighborhood === '') neighborhood = undefined;
@@ -43,8 +87,18 @@ export function createNeighborhoodExplorer({ source = 'realtor', neighborhood, y
   if (typeof document === 'undefined')
     throw new Error('The neighborhood explorer requires a browser document.');
   const controller = new AbortController();
-  const listen = (node, event, handler, options = {}) =>
-    node.addEventListener(event, handler, { ...options, signal: controller.signal });
+  function listen<K extends keyof GlobalEventHandlersEventMap>(
+    node: HTMLElement | SVGElement | Window,
+    event: K,
+    handler: (event: GlobalEventHandlersEventMap[K]) => void,
+    options: AddEventListenerOptions = {},
+  ) {
+    node.addEventListener(
+      event,
+      (incoming: Event) => handler(incoming as GlobalEventHandlersEventMap[K]),
+      { ...options, signal: controller.signal },
+    );
+  }
   const root = element('section', '', 'sf-explorer');
   root.setAttribute('aria-label', 'San Francisco neighborhood explorer');
   const style = element('style');
@@ -104,15 +158,18 @@ export function createNeighborhoodExplorer({ source = 'realtor', neighborhood, y
     bartStations: false,
   });
   canvas.innerHTML = map.svg;
-  const svg = canvas.querySelector('svg');
+  const renderedSvg = canvas.querySelector('svg');
+  if (!renderedSvg) throw new Error('The renderer did not produce an SVG.');
+  const svg = renderedSvg;
   svg.setAttribute('role', 'group');
   svg.setAttribute(
     'aria-label',
     'Neighborhood map. Use search results and map controls to explore.',
   );
   svg.removeAttribute('aria-labelledby');
-  svg.querySelector('[data-layer="landmark-labels"]').remove();
+  svg.querySelector('[data-layer="landmark-labels"]')?.remove();
   const geography = svg.querySelector('[data-layer="geography"]');
+  if (!geography) throw new Error('The renderer did not produce a geography layer.');
   const areas = svgElement('g', { 'data-layer': 'explorer-neighborhoods' });
   const stations = svgElement('g', { 'data-layer': 'explorer-bart' });
   const labelLayer = svgElement('g', {
@@ -121,17 +178,22 @@ export function createNeighborhoodExplorer({ source = 'realtor', neighborhood, y
     'font-family': 'system-ui,sans-serif',
   });
   geography.append(areas, stations, labelLayer);
-  let view = [0, 0, 800],
-    selected,
-    items = [],
-    destroyed = false,
-    frame;
-  const downloads = new Set();
-  const stationItems = bartStations.features.map((feature) => ({
-    point: map.project(feature.geometry.coordinates),
-    name: feature.properties.name,
-    kind: 'bart',
-  }));
+  let view: View = [0, 0, 800];
+  let selected: NeighborhoodFeature | undefined;
+  let items: NeighborhoodItem[] = [];
+  let destroyed = false;
+  let frame = 0;
+  const downloads = new Set<string>();
+  const stationItems = bartStations.features.map((feature) => {
+    if (feature.geometry.type !== 'Point')
+      throw new TypeError('BART stations must use Point geometry.');
+    return {
+      point: map.project(feature.geometry.coordinates),
+      name: feature.properties.name,
+      kind: 'bart',
+      node: svgElement('circle'),
+    };
+  });
   for (const station of stationItems) {
     station.node = svgElement('circle', {
       cx: station.point[0],
@@ -154,7 +216,7 @@ export function createNeighborhoodExplorer({ source = 'realtor', neighborhood, y
   const zoomControls = element('div', '', 'sf-explorer-control-group');
   const panControls = element('div', '', 'sf-explorer-control-group sf-explorer-pan-controls');
   toolbar.append(zoomControls, panControls);
-  function button(text, label, action, group = zoomControls) {
+  function button(text: string, label: string, action: () => void, group = zoomControls) {
     const node = element('button', text);
     node.type = 'button';
     node.setAttribute('aria-label', label);
@@ -172,14 +234,14 @@ export function createNeighborhoodExplorer({ source = 'realtor', neighborhood, y
     ['↑', 'Pan north', 0, -1],
     ['↓', 'Pan south', 0, 1],
     ['→', 'Pan east', 1, 0],
-  ])
+  ] as const)
     button(
       symbol,
       label,
       () => setView([view[0] + (dx * view[2]) / 4, view[1] + (dy * view[2]) / 4, view[2]]),
       panControls,
     );
-  function setView(next) {
+  function setView(next: View) {
     if (destroyed) return;
     view = clampView(next);
     svg.setAttribute('viewBox', `${view[0]} ${view[1]} ${view[2]} ${view[2]}`);
@@ -190,7 +252,7 @@ export function createNeighborhoodExplorer({ source = 'realtor', neighborhood, y
     zoomOut.disabled = zoom <= 1;
     scheduleLabels();
   }
-  function zoomBy(factor) {
+  function zoomBy(factor: number) {
     if (!Number.isFinite(factor) || factor <= 0)
       throw new RangeError('Zoom factor must be positive and finite.');
     const size = Math.max(800 / 12, Math.min(800, view[2] / factor));
@@ -212,11 +274,12 @@ export function createNeighborhoodExplorer({ source = 'realtor', neighborhood, y
       zoom = 800 / view[2];
     for (const station of stationItems) station.node.setAttribute('r', String(3.7 * unit));
     const selectedItem = items.find((item) => item.feature === selected);
-    const candidates = [];
+    const candidates: LabelItem[] = [];
     if (selectedItem?.point)
       candidates.push({
         ...selectedItem,
-        name: selected.properties.canonicalName,
+        point: selectedItem.point,
+        name: selectedItem.feature.properties.canonicalName,
         kind: 'selected',
       });
     if (zoom >= 1.8) candidates.push(...stationItems);
@@ -231,7 +294,10 @@ export function createNeighborhoodExplorer({ source = 'realtor', neighborhood, y
     if (zoom >= (width < 500 ? 2.5 : 1.7))
       candidates.push(
         ...items
-          .filter((item) => item.feature !== selected && item.point)
+          .filter(
+            (item): item is NeighborhoodItem & { point: [number, number] } =>
+              item.feature !== selected && item.point !== undefined,
+          )
           .sort((a, b) => b.area - a.area || a.feature.id.localeCompare(b.feature.id))
           .map((item) => ({
             ...item,
@@ -275,10 +341,10 @@ export function createNeighborhoodExplorer({ source = 'realtor', neighborhood, y
     for (const url of downloads) URL.revokeObjectURL(url);
     downloads.clear();
   }
-  function downloadLink(text, value, filename) {
+  function downloadLink(text: string, value: unknown, filename: string) {
     const link = element('a', text, 'sf-explorer-download');
     const url = URL.createObjectURL(
-      new Blob([JSON.stringify(value, null, 2) + '\n'], { type: 'application/geo+json' }),
+      new Blob([`${JSON.stringify(value, null, 2)}\n`], { type: 'application/geo+json' }),
     );
     downloads.add(url);
     link.href = url;
@@ -324,9 +390,11 @@ export function createNeighborhoodExplorer({ source = 'realtor', neighborhood, y
     detail.append(provenance);
   }
   function updateResults() {
-    const focusedId = results.contains(document.activeElement)
-      ? document.activeElement.dataset.neighborhoodResult
-      : undefined;
+    const activeElement = document.activeElement;
+    const focusedId =
+      activeElement instanceof HTMLElement && results.contains(activeElement)
+        ? activeElement.dataset.neighborhoodResult
+        : undefined;
     const matches = searchNeighborhoods(search.value, { source }).sort((a, b) =>
       a.canonicalName.localeCompare(b.canonicalName),
     );
@@ -345,7 +413,7 @@ export function createNeighborhoodExplorer({ source = 'realtor', neighborhood, y
         element('p', 'No matches. Try another name or definition source.', 'sf-explorer-note'),
       );
   }
-  function selectNeighborhood(name) {
+  function selectNeighborhood(name: string) {
     const feature = getNeighborhood(name, { source });
     if (!feature) return false;
     selected = feature;
@@ -357,7 +425,8 @@ export function createNeighborhoodExplorer({ source = 'realtor', neighborhood, y
       item.node.setAttribute('stroke-width', active ? '2.5' : '.65');
       if (active) areas.append(item.node);
     }
-    setView(fitBounds(items.find((item) => item.feature === selected).bounds));
+    const selectedItem = items.find((item) => item.feature === selected);
+    if (selectedItem) setView(fitBounds(selectedItem.bounds));
     root.dataset.selectedNeighborhood = feature.id;
     updateResults();
     updateDetail();
@@ -367,7 +436,7 @@ export function createNeighborhoodExplorer({ source = 'realtor', neighborhood, y
     );
     return true;
   }
-  function setSource(next) {
+  function setSource(next: NeighborhoodSource) {
     if (!Object.hasOwn(neighborhoodCollections, next))
       throw new RangeError(`Unknown neighborhood source: ${next}`);
     source = next;
@@ -415,13 +484,19 @@ export function createNeighborhoodExplorer({ source = 'realtor', neighborhood, y
       }
     }
   });
-  listen(sourceSelect, 'change', () => setSource(sourceSelect.value));
-  listen(results, 'click', (event) => {
-    const node = event.target.closest('[data-neighborhood-result]');
-    if (node) selectNeighborhood(node.dataset.neighborhoodResult);
+  listen(sourceSelect, 'change', () => {
+    const next = sourceSelect.value;
+    if (next === 'realtor' || next === 'sf-find' || next === 'analysis') setSource(next);
   });
-  let drag,
-    suppressClick = false;
+  listen(results, 'click', (event) => {
+    const node =
+      event.target instanceof Element
+        ? event.target.closest<HTMLElement>('[data-neighborhood-result]')
+        : null;
+    if (node?.dataset.neighborhoodResult) selectNeighborhood(node.dataset.neighborhoodResult);
+  });
+  let drag: { x: number; y: number; view: View; id: number } | undefined;
+  let suppressClick = false;
   listen(svg, 'pointerdown', (event) => {
     if (event.pointerType !== 'mouse' || event.button !== 0) return;
     drag = { x: event.clientX, y: event.clientY, view: [...view], id: event.pointerId };
@@ -448,8 +523,11 @@ export function createNeighborhoodExplorer({ source = 'realtor', neighborhood, y
       suppressClick = false;
       return;
     }
-    const node = event.target.closest('[data-neighborhood-id]');
-    if (node) selectNeighborhood(node.dataset.neighborhoodId);
+    const node =
+      event.target instanceof Element
+        ? event.target.closest<SVGElement>('[data-neighborhood-id]')
+        : null;
+    if (node?.dataset.neighborhoodId) selectNeighborhood(node.dataset.neighborhoodId);
   });
   listen(
     svg,
@@ -463,7 +541,7 @@ export function createNeighborhoodExplorer({ source = 'realtor', neighborhood, y
   );
   const observer = new ResizeObserver(scheduleLabels);
   observer.observe(canvas);
-  Object.assign(root, {
+  const explorer = Object.assign(root, {
     selectNeighborhood,
     setSource,
     resetView,
@@ -478,5 +556,5 @@ export function createNeighborhoodExplorer({ source = 'realtor', neighborhood, y
   });
   setSource(source);
   if (neighborhood !== undefined) selectNeighborhood(neighborhood);
-  return root;
+  return explorer;
 }

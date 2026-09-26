@@ -1,10 +1,10 @@
-import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import test from 'node:test';
 import polygonClipping from 'polygon-clipping';
 import realtor from '../data/neighborhoods-realtor.json' with { type: 'json' };
-import digests from './fixtures/geometry-digests.json' with { type: 'json' };
 import { findOverlaps, removeOverlaps } from '../scripts/lib/topology.js';
+import digests from './fixtures/geometry-digests.json' with { type: 'json' };
 
 const rectangle = (id, x1, y1, x2, y2) => ({
   type: 'Feature',

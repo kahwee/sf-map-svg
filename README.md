@@ -158,3 +158,8 @@ Run `pnpm demo`, serve the repository root over HTTP, and open `examples/generat
 ## License
 
 Software is licensed under MIT. Geographic datasets retain their source terms and attribution requirements; see [SOURCES.md](SOURCES.md).
+
+
+## TypeScript development
+
+The library is authored in strict TypeScript 7. Run `pnpm build` to compile JavaScript and declarations into `dist/`. JavaScript consumers require no TypeScript runtime. `pnpm format` applies Biome formatting and safe lint fixes; `pnpm check` checks Biome, data, source and consumer types, and tests.

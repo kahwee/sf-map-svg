@@ -1,6 +1,6 @@
-import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createSFMap, renderSFMap, districtYears, neighborhoodNames } from '../src/index.js';
+import test from 'node:test';
+import { createSFMap, districtYears, neighborhoodNames, renderSFMap } from '../dist/src/index.js';
 
 test('each historical map has eleven districts and finite standalone SVG geometry', () => {
   for (const year of districtYears) {
