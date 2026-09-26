@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased
+## 1.0.0
+
+- Publish the stable 1.0 API with public npm access and a public source repository.
+- Add the reusable interactive map entrypoint, controlled viewport and selection APIs, keyboard/touch navigation, and marker selection.
+- Add interactive examples, Storybook stories, and viewport/navigation regression checks.
 
 - Add district/neighborhood explorer modes and a labels toggle, with fixed screen-size labels while zooming.
 - Add a master visible-label switch for standalone SVGs.
@@ -10,7 +14,6 @@
 - Add a transit-inspired map theme with pale water, quiet land, green parks, and blue station symbols.
 - Refine the neighborhood explorer presentation and map legend.
 - Add a transit example and Storybook preset.
-
 
 ## 0.4.1
 

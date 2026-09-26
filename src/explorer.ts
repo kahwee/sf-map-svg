@@ -9,41 +9,25 @@ import {
   searchNeighborhoods,
 } from '../data/index.js';
 import type { View } from './explorer-layout.js';
-import {
-  clampView,
-  fitBounds,
-  interiorAnchor,
-  layoutLabels,
-  projectedBounds,
-} from './explorer-layout.js';
+import { fitBounds, interiorAnchor, layoutLabels, projectedBounds } from './explorer-layout.js';
 import { geometryPath } from './geometry.js';
 import { createSFMap, districtColors } from './index.js';
+import { attachNavigation } from './navigation.js';
+import type {
+  ExplorerMode,
+  MapMarker,
+  MapViewport,
+  NeighborhoodExplorerElement,
+  NeighborhoodExplorerOptions,
+  NeighborhoodSelection,
+} from './types.js';
+import { fitViewport, validateViewport } from './viewport.js';
 
-export type ExplorerMode = 'neighborhoods' | 'districts';
-
-export interface NeighborhoodExplorerOptions {
-  mode?: ExplorerMode;
-  labels?: boolean;
-  source?: NeighborhoodSource;
-  /** Canonical name, source name, alias, or stable ID in the selected source. */
-  neighborhood?: string;
-  year?: 2002 | 2012 | 2022;
-}
-export interface NeighborhoodExplorerElement extends HTMLElement {
-  /** Select and fit a neighborhood; returns false when no exact name or alias matches. */
-  selectNeighborhood(name: string): boolean;
-  /** Switch definitions, clear selection, and reset to city view. */
-  setSource(source: NeighborhoodSource): void;
-  /** Switch between neighborhood definitions and supervisorial districts. */
-  setMode(mode: ExplorerMode): void;
-  /** Show or hide all map text labels; station rings remain visible. */
-  setLabels(visible: boolean): void;
-  resetView(): void;
-  /** Multiply zoom, clamped to 1–12×. */
-  zoomBy(factor: number): void;
-  /** Release listeners, animation frames, resize observer, and download URLs. */
-  destroy(): void;
-}
+export type {
+  ExplorerMode,
+  NeighborhoodExplorerElement,
+  NeighborhoodExplorerOptions,
+} from './types.js';
 
 interface NeighborhoodItem {
   feature: NeighborhoodFeature;
@@ -90,9 +74,43 @@ export function createNeighborhoodExplorer({
   labels = true,
   neighborhood,
   year = 2022,
+  theme = 'transit',
+  interface: chrome = 'explorer',
+  layers = {},
+  selectableNeighborhoods = true,
+  labelSize = {},
+  fitPadding = 24,
+  markers: initialMarkers = [],
+  markerRadius = 6,
+  markerHitSize = 44,
+  markerColor = '#245b61',
+  selectedMarkerColor = '#f04f32',
+  onMarkerActivate,
 }: NeighborhoodExplorerOptions = {}): NeighborhoodExplorerElement {
-  if (mode !== 'neighborhoods' && mode !== 'districts')
+  if (!['neighborhoods', 'districts', 'basemap'].includes(mode))
     throw new RangeError(`Unknown map mode: ${mode}`);
+  if (chrome !== 'explorer' && chrome !== 'map') throw new RangeError('Unknown interface.');
+  const minLabelSize = labelSize.min ?? 11,
+    maxLabelSize = labelSize.max ?? 12;
+  if (
+    ![minLabelSize, maxLabelSize, markerRadius, markerHitSize].every(Number.isFinite) ||
+    minLabelSize < 8 ||
+    maxLabelSize < minLabelSize ||
+    maxLabelSize > 32 ||
+    markerRadius <= 0 ||
+    markerHitSize < markerRadius * 2
+  )
+    throw new RangeError(
+      'Use label sizes from 8–32px and a positive marker radius inside its hit target.',
+    );
+  layers = { ...layers };
+  const enabled = (layer: keyof NonNullable<NeighborhoodExplorerOptions['layers']>) =>
+    layers[layer] ??
+    (layer.startsWith('district')
+      ? mode === 'districts'
+      : layer.startsWith('neighborhood')
+        ? mode === 'neighborhoods'
+        : true);
   if (typeof labels !== 'boolean') throw new TypeError('Labels must be a boolean.');
   if (!Object.hasOwn(neighborhoodCollections, source))
     throw new RangeError(`Unknown neighborhood source: ${source}`);
@@ -148,11 +166,11 @@ export function createNeighborhoodExplorer({
 .sf-explorer-download{display:block;margin:8px 0;color:#12649c;text-underline-offset:3px}
 .sf-explorer-map-column{grid-area:map;min-width:0;background:#e4f2f8}
 .sf-explorer-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:12px;background:#fff;border-bottom:1px solid #dce5eb}
-.sf-explorer-control-group{display:flex;align-items:center;gap:6px}
+.sf-explorer-control-group{display:flex;align-items:center;flex-wrap:wrap;gap:6px;max-width:100%}
 .sf-explorer-pan-controls{margin-left:auto}
 .sf-explorer-toolbar button{min-width:44px;padding:6px 10px}
 .sf-explorer-zoom{font-size:12px;min-width:42px;text-align:center;font-variant-numeric:tabular-nums;color:#496578}
-.sf-explorer-canvas{position:relative;aspect-ratio:1;overflow:hidden;touch-action:pan-y}
+.sf-explorer-canvas{position:relative;aspect-ratio:1;overflow:hidden;touch-action:pan-y pinch-zoom}
 .sf-explorer-canvas>svg{display:block;width:100%;height:100%;max-width:none;cursor:grab;user-select:none}
 .sf-explorer-canvas>svg:active{cursor:grabbing}
 .sf-explorer-canvas path[data-neighborhood-id]{cursor:pointer}
@@ -166,6 +184,13 @@ export function createNeighborhoodExplorer({
 .sf-explorer-hint{padding:6px 16px 10px;font-size:12px;color:#586f80;background:#fff}
 .sf-explorer text{pointer-events:none}
 .sf-explorer-status{padding:0 16px 14px;font-size:12px;background:#fff;color:#496578}
+.sf-explorer[data-interface=map] .sf-explorer-body{display:block}
+.sf-explorer[data-interface=map] .sf-explorer-header,.sf-explorer[data-interface=map] .sf-explorer-panel,.sf-explorer[data-interface=map] .sf-explorer-detail{display:none}
+.sf-explorer-feature-controls{display:flex;flex-wrap:wrap;gap:8px;padding:10px;background:#fff}
+.sf-explorer-feature-controls label{display:flex;flex:1;flex-direction:column;min-width:0}
+.sf-explorer-feature-controls select{width:100%;min-width:0}
+.sf-explorer svg [role=button]:focus-visible{outline:none;stroke:#102f72;stroke-width:3;fill-opacity:.3}
+@media(prefers-reduced-motion:reduce){.sf-explorer button{transition:none}}
 .sf-explorer button:disabled{opacity:.45;cursor:default}
 @container sf-neighborhood-explorer (max-width:650px){
 .sf-explorer-body{grid-template-columns:1fr;grid-template-areas:"panel" "map" "detail";grid-template-rows:auto auto auto}
@@ -174,6 +199,7 @@ export function createNeighborhoodExplorer({
 .sf-explorer-header p{font-size:13px}
 .sf-explorer-panel{border-right:0;border-bottom:1px solid #dce5eb;padding:14px;gap:10px}
 .sf-explorer-results{max-height:140px}
+.sf-explorer-feature-controls{flex-direction:column}
 .sf-explorer-detail{padding:14px;border-right:0}
 .sf-explorer-toolbar{padding:8px;gap:6px}
 .sf-explorer-control-group{gap:4px}
@@ -182,6 +208,7 @@ export function createNeighborhoodExplorer({
 .sf-explorer-legend{gap:8px 16px;padding:12px 14px 8px}
 .sf-explorer-download{display:inline-block;margin:4px 14px 4px 0}
 }`;
+  root.dataset.interface = chrome;
   root.append(style);
   const header = element('header', '', 'sf-explorer-header');
   header.append(
@@ -196,6 +223,7 @@ export function createNeighborhoodExplorer({
   for (const [value, title] of [
     ['neighborhoods', 'Neighborhoods'],
     ['districts', 'Districts'],
+    ['basemap', 'Basemap'],
   ] as const) {
     const option = element('option', title);
     option.value = value;
@@ -230,7 +258,7 @@ export function createNeighborhoodExplorer({
   const canvas = element('div', '', 'sf-explorer-canvas');
   const hint = element(
     'p',
-    'Drag to pan · Ctrl/⌘ + scroll to zoom · buttons work on touch screens',
+    'Drag to pan · Ctrl/⌘ + scroll to zoom · Focus map: arrows pan, +/− zoom, Home resets. Touch: scroll the page, or enable Touch navigation to pan and pinch the map. Escape exits.',
     'sf-explorer-hint',
   );
   const status = element('p', '', 'sf-explorer-status');
@@ -249,18 +277,27 @@ export function createNeighborhoodExplorer({
     entry.append(symbol, document.createTextNode(label));
     legend.append(entry);
   }
-  column.append(toolbar, canvas, legend, hint, status);
+  const featureControls = element('div', '', 'sf-explorer-feature-controls');
+  const neighborhoodLabel = element('label', 'Select neighborhood');
+  const neighborhoodSelect = element('select');
+  neighborhoodLabel.append(neighborhoodSelect);
+  const markerLabel = element('label', 'Choose marker');
+  const markerSelect = element('select');
+  markerLabel.append(markerSelect);
+  featureControls.append(neighborhoodLabel, markerLabel);
+  const attribution = element('p', '', 'sf-explorer-hint');
+  column.append(toolbar, featureControls, canvas, legend, hint, status, attribution);
   body.append(panel, column, detail);
   root.append(body);
   const map = createSFMap({
     year,
-    theme: 'transit',
+    theme,
     districtLabels: false,
     districtLines: true,
     districtFills: true,
-    highways: true,
-    keyRoads: true,
-    landmarks: true,
+    highways: enabled('highways'),
+    keyRoads: enabled('keyRoads'),
+    landmarks: enabled('landmarks'),
     bartStations: false,
   });
   canvas.innerHTML = map.svg;
@@ -268,6 +305,7 @@ export function createNeighborhoodExplorer({
   if (!renderedSvg) throw new Error('The renderer did not produce an SVG.');
   const svg = renderedSvg;
   svg.setAttribute('role', 'group');
+  svg.setAttribute('tabindex', '0');
   svg.setAttribute(
     'aria-label',
     'Neighborhood map. Use search results and map controls to explore.',
@@ -295,6 +333,7 @@ export function createNeighborhoodExplorer({
       kind: 'district',
     })),
   );
+  const markerLayer = svgElement('g', { 'data-layer': 'interactive-markers' });
   const areas = svgElement('g', { 'data-layer': 'explorer-neighborhoods' });
   const stations = svgElement('g', { 'data-layer': 'explorer-bart' });
   const labelLayer = svgElement('g', {
@@ -302,14 +341,14 @@ export function createNeighborhoodExplorer({
     'aria-hidden': 'true',
     'font-family': 'system-ui,sans-serif',
   });
-  geography.append(areas, stations, labelLayer);
+  geography.append(areas, stations, labelLayer, markerLayer);
   let view: View = [0, 0, 800];
   let selected: NeighborhoodFeature | undefined;
   let items: NeighborhoodItem[] = [];
   let destroyed = false;
   let frame = 0;
   const downloads = new Set<string>();
-  const stationItems = bartStations.features.map((feature) => {
+  const stationItems = (enabled('bartStations') ? bartStations.features : []).map((feature) => {
     if (feature.geometry.type !== 'Point')
       throw new TypeError('BART stations must use Point geometry.');
     return {
@@ -333,16 +372,34 @@ export function createNeighborhoodExplorer({
     station.node.append(title);
     stations.append(station.node);
   }
-  const roadItems = keyRoads.features.map((feature) => ({
+  const roadItems = (enabled('keyRoads') ? keyRoads.features : []).map((feature) => ({
     point: map.project(feature.properties.label),
     name: feature.properties.name,
     kind: 'road',
   }));
-  const parkItems = landmarks.features.map((feature) => ({
+  const parkItems = (enabled('landmarks') ? landmarks.features : []).map((feature) => ({
     point: map.project(feature.properties.label),
     name: feature.properties.name,
     kind: 'park',
   }));
+  for (const [kind, option] of [
+    ['bart', 'bartStations'],
+    ['park', 'landmarks'],
+    ['highway', 'highways'],
+    ['road', 'keyRoads'],
+  ] as const) {
+    if (!enabled(option))
+      legend.querySelector(`.sf-explorer-legend-${kind}`)?.parentElement?.remove();
+  }
+  legend.hidden = !legend.children.length;
+  let markerItems: {
+    marker: MapMarker;
+    point: [number, number];
+    node: SVGGElement;
+    dot: SVGCircleElement;
+    hit: SVGCircleElement;
+  }[] = [];
+  let selectedMarker: string | null = null;
   const zoomControls = element('div', '', 'sf-explorer-control-group');
   const panControls = element('div', '', 'sf-explorer-control-group sf-explorer-pan-controls');
   toolbar.append(zoomControls, panControls);
@@ -372,15 +429,34 @@ export function createNeighborhoodExplorer({
       () => setView([view[0] + (dx * view[2]) / 4, view[1] + (dy * view[2]) / 4, view[2]]),
       panControls,
     );
-  function setView(next: View) {
+  function panBy(x: number, y: number) {
+    if (![x, y].every(Number.isFinite))
+      throw new RangeError('Pan offsets must be finite screen pixels.');
+    const width = canvas.getBoundingClientRect().width;
+    if (width) setView([view[0] + (x * view[2]) / width, view[1] + (y * view[2]) / width, view[2]]);
+  }
+  function getViewport(): MapViewport {
+    return [...view];
+  }
+  function fitGeometry(geometry: import('../data/types.js').Geometry, padding = fitPadding) {
+    const width = canvas.getBoundingClientRect().width;
+    if (!width) throw new Error('Mount the map in a visible container before fitting geometry.');
+    setView(fitViewport(projectedBounds(geometry, map.project), width, padding));
+  }
+  function setView(next: MapViewport) {
     if (destroyed) return;
-    view = clampView(next);
+    const previous = view;
+    view = validateViewport(next);
     svg.setAttribute('viewBox', `${view[0]} ${view[1]} ${view[2]} ${view[2]}`);
     const zoom = 800 / view[2];
     zoomText.textContent = `${Math.round(zoom * 100)}%`;
     root.dataset.zoom = String(zoom);
     zoomIn.disabled = zoom >= 12;
     zoomOut.disabled = zoom <= 1;
+    if (view.some((value, i) => value !== previous[i]))
+      root.dispatchEvent(
+        new CustomEvent('viewportchange', { bubbles: true, detail: { viewport: getViewport() } }),
+      );
     scheduleLabels();
   }
   function zoomBy(factor: number) {
@@ -393,6 +469,7 @@ export function createNeighborhoodExplorer({
     setView([0, 0, 800]);
   }
   function scheduleLabels() {
+    if (destroyed) return;
     cancelAnimationFrame(frame);
     frame = requestAnimationFrame(drawLabels);
   }
@@ -404,32 +481,44 @@ export function createNeighborhoodExplorer({
     const unit = view[2] / width,
       zoom = 800 / view[2];
     for (const station of stationItems) station.node.setAttribute('r', String(4.5 * unit));
+    for (const item of markerItems) {
+      item.dot.setAttribute(
+        'r',
+        String((item.marker.id === selectedMarker ? markerRadius + 2 : markerRadius) * unit),
+      );
+      item.hit.setAttribute('r', String((markerHitSize / 2) * unit));
+    }
     if (!labels) {
       root.dataset.visibleLabels = '0';
       return;
     }
     const selectedItem = items.find((item) => item.feature === selected);
     const candidates: LabelItem[] = [];
-    if (mode === 'districts') {
-      candidates.push(...districtItems);
-    } else {
-      if (selectedItem?.point)
-        candidates.push({
-          ...selectedItem,
-          point: selectedItem.point,
-          name: selectedItem.feature.properties.canonicalName,
-          kind: 'selected',
-        });
-      if (zoom >= 1.8) candidates.push(...stationItems);
-      candidates.push(
-        ...parkItems.filter(
-          (park) =>
-            zoom >= 1.8 ||
-            park.name === 'Golden Gate Park' ||
-            (width >= 550 && park.name === 'Presidio'),
-        ),
-      );
-      if (zoom >= 1.8) candidates.push(...roadItems);
+    const marker = markerItems.find((item) => item.marker.id === selectedMarker);
+    if (marker)
+      candidates.push({
+        point: marker.point,
+        name: marker.marker.label ?? marker.marker.id,
+        kind: 'selected-marker',
+      });
+    if (selectedItem?.point && enabled('neighborhoodLabels'))
+      candidates.push({
+        point: selectedItem.point,
+        name: selectedItem.feature.properties.canonicalName,
+        kind: 'selected',
+      });
+    if (enabled('districtLabels')) candidates.push(...districtItems);
+    if (zoom >= 1.8) candidates.push(...stationItems);
+    candidates.push(
+      ...parkItems.filter(
+        (park) =>
+          zoom >= 1.8 ||
+          park.name === 'Golden Gate Park' ||
+          (width >= 550 && park.name === 'Presidio'),
+      ),
+    );
+    if (zoom >= 1.8) candidates.push(...roadItems);
+    if (enabled('neighborhoodLabels'))
       candidates.push(
         ...items
           .filter(
@@ -438,16 +527,19 @@ export function createNeighborhoodExplorer({
           )
           .sort((a, b) => b.area - a.area || a.feature.id.localeCompare(b.feature.id))
           .map((item) => ({
-            ...item,
+            point: item.point,
             name: item.feature.properties.canonicalName,
             kind: 'neighborhood',
           })),
       );
-    }
     const measured = candidates.map((item) => {
+      const fontSize = Math.max(
+        minLabelSize,
+        Math.min(maxLabelSize, item.kind === 'road' ? 11 : 12),
+      );
       const node = svgElement('text', {
-        'font-size': (item.kind === 'road' ? 11 : 12) * unit,
-        'font-weight': item.kind === 'selected' || item.kind === 'district' ? 700 : 550,
+        'font-size': fontSize * unit,
+        'font-weight': item.kind.startsWith('selected') || item.kind === 'district' ? 700 : 550,
         fill: item.kind === 'park' ? '#426641' : item.kind === 'road' ? '#77736b' : '#163d61',
         stroke: '#ffffff',
         'stroke-width': 3 * unit,
@@ -463,8 +555,9 @@ export function createNeighborhoodExplorer({
         x: (item.point[0] - view[0]) / unit,
         y: (item.point[1] - view[1]) / unit,
         textWidth: node.getComputedTextLength() / unit,
-        textHeight: 15,
-        offset: item.kind === 'bart' ? 11 : 0,
+        fontSize,
+        textHeight: fontSize * 1.25,
+        offset: item.kind === 'selected-marker' ? markerRadius + 7 : item.kind === 'bart' ? 11 : 0,
       };
     });
     const stationBounds: Bounds[] = stationItems.map(({ point }) => {
@@ -472,11 +565,21 @@ export function createNeighborhoodExplorer({
       const y = (point[1] - view[1]) / unit;
       return [x - 6, y - 6, x + 6, y + 6];
     });
-    const placed = layoutLabels(measured, width, width, stationBounds);
+    const markerBounds: Bounds[] = markerItems.map(({ point }) => {
+      const x = (point[0] - view[0]) / unit,
+        y = (point[1] - view[1]) / unit;
+      return [
+        x - markerRadius - 3,
+        y - markerRadius - 3,
+        x + markerRadius + 3,
+        y + markerRadius + 3,
+      ];
+    });
+    const placed = layoutLabels(measured, width, width, [...stationBounds, ...markerBounds]);
     for (const item of measured) item.node.remove();
     for (const item of placed) {
       item.node.setAttribute('x', String(view[0] + item.left * unit));
-      item.node.setAttribute('y', String(view[1] + (item.top + 12) * unit));
+      item.node.setAttribute('y', String(view[1] + (item.top + item.fontSize) * unit));
       labelLayer.append(item.node);
     }
     root.dataset.visibleLabels = String(placed.length);
@@ -497,6 +600,7 @@ export function createNeighborhoodExplorer({
   }
   function updateDetail() {
     releaseDownloads();
+    if (chrome === 'map') return;
     detail.replaceChildren();
     if (mode === 'districts') {
       const collection = districtMaps[year];
@@ -509,6 +613,10 @@ export function createNeighborhoodExplorer({
         downloadLink('Download district GeoJSON', collection, `districts-${year}.geojson`),
         element('p', collection.definition.description),
       );
+      return;
+    }
+    if (mode === 'basemap') {
+      detail.append(element('h3', 'San Francisco basemap'));
       return;
     }
     const collection = neighborhoodCollections[source];
@@ -547,6 +655,7 @@ export function createNeighborhoodExplorer({
     detail.append(provenance);
   }
   function updateResults() {
+    if (chrome === 'map') return;
     const activeElement = document.activeElement;
     const focusedId =
       activeElement instanceof HTMLElement && results.contains(activeElement)
@@ -570,39 +679,76 @@ export function createNeighborhoodExplorer({
         element('p', 'No matches. Try another name or definition source.', 'sf-explorer-note'),
       );
   }
-  function selectNeighborhood(name: string) {
-    const feature = getNeighborhood(name, { source });
-    if (!feature) return false;
-    if (mode !== 'neighborhoods') setMode('neighborhoods');
+  function getSelection(): NeighborhoodSelection | null {
+    return selected
+      ? { id: selected.id, name: selected.properties.canonicalName, source, feature: selected }
+      : null;
+  }
+  function selectNeighborhood(name: string | null, options: { fit?: boolean } = {}) {
+    if (destroyed) return false;
+    const feature = name === null ? undefined : getNeighborhood(name, { source });
+    if (name !== null && !feature) return false;
+    if (feature && !enabled('neighborhoodLines') && !enabled('neighborhoodLabels'))
+      setMode('neighborhoods');
+    const changed = selected !== feature;
     selected = feature;
     for (const item of items) {
       const active = item.feature === selected;
       item.node.setAttribute('fill', active ? '#408dbe' : 'transparent');
       item.node.setAttribute('fill-opacity', active ? '.16' : '1');
       item.node.setAttribute('stroke', active ? '#176ba2' : '#9caebc');
-      item.node.setAttribute('stroke-width', active ? '2.2' : '.55');
+      item.node.setAttribute(
+        'stroke-width',
+        active ? '2.2' : enabled('neighborhoodLines') ? '.55' : '0',
+      );
+      item.node.setAttribute('aria-pressed', String(active));
       if (active) areas.append(item.node);
     }
     const selectedItem = items.find((item) => item.feature === selected);
-    if (selectedItem) setView(fitBounds(selectedItem.bounds));
-    root.dataset.selectedNeighborhood = feature.id;
+    if (selectedItem && options.fit !== false) {
+      const width = canvas.getBoundingClientRect().width;
+      setView(
+        width
+          ? fitViewport(selectedItem.bounds, width, fitPadding)
+          : fitBounds(selectedItem.bounds),
+      );
+    }
+    if (feature) root.dataset.selectedNeighborhood = feature.id;
+    else delete root.dataset.selectedNeighborhood;
+    neighborhoodSelect.value = feature?.id ?? '';
+    scheduleLabels();
     updateResults();
     updateDetail();
-    status.textContent = `${feature.properties.canonicalName} selected. ${sourceNames[source]}.`;
-    root.dispatchEvent(
-      new CustomEvent('neighborhoodchange', { bubbles: true, detail: { feature, source } }),
-    );
+    status.textContent = feature
+      ? `${feature.properties.canonicalName} selected. ${sourceNames[source]}.`
+      : 'Neighborhood selection cleared.';
+    if (changed)
+      root.dispatchEvent(
+        new CustomEvent('neighborhoodchange', {
+          bubbles: true,
+          detail: {
+            feature: feature ?? null,
+            source,
+            id: feature?.id ?? null,
+            name: feature?.properties.canonicalName ?? null,
+          },
+        }),
+      );
     return true;
   }
   function setSource(next: NeighborhoodSource) {
+    if (destroyed) return;
     if (!Object.hasOwn(neighborhoodCollections, next))
       throw new RangeError(`Unknown neighborhood source: ${next}`);
+    const hadSelection = !!selected;
     source = next;
     sourceSelect.value = source;
     selected = undefined;
     delete root.dataset.selectedNeighborhood;
     root.dataset.source = source;
     areas.replaceChildren();
+    neighborhoodSelect.replaceChildren(element('option', 'No neighborhood selected'));
+    neighborhoodSelect.options[0].value = '';
     items = neighborhoodCollections[source].features.map((feature) => {
       const bounds = projectedBounds(feature.geometry, map.project);
       const node = svgElement('path', {
@@ -613,7 +759,14 @@ export function createNeighborhoodExplorer({
         stroke: '#9caebc',
         'stroke-width': '.55',
         'vector-effect': 'non-scaling-stroke',
+        role: 'button',
+        tabindex: -1,
+        'aria-label': feature.properties.canonicalName,
+        'aria-pressed': 'false',
       });
+      const option = element('option', feature.properties.canonicalName);
+      option.value = feature.id;
+      neighborhoodSelect.append(option);
       const title = svgElement('title');
       title.textContent = feature.properties.canonicalName;
       node.append(title);
@@ -626,42 +779,184 @@ export function createNeighborhoodExplorer({
         area: (bounds[2] - bounds[0]) * (bounds[3] - bounds[1]),
       };
     });
+    if (items[0]) items[0].node.setAttribute('tabindex', '0');
     updateResults();
     updateDetail();
+    updateComposition();
     resetView();
+    if (hadSelection)
+      root.dispatchEvent(
+        new CustomEvent('neighborhoodchange', {
+          bubbles: true,
+          detail: { feature: null, source, id: null, name: null },
+        }),
+      );
     status.textContent =
-      mode === 'districts'
-        ? `${year} supervisorial districts. Numbers identify each district.`
-        : `${sourceNames[source]}. Select a neighborhood to begin.`;
+      mode === 'basemap'
+        ? 'San Francisco basemap.'
+        : mode === 'districts'
+          ? `${year} supervisorial districts. Numbers identify each district.`
+          : `${sourceNames[source]}. Select a neighborhood to begin.`;
+  }
+  function updateComposition() {
+    const neighborhoodsVisible =
+      enabled('neighborhoodLines') || (labels && enabled('neighborhoodLabels'));
+    areas.style.display = neighborhoodsVisible ? '' : 'none';
+    areas.style.pointerEvents = selectableNeighborhoods ? '' : 'none';
+    neighborhoodLabel.hidden =
+      !neighborhoodsVisible || !selectableNeighborhoods || chrome === 'explorer';
+    for (const item of items) {
+      item.node.setAttribute(
+        'stroke-width',
+        item.feature === selected ? '2.2' : enabled('neighborhoodLines') ? '.55' : '0',
+      );
+      item.node.setAttribute('tabindex', selectableNeighborhoods && item === items[0] ? '0' : '-1');
+      item.node.setAttribute('role', selectableNeighborhoods ? 'button' : 'img');
+      if (!selectableNeighborhoods) item.node.removeAttribute('aria-pressed');
+    }
+    for (const layer of districtLayers) {
+      const key = layer.dataset.layer === 'district-fills' ? 'districtFills' : 'districtLines';
+      layer.style.display = enabled(key) ? '' : 'none';
+    }
+    const districtsVisible =
+      enabled('districtFills') || enabled('districtLines') || (labels && enabled('districtLabels'));
+    const descriptions = ['San Francisco map.'];
+    if (districtsVisible) descriptions.push(`${year} supervisorial districts, DataSF.`);
+    if (neighborhoodsVisible) {
+      const collection = neighborhoodCollections[source];
+      descriptions.push(`${collection.title}. ${collection.definition.description}`);
+    }
+    if (enabled('landmarks')) descriptions.push('Park property boundaries from DataSF.');
+    if (enabled('highways') || enabled('keyRoads')) descriptions.push('Road geometry from DataSF.');
+    if (enabled('bartStations')) descriptions.push('BART station locations from BART.');
+    descriptions.push('Display coastline from DataSF. Source downloads: September 2026.');
+    const description = descriptions.join(' ');
+    const desc = svg.querySelector('desc');
+    if (desc) desc.textContent = description;
+    const title = svg.querySelector('title');
+    if (title) title.textContent = 'San Francisco map';
+    svg.setAttribute(
+      'aria-label',
+      `${description} Arrow keys pan; plus and minus zoom; Home resets. Neighborhoods: brackets move focus; Enter selects. The neighborhood and marker menus include every supplied item.`,
+    );
+    attribution.textContent = description;
+    scheduleLabels();
+  }
+  function getSelectedMarker() {
+    const marker = markerItems.find((item) => item.marker.id === selectedMarker)?.marker;
+    return marker ? { ...marker } : null;
+  }
+  function selectMarker(id: string | null, options: { fit?: boolean } = {}) {
+    if (destroyed) return false;
+    const item = markerItems.find((item) => item.marker.id === id);
+    if (id !== null && !item) return false;
+    const changed = selectedMarker !== id;
+    selectedMarker = id;
+    markerSelect.value = id ?? '';
+    for (const entry of markerItems) {
+      const active = entry.marker.id === id;
+      entry.node.setAttribute('aria-pressed', String(active));
+      entry.dot.setAttribute(
+        'fill',
+        active ? selectedMarkerColor : (entry.marker.color ?? markerColor),
+      );
+      if (active) markerLayer.append(entry.node);
+    }
+    if (item && options.fit !== false) {
+      const width = canvas.getBoundingClientRect().width;
+      const bounds: Bounds = [...item.point, ...item.point];
+      setView(width ? fitViewport(bounds, width, fitPadding) : fitBounds(bounds));
+    }
+    scheduleLabels();
+    const marker = getSelectedMarker();
+    if (changed)
+      root.dispatchEvent(
+        new CustomEvent('markerchange', { bubbles: true, detail: { id, marker } }),
+      );
+    if (changed && marker) onMarkerActivate?.({ ...marker });
+    return true;
+  }
+  function setMarkers(markers: readonly MapMarker[]) {
+    if (destroyed) return;
+    const ids = new Set<string>();
+    const next = markers.map((marker) => {
+      if (typeof marker.id !== 'string' || !marker.id || ids.has(marker.id))
+        throw new RangeError('Markers require unique nonempty IDs.');
+      ids.add(marker.id);
+      return { marker: { ...marker }, point: map.project([marker.lng, marker.lat]) };
+    });
+    const previous = selectedMarker;
+    markerLayer.replaceChildren();
+    markerSelect.replaceChildren(element('option', 'No marker selected'));
+    markerSelect.options[0].value = '';
+    markerItems = next.map(({ marker, point }) => {
+      const node = svgElement('g', {
+        transform: `translate(${point[0]},${point[1]})`,
+        'data-marker-id': marker.id,
+        role: 'button',
+        tabindex: 0,
+        'aria-label': marker.label ?? marker.id,
+        'aria-pressed': 'false',
+      });
+      const hit = svgElement('circle', { fill: 'transparent', 'pointer-events': 'all' });
+      const dot = svgElement('circle', {
+        fill: marker.color ?? markerColor,
+        stroke: '#fff9e9',
+        'stroke-width': 2,
+        'vector-effect': 'non-scaling-stroke',
+        'pointer-events': 'none',
+      });
+      const title = svgElement('title');
+      title.textContent = marker.label ?? marker.id;
+      node.append(title, hit, dot);
+      markerLayer.append(node);
+      const option = element('option', marker.label ?? marker.id);
+      option.value = marker.id;
+      markerSelect.append(option);
+      return { marker, point, node, dot, hit };
+    });
+    markerLabel.hidden = !markerItems.length;
+    if (markerLabel.firstChild)
+      markerLabel.firstChild.textContent = `Choose marker (${markerItems.length})`;
+    const nextSelection =
+      previous && ids.has(previous)
+        ? previous
+        : (markers.find((marker) => marker.selected)?.id ?? null);
+    selectMarker(nextSelection, { fit: false });
   }
   function setMode(next: ExplorerMode) {
-    if (next !== 'neighborhoods' && next !== 'districts')
+    if (destroyed) return;
+    if (!['neighborhoods', 'districts', 'basemap'].includes(next))
       throw new RangeError(`Unknown map mode: ${next}`);
     mode = next;
     modeSelect.value = mode;
     root.dataset.mode = mode;
-    root.setAttribute('aria-label', `San Francisco ${mode} explorer`);
+    root.setAttribute('aria-label', 'San Francisco interactive map');
     svg.setAttribute(
       'aria-label',
       `${mode === 'districts' ? 'District' : 'Neighborhood'} map. Use map controls to explore.`,
     );
-    const districts = mode === 'districts';
+    const districts = mode !== 'neighborhoods';
     for (const node of [sourceLabel, searchLabel, count, results]) node.hidden = districts;
-    areas.style.display = districts ? 'none' : '';
-    for (const layer of districtLayers) layer.style.display = districts ? '' : 'none';
+    updateComposition();
     updateDetail();
     resetView();
-    status.textContent = districts
-      ? `${year} supervisorial districts. Numbers identify each district.`
-      : selected
-        ? `${selected.properties.canonicalName} selected. ${sourceNames[source]}.`
-        : `${sourceNames[source]}. Select a neighborhood to begin.`;
+    status.textContent =
+      mode === 'basemap'
+        ? 'San Francisco basemap.'
+        : districts
+          ? `${year} supervisorial districts. Numbers identify each district.`
+          : selected
+            ? `${selected.properties.canonicalName} selected. ${sourceNames[source]}.`
+            : `${sourceNames[source]}. Select a neighborhood to begin.`;
   }
   function setLabels(visible: boolean) {
+    if (destroyed) return;
     if (typeof visible !== 'boolean') throw new TypeError('Labels must be a boolean.');
     labels = visible;
     labelsButton.setAttribute('aria-pressed', String(labels));
     root.dataset.labels = String(labels);
+    updateComposition();
     if (!labels) {
       labelLayer.replaceChildren();
       root.dataset.visibleLabels = '0';
@@ -670,7 +965,7 @@ export function createNeighborhoodExplorer({
   }
   listen(modeSelect, 'change', () => {
     const next = modeSelect.value;
-    if (next === 'neighborhoods' || next === 'districts') setMode(next);
+    if (next === 'neighborhoods' || next === 'districts' || next === 'basemap') setMode(next);
   });
   listen(search, 'input', updateResults);
   listen(search, 'keydown', (event) => {
@@ -694,54 +989,83 @@ export function createNeighborhoodExplorer({
         : null;
     if (node?.dataset.neighborhoodResult) selectNeighborhood(node.dataset.neighborhoodResult);
   });
-  let drag: { x: number; y: number; view: View; id: number } | undefined;
-  let suppressClick = false;
-  listen(svg, 'pointerdown', (event) => {
-    if (event.pointerType !== 'mouse' || event.button !== 0) return;
-    drag = { x: event.clientX, y: event.clientY, view: [...view], id: event.pointerId };
-    suppressClick = false;
-  });
-  listen(window, 'pointermove', (event) => {
-    if (!drag || event.pointerId !== drag.id) return;
-    const dx = event.clientX - drag.x,
-      dy = event.clientY - drag.y;
-    if (Math.hypot(dx, dy) > 4) suppressClick = true;
-    if (suppressClick) {
-      const scale = drag.view[2] / canvas.getBoundingClientRect().width;
-      setView([drag.view[0] - dx * scale, drag.view[1] - dy * scale, drag.view[2]]);
+  const touchButton = button('Touch navigation', 'Enable map touch navigation', () =>
+    setTouchNavigation(!touchNavigation),
+  );
+  let touchNavigation = false;
+  const navigation = attachNavigation(svg, getViewport, setView, controller.signal, () =>
+    setTouchNavigation(false),
+  );
+  function setTouchNavigation(enabled: boolean) {
+    if (destroyed) return;
+    if (typeof enabled !== 'boolean') throw new TypeError('Touch navigation must be a boolean.');
+    touchNavigation = enabled;
+    navigation.setTouchNavigation(enabled);
+    canvas.style.touchAction = enabled ? 'none' : 'pan-y pinch-zoom';
+    touchButton.textContent = enabled ? 'Done: page scrolling' : 'Touch navigation';
+    touchButton.setAttribute(
+      'aria-label',
+      enabled ? 'Exit map touch navigation' : 'Enable map touch navigation',
+    );
+    touchButton.setAttribute('aria-pressed', String(enabled));
+    root.dataset.touchNavigation = String(enabled);
+  }
+  listen(neighborhoodSelect, 'change', () => selectNeighborhood(neighborhoodSelect.value || null));
+  listen(markerSelect, 'change', () => selectMarker(markerSelect.value || null));
+  listen(svg, 'keydown', (event) => {
+    const target = event.target instanceof SVGElement ? event.target : null;
+    const id = target?.dataset.neighborhoodId;
+    if (!id || !selectableNeighborhoods) return;
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      selectNeighborhood(id);
+      target.focus();
+    } else if (event.key === '[' || event.key === ']') {
+      event.preventDefault();
+      const i = items.findIndex((item) => item.feature.id === id);
+      const next = items[(i + (event.key === ']' ? 1 : items.length - 1)) % items.length];
+      for (const item of items) item.node.setAttribute('tabindex', item === next ? '0' : '-1');
+      next.node.focus();
     }
   });
-  listen(window, 'pointerup', () => {
-    drag = undefined;
+  listen(markerLayer, 'click', (event) => {
+    const node =
+      event.target instanceof Element ? event.target.closest<SVGElement>('[data-marker-id]') : null;
+    if (node?.dataset.markerId) selectMarker(node.dataset.markerId);
   });
-  listen(window, 'pointercancel', () => {
-    drag = undefined;
+  listen(markerLayer, 'keydown', (event) => {
+    const node =
+      event.target instanceof Element ? event.target.closest<SVGElement>('[data-marker-id]') : null;
+    if (node?.dataset.markerId && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault();
+      selectMarker(node.dataset.markerId);
+      node.focus();
+    }
   });
   listen(svg, 'click', (event) => {
-    if (suppressClick) {
-      suppressClick = false;
-      return;
-    }
     const node =
       event.target instanceof Element
         ? event.target.closest<SVGElement>('[data-neighborhood-id]')
         : null;
-    if (node?.dataset.neighborhoodId) selectNeighborhood(node.dataset.neighborhoodId);
+    if (selectableNeighborhoods && node?.dataset.neighborhoodId)
+      selectNeighborhood(node.dataset.neighborhoodId);
   });
-  listen(
-    svg,
-    'wheel',
-    (event) => {
-      if (!event.ctrlKey && !event.metaKey) return;
-      event.preventDefault();
-      zoomBy(Math.exp(-Math.max(-100, Math.min(100, event.deltaY)) / 300));
-    },
-    { passive: false },
-  );
-  const observer = new ResizeObserver(scheduleLabels);
+  const observer = new ResizeObserver(() => {
+    navigation.cancel();
+    scheduleLabels();
+  });
   observer.observe(canvas);
   const explorer = Object.assign(root, {
     selectNeighborhood,
+    getSelection,
+    getViewport,
+    setViewport: setView,
+    fitGeometry,
+    panBy,
+    setTouchNavigation,
+    setMarkers,
+    selectMarker,
+    getSelectedMarker,
     setSource,
     setMode,
     setLabels,
@@ -764,5 +1088,7 @@ export function createNeighborhoodExplorer({
     if (selectedItem) setView(fitBounds(selectedItem.bounds));
   }
   setLabels(labels);
+  setTouchNavigation(false);
+  setMarkers(initialMarkers);
   return explorer;
 }
