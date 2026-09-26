@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.0
 
 - Add a browser neighborhood explorer with alias search, selection, boundary zoom, and GeoJSON downloads.
 - Adapt explorer labels to zoom and viewport size while preserving static SVG defaults.
