@@ -51,7 +51,8 @@
     "test:package": "node scripts/smoke-package.mjs",
     "build": "node scripts/build.mjs",
     "lint": "biome check .",
-    "prepack": "pnpm build"
+    "prepack": "pnpm build",
+    "build:pages": "pnpm demo && node scripts/build-pages.mjs"
   },
   "repository": {
     "type": "git",
@@ -72,7 +73,7 @@
     "typescript": "^7.0.2",
     "vite": "^8.3.1"
   },
-  "homepage": "https://github.com/kahwee/sf-map-svg#readme",
+  "homepage": "https://kahwee.github.io/sf-map-svg/",
   "bugs": {
     "url": "https://github.com/kahwee/sf-map-svg/issues"
   },

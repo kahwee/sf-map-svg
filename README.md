@@ -1,143 +1,77 @@
 # San Francisco SVG maps
 
-![District fills, optional neighborhood boundaries, and plain outlines](docs/map-preview.png)
+[Explore the live map](https://kahwee.github.io/sf-map-svg/) · [Data guide](data/README.md) · [Geographic sources](SOURCES.md) · [Contributing](CONTRIBUTING.md)
 
-An MIT-licensed package extracted from KahWee’s **San Francisco District Map** Site. Draws a self-contained SVG with bundled geometry and no runtime dependencies, tiles, WebGL, or network requests.
+Self-contained SVG maps of San Francisco, with precise coastlines, soft district colors, parks, roads, BART stations, and searchable neighborhoods. Render static SVGs in Node or add an interactive map to a browser. All geometry is bundled; there are no runtime dependencies, map tiles, API keys, or external data requests.
 
-```js
-import { renderSFMap, createSFMap } from '@kahwee/sf-map-svg';
+![San Francisco district maps with optional neighborhood boundaries](docs/map-preview.png)
 
-const svg = renderSFMap({
-  year: 2022,
-  districtLines: true,
-  landmarks: true, // parks with labels
-  bartStations: true, // all eight SF stations
-  highways: true,
-  neighborhoodLines: true, // optional; off by default
-  markers: [{ id: 'dolores', lng: -122.4269, lat: 37.7596, label: 'Dolores Park' }],
-});
-```
-
-Write `svg` to a `.svg` file or embed it in your page. For Astro, render it with `<div set:html={svg} />`. Text and attribute values are XML escaped.
-
-## Layers and options
-
-| Option              | Default             | Purpose                                                                                                                    |
-| ------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `year`              | `2022`              | District boundaries: `2002`, `2012`, or `2022`                                                                             |
-| `districtLines`     | `true`              | Supervisorial district outlines                                                                                            |
-| `neighborhoodLines` | `false`             | Dashed SFAR realtor neighborhood outlines                                                                                  |
-| `theme` | `'districts'` | Use `'transit'` for pale blue water, ivory land, green parks, and blue BART symbols; custom `colors` still take precedence |
-| `districtFills`     | `true`              | Original Site’s eleven muted district colors                                                                               |
-| `labels` | `true` | Master switch for visible map text; symbols and accessible titles remain |
-| `districtLabels`    | `true`              | District number badges                                                                                                     |
-| `highways`          | `false`             | Original Site’s highway geometry                                                                                           |
-| `landmarks`         | `false`             | Golden Gate Park, Presidio, Lincoln Park, Twin Peaks, Dolores Park, and McLaren Park                                       |
-| `bartStations`      | `false`             | Eight San Francisco BART stations with blue rings and names                                                                |
-| `width`, `height`   | `800`, `800`        | SVG viewBox and intrinsic size                                                                                             |
-| `padding`           | `28`                | Space around the coast                                                                                                     |
-| `markers`           | `[]`                | Points with `id`, `lng`, `lat`, optional `label`, `color`, `selected`                                                      |
-| `keyRoads` | `false` | Nine selected road corridors and names for orientation |
-| `colors`            | Built-in palette    | Override `water`, `land`, `district`, `neighborhood`, `highway`, `road`, `park`, `landmark`, `bart`, `label`, `marker`, `selected` |
-| `title`             | `San Francisco map` | Accessible SVG title                                                                                                       |
-| `idPrefix`          | Unique per process  | Set explicitly for deterministic output or independent server renders                                                      |
-
-For a plain outline map, set `districtFills: false`. Neighborhood areas are **August 2010 SFAR realtor areas**, not legal boundaries or a historical layer matched to the district year. See [SOURCES.md](SOURCES.md).
-
-`createSFMap(options)` returns `{ svg, project, viewBox }`. `project([longitude, latitude])` gives matching SVG coordinates for custom overlays. Named exports also include `districtYears`, `districtColors`, and `neighborhoodNames`.
-
-## Installation
+## Install
 
 ```sh
 pnpm add @kahwee/sf-map-svg
 ```
 
-The package is published publicly on npm. Geographic JSON files are included in the package. See `LICENSE` and `SOURCES.md` for software and source-data rights.
+Use Node 22.12+ for server-side rendering. Browser components need a DOM and a bundler that supports the package’s JSON imports.
 
-## Development
+| Start with | Entry point | What you get |
+| --- | --- | --- |
+| Static SVG | `@kahwee/sf-map-svg` | SVG markup, projection helpers, optional layers |
+| Neighborhood explorer | `@kahwee/sf-map-svg/explorer` | Search, source selection, map controls, GeoJSON downloads |
+| Interactive map | `@kahwee/sf-map-svg/interactive` | Embeddable map and controls without the explorer sidebar |
+| Geographic data | `@kahwee/sf-map-svg/data` | Source-aware lookup and canonical GeoJSON |
 
-```sh
-pnpm install --frozen-lockfile
-pnpm test
-pnpm demo
-```
-
-Open `examples/generated/index.html` to compare district and neighborhood maps. Generated SVG files are there too. See [CONTRIBUTING.md](CONTRIBUTING.md) for source structure, checks and release steps. GitHub Actions runs validation; npm releases use public access.
-
-The package uses a small Mercator SVG renderer while retaining the Site’s boundary geometry, coastline, palette, district labels, and highway data.
-
-The `theme: 'transit'` preset borrows the clear visual hierarchy of [BART’s system map](https://www.bart.gov/system-map), retaining geographic positions. It uses a quiet, single-color land fill instead of district colors. The neighborhood explorer uses this preset.
-
-Enable `landmarks`, `bartStations`, and `highways` together for the featured example. Park fills use `colors.park`, park labels use `colors.landmark`, and station rings and labels use `colors.bart`. These current geographic overlays are independent of the district year; BART stations are city-only (Daly City is outside the map). Station positions are geographic points, not a route diagram.
-
-## Examples
-
-### Landmarks, BART stations, and highways
+## Render a static map
 
 ```js
-import { renderSFMap } from '@kahwee/sf-map-svg';
 import { writeFile } from 'node:fs/promises';
+import { renderSFMap } from '@kahwee/sf-map-svg';
 
-await writeFile(
-  'san-francisco.svg',
-  renderSFMap({
-    landmarks: true,
-    bartStations: true,
-    highways: true,
-  }),
-);
-```
-
-### Plain map with a selected place
-
-```js
-const svg = renderSFMap({
-  districtFills: false,
-  districtLabels: false,
-  landmarks: true,
-  markers: [{ id: 'dolores', lng: -122.4269, lat: 37.7596, label: 'Dolores Park', selected: true }],
-});
-```
-
-### Match a site's colors
-
-```js
 const svg = renderSFMap({
   landmarks: true,
   bartStations: true,
-  colors: { park: '#c4d4b1', landmark: '#3e6346', bart: '#795285' },
+  highways: true,
+  neighborhoodLines: true,
+  markers: [{ id: 'dolores', lng: -122.4269, lat: 37.7596, label: 'Dolores Park' }],
 });
+
+await writeFile('san-francisco.svg', svg);
 ```
 
-## Storybook
+Embed the returned SVG markup directly in a page; in Astro, use `<div set:html={svg} />`. User-supplied text and attributes are XML escaped. Use a distinct `idPrefix` for each map when combining independently rendered SVGs.
 
-```sh
-pnpm storybook        # http://127.0.0.1:6006
-pnpm build-storybook  # static output in storybook-static/
-```
+## Static options
 
-Map stories cover the default map, combined and independent landmark/BART layers, neighborhoods, outlines, historical district years, custom markers, a custom palette, and a narrow map. The Data / Neighborhood explorer adds examples for comparing Mission, Outer Mission, SoMa, and NoPa across source definitions. Controls edit map options live; the Docs tab shows usage examples. Storybook and Vite are development dependencies only and are excluded from the package archive. Development requires Node 22.12+ and pnpm 12. Only esbuild's dependency build script is enabled in `pnpm-workspace.yaml`.
+| Option | Default | Purpose |
+| --- | --- | --- |
+| `year` | `2022` | District boundaries: `2002`, `2012`, or `2022` |
+| `districtLines` | `true` | Supervisorial district outlines |
+| `neighborhoodLines` | `false` | Dashed SFAR realtor neighborhood outlines |
+| `theme` | `'districts'` | Use `'transit'` for pale blue water, ivory land, green parks, and blue BART symbols; custom `colors` still take precedence |
+| `districtFills` | `true` | Original Site’s eleven muted district colors |
+| `labels` | `true` | Master switch for visible map text; symbols and accessible titles remain |
+| `districtLabels` | `true` | District number badges |
+| `highways` | `false` | Original Site’s highway geometry |
+| `landmarks` | `false` | Golden Gate Park, Presidio, Lincoln Park, Twin Peaks, Dolores Park, and McLaren Park |
+| `bartStations` | `false` | Eight San Francisco BART stations with blue rings and names |
+| `width`, `height` | `800`, `800` | SVG viewBox and intrinsic size |
+| `padding` | `28` | Space around the coast |
+| `markers` | `[]` | Points with `id`, `lng`, `lat`, optional `label`, `color`, `selected` |
+| `keyRoads` | `false` | Nine selected road corridors and names for orientation |
+| `colors` | Built-in palette | Override `water`, `land`, `district`, `neighborhood`, `highway`, `road`, `park`, `landmark`, `bart`, `label`, `marker`, `selected` |
+| `title` | `San Francisco map` | Accessible SVG title |
+| `idPrefix` | Unique per process | Set explicitly for deterministic output or independent server renders |
 
-Dependabot checks npm dependencies and GitHub Actions weekly, grouping Storybook updates. CI validates formatting, SVG tests, generated examples, Storybook builds, and package creation on Node 22 and 26. Dependency PRs require review; updates are not merged automatically.
+For a plain outline map, set `districtFills: false`. Neighborhood areas are **August 2010 SFAR realtor areas**, not legal boundaries or a historical layer matched to the district year. See [SOURCES.md](SOURCES.md).
 
-## Accessible JSON data and neighborhood lookup
+`createSFMap(options)` returns `{ svg, project, viewBox }`. `project([longitude, latitude])` gives matching SVG coordinates for custom overlays. Named exports also include `districtYears`, `districtColors`, and `neighborhoodNames`.
 
-All map geometry is available through stable JSON package exports. There are three district files (2002, 2012, 2022), the full 117 SF Find neighborhoods, 41 analysis neighborhoods, 92 realtor-defined areas, and separate coastline, highway, landmark, and BART files. Neighborhood records include a canonical display name, exact source name, stable ID, aliases where documented, source definition, and full polygon geometry.
+Use `theme: 'transit'` for pale water, ivory land, green parks, and blue BART symbols. Custom `colors` override the preset. Park and station overlays represent current source geography, independently of the district year; stations outside San Francisco, including Daly City, are excluded.
 
-```js
-import neighborhoods from '@kahwee/sf-map-svg/data/neighborhoods-realtor.json' with { type: 'json' };
-import districts2022 from '@kahwee/sf-map-svg/data/districts-2022.json' with { type: 'json' };
-import { getNeighborhood, searchNeighborhoods } from '@kahwee/sf-map-svg/data';
+`keyRoads: true` adds Market, Mission, Geary, Van Ness, 19th Avenue, Sunset, The Embarcadero, Columbus, and Divisadero using DataSF centerlines. These are orientation features, not routing guidance.
 
-const mission = getNeighborhood('Inner Mission');
-const outerMission = getNeighborhood('Outer Mission');
-const nopa = getNeighborhood('NoPa', { source: 'realtor' });
-const matchingDefinitions = searchNeighborhoods('mission');
-```
 
-These are 250 **source-specific definitions**, not 250 distinct neighborhoods. Canonical names are package display names, and boundaries reflect each documented source rather than a claimed universal consensus. Mission and Outer Mission remain distinct. JSON files are the source of truth used by the renderer; the default map and lookup use the 92 SFAR realtor neighborhoods. See [the data API guide](data/README.md) for all filenames, schema, lookup rules, source comparisons, and custom SVG overlays. Storybook provides downloadable JSON files beside its neighborhood examples.
-
-## Interactive neighborhood explorer
+## Neighborhood explorer
 
 The browser explorer includes canonical-name and alias search, source selection, neighborhood outlines, zoom controls, and GeoJSON downloads. SFAR realtor definitions are selected by default; SF Find and analysis neighborhoods remain separate choices.
 
@@ -158,19 +92,6 @@ Selected downloads are one-feature GeoJSON FeatureCollections retaining source a
 
 At city scale, labels stay sparse. Zooming reveals neighborhood and BART names, with label sizing and collision checks based on the visible viewport. Station points remain visible. The static `renderSFMap` API keeps its existing labels and defaults.
 
-Run `pnpm demo`, serve the repository root over HTTP, and open `examples/generated/explorer.html`. Storybook includes city, selected neighborhood, alternative-source, and mobile examples.
-
-## License
-
-Software is licensed under MIT. Geographic datasets retain their source terms and attribution requirements; see [SOURCES.md](SOURCES.md).
-
-
-## TypeScript development
-
-The library is authored in strict TypeScript 7. Run `pnpm build` to compile JavaScript and declarations into `dist/`. JavaScript consumers require no TypeScript runtime. `pnpm format` applies Biome formatting and safe lint fixes; `pnpm check` checks Biome, data, source and consumer types, and tests.
-
-Enable `keyRoads: true` for Market, Mission, Geary, Van Ness, 19th Avenue, Sunset, The Embarcadero, Columbus, and Divisadero. These use active DataSF centerlines, not invented routes. The explorer reveals road names as you zoom. Import `keyRoads` from the data entry point or `data/key-roads.json` for geometry, source segment IDs, and label anchors.
-
 ### Map modes and labels
 
 The interactive explorer includes a map-mode selector and a Labels toggle. `mode: 'districts'` shows numbered supervisorial districts; `mode: 'neighborhoods'` shows names from the selected neighborhood source (SFAR realtor by default). Labels are collision-filtered and remain about 12 screen pixels through map zoom and resize; more names fit as you zoom in. Road labels use 11 pixels.
@@ -186,7 +107,7 @@ explorer.setLabels(true);
 
 ## Reusable interactive map
 
-The new `@kahwee/sf-map-svg/interactive` entry point provides a map, accessible controls, and
+The `@kahwee/sf-map-svg/interactive` entry point provides a map, accessible controls, and
 attribution without the explorer's search sidebar or detail panel. It does not change URLs,
 load articles, apply editorial filters, or navigate. Importing the static entry point does not
 import this interactive runtime. Both paths retain zero runtime dependencies.
@@ -319,7 +240,39 @@ chooser to reach obscured markers. Automated clustering is not included in this 
 - Pointer cancellation, loss of capture, window blur, and resizing cancel active gestures.
   There is no animated camera or inertia. Button transitions are disabled with reduced motion.
 
-### Examples and verification
+## Geographic data and lookup
+
+All map geometry is available through stable JSON package exports. There are three district files (2002, 2012, 2022), the full 117 SF Find neighborhoods, 41 analysis neighborhoods, 92 realtor-defined areas, and separate coastline, highway, landmark, and BART files. Neighborhood records include a canonical display name, exact source name, stable ID, aliases where documented, source definition, and full polygon geometry.
+
+```js
+import neighborhoods from '@kahwee/sf-map-svg/data/neighborhoods-realtor.json' with { type: 'json' };
+import districts2022 from '@kahwee/sf-map-svg/data/districts-2022.json' with { type: 'json' };
+import { getNeighborhood, searchNeighborhoods } from '@kahwee/sf-map-svg/data';
+
+const mission = getNeighborhood('Inner Mission');
+const outerMission = getNeighborhood('Outer Mission');
+const nopa = getNeighborhood('NoPa', { source: 'realtor' });
+const matchingDefinitions = searchNeighborhoods('mission');
+```
+
+These are 250 **source-specific definitions**, not 250 distinct neighborhoods. Canonical names are package display names, and boundaries reflect each documented source rather than a claimed universal consensus. Mission and Outer Mission remain distinct. JSON files are the source of truth used by the renderer; the default map and lookup use the 92 SFAR realtor neighborhoods. See [the data API guide](data/README.md) for all filenames, schema, lookup rules, source comparisons, and custom SVG overlays. Storybook provides downloadable JSON files beside its neighborhood examples.
+
+## Development
+
+Requires Node 22.12+ and pnpm 12. The library uses strict TypeScript; the build emits JavaScript and declarations to `dist/`.
+
+```sh
+pnpm install --frozen-lockfile
+pnpm check            # formatting, data catalog, types, and tests
+pnpm demo             # generated SVGs and example pages
+pnpm build-storybook  # static component documentation
+pnpm test:package     # install and check the packed package
+```
+
+Use `pnpm format` to apply Biome formatting and safe lint fixes. Run `pnpm storybook` for interactive component examples at http://127.0.0.1:6006. CI runs checks on Node 22, 24, and 26. See [CONTRIBUTING.md](CONTRIBUTING.md) for source structure and release instructions.
+
+### Browser verification
+
 
 Run `pnpm demo` and serve the repository root. `examples/generated/index.html` covers static
 maps, `explorer.html` covers the full explorer, and `interactive.html` covers independently
@@ -342,3 +295,19 @@ teardown. Physical iOS Safari and Android Chrome verification remains required b
 check page scroll and browser pinch in default mode; map pan and pinch in engaged mode; lift one
 finger; interrupt/cancel; rotate; use Done; verify scrolling resumes. Desktop automation and
 synthetic pointer tests do not establish physical-device compatibility.
+
+## GitHub Pages
+
+The [live explorer](https://kahwee.github.io/sf-map-svg/) provides neighborhood search, 2022 district views, SVG examples, and GeoJSON downloads. Its source is in `website/` and uses the public explorer API.
+
+```sh
+pnpm build:pages
+python3 -m http.server 8765 --directory pages-dist
+# Open http://localhost:8765
+```
+
+The build bundles local assets into `pages-dist/` with relative URLs for GitHub’s project path. `.github/workflows/pages.yml` validates and deploys pushes to `main` using GitHub Actions. It does not publish npm packages or releases.
+
+## License and attribution
+
+MIT-licensed software, originally extracted from KahWee’s San Francisco District Map. Geographic data retains its source terms and attribution requirements; see [LICENSE](LICENSE) and [SOURCES.md](SOURCES.md). Neighborhood definitions vary by source and are not legal boundaries or a claim of universal consensus.
