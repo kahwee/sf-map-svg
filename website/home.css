@@ -485,6 +485,10 @@ button:focus-visible {
   width: 100%;
   height: 100%;
 }
+.history-morph {
+  background: transparent;
+  pointer-events: none;
+}
 .history-stage-caption {
   align-self: end;
   margin-bottom: 24px;

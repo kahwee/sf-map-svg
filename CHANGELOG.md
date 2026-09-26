@@ -4,6 +4,11 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 1.3.4 — 2026-09-26
+
+- Morph matched district outlines between historical maps on GitHub Pages, restoring moving boundaries in place of the 1.3.3 line trace.
+- Keep each dated SVG exact when motion settles and switch instantly for visitors who request reduced motion.
+
 ## 1.3.3 — 2026-09-26
 
 - Draw each historical district map’s actual boundary lines during the GitHub Pages playback, with a reduced-motion instant switch.

@@ -1,4 +1,5 @@
 import election from '../data/elections/2026-06-02.json';
+import { createDistrictMorph } from './district-morph.ts';
 import { noShareColor, passed, shareColor, yesShare } from './measures-model.js';
 
 const $ = (id) => document.getElementById(id);
@@ -19,7 +20,7 @@ let district = 0;
 let resultSvg;
 let currentYear = 2022;
 let currentHistoryLayer;
-let activeAnimations = [];
+let activeTransition;
 let playbackToken = 0;
 let transitionToken = 0;
 let playing = false;
@@ -192,7 +193,7 @@ function updateHistoryLabel() {
     'aria-label',
     `${currentYear} San Francisco supervisorial districts`,
   );
-  for (const button of document.querySelectorAll('[data-year]'))
+  for (const button of document.querySelectorAll('.history-timeline button[data-year]'))
     button.setAttribute('aria-pressed', String(Number(button.dataset.year) === currentYear));
 }
 
@@ -201,9 +202,12 @@ async function transitionToYear(year, animate = true) {
   const request = ++transitionToken;
   const source = await loadYear(year);
   if (request !== transitionToken) return false;
-  if (year === currentYear && currentHistoryLayer) return true;
-  for (const animation of activeAnimations) animation.cancel();
-  activeAnimations = [];
+  activeTransition?.cancel();
+  activeTransition = undefined;
+  if (year === currentYear && currentHistoryLayer) {
+    updateHistoryLabel();
+    return true;
+  }
   const next = historyLayer(source);
   if (!currentHistoryLayer || !animate || reducedMotion.matches) {
     $('history-map').replaceChildren(next);
@@ -212,48 +216,61 @@ async function transitionToYear(year, animate = true) {
     updateHistoryLabel();
     return true;
   }
-  $('history-status').textContent = `Drawing ${year} boundaries`;
-  $('history-map').append(next);
-  const outlines = [...next.querySelectorAll('[data-layer="district-lines"] path')];
-  const animations = [
-    next.animate([{ opacity: 0 }, { opacity: 1 }], {
-      duration: 500,
-      easing: 'ease-out',
-      fill: 'forwards',
-    }),
-  ];
-  for (const [index, path] of outlines.entries()) {
-    const length = Math.max(1, path.getTotalLength());
-    path.style.strokeDasharray = `${length}px ${length}px`;
-    path.style.strokeDashoffset = `${length}px`;
-    path.style.stroke = '#216c70';
-    path.style.strokeWidth = '2.4px';
-    path.style.strokeLinecap = 'round';
-    animations.push(
-      path.animate([{ strokeDashoffset: `${length}px` }, { strokeDashoffset: '0px' }], {
-        duration: 1100,
-        delay: 160 + index * 55,
-        easing: 'cubic-bezier(.42, 0, .24, 1)',
-        fill: 'forwards',
-      }),
-    );
-  }
-  activeAnimations = animations;
-  try {
-    await Promise.all(animations.map((animation) => animation.finished));
-  } catch {
-    next.remove();
+  const fromLines = currentHistoryLayer.querySelector('[data-layer="district-lines"]');
+  const toLines = next.querySelector('[data-layer="district-lines"]');
+  const fromLabels = currentHistoryLayer.querySelector('[data-layer="district-labels"]');
+  const toLabels = next.querySelector('[data-layer="district-labels"]');
+  const morph = createDistrictMorph(
+    currentHistoryLayer.querySelector('svg'),
+    next.querySelector('svg'),
+  );
+  $('history-status').textContent = `Morphing ${currentYear} into ${year} boundaries`;
+  fromLines.style.opacity = '0';
+  toLines.style.opacity = '0';
+  toLabels.style.opacity = '0';
+  next.style.opacity = '0';
+  morph.update(0);
+  $('history-map').append(next, morph.layer);
+  const completed = await new Promise((resolve) => {
+    let frame;
+    let settled = false;
+    let started;
+    let transition;
+    const finish = (value) => {
+      if (settled) return;
+      settled = true;
+      cancelAnimationFrame(frame);
+      if (activeTransition === transition) activeTransition = undefined;
+      fromLines.style.removeProperty('opacity');
+      toLines.style.removeProperty('opacity');
+      fromLabels.style.removeProperty('opacity');
+      toLabels.style.removeProperty('opacity');
+      next.style.removeProperty('opacity');
+      morph.layer.remove();
+      if (!value) next.remove();
+      resolve(value);
+    };
+    transition = { cancel: () => finish(false) };
+    activeTransition = transition;
+    const tick = (time) => {
+      started ??= time;
+      const progress = Math.min(1, (time - started) / 1550);
+      const eased = progress < 0.5 ? 4 * progress ** 3 : 1 - (-2 * progress + 2) ** 3 / 2;
+      morph.update(eased);
+      next.style.opacity = String(Math.min(1, progress / 0.75));
+      fromLabels.style.opacity = String(Math.max(0, 1 - progress / 0.35));
+      toLabels.style.opacity = String(Math.max(0, (progress - 0.65) / 0.35));
+      const settling = Math.max(0, (progress - 0.75) / 0.25);
+      toLines.style.opacity = String(settling);
+      morph.setOpacity(1 - settling);
+      if (progress === 1) finish(true);
+      else frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+  });
+  if (!completed) {
     if (request === transitionToken) updateHistoryLabel();
     return false;
-  }
-  if (activeAnimations === animations) activeAnimations = [];
-  for (const animation of animations) animation.cancel();
-  for (const path of outlines) {
-    path.style.removeProperty('stroke-dasharray');
-    path.style.removeProperty('stroke-dashoffset');
-    path.style.removeProperty('stroke');
-    path.style.removeProperty('stroke-width');
-    path.style.removeProperty('stroke-linecap');
   }
   $('history-map').replaceChildren(next);
   currentHistoryLayer = next;
@@ -266,8 +283,9 @@ function stopPlayback() {
   playbackToken++;
   transitionToken++;
   playing = false;
-  for (const animation of activeAnimations) animation.cancel();
-  activeAnimations = [];
+  activeTransition?.cancel();
+  activeTransition = undefined;
+  updateHistoryLabel();
   $('history-play').textContent = 'Play the change ▶';
   $('history-play').setAttribute('aria-label', 'Play district boundary history');
 }
