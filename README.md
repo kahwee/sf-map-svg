@@ -26,6 +26,8 @@ Use Node 22.12+ for server-side rendering. Browser components need a DOM and a b
 | Lightweight guide map | `@kahwee/sf-map-svg/guide` | Curated overview geography, with detailed data loaded explicitly |
 | Animated transit demo | `@kahwee/sf-map-svg/transit` | Optional, schematic BART journey with playback controls |
 | Geographic data | `@kahwee/sf-map-svg/data` | Source-aware lookup and canonical GeoJSON |
+| Metadata search | `@kahwee/sf-map-svg/data/catalog` | Search names without polygon geometry |
+| SFAR lookup | `@kahwee/sf-map-svg/data/realtor` | Default neighborhoods without alternative sources |
 
 ## Render a static map
 
@@ -53,6 +55,14 @@ road, park, and station arrays. Use the canonical JSON subpaths documented in
 corresponding `SFMapData` records. The root entry remains convenient and includes the
 built-in datasets for backward compatibility.
 
+In tree-shaking bundlers, importing a single symbol from `/data` retains only the
+modules that symbol uses.
+`searchNeighborhoods` needs catalog metadata but no polygon geometry. The synchronous
+source-switching `getNeighborhood` still needs all three neighborhood collections;
+use `/data/realtor` when only the default SFAR definitions are needed. Optional coast,
+district, road, park, and station collections also have independent `/data/*` entries.
+See [the measured bundle report](docs/module-bundle-report.md).
+
 The same split is available for browser controls with
 `@kahwee/sf-map-svg/interactive-data`. Pass an `InteractiveSFMapData` object containing
 `map` (the `SFMapData` used by the static renderer) and only the neighborhood collections
@@ -69,7 +79,8 @@ have independent `layers.keyRoads` and `layers.roadLabels` controls. Lombard geo
 label appear after 1.8× zoom; major street labels can appear at city scale in a smaller type size.
 
 ```ts
-import { createGuideMap, loadGuideDetailedData } from '@kahwee/sf-map-svg/guide';
+import { createGuideMap } from '@kahwee/sf-map-svg/guide';
+import { loadGuideDetailedData } from '@kahwee/sf-map-svg/guide/detailed';
 import { createInteractiveSFMapWithData } from '@kahwee/sf-map-svg/interactive-data';
 
 const map = createGuideMap({ layers: { roadLabels: false } });
@@ -85,6 +96,8 @@ const detailedMap = createInteractiveSFMapWithData(detailedData, {
 
 Run `pnpm data:guide` to rebuild the subpixel overview geometries from canonical files.
 `docs/guide-bundle-report.md` records compressed bundle sizes and verifies the included data.
+The detailed loader is also re-exported from `/guide` for compatibility; importing only
+that function no longer puts overview geography in the initial bundle.
 
 ```js
 import coast from '@kahwee/sf-map-svg/data/coast.json' with { type: 'json' };
@@ -328,13 +341,12 @@ chooser to reach obscured markers. Automated clustering is not included in this 
 All map geometry is available through stable JSON package exports. There are three district files (2002, 2012, 2022), the full 117 SF Find neighborhoods, 41 analysis neighborhoods, 92 realtor-defined areas, and separate coastline, highway, landmark, and BART files. Neighborhood records include a canonical display name, exact source name, stable ID, aliases where documented, source definition, and full polygon geometry.
 
 ```js
-import neighborhoods from '@kahwee/sf-map-svg/data/neighborhoods-realtor.json' with { type: 'json' };
-import districts2022 from '@kahwee/sf-map-svg/data/districts-2022.json' with { type: 'json' };
-import { getNeighborhood, searchNeighborhoods } from '@kahwee/sf-map-svg/data';
+import { getRealtorNeighborhood } from '@kahwee/sf-map-svg/data/realtor';
+import { searchNeighborhoods } from '@kahwee/sf-map-svg/data/catalog';
 
-const mission = getNeighborhood('Inner Mission');
-const outerMission = getNeighborhood('Outer Mission');
-const nopa = getNeighborhood('NoPa', { source: 'realtor' });
+const mission = getRealtorNeighborhood('Inner Mission');
+const outerMission = getRealtorNeighborhood('Outer Mission');
+const nopa = getRealtorNeighborhood('NoPa');
 const matchingDefinitions = searchNeighborhoods('mission');
 ```
 

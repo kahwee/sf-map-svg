@@ -33,7 +33,28 @@ const mission = neighborhoods.features.find((f) => f.id === 'inner-mission');
 console.log(mission.properties.canonicalName, mission.geometry);
 ```
 
-Node 22.12+ supports this syntax. Bundlers may also support JSON imports without the import attribute. Files are included in the package archive; non-JavaScript consumers can parse the same JSON files directly. These are package entry points, not a hosted API. The public repository and GitHub Pages explorer also provide access to the source data. Consumers who need only one dataset should import its JSON subpath rather than the convenience module, which loads all collections.
+Node 22.12+ supports this syntax. Bundlers may also support JSON imports without the import attribute. Files are included in the package archive; non-JavaScript consumers can parse the same JSON files directly. These are package entry points, not a hosted API. The public repository and GitHub Pages explorer also provide access to the source data. Consumers who need only one dataset can import its JSON subpath or a typed, frozen leaf module.
+
+## Import only the data you need
+
+```js
+import { searchNeighborhoods } from '@kahwee/sf-map-svg/data/catalog';
+import { getRealtorNeighborhood } from '@kahwee/sf-map-svg/data/realtor';
+import { coast } from '@kahwee/sf-map-svg/data/coast';
+
+const candidates = searchNeighborhoods('mission'); // metadata, no polygons
+const mission = getRealtorNeighborhood('Inner Mission'); // SFAR only
+const coastline = coast.features[0].geometry;
+```
+
+The `/data` entry remains compatible and re-exports these helpers and collections.
+Its `getNeighborhood(name, { source })` imports all three neighborhood definitions
+because source switching is synchronous. Importing only `searchNeighborhoods` from
+`/data` now includes catalog metadata only in tree-shaking bundles. Other independent modules are
+`/data/sf-find`, `/data/analysis`, `/data/districts`, `/data/highways`,
+`/data/landmarks`, `/data/roads`, and `/data/stations`. Districts still groups all
+three supported years; import `districts-2022.json` directly when only one year is
+needed. See [the consumer bundle report](../docs/module-bundle-report.md).
 
 ## Names and definitions
 
@@ -69,7 +90,7 @@ const allAnalysisPolygons = neighborhoodCollections.analysis;
 const historicalDistricts = districtMaps[2012];
 ```
 
-Lookup is exact after case/punctuation normalization, returns `undefined` for an unknown name, and throws for an unknown source. Search matches substrings and preserves every source-specific result. The convenience module's shared data is deeply frozen; use `structuredClone(feature)` if you need an editable copy. Do not mutate imported datasets used by the renderer.
+Lookup is exact after case/punctuation normalization, returns `undefined` for an unknown name, and throws for an unknown source. Search matches substrings and preserves every source-specific result. The convenience and leaf modules' shared data is deeply frozen; use `structuredClone(feature)` if you need an editable copy. Do not mutate imported datasets used by the renderer.
 
 ## Draw a neighborhood with the existing projection
 

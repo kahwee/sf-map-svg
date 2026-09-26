@@ -1,6 +1,36 @@
 import stations from '../data/bart-stations.json' with { type: 'json' };
-import { createSFMap } from './index.js';
+import coast from '../data/coast.json' with { type: 'json' };
+import districts from '../data/districts-2022.json' with { type: 'json' };
+import parks from '../data/landmarks.json' with { type: 'json' };
+import type {
+  DistrictProperties,
+  FeatureCollection,
+  Geometry,
+  LandmarkProperties,
+} from '../data/types.js';
+import type { SFMapData } from './map-core.js';
+import { createSFMapWithData } from './map-core.js';
 import type { TransitAnimationElement } from './types.js';
+
+const districtData = districts as unknown as FeatureCollection<DistrictProperties>;
+const parkData = parks as unknown as FeatureCollection<LandmarkProperties>;
+const transitMapData: SFMapData = {
+  coast: coast.features[0].geometry as unknown as Geometry,
+  districts: {
+    2022: districtData.features.map(({ geometry, properties }) => ({
+      id: properties.district,
+      label: properties.label,
+      labelPoints: properties.labelPoints,
+      geometry,
+      extras: properties.displayExtras,
+    })),
+  },
+  landmarks: parkData.features.map(({ id, properties, geometry }) => ({
+    id,
+    ...properties,
+    geometry,
+  })),
+};
 
 /** A deliberately schematic, offline station-to-station animation. Starts paused. */
 export function createTransitAnimation(): TransitAnimationElement {
@@ -8,7 +38,10 @@ export function createTransitAnimation(): TransitAnimationElement {
     destroy: () => {},
   }) as TransitAnimationElement;
   const root = host.attachShadow({ mode: 'open' });
-  const map = createSFMap({ districtLabels: false, landmarks: true, labels: false });
+  const map = createSFMapWithData(
+    { districtLabels: false, landmarks: true, labels: false },
+    transitMapData,
+  );
   root.innerHTML = `<style>
     :host{display:block;font:14px system-ui;color:#244747;max-width:800px}
     svg{display:block;width:100%;height:auto} .controls{display:flex;gap:12px;align-items:center;padding:12px;flex-wrap:wrap}

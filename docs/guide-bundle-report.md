@@ -4,8 +4,8 @@ Generated 2026-09-26 by `pnpm report:guide` with Vite production minification an
 
 | Entry | Initial JS, raw | Initial JS, gzip | Explicit detail JS, gzip |
 | --- | ---: | ---: | ---: |
-| Compatibility interactive (before) | 6392.3 KB | 1824.1 KB | — |
-| Guide preset (after) | 438.9 KB | 103.9 KB | 473.7 KB |
+| Compatibility interactive (before) | 6288.4 KB | 1808.0 KB | — |
+| Guide preset (after) | 439.0 KB | 103.8 KB | 473.7 KB |
 
 **Change in initial gzip:** 94.3% smaller. **500 KB target:** met.
 

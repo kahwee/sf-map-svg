@@ -4,6 +4,13 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 1.4.0 — 2026-09-26
+
+- Split geographic convenience exports into independent data modules, so metadata search and SFAR-only lookup avoid unrelated JSON.
+- Separate the guide's detailed loader from overview geography; keep the existing `/guide` exports and add explicit `/guide/detailed`, `/guide/data`, and `/guide/map` paths.
+- Make the optional transit animation include only its 2022 map geography, preserving the rendered route while cutting its consumer bundle size.
+- Publish a before-and-after tree-shaking report for representative consumer imports.
+
 ## 1.3.8 — 2026-09-26
 
 - Give the district map a clear, dedicated viewing area on mobile by shrinking the election and measure controls and moving the map legend below the map.
