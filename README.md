@@ -333,4 +333,4 @@ Embed the Pages demo with `<iframe src="https://kahwee.github.io/sf-map-svg/tran
 
 ## Ballot measures explorer
 
-[Explore June 2026 ballot measures](https://kahwee.github.io/sf-map-svg/measures.html): certified local Measures A–D, citywide outcomes, a district Yes-share map, all-district comparison table, shareable views, and downloadable JSON. The page uses the released map renderer and separately bundled official election results. It is an archive, not a live results service or voting guide. Methodology and source links are available on the page and in [SOURCES.md](SOURCES.md).
+[Explore June 2026 ballot measures](https://kahwee.github.io/sf-map-svg/measures.html): certified local Measures A–D, citywide outcomes, prominent interactive district maps, side-by-side measure comparisons, Yes/No or original district colors, zoom and district fitting, a sortable comparison table, shareable views, and SVG/CSV/JSON downloads. The page uses the released map renderer and separately bundled official election results. It is an archive, not a live results service or voting guide. Methodology and source links are available on the page and in [SOURCES.md](SOURCES.md).

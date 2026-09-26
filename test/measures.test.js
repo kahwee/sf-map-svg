@@ -37,3 +37,26 @@ test('vote shares exclude blank responses and passage respects exact thresholds'
   assert.equal(passed({ threshold: 'two-thirds', citywide: { yes: 2, no: 1 } }), true);
   assert.equal(passed({ threshold: 'two-thirds', citywide: { yes: 66, no: 34 } }), false);
 });
+
+test('shared views validate URL input and preserve independent comparison controls', async () => {
+  const { readView } = await import('../website/measures-model.js');
+  assert.deepEqual(
+    readView('#measure=D&district=8&compare=B&mode=no&labels=0', ['A', 'B', 'C', 'D']),
+    { measure: 'D', district: 8, compare: 'B', mode: 'no', labels: false },
+  );
+  assert.deepEqual(
+    readView('#measure=bad&district=Infinity&compare=A&mode=bad', ['A', 'B', 'C', 'D']),
+    { measure: 'A', district: 0, compare: '', mode: 'yes', labels: true },
+  );
+});
+test('CSV exports include citywide and district totals for both selected measures', async () => {
+  const { resultsCsv } = await import('../website/measures-model.js');
+  const csv = resultsCsv(election, election.measures.slice(0, 2));
+  assert.equal(csv.trim().split('\r\n').length, 25);
+  assert.match(csv, /"San Francisco","203479","48620","252099"/);
+  assert.match(csv, /"District 11"/);
+  assert.match(csv, /https:\/\/sfelections.org/);
+  const quoted = structuredClone(election.measures[0]);
+  quoted.title = 'Title with "quotes", comma';
+  assert.match(resultsCsv(election, [quoted]), /"Title with ""quotes"", comma"/);
+});

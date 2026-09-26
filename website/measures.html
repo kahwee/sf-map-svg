@@ -1,62 +1,64 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Explore certified San Francisco ballot measure results from June 2026. Compare Yes and No votes across all 11 supervisorial districts.">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="See how San Francisco voted. Interactive district maps, side-by-side ballot measure comparisons, certified results, and SVG and CSV downloads.">
   <link rel="canonical" href="https://kahwee.github.io/sf-map-svg/measures.html">
-  <title>San Francisco ballot measures · SF / SVG</title>
-  <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="./style.css">
-  <link rel="stylesheet" href="./measures.css">
+  <meta property="og:title" content="How San Francisco voted · District maps & ballot measures">
+  <meta property="og:description" content="Explore certified June 2026 results across eleven districts. Compare measures, inspect votes, and download your map.">
+  <meta property="og:image" content="https://kahwee.github.io/sf-map-svg/social-preview.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <title>Ballot measures atlas · San Francisco</title><link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./style.css"><link rel="stylesheet" href="./measures.css">
 </head>
 <body>
-  <a class="skip" href="#results">Skip to results</a>
-  <header class="shell">
-    <nav aria-label="Main navigation"><a class="brand" href="./">SF / SVG</a><div><a href="./">Neighborhood explorer</a><a href="#sources">Sources</a><a href="https://github.com/kahwee/sf-map-svg">GitHub ↗</a></div></nav>
-    <p class="eyebrow">Certified results · June 2, 2026 election</p>
-    <h1 class="measure-heading">How the city voted.</h1>
-    <p class="intro">Four local measures. Eleven districts. Explore the Yes and No votes behind San Francisco’s ballot results.</p>
-    <p class="source-note">June 2026 archive · Certified June 25, 2026. This page covers local Measures A–D, not upcoming elections or live returns. No recommendations or endorsements.</p>
+  <a class="skip" href="#map-workspace">Skip to district maps</a>
+  <header class="atlas-header">
+    <a class="brand" href="./">SF / SVG</a>
+    <div class="atlas-title"><h1>How San Francisco voted</h1><p>June 2, 2026 · Local Measures A–D · Certified results</p></div>
+    <nav aria-label="Atlas navigation"><a href="#district-table">District table</a><a href="#sources">Sources & method</a><a href="./">Neighborhoods ↗</a></nav>
   </header>
-  <main class="shell" id="results">
-    <div class="measure-controls">
-      <label for="measure">Ballot measure<select id="measure"></select></label>
-      <label for="district">View results for<select id="district"><option value="0">All San Francisco</option></select></label>
-    </div>
-    <section aria-labelledby="measure-title" class="measure-overview">
-      <p id="outcome" class="release-badge"></p><h2 id="measure-title">Select a measure</h2>
-      <p id="threshold"></p><a id="official-measure" href="https://sfelections.org/results/20260602/index.html">Read the official ballot question and results ↗</a>
-    </section>
-    <div class="results-layout">
-      <section aria-labelledby="map-heading">
-        <h2 id="map-heading">Yes vote share by district</h2>
-        <p>Choose a district on the map or use the selector above.</p>
-        <div id="results-map"></div>
-        <div class="map-scale" role="img" aria-label="Map color scale: 0 to 100 percent Yes"><span>0% Yes</span><div></div><span>100% Yes</span></div>
-        <p class="fine">Same scale for every measure. District numbers use the 2022 boundaries. Color shows Yes share, not whether a measure passed in a district.</p>
+  <main class="atlas-shell">
+    <section aria-label="Choose a ballot measure" class="measure-strip" id="measure-cards"></section>
+    <div class="workspace" id="map-workspace">
+      <section class="map-panel" aria-label="Interactive district maps">
+        <div class="map-toolbar">
+          <label>Map colors<select id="mode"><option value="yes">Yes vote share</option><option value="no">No vote share</option><option value="districts">District colors</option></select></label>
+          <label>Compare with<select id="compare"><option value="">No comparison</option></select></label>
+          <button id="labels" type="button" aria-pressed="true">District numbers</button>
+        </div>
+        <div class="maps" id="maps">
+          <figure class="map-figure"><figcaption id="primary-caption">District map</figcaption><div id="results-map" class="map-canvas"></div></figure>
+          <figure class="map-figure" id="comparison-figure" hidden><figcaption id="comparison-caption">Comparison map</figcaption><div id="comparison-map" class="map-canvas"></div></figure>
+        </div>
+        <div class="map-bottom">
+          <div class="legend" id="legend"><span id="legend-low">0% Yes</span><div id="legend-gradient"></div><span id="legend-high">100% Yes</span></div>
+          <fieldset class="zoom-controls" aria-label="Map navigation"><button id="zoom-out" type="button" aria-label="Zoom out">−</button><output id="zoom-level" aria-label="Zoom level">100%</output><button id="zoom-in" type="button" aria-label="Zoom in">+</button><button id="reset-view" type="button">Reset view</button></fieldset>
+        </div>
+        <div class="map-help"><p id="map-hint">Click a district to inspect it. Tab + Enter works too.</p><span>2022 district boundaries · Same scale on both maps</span></div>
+        <div class="map-actions"><button id="export-svg" type="button">Download map SVG ↓</button><button id="share" type="button">Copy view link ↗</button><span id="action-status" role="status"></span></div>
       </section>
-      <section class="vote-panel" aria-labelledby="area-title">
+      <aside class="inspector" aria-label="Selected area results">
+        <label class="area-selector" for="district">Inspect results<select id="district"><option value="0">All San Francisco</option></select></label>
         <div id="area-summary" aria-live="polite" aria-atomic="true"></div>
-        <p class="fine">Vote shares use Yes + No votes only. Blank responses (undervotes) and invalid multiple responses (overvotes) are listed separately.</p>
-        <button type="button" id="share">Copy link to this view</button><p id="share-status" role="status" class="fine"></p>
-      </section>
+        <button id="fit-district" type="button" disabled>Zoom to district</button>
+        <div class="measure-detail"><p id="outcome" class="outcome"></p><h2 id="measure-title">Measure details</h2><p id="threshold"></p><a id="official-measure" href="https://sfelections.org/results/20260602/index.html">Official ballot question ↗</a></div>
+        <div id="comparison-summary" hidden></div>
+        <p class="fine">District shares describe local voting patterns. Passage is determined citywide.</p>
+      </aside>
     </div>
-    <section aria-labelledby="table-title">
-      <div class="section-heading"><h2 id="table-title">Compare all districts</h2><label for="sort">Sort by <select id="sort"><option value="district">District number</option><option value="yes">Highest Yes share</option></select></label></div>
-      <div class="table-scroll"><table><caption id="table-caption"></caption><thead><tr><th scope="col">District</th><th scope="col">Yes</th><th scope="col">No</th><th scope="col">Yes share</th><th scope="col">Valid votes</th></tr></thead><tbody id="district-rows"></tbody></table></div>
+    <section class="table-panel" id="district-table" aria-labelledby="table-title">
+      <div class="table-heading"><div><p class="eyebrow">Every district, in detail</p><h2 id="table-title">Compare the numbers</h2></div><div class="table-tools"><label for="sort">Sort<select id="sort"><option value="district">District number</option><option value="yes">Highest Yes share</option><option value="no">Highest No share</option><option value="votes">Most valid votes</option></select></label><button id="export-csv" type="button">Download CSV ↓</button></div></div>
+      <!-- biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users need to scroll the wide comparison table. -->
+      <section class="table-scroll" tabindex="0" aria-label="Scrollable district results table"><table><caption id="table-caption"></caption><thead><tr><th scope="col">District</th><th scope="col">Yes votes</th><th scope="col">No votes</th><th scope="col">Yes share</th><th scope="col">vs. city</th><th scope="col">Valid votes</th><th scope="col" id="compare-column" hidden>Comparison Yes</th></tr></thead><tbody id="district-rows"></tbody></table></section>
     </section>
-    <section id="sources" aria-labelledby="sources-title">
-      <h2 id="sources-title">Source & method</h2>
-      <p>San Francisco Department of Elections, final District Statement of the Vote. Election Day and Vote by Mail totals are combined. District totals reconcile to citywide counts for each measure. Downloaded September 26, 2026.</p>
-      <p>Measure A required two-thirds of valid votes. Measures B, C and D required a simple majority. Outcomes here are calculated from certified citywide counts and those thresholds. District figures are comparisons, not separate election outcomes.</p>
-      <p>The map uses the package’s existing 2022 district display geometry and coastline. It is a city-scale illustration, not a precinct map. Election data is bundled separately from the map package; loading this page makes no requests to election services.</p>
-      <div class="hero-links"><a id="workbook" href="https://sfelections.org/results/20260602/data/20260625/dsov.xlsx">Official district workbook ↗</a><a id="certification" href="https://sfelections.org/results/20260602/data/20260625/CertificationLetterJun22026.pdf">Certification letter ↗</a><a href="./data/measures-2026-06-02.json" download>Download results JSON ↓</a></div>
-      <p class="fine">Map renderer %RELEASE_LABEL%. Election snapshot: June 2026.</p>
+    <section class="source-panel" id="sources" aria-labelledby="sources-title">
+      <div><p class="eyebrow">Public data, clearly sourced</p><h2 id="sources-title">About this election snapshot</h2><p>Certified June 25, 2026. This archive covers the four local measures in the June 2, 2026 election. It does not show live returns or upcoming ballots.</p></div>
+      <div><p>Source: San Francisco Department of Elections, final District Statement of the Vote. Election Day and Vote by Mail are combined; all eleven district totals reconcile to citywide counts. Downloaded September 26, 2026.</p><p>Yes share is Yes ÷ (Yes + No); No share uses the same denominator. Undervotes and overvotes are excluded. “vs. city” is the difference in Yes share, in percentage points. A required two-thirds; B–D required more than half of valid citywide votes. Rounded percentages do not determine passage.</p><p>Maps reuse the 2022 district display geometry and precise coastline. They illustrate district results, not precinct or neighborhood results. Colors express vote share, not endorsements. District colors preserve the map’s original palette.</p><div class="source-links"><a id="workbook" href="https://sfelections.org/results/20260602/data/20260625/dsov.xlsx">Official workbook ↗</a><a id="certification" href="https://sfelections.org/results/20260602/data/20260625/CertificationLetterJun22026.pdf">Certification ↗</a><a href="./data/measures-2026-06-02.json" download>All results JSON ↓</a></div><p class="fine">Map renderer %RELEASE_LABEL%. Election data is bundled separately. No live election-service requests.</p></div>
     </section>
-    <noscript><p>This explorer needs JavaScript. <a href="https://sfelections.org/results/20260602/index.html">Read the official election results</a>.</p></noscript>
+    <noscript><p>This interactive atlas needs JavaScript. <a href="./maps/districts.svg">Open the district map</a> or <a href="https://sfelections.org/results/20260602/index.html">read the official results</a>.</p></noscript>
   </main>
-  <footer class="shell"><a href="./">Back to the neighborhood map</a><span>Public data, clearly sourced. MIT-licensed software.</span></footer>
+  <footer class="atlas-shell"><a href="./">Explore more of San Francisco →</a><span>SF / SVG · MIT-licensed software</span></footer>
   <script type="module" src="./measures.js"></script>
 </body>
 </html>

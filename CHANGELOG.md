@@ -4,6 +4,8 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Redesign the measures explorer around visible district maps, side-by-side comparisons, Yes/No and district-color modes, keyboard zoom/pan, district fitting, stable labels, and SVG/CSV exports.
+
 - Add a Pages ballot-measures explorer for certified June 2026 local results, with district comparisons, shareable selections, and official data downloads.
 
 - Build public Pages demos and SVG downloads from the published npm version, with visible release metadata, installation copying, release links, and social previews.
