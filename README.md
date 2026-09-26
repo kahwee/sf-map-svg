@@ -38,7 +38,13 @@ For a plain outline map, set `districtFills: false`. Neighborhood areas are appr
 
 ## Private installation
 
-The repository and GitHub npm package are private. Configure your project’s `.npmrc`:
+The repository is private. You can install directly from GitHub with an authenticated SSH key:
+
+```sh
+pnpm add git+ssh://git@github.com/kahwee/sf-map-svg.git#v0.1.0
+```
+
+A private release also contains the package archive and ready-to-use SVG files. **GitHub Packages publication is currently blocked by the account’s Actions billing/spending limit.** Once that is resolved and the publish workflow succeeds, configure your project’s `.npmrc`:
 
 ```ini
 @kahwee:registry=https://npm.pkg.github.com
