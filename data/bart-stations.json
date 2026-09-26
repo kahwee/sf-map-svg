@@ -1,0 +1,134 @@
+{
+  "type": "FeatureCollection",
+  "schemaVersion": 1,
+  "id": "bart-stations",
+  "title": "San Francisco BART stations",
+  "coordinateSystem": "WGS84 longitude, latitude (EPSG:4326)",
+  "definition": {
+    "kind": "station-centroids",
+    "description": "Eight station centroids within San Francisco. Entrances, tracks, and other cities are excluded."
+  },
+  "sources": [
+    {
+      "id": "bart-stations",
+      "title": "BART official geospatial data",
+      "url": "https://www.bart.gov/sites/default/files/2025-12/BART-Stations-tracks-entrances-121025.kmz_.zip",
+      "retrievedAt": "2026-09-25",
+      "licenseUrl": "https://www.bart.gov/schedules/developers/geo"
+    }
+  ],
+  "features": [
+    {
+      "type": "Feature",
+      "id": "embarcadero",
+      "bbox": [
+        -122.3969009943399,
+        37.79285391372556,
+        -122.3969009943399,
+        37.79285391372556
+      ],
+      "properties": {
+        "name": "Embarcadero"
+      },
+      "geometry": {"type":"Point","coordinates":[-122.3969009943399,37.79285391372556]}
+    },
+    {
+      "type": "Feature",
+      "id": "montgomery-st",
+      "bbox": [
+        -122.4011747105981,
+        37.78944952039284,
+        -122.4011747105981,
+        37.78944952039284
+      ],
+      "properties": {
+        "name": "Montgomery St"
+      },
+      "geometry": {"type":"Point","coordinates":[-122.4011747105981,37.78944952039284]}
+    },
+    {
+      "type": "Feature",
+      "id": "powell-st",
+      "bbox": [
+        -122.4070176588271,
+        37.78487089662774,
+        -122.4070176588271,
+        37.78487089662774
+      ],
+      "properties": {
+        "name": "Powell St"
+      },
+      "geometry": {"type":"Point","coordinates":[-122.4070176588271,37.78487089662774]}
+    },
+    {
+      "type": "Feature",
+      "id": "civic-center-un-plaza",
+      "bbox": [
+        -122.4139364152156,
+        37.77939386076284,
+        -122.4139364152156,
+        37.77939386076284
+      ],
+      "properties": {
+        "name": "Civic Center/UN Plaza"
+      },
+      "geometry": {"type":"Point","coordinates":[-122.4139364152156,37.77939386076284]}
+    },
+    {
+      "type": "Feature",
+      "id": "16th-st-mission",
+      "bbox": [
+        -122.4197081435103,
+        37.76505423932072,
+        -122.4197081435103,
+        37.76505423932072
+      ],
+      "properties": {
+        "name": "16th St/Mission"
+      },
+      "geometry": {"type":"Point","coordinates":[-122.4197081435103,37.76505423932072]}
+    },
+    {
+      "type": "Feature",
+      "id": "24th-st-mission",
+      "bbox": [
+        -122.4184678760468,
+        37.75223145165559,
+        -122.4184678760468,
+        37.75223145165559
+      ],
+      "properties": {
+        "name": "24th St/Mission"
+      },
+      "geometry": {"type":"Point","coordinates":[-122.4184678760468,37.75223145165559]}
+    },
+    {
+      "type": "Feature",
+      "id": "glen-park",
+      "bbox": [
+        -122.4337900883829,
+        37.73311239451952,
+        -122.4337900883829,
+        37.73311239451952
+      ],
+      "properties": {
+        "name": "Glen Park"
+      },
+      "geometry": {"type":"Point","coordinates":[-122.4337900883829,37.73311239451952]}
+    },
+    {
+      "type": "Feature",
+      "id": "balboa-park",
+      "bbox": [
+        -122.4475873574919,
+        37.72135058802738,
+        -122.4475873574919,
+        37.72135058802738
+      ],
+      "properties": {
+        "name": "Balboa Park"
+      },
+      "geometry": {"type":"Point","coordinates":[-122.4475873574919,37.72135058802738]}
+    }
+  ]
+}

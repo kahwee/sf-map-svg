@@ -1,0 +1,145 @@
+{
+  "description": "v0.2.0 district geometry and display extras, before conversion to canonical JSON.",
+  "districts": {
+    "2002": [
+      {
+        "id": 1,
+        "sha256": "631d892c9f5e69c591e1752c7e1f084711fb9019abf866043b021fe206dde193"
+      },
+      {
+        "id": 2,
+        "sha256": "c3c87b821a98f7b090802fb6d54a29b784f4c104da7b84b2821a18bdeeab7989"
+      },
+      {
+        "id": 3,
+        "sha256": "76550a1289dfdeac140cac3c68a5f6def6763225e8260d94bd2d1777070703e7"
+      },
+      {
+        "id": 4,
+        "sha256": "eccfeb4f0d135cf9fa4f1e5d6027fcd37fc16bcbc8f97c71c74052718c3fc240"
+      },
+      {
+        "id": 5,
+        "sha256": "76855e357e3b66a01f1beacdc5e87b98dfe26b433f9d85da59ec1e2de7989b40"
+      },
+      {
+        "id": 6,
+        "sha256": "ebe772e1b614ad973a9cf38bff114850c0f34368d8457760957de119b423a8e9"
+      },
+      {
+        "id": 7,
+        "sha256": "c74645c690e717a1f6c26592e87b6d5e864c0dbddadc7cd87a350feceb896f1a"
+      },
+      {
+        "id": 8,
+        "sha256": "c481e9d74a1bdf0889c13e5c4fce9a65f3c1c01287516e704cf8cedd0a29e380"
+      },
+      {
+        "id": 9,
+        "sha256": "68dbfa640d27cdeb53ecba13764c5fc43fbeb1400bbd16a8a983503cbe3bd06d"
+      },
+      {
+        "id": 10,
+        "sha256": "5b9e9ebd641e4d5d3ad810b6883054ada8fe470440f3263286d453faa9a57011"
+      },
+      {
+        "id": 11,
+        "sha256": "d549852ba5cd44e30a8fb77cb4a85efb77d66983e70619e46ba4beb23fd6b209"
+      }
+    ],
+    "2012": [
+      {
+        "id": 1,
+        "sha256": "5a26816813d39fc112921a1fb24a6eca7ae82b2f08b23ef284a1b6e11f351dcc"
+      },
+      {
+        "id": 2,
+        "sha256": "4ad21d2813b988a7be52bac5c5d9a235627e0111a0053cfb02d364afcf5c3db5"
+      },
+      {
+        "id": 3,
+        "sha256": "d9673047e21ff337dbb344577286d9e1690e4d2d6c77d96b2758c927fa833c15"
+      },
+      {
+        "id": 4,
+        "sha256": "13a0cad7471d40d106df237a6bc376dcbfb8903549211631debff964d656c4b7"
+      },
+      {
+        "id": 5,
+        "sha256": "b8d19494a78a71b0100fa46be7e7adad59bad28510d313712e887265e7891037"
+      },
+      {
+        "id": 6,
+        "sha256": "94bd6aa9fba641e2999ab1d8df07e369b97c49603692befc8460b3a694b6c85f"
+      },
+      {
+        "id": 7,
+        "sha256": "3405274f9d6900e2a71da6f365c6ee6bb4f9b97fd08248827ab8d378104cc092"
+      },
+      {
+        "id": 8,
+        "sha256": "f27d8815021593667c1c8d5ff775c67fa24051915f96d6b6c29a58cc5085a662"
+      },
+      {
+        "id": 9,
+        "sha256": "a5e247c2f5b21f597ec388dad0420991319ce1f999a0064e95a26bc203ef3071"
+      },
+      {
+        "id": 10,
+        "sha256": "fbb86f008f610d0f1b02a23576016af689184a7e0f7f21c710dcceca4e2a02dd"
+      },
+      {
+        "id": 11,
+        "sha256": "03b32b88cc929c4a40203e35b83b9b4a1680c129682dc9e66c5a6b0790f8d8f4"
+      }
+    ],
+    "2022": [
+      {
+        "id": 1,
+        "sha256": "42156ff7a3199a59802068a35a959fd76d77e7fd1ad5973505f4565e215661aa"
+      },
+      {
+        "id": 2,
+        "sha256": "65757364ec59cd211a18caaae851799a95926b375300e1b0a6ade2dcc9d07e0c"
+      },
+      {
+        "id": 3,
+        "sha256": "f7bf50293d57605eff9a51d7dcb069d0f6efcd6512550ecc3a4c3382a7a95406"
+      },
+      {
+        "id": 4,
+        "sha256": "59c264166fde5a5de624ccfbe53bf25be48d52769c8df43519d69265ddf5d874"
+      },
+      {
+        "id": 5,
+        "sha256": "fa82c7ed6fb7840d08164fab217719d7de4ec17a417bd0e3d6f8632a21ee1a45"
+      },
+      {
+        "id": 6,
+        "sha256": "04c084ac95fdfa890fa6fdf77ca849c2017a1a1718d8edea6af51f4908fdc356"
+      },
+      {
+        "id": 7,
+        "sha256": "025e8c21bbbd71e8b6b1262cfa053ed7a5bc557f1a52aa01ec2766e4afba19cf"
+      },
+      {
+        "id": 8,
+        "sha256": "089e872c499b170c5119ed818cd0f2e4d08c4548cf66604f94f0a7bdd9387506"
+      },
+      {
+        "id": 9,
+        "sha256": "a10362000615415b525416ff9eb5b1e5ccfaa7cf93a687757314bfabf9626542"
+      },
+      {
+        "id": 10,
+        "sha256": "bb1245b8a0f6bdb2c7f12c35392e397f930243e4180116317006bb0b4de3c615"
+      },
+      {
+        "id": 11,
+        "sha256": "8be265c5c0cdff64cd54be479a47f37b891819ec51034b56bbb1b78ff9761b5e"
+      }
+    ]
+  },
+  "sfFind": "cbcb0262417a71398af6d5a48c6cf40c0dddd33d1a48f3800bf347c998edd057",
+  "realtorUnion": "4f34f81b0f6ecad21ffa915b7b80df3f13d95424d8d09db6a1dea198f4669cb8"
+}

@@ -11,10 +11,15 @@ test('each historical map has eleven districts and finite standalone SVG geometr
   }
 });
 test('neighborhood layer is optional and contains every named area', () => {
-  assert.equal(neighborhoodNames.length, 117);
+  assert.equal(neighborhoodNames.length, 92);
+  assert.ok(neighborhoodNames.includes('Inner Mission'));
+  assert.ok(neighborhoodNames.includes('Outer Mission'));
+  assert.ok(neighborhoodNames.includes('North Panhandle'));
   const svg = renderSFMap({ neighborhoodLines: true, districtLines: false });
-  assert.equal((svg.match(/data-neighborhood=/g) ?? []).length, 117);
+  assert.equal((svg.match(/data-neighborhood=/g) ?? []).length, 92);
   assert.ok(!svg.includes('data-layer="district-lines"'));
+  assert.ok(svg.includes('SFAR realtor neighborhood areas, defined in August 2010'));
+  assert.ok(!svg.includes('SF Find neighborhood areas'));
 });
 test('projection places SF points inside map and matches marker coordinates', () => {
   const map = createSFMap({ markers: [{ id: 'park', lng: -122.4269, lat: 37.7596 }] });
@@ -37,7 +42,7 @@ test('explicit ids make output deterministic', () => {
 
 import { DOMParser } from '@xmldom/xmldom';
 
-test('every layer combination produces valid XML with resolvable clip paths', () => {
+test('combined layers produce valid XML with resolvable clip paths for every district year', () => {
   for (const year of districtYears) {
     for (const neighborhoodLines of [false, true]) {
       const errors = [];
@@ -90,4 +95,42 @@ test('landmarks and BART are independent optional geographic overlays', () => {
     .map((v) => Number(v.toFixed(2)));
   assert.ok(map.svg.includes(`data-bart-station="embarcadero" transform="translate(${x},${y})"`));
   assert.ok(map.svg.includes('stroke="#123456"'));
+});
+
+test('rejects overflowing and out-of-range longitude before writing SVG coordinates', () => {
+  const map = createSFMap();
+  for (const lng of [1e308, -1e308, 181, -181, Infinity, NaN]) {
+    assert.throws(() => map.project([lng, 37.77]), RangeError);
+    assert.throws(() => renderSFMap({ markers: [{ id: 'bad', lng, lat: 37.77 }] }), RangeError);
+  }
+});
+
+test('optional layers work independently and preserve unique district IDs', () => {
+  const options = {
+    neighborhoodLines: 'neighborhood-lines',
+    highways: 'highways',
+    landmarks: 'landmarks',
+    bartStations: 'bart-stations',
+  };
+  for (const [option, layer] of Object.entries(options)) {
+    const svg = renderSFMap({ [option]: true });
+    assert.ok(svg.includes(`data-layer="${layer}"`));
+    for (const [otherOption, otherLayer] of Object.entries(options)) {
+      if (otherOption !== option) assert.ok(!svg.includes(`data-layer="${otherLayer}"`));
+    }
+  }
+  for (const year of districtYears) {
+    const document = new DOMParser().parseFromString(renderSFMap({ year }), 'image/svg+xml');
+    for (const layer of ['district-fills', 'district-lines']) {
+      const group = Array.from(document.getElementsByTagName('g')).find(
+        (g) => g.getAttribute('data-layer') === layer,
+      );
+      assert.deepEqual(
+        Array.from(group.getElementsByTagName('path'), (p) =>
+          Number(p.getAttribute('data-district')),
+        ),
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+      );
+    }
+  }
 });

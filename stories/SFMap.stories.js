@@ -1,4 +1,4 @@
-import { renderSFMap } from '../src/index.js';
+import { renderSFMap, districtYears } from '../src/index.js';
 
 export default {
   title: 'Maps/San Francisco',
@@ -21,7 +21,7 @@ export default {
     title: 'San Francisco map',
   },
   argTypes: {
-    year: { control: 'select', options: [2002, 2012, 2022] },
+    year: { control: 'select', options: districtYears },
     width: { control: { type: 'range', min: 320, max: 1200, step: 20 } },
     height: { control: { type: 'range', min: 320, max: 1200, step: 20 } },
     padding: { control: { type: 'range', min: 0, max: 100, step: 4 } },
@@ -74,3 +74,7 @@ export const CustomPalette = {
     },
   },
 };
+
+export const LandmarksOnly = { args: { landmarks: true } };
+export const BARTOnly = { args: { bartStations: true } };
+export const Mobile = { args: { width: 390, height: 390, landmarks: true, bartStations: true } };
