@@ -1,0 +1,738 @@
+{
+  "districtYear": 2012,
+  "electionDate": "2012-11-06",
+  "electionName": "November 6, 2012 · Consolidated General Election",
+  "certifiedDate": null,
+  "downloadedDate": "2026-09-26",
+  "source": "https://sfelections.org/results/20121106/data/SOV_Nov2012.xls",
+  "summarySource": "https://sfelections.org/results/20121106/index.html",
+  "certificationSource": null,
+  "sourceSha256": "b7295053f3a29959a8fa46ecd2258c54f198a304b2061a621a84d31d74f5bd2a",
+  "crosswalkSource": "https://data.sfgov.org/resource/bsfq-aeyw.json?$limit=1000",
+  "crosswalkSha256": "5c27da0b0603692171e7db0702fc49b5f8c042b1c181fbe7537e50a781cb6c4d",
+  "geography": "2012 supervisorial districts; 596 official precincts grouped by the DataSF historical 2012 precinct-to-district field.",
+  "method": "Election Day and vote-by-mail rows are summed for each precinct. Yes share = Yes / (Yes + No); under/overvotes are excluded. Every precinct resolves to one district and all district counts reconcile to the official contest totals.",
+  "measures": [
+    {
+      "id": "A",
+      "title": "City College Parcel Tax",
+      "sourceSheet": "Sheet34",
+      "sourceUrl": "https://sfelections.org/results/20121106/index.html#a_english_29",
+      "threshold": "two-thirds",
+      "citywide": {
+        "yes": 242410,
+        "no": 90134,
+        "undervotes": 26444,
+        "overvotes": 86
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 20679,
+          "no": 8302,
+          "undervotes": 2175,
+          "overvotes": 5,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 2,
+          "yes": 21922,
+          "no": 12903,
+          "undervotes": 3781,
+          "overvotes": 9,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 3,
+          "yes": 17534,
+          "no": 6831,
+          "undervotes": 2568,
+          "overvotes": 9,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 4,
+          "yes": 18149,
+          "no": 9908,
+          "undervotes": 2013,
+          "overvotes": 9,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 5,
+          "yes": 30627,
+          "no": 7171,
+          "undervotes": 3351,
+          "overvotes": 8,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 6,
+          "yes": 16781,
+          "no": 5791,
+          "undervotes": 2200,
+          "overvotes": 6,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 7,
+          "yes": 22354,
+          "no": 11328,
+          "undervotes": 2318,
+          "overvotes": 6,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 8,
+          "yes": 35095,
+          "no": 9988,
+          "undervotes": 2960,
+          "overvotes": 9,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 9,
+          "yes": 24043,
+          "no": 5553,
+          "undervotes": 1877,
+          "overvotes": 7,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 10,
+          "yes": 18600,
+          "no": 5767,
+          "undervotes": 1754,
+          "overvotes": 8,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 11,
+          "yes": 16626,
+          "no": 6592,
+          "undervotes": 1447,
+          "overvotes": 10,
+          "sourceRow": "precinct aggregate"
+        }
+      ]
+    },
+    {
+      "id": "B",
+      "title": "Clean and Safe Neighborhood Parks Bond",
+      "sourceSheet": "Sheet35",
+      "sourceUrl": "https://sfelections.org/results/20121106/index.html#a_english_30",
+      "threshold": "two-thirds",
+      "citywide": {
+        "yes": 242404,
+        "no": 93735,
+        "undervotes": 22820,
+        "overvotes": 115
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 20436,
+          "no": 8822,
+          "undervotes": 1894,
+          "overvotes": 9,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 2,
+          "yes": 25023,
+          "no": 10814,
+          "undervotes": 2766,
+          "overvotes": 12,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 3,
+          "yes": 18161,
+          "no": 6741,
+          "undervotes": 2033,
+          "overvotes": 7,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 4,
+          "yes": 18277,
+          "no": 9859,
+          "undervotes": 1934,
+          "overvotes": 9,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 5,
+          "yes": 28699,
+          "no": 9603,
+          "undervotes": 2840,
+          "overvotes": 15,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 6,
+          "yes": 17313,
+          "no": 5604,
+          "undervotes": 1850,
+          "overvotes": 11,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 7,
+          "yes": 22442,
+          "no": 11484,
+          "undervotes": 2069,
+          "overvotes": 11,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 8,
+          "yes": 34639,
+          "no": 10916,
+          "undervotes": 2486,
+          "overvotes": 11,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 9,
+          "yes": 22307,
+          "no": 7375,
+          "undervotes": 1787,
+          "overvotes": 11,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 10,
+          "yes": 18728,
+          "no": 5732,
+          "undervotes": 1664,
+          "overvotes": 5,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 11,
+          "yes": 16379,
+          "no": 6785,
+          "undervotes": 1497,
+          "overvotes": 14,
+          "sourceRow": "precinct aggregate"
+        }
+      ]
+    },
+    {
+      "id": "C",
+      "title": "Housing Trust Fund",
+      "sourceSheet": "Sheet36",
+      "sourceUrl": "https://sfelections.org/results/20121106/index.html#a_english_31",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 211674,
+        "no": 113214,
+        "undervotes": 34081,
+        "overvotes": 105
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 17827,
+          "no": 10361,
+          "undervotes": 2966,
+          "overvotes": 7,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 2,
+          "yes": 18236,
+          "no": 15939,
+          "undervotes": 4426,
+          "overvotes": 14,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 3,
+          "yes": 15564,
+          "no": 8457,
+          "undervotes": 2916,
+          "overvotes": 5,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 4,
+          "yes": 15209,
+          "no": 11809,
+          "undervotes": 3053,
+          "overvotes": 8,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 5,
+          "yes": 27035,
+          "no": 9955,
+          "undervotes": 4153,
+          "overvotes": 14,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 6,
+          "yes": 15625,
+          "no": 6812,
+          "undervotes": 2330,
+          "overvotes": 11,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 7,
+          "yes": 18126,
+          "no": 14694,
+          "undervotes": 3175,
+          "overvotes": 11,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 8,
+          "yes": 30804,
+          "no": 13179,
+          "undervotes": 4056,
+          "overvotes": 13,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 9,
+          "yes": 21638,
+          "no": 7291,
+          "undervotes": 2544,
+          "overvotes": 7,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 10,
+          "yes": 17090,
+          "no": 6730,
+          "undervotes": 2298,
+          "overvotes": 11,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 11,
+          "yes": 14520,
+          "no": 7987,
+          "undervotes": 2164,
+          "overvotes": 4,
+          "sourceRow": "precinct aggregate"
+        }
+      ]
+    },
+    {
+      "id": "D",
+      "title": "Consolidating Odd-Year Municipal Elections",
+      "sourceSheet": "Sheet37",
+      "sourceUrl": "https://sfelections.org/results/20121106/index.html#a_english_32",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 263642,
+        "no": 53252,
+        "undervotes": 42095,
+        "overvotes": 85
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 22649,
+          "no": 4825,
+          "undervotes": 3679,
+          "overvotes": 8,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 2,
+          "yes": 28380,
+          "no": 5374,
+          "undervotes": 4853,
+          "overvotes": 8,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 3,
+          "yes": 19391,
+          "no": 3815,
+          "undervotes": 3730,
+          "overvotes": 6,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 4,
+          "yes": 21243,
+          "no": 5080,
+          "undervotes": 3744,
+          "overvotes": 12,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 5,
+          "yes": 30078,
+          "no": 5911,
+          "undervotes": 5161,
+          "overvotes": 7,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 6,
+          "yes": 17708,
+          "no": 3791,
+          "undervotes": 3271,
+          "overvotes": 8,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 7,
+          "yes": 26751,
+          "no": 5489,
+          "undervotes": 3760,
+          "overvotes": 6,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 8,
+          "yes": 37824,
+          "no": 5546,
+          "undervotes": 4674,
+          "overvotes": 8,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 9,
+          "yes": 23620,
+          "no": 4485,
+          "undervotes": 3366,
+          "overvotes": 9,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 10,
+          "yes": 18827,
+          "no": 4328,
+          "undervotes": 2967,
+          "overvotes": 7,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 11,
+          "yes": 17171,
+          "no": 4608,
+          "undervotes": 2890,
+          "overvotes": 6,
+          "sourceRow": "precinct aggregate"
+        }
+      ]
+    },
+    {
+      "id": "E",
+      "title": "Gross Receipts Tax",
+      "sourceSheet": "Sheet38",
+      "sourceUrl": "https://sfelections.org/results/20121106/index.html#a_english_33",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 223887,
+        "no": 92577,
+        "undervotes": 42450,
+        "overvotes": 160
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 19094,
+          "no": 8317,
+          "undervotes": 3739,
+          "overvotes": 11,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 2,
+          "yes": 21710,
+          "no": 11772,
+          "undervotes": 5123,
+          "overvotes": 10,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 3,
+          "yes": 15974,
+          "no": 7203,
+          "undervotes": 3755,
+          "overvotes": 10,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 4,
+          "yes": 17395,
+          "no": 8932,
+          "undervotes": 3742,
+          "overvotes": 10,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 5,
+          "yes": 26941,
+          "no": 8895,
+          "undervotes": 5304,
+          "overvotes": 17,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 6,
+          "yes": 15051,
+          "no": 6588,
+          "undervotes": 3130,
+          "overvotes": 9,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 7,
+          "yes": 21735,
+          "no": 10340,
+          "undervotes": 3910,
+          "overvotes": 21,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 8,
+          "yes": 33681,
+          "no": 9540,
+          "undervotes": 4809,
+          "overvotes": 22,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 9,
+          "yes": 21492,
+          "no": 6701,
+          "undervotes": 3273,
+          "overvotes": 14,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 10,
+          "yes": 16140,
+          "no": 7052,
+          "undervotes": 2916,
+          "overvotes": 21,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 11,
+          "yes": 14674,
+          "no": 7237,
+          "undervotes": 2749,
+          "overvotes": 15,
+          "sourceRow": "precinct aggregate"
+        }
+      ]
+    },
+    {
+      "id": "F",
+      "title": "Water and Environment Plan",
+      "sourceSheet": "Sheet39",
+      "sourceUrl": "https://sfelections.org/results/20121106/index.html#a_english_34",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 74885,
+        "no": 249304,
+        "undervotes": 34666,
+        "overvotes": 219
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 6303,
+          "no": 21931,
+          "undervotes": 2910,
+          "overvotes": 17,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 2,
+          "yes": 7348,
+          "no": 26861,
+          "undervotes": 4378,
+          "overvotes": 28,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 3,
+          "yes": 5932,
+          "no": 17875,
+          "undervotes": 3119,
+          "overvotes": 16,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 4,
+          "yes": 6202,
+          "no": 21037,
+          "undervotes": 2822,
+          "overvotes": 18,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 5,
+          "yes": 8289,
+          "no": 28591,
+          "undervotes": 4255,
+          "overvotes": 22,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 6,
+          "yes": 6359,
+          "no": 15600,
+          "undervotes": 2806,
+          "overvotes": 13,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 7,
+          "yes": 6382,
+          "no": 26587,
+          "undervotes": 3016,
+          "overvotes": 21,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 8,
+          "yes": 8123,
+          "no": 36106,
+          "undervotes": 3802,
+          "overvotes": 21,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 9,
+          "yes": 6897,
+          "no": 21905,
+          "undervotes": 2657,
+          "overvotes": 21,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 10,
+          "yes": 6598,
+          "no": 16964,
+          "undervotes": 2546,
+          "overvotes": 21,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 11,
+          "yes": 6452,
+          "no": 15847,
+          "undervotes": 2355,
+          "overvotes": 21,
+          "sourceRow": "precinct aggregate"
+        }
+      ]
+    },
+    {
+      "id": "G",
+      "title": "Policy Opposing Corporate Personhood",
+      "sourceSheet": "Sheet40",
+      "sourceUrl": "https://sfelections.org/results/20121106/index.html#a_english_35",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 260595,
+        "no": 61181,
+        "undervotes": 37206,
+        "overvotes": 92
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 22213,
+          "no": 5563,
+          "undervotes": 3378,
+          "overvotes": 7,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 2,
+          "yes": 25026,
+          "no": 9134,
+          "undervotes": 4446,
+          "overvotes": 9,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 3,
+          "yes": 18889,
+          "no": 4686,
+          "undervotes": 3359,
+          "overvotes": 8,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 4,
+          "yes": 20685,
+          "no": 5668,
+          "undervotes": 3722,
+          "overvotes": 4,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 5,
+          "yes": 32130,
+          "no": 4984,
+          "undervotes": 4029,
+          "overvotes": 14,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 6,
+          "yes": 17596,
+          "no": 4324,
+          "undervotes": 2850,
+          "overvotes": 8,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 7,
+          "yes": 25149,
+          "no": 7271,
+          "undervotes": 3578,
+          "overvotes": 8,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 8,
+          "yes": 38750,
+          "no": 5761,
+          "undervotes": 3528,
+          "overvotes": 13,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 9,
+          "yes": 24672,
+          "no": 4197,
+          "undervotes": 2602,
+          "overvotes": 9,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 10,
+          "yes": 18506,
+          "no": 4754,
+          "undervotes": 2867,
+          "overvotes": 2,
+          "sourceRow": "precinct aggregate"
+        },
+        {
+          "district": 11,
+          "yes": 16979,
+          "no": 4839,
+          "undervotes": 2847,
+          "overvotes": 10,
+          "sourceRow": "precinct aggregate"
+        }
+      ]
+    }
+  ]
+}

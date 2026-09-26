@@ -56,8 +56,8 @@ export function resultsCsv(election, measures) {
         row.no,
         row.yes + row.no,
         yesShare(row) === null ? '' : (100 * yesShare(row)).toFixed(4),
-        row.undervotes,
-        row.overvotes,
+        row.undervotes ?? '',
+        row.overvotes ?? '',
         election.source,
       ]);
     }

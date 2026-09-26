@@ -1,5 +1,6 @@
-import { renderSFMap } from '@kahwee/sf-map-svg';
-import election from '../data/elections/2026-06-02.json';
+import { createSFMapWithData } from '@kahwee/sf-map-svg/custom-map';
+import coast from '../data/coast.json';
+import catalog from '../data/elections/catalog.json';
 import {
   noShareColor,
   passed,
@@ -11,16 +12,23 @@ import {
 
 const $ = (id) => document.getElementById(id);
 const format = new Intl.NumberFormat('en-US');
+const formatCount = (count) => (count === null ? 'Unavailable' : format.format(count));
 const percent = (share) => (share === null ? 'No votes' : `${(share * 100).toFixed(2)}%`);
 const difference = (share) => `${share > 0 ? '+' : ''}${(share * 100).toFixed(2)} pp`;
-const ids = election.measures.map((m) => m.id);
+const datasets = import.meta.glob('../data/elections/*.json');
+const districtDatasets = import.meta.glob('../data/districts-*.json');
+const electionChoices = catalog.elections;
 const shortTitles = {
   A: 'Earthquake safety',
   B: 'Lifetime term limits',
   C: 'Business tax decreases',
   D: 'Executive pay tax',
 };
-let state = readView(location.hash, ids);
+let election;
+let ids = [];
+let state;
+let electionDate;
+let mapData;
 let viewport = [0, 0, 800];
 let sort = 'district';
 const node = (tag, text, className) => {
@@ -30,37 +38,57 @@ const node = (tag, text, className) => {
   return el;
 };
 const measureById = (id) => election.measures.find((m) => m.id === id);
+const measureTitle = (measure) =>
+  electionDate === '2026-06-02' ? shortTitles[measure.id] : measure.title;
 const areaVotes = (m) =>
   state.district ? m.districts.find((d) => d.district === state.district) : m.citywide;
 const areaName = () => (state.district ? `District ${state.district}` : 'All San Francisco');
 $('inspector').open = matchMedia('(min-width: 900px)').matches;
 const cards = new Map();
-for (const m of election.measures) {
-  const card = node('button', undefined, 'measure-card');
-  card.type = 'button';
-  card.setAttribute('aria-label', `Measure ${m.id}: ${m.title}`);
-  card.dataset.measure = m.id;
-  const letter = node('span', m.id, 'measure-letter');
-  const words = node('span');
-  words.append(
-    node('span', shortTitles[m.id], 'card-title'),
-    node('span', passed(m) ? 'Passed citywide' : 'Did not pass', 'card-meta'),
-  );
-  const share = node('span', percent(yesShare(m.citywide)), 'card-share');
-  share.append(node('small', 'Yes citywide'));
-  card.append(letter, words, share);
-  card.addEventListener('click', () => {
-    if (state.compare === m.id) state.compare = state.measure;
-    state.measure = m.id;
-    update();
-  });
-  cards.set(m.id, card);
-  $('measure-cards').append(card);
-  $('compare').add(new Option(`${m.id} · ${shortTitles[m.id]}`, m.id));
-}
+for (const choice of electionChoices)
+  $('election').add(new Option(`${choice.label} · ${choice.measureCount} measures`, choice.date));
 for (let d = 1; d <= 11; d++) $('district').add(new Option(`District ${d}`, String(d)));
-$('workbook').href = election.source;
-$('certification').href = election.certificationSource;
+
+function filterCards() {
+  const query = $('measure-search').value.trim().toLocaleLowerCase();
+  let shown = 0;
+  for (const [id, card] of cards) {
+    const measure = measureById(id);
+    card.hidden = !`${id} ${measure.title}`.toLocaleLowerCase().includes(query);
+    if (!card.hidden) shown++;
+  }
+  $('measure-count').textContent = `${shown} of ${ids.length} local measures`;
+}
+
+function renderCards() {
+  cards.clear();
+  $('measure-cards').replaceChildren();
+  $('compare').replaceChildren(new Option('No comparison', ''));
+  for (const m of election.measures) {
+    const card = node('button', undefined, 'measure-card');
+    card.type = 'button';
+    card.setAttribute('aria-label', `Measure ${m.id}: ${m.title}`);
+    card.dataset.measure = m.id;
+    const letter = node('span', m.id, 'measure-letter');
+    const words = node('span');
+    words.append(
+      node('span', measureTitle(m), 'card-title'),
+      node('span', passed(m) ? 'Passed citywide' : 'Did not pass', 'card-meta'),
+    );
+    const share = node('span', percent(yesShare(m.citywide)), 'card-share');
+    share.append(node('small', 'Yes citywide'));
+    card.append(letter, words, share);
+    card.addEventListener('click', () => {
+      if (state.compare === m.id) state.compare = state.measure;
+      state.measure = m.id;
+      update();
+    });
+    cards.set(m.id, card);
+    $('measure-cards').append(card);
+    $('compare').add(new Option(`${m.id} · ${m.title}`, m.id));
+  }
+  filterCards();
+}
 
 function enableGestures(svg) {
   const pointers = new Map();
@@ -128,12 +156,15 @@ function enableGestures(svg) {
 }
 function makeMap(hostId, prefix) {
   const host = $(hostId);
-  host.innerHTML = renderSFMap({
-    year: 2022,
-    title: 'San Francisco ballot measure district map',
-    idPrefix: prefix,
-    colors: { water: '#edf4f4' },
-  });
+  host.innerHTML = createSFMapWithData(
+    {
+      year: election.districtYear,
+      title: 'San Francisco ballot measure district map',
+      idPrefix: prefix,
+      colors: { water: '#edf4f4' },
+    },
+    mapData,
+  ).svg;
   const svg = host.querySelector('svg');
   svg.style.height = '100%';
   svg.setAttribute('role', 'group');
@@ -185,9 +216,9 @@ function makeMap(hostId, prefix) {
   });
   return { svg, paths, originalColors };
 }
-const primary = makeMap('results-map', 'measure-primary');
-const secondary = makeMap('comparison-map', 'measure-secondary');
-const maps = [primary, secondary];
+let primary;
+let secondary;
+let maps = [];
 function labelSizes() {
   for (const { svg } of maps) {
     const scale = svg.getScreenCTM()?.a;
@@ -200,7 +231,6 @@ function labelSizes() {
   }
 }
 const observer = new ResizeObserver(labelSizes);
-for (const m of maps) observer.observe(m.svg);
 window.addEventListener('pagehide', (event) => {
   if (!event.persisted) observer.disconnect();
 });
@@ -246,7 +276,7 @@ function paint(map, m) {
     path.setAttribute('aria-pressed', String(row.district === state.district));
   }
   svg.querySelector('title').textContent =
-    `Measure ${m.id}: ${m.title}. ${state.mode === 'districts' ? 'District colors' : state.mode === 'yes' ? 'Yes vote share' : 'No vote share'}. June 2, 2026 certified results.`;
+    `Measure ${m.id}: ${m.title}. ${state.mode === 'districts' ? 'District colors' : state.mode === 'yes' ? 'Yes vote share' : 'No vote share'}. ${election.electionName}.`;
 }
 function renderInspector(m, comparison) {
   const votes = areaVotes(m),
@@ -279,7 +309,7 @@ function renderInspector(m, comparison) {
     ['Undervotes', votes.undervotes],
     ['Overvotes', votes.overvotes],
   ])
-    details.append(node('dt', label), node('dd', format.format(value)));
+    details.append(node('dt', label), node('dd', formatCount(value)));
   $('selection-label').textContent = areaName();
   $('selection-share').textContent = `${percent(yes)} Yes`;
   $('area-summary').replaceChildren(heading, big, context, bar, labels, details);
@@ -356,6 +386,7 @@ function update(writeUrl = true) {
   const m = measureById(state.measure),
     comparison = measureById(state.compare);
   for (const [id, card] of cards) card.setAttribute('aria-pressed', String(id === state.measure));
+  cards.get(state.measure)?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   $('district').value = String(state.district);
   $('mode').value = state.mode;
   $('compare').value = state.compare;
@@ -363,9 +394,9 @@ function update(writeUrl = true) {
   $('labels').setAttribute('aria-pressed', String(state.labels));
   $('comparison-figure').hidden = !comparison;
   $('maps').classList.toggle('is-comparing', !!comparison);
-  $('primary-caption').textContent = `${m.id} · ${shortTitles[m.id]}`;
+  $('primary-caption').textContent = `${m.id} · ${measureTitle(m)}`;
   if (comparison)
-    $('comparison-caption').textContent = `${comparison.id} · ${shortTitles[comparison.id]}`;
+    $('comparison-caption').textContent = `${comparison.id} · ${measureTitle(comparison)}`;
   paint(primary, m);
   if (comparison) paint(secondary, comparison);
   $('legend-gradient').hidden = state.mode === 'districts';
@@ -388,6 +419,7 @@ function update(writeUrl = true) {
   $('action-status').textContent = '';
   if (writeUrl) {
     const params = new URLSearchParams({
+      election: electionDate,
       measure: state.measure,
       district: String(state.district),
       mode: state.mode,
@@ -397,6 +429,62 @@ function update(writeUrl = true) {
     history.replaceState(null, '', `#${params}`);
   }
 }
+let loadSequence = 0;
+async function selectElection(date, fromHash = false) {
+  const choice = electionChoices.find((item) => item.date === date) ?? electionChoices[0];
+  const sequence = ++loadSequence;
+  const loader = datasets[`../data/elections/${choice.data}`];
+  const districtLoader = districtDatasets[`../data/districts-${choice.districtYear}.json`];
+  if (!loader) throw new Error(`Missing election dataset: ${choice.data}`);
+  if (!districtLoader) throw new Error(`Missing district map: ${choice.districtYear}`);
+  const [electionModule, districtModule] = await Promise.all([loader(), districtLoader()]);
+  if (sequence !== loadSequence) return;
+  election = electionModule.default;
+  mapData = {
+    coast: coast.features[0].geometry,
+    districts: {
+      [choice.districtYear]: districtModule.default.features.map(({ geometry, properties }) => ({
+        id: properties.district,
+        label: properties.label,
+        labelPoints: properties.labelPoints,
+        geometry,
+        extras: properties.displayExtras,
+      })),
+    },
+  };
+  electionDate = election.electionDate;
+  ids = election.measures.map((measure) => measure.id);
+  state = readView(fromHash ? location.hash : '', ids);
+  $('election').value = electionDate;
+  $('measure-search').value = '';
+  $('election-subtitle').textContent =
+    `${choice.label} · ${ids.length} local measures · ${election.districtYear} district map`;
+  $('district-year-note').textContent =
+    `${election.districtYear} district boundaries · Same scale on both maps`;
+  $('source-intro').textContent =
+    `${election.electionName}. ${ids.length} local measures. ${election.certifiedDate ? `Certified ${election.certifiedDate}.` : 'Official final results.'} Downloaded ${election.downloadedDate}.`;
+  $('source-method').textContent = election.method;
+  $('source-geography').textContent =
+    `${election.geography} The map illustrates district results, not precinct or neighborhood results. Colors express vote share, not endorsements.`;
+  $('workbook').href = election.source;
+  $('certification').hidden = !election.certificationSource;
+  if (election.certificationSource) $('certification').href = election.certificationSource;
+  $('results-json').href = `./data/elections/${electionDate}.json`;
+  renderCards();
+  observer.disconnect();
+  primary = makeMap('results-map', 'measure-primary');
+  secondary = makeMap('comparison-map', 'measure-secondary');
+  maps = [primary, secondary];
+  for (const map of maps) observer.observe(map.svg);
+  setViewport([0, 0, 800]);
+  update(!fromHash);
+}
+$('election').addEventListener('change', () => {
+  selectElection($('election').value).catch((error) => {
+    $('action-status').textContent = `Could not load election: ${error.message}`;
+  });
+});
+$('measure-search').addEventListener('input', filterCards);
 $('focus-map').addEventListener('click', () => {
   const focused = document.body.classList.toggle('map-focused');
   $('focus-map').setAttribute('aria-pressed', String(focused));
@@ -454,7 +542,7 @@ $('export-csv').addEventListener('click', () => {
   download(
     resultsCsv(election, selected),
     'text/csv;charset=utf-8',
-    `sf-measures-${selected.map((m) => m.id).join('-')}-2026-06-02.csv`,
+    `sf-measures-${selected.map((m) => m.id).join('-')}-${electionDate}.csv`,
   );
 });
 $('export-svg').addEventListener('click', () => {
@@ -464,7 +552,7 @@ $('export-svg').addEventListener('click', () => {
   clone.removeAttribute('tabindex');
   clone.removeAttribute('aria-label');
   const desc = clone.querySelector('desc');
-  desc.textContent = `Certified June 2, 2026 San Francisco election. Measure ${state.measure}. Colors: ${state.mode}. Yes/No shares exclude under/overvotes. Source: ${election.source}. Certified ${election.certifiedDate}. District 2022 display geometry: https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md`;
+  desc.textContent = `${election.electionName}. Measure ${state.measure}. Colors: ${state.mode}. Yes/No shares exclude under/overvotes. Source: ${election.source}. District ${election.districtYear} display geometry: https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md`;
   for (const path of clone.querySelectorAll('[role="button"]')) {
     if (path.getAttribute('aria-pressed') === 'true') {
       path.setAttribute('stroke', '#a54830');
@@ -478,7 +566,7 @@ $('export-svg').addEventListener('click', () => {
   download(
     new XMLSerializer().serializeToString(clone),
     'image/svg+xml',
-    `sf-measure-${state.measure}-${state.mode}-2026-06-02.svg`,
+    `sf-measure-${state.measure}-${state.mode}-${electionDate}.svg`,
   );
   $('action-status').textContent = 'Primary map exported with source attribution.';
 });
@@ -505,8 +593,15 @@ for (const link of document.querySelectorAll('a[href^="#"]')) {
   });
 }
 window.addEventListener('hashchange', () => {
-  state = readView(location.hash, ids);
-  update(false);
+  const requested = new URLSearchParams(location.hash.replace(/^#/, '')).get('election');
+  if (requested && requested !== electionDate) {
+    selectElection(requested, true).catch((error) => {
+      $('action-status').textContent = `Could not load election: ${error.message}`;
+    });
+  } else {
+    state = readView(location.hash, ids);
+    update(false);
+  }
 });
-update(false);
-setViewport([0, 0, 800]);
+const requested = new URLSearchParams(location.hash.replace(/^#/, '')).get('election');
+await selectElection(requested, true);

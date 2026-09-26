@@ -5,7 +5,7 @@
   <meta name="description" content="See how San Francisco voted. Interactive district maps, side-by-side ballot measure comparisons, certified results, and SVG and CSV downloads.">
   <link rel="canonical" href="https://kahwee.github.io/sf-map-svg/measures.html">
   <meta property="og:title" content="How San Francisco voted · District maps & ballot measures">
-  <meta property="og:description" content="Explore certified June 2026 results across eleven districts. Compare measures, inspect votes, and download your map.">
+  <meta property="og:description" content="Explore 44 local measures across the 2002, 2012, and 2022 San Francisco district maps. Compare districts and download sourced results.">
   <meta property="og:image" content="https://kahwee.github.io/sf-map-svg/social-preview.png">
   <meta name="twitter:card" content="summary_large_image">
   <title>Ballot measures atlas · San Francisco</title><link rel="icon" href="data:,">
@@ -15,10 +15,11 @@
   <a class="skip" href="#map-workspace">Skip to district maps</a>
   <header class="atlas-header">
     <a class="brand" href="./">SF / SVG</a>
-    <div class="atlas-title"><h1>How San Francisco voted</h1><p>June 2, 2026 · Local Measures A–D · Certified results</p></div>
+    <div class="atlas-title"><h1>How San Francisco voted</h1><p id="election-subtitle">Local measures across three district map years</p></div>
     <nav aria-label="Atlas navigation"><a href="#district-table">District table</a><a href="#sources">Sources & method</a><a href="./">Neighborhoods ↗</a></nav>
   </header>
   <main class="atlas-shell">
+    <div class="election-controls"><label for="election">Election<select id="election"></select></label><label for="measure-search">Find a measure<input id="measure-search" type="search" placeholder="Search title or letter" autocomplete="off"></label><span id="measure-count" role="status"></span></div>
     <section aria-label="Choose a ballot measure" class="measure-strip" id="measure-cards"></section>
     <div class="workspace" id="map-workspace">
       <section class="map-panel" aria-label="Interactive district maps">
@@ -37,7 +38,7 @@
           <div class="legend" id="legend"><span id="legend-low">0% Yes</span><div id="legend-gradient"></div><span id="legend-high">100% Yes</span></div>
           <fieldset class="zoom-controls" aria-label="Map navigation"><button id="zoom-out" type="button" aria-label="Zoom out">−</button><output id="zoom-level" aria-label="Zoom level">100%</output><button id="zoom-in" type="button" aria-label="Zoom in">+</button><button id="reset-view" type="button">Reset view</button></fieldset>
         </div>
-        <div class="map-help"><p id="map-hint">Click a district to inspect it. Tab + Enter works too.</p><span>2022 district boundaries · Same scale on both maps</span></div>
+        <div class="map-help"><p id="map-hint">Click a district to inspect it. Tab + Enter works too.</p><span id="district-year-note">District boundaries · Same scale on both maps</span></div>
 
       </section>
       <aside aria-label="Selected area results"><details class="inspector" id="inspector"><summary><span id="selection-label">All San Francisco</span><span id="selection-share"></span><span class="expand-label">Details ⌄</span></summary><div class="inspector-content">
@@ -58,8 +59,8 @@
     </dialog>
     <dialog id="sources-dialog" aria-labelledby="sources-title"><form method="dialog" class="dialog-close"><button type="submit" aria-label="Close sources">Close ×</button></form>
     <section class="source-panel" id="sources" aria-labelledby="sources-title">
-      <div><p class="eyebrow">Public data, clearly sourced</p><h2 id="sources-title">About this election snapshot</h2><p>Certified June 25, 2026. This archive covers the four local measures in the June 2, 2026 election. It does not show live returns or upcoming ballots.</p></div>
-      <div><p>Source: San Francisco Department of Elections, final District Statement of the Vote. Election Day and Vote by Mail are combined; all eleven district totals reconcile to citywide counts. Downloaded September 26, 2026.</p><p>Yes share is Yes ÷ (Yes + No); No share uses the same denominator. Undervotes and overvotes are excluded. “vs. city” is the difference in Yes share, in percentage points. A required two-thirds; B–D required more than half of valid citywide votes. Rounded percentages do not determine passage.</p><p>Maps reuse the 2022 district display geometry and precise coastline. They illustrate district results, not precinct or neighborhood results. Colors express vote share, not endorsements. District colors preserve the map’s original palette.</p><div class="source-links"><a id="workbook" href="https://sfelections.org/results/20260602/data/20260625/dsov.xlsx">Official workbook ↗</a><a id="certification" href="https://sfelections.org/results/20260602/data/20260625/CertificationLetterJun22026.pdf">Certification ↗</a><a href="./data/measures-2026-06-02.json" download>All results JSON ↓</a></div><p class="fine">Map renderer %RELEASE_LABEL%. Election data is bundled separately. No live election-service requests.</p></div>
+      <div><p class="eyebrow">Public data, clearly sourced</p><h2 id="sources-title">About this election snapshot</h2><p id="source-intro"></p></div>
+      <div><p id="source-method"></p><p>Yes share is Yes ÷ (Yes + No). Undervotes and overvotes are excluded. “vs. city” is the difference in Yes share, in percentage points. Passage is determined citywide using each measure’s listed threshold. Rounded percentages do not determine passage.</p><p id="source-geography"></p><div class="source-links"><a id="workbook" href="https://sfelections.org/">Official results ↗</a><a id="certification" href="https://sfelections.org/">Certification ↗</a><a id="results-json" href="./data/elections/catalog.json" download>Election results JSON ↓</a><a href="./data/elections/catalog.json" download>Dataset catalog ↓</a></div><p class="fine">Map renderer %RELEASE_LABEL%. Election data is bundled separately. No live election-service requests.</p></div>
     </section>
     </dialog>
     <button id="focus-map" type="button" aria-pressed="false">Focus map ⛶</button>

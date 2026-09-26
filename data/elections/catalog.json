@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "scope": "All San Francisco local ballot measures in the four listed certified election snapshots. Election years not listed here are not included.",
+  "districtMapYears": [2002, 2012, 2022],
+  "elections": [
+    {
+      "date": "2026-06-02",
+      "label": "June 2026",
+      "districtYear": 2022,
+      "measureCount": 4,
+      "data": "2026-06-02.json"
+    },
+    {
+      "date": "2022-11-08",
+      "label": "November 2022",
+      "districtYear": 2022,
+      "measureCount": 14,
+      "data": "2022-11-08.json"
+    },
+    {
+      "date": "2012-11-06",
+      "label": "November 2012",
+      "districtYear": 2012,
+      "measureCount": 7,
+      "data": "2012-11-06.json"
+    },
+    {
+      "date": "2002-11-05",
+      "label": "November 2002",
+      "districtYear": 2002,
+      "measureCount": 19,
+      "data": "2002-11-05.json"
+    }
+  ]
+}

@@ -1,0 +1,1974 @@
+{
+  "districtYear": 2002,
+  "electionDate": "2002-11-05",
+  "electionName": "November 5, 2002 · Consolidated General Election",
+  "certifiedDate": null,
+  "downloadedDate": "2026-09-26",
+  "source": "https://sfelections.org/results/20021105/SOV021105.xls",
+  "titleSource": "https://webbie1.sfpl.org/multimedia/pdf/elections/November5_2002.pdf",
+  "titleSourceSha256": "7e26f0e49843a873e92e7c22c8ff4710d371382ffb832e3ec4f20d10d0bdb4b6",
+  "summarySource": "https://sfelections.org/results/20021105w/index.html",
+  "certificationSource": null,
+  "sourceSha256": "b5bdcef7bd6cd352fa6450aa92ce2c4b639af072ea89e7e12f129bf8b479c28c",
+  "geography": "2002 supervisorial districts; official workbook supervisorial totals.",
+  "method": "Yes share = Yes / (Yes + No). The 2002 workbook omits separate under/overvote counts; null means unavailable, not zero.",
+  "measures": [
+    {
+      "id": "A",
+      "title": "Water Bonds",
+      "sourceSheet": "PROPOSITIONS",
+      "sourceUrl": "https://webbie1.sfpl.org/multimedia/pdf/elections/November5_2002.pdf",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 105468,
+        "no": 92577,
+        "undervotes": null,
+        "overvotes": null
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 8219,
+          "no": 8679,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1285
+        },
+        {
+          "district": 2,
+          "yes": 10814,
+          "no": 10590,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1286
+        },
+        {
+          "district": 3,
+          "yes": 7749,
+          "no": 7483,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1287
+        },
+        {
+          "district": 4,
+          "yes": 7140,
+          "no": 10705,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1288
+        },
+        {
+          "district": 5,
+          "yes": 13194,
+          "no": 8239,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1289
+        },
+        {
+          "district": 6,
+          "yes": 7963,
+          "no": 5326,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1290
+        },
+        {
+          "district": 7,
+          "yes": 9684,
+          "no": 11587,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1291
+        },
+        {
+          "district": 8,
+          "yes": 17200,
+          "no": 11735,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1292
+        },
+        {
+          "district": 9,
+          "yes": 8927,
+          "no": 6011,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1293
+        },
+        {
+          "district": 10,
+          "yes": 7716,
+          "no": 5498,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1294
+        },
+        {
+          "district": 11,
+          "yes": 6862,
+          "no": 6724,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1295
+        }
+      ]
+    },
+    {
+      "id": "B",
+      "title": "Affordable Housing Bonds",
+      "sourceSheet": "PROPOSITIONS",
+      "sourceUrl": "https://webbie1.sfpl.org/multimedia/pdf/elections/November5_2002.pdf",
+      "threshold": "two-thirds",
+      "citywide": {
+        "yes": 117752,
+        "no": 93135,
+        "undervotes": null,
+        "overvotes": null
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 8885,
+          "no": 9092,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1285
+        },
+        {
+          "district": 2,
+          "yes": 10139,
+          "no": 12333,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1286
+        },
+        {
+          "district": 3,
+          "yes": 9335,
+          "no": 7296,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1287
+        },
+        {
+          "district": 4,
+          "yes": 7347,
+          "no": 11504,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1288
+        },
+        {
+          "district": 5,
+          "yes": 16015,
+          "no": 7021,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1289
+        },
+        {
+          "district": 6,
+          "yes": 10148,
+          "no": 4354,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1290
+        },
+        {
+          "district": 7,
+          "yes": 9015,
+          "no": 13227,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1291
+        },
+        {
+          "district": 8,
+          "yes": 19094,
+          "no": 11237,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1292
+        },
+        {
+          "district": 9,
+          "yes": 10994,
+          "no": 5102,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1293
+        },
+        {
+          "district": 10,
+          "yes": 9114,
+          "no": 5045,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1294
+        },
+        {
+          "district": 11,
+          "yes": 7666,
+          "no": 6924,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1295
+        }
+      ]
+    },
+    {
+      "id": "C",
+      "title": "Veterans Building Bonds",
+      "sourceSheet": "PROPOSITIONS",
+      "sourceUrl": "https://webbie1.sfpl.org/multimedia/pdf/elections/November5_2002.pdf",
+      "threshold": "two-thirds",
+      "citywide": {
+        "yes": 112475,
+        "no": 92042,
+        "undervotes": null,
+        "overvotes": null
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 8729,
+          "no": 8780,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1285
+        },
+        {
+          "district": 2,
+          "yes": 11616,
+          "no": 10422,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1286
+        },
+        {
+          "district": 3,
+          "yes": 8275,
+          "no": 7423,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1287
+        },
+        {
+          "district": 4,
+          "yes": 7335,
+          "no": 11065,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1288
+        },
+        {
+          "district": 5,
+          "yes": 14567,
+          "no": 7709,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1289
+        },
+        {
+          "district": 6,
+          "yes": 8629,
+          "no": 5267,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1290
+        },
+        {
+          "district": 7,
+          "yes": 10306,
+          "no": 11514,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1291
+        },
+        {
+          "district": 8,
+          "yes": 18517,
+          "no": 10932,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1292
+        },
+        {
+          "district": 9,
+          "yes": 9626,
+          "no": 5889,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1293
+        },
+        {
+          "district": 10,
+          "yes": 8016,
+          "no": 5725,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1294
+        },
+        {
+          "district": 11,
+          "yes": 6859,
+          "no": 7316,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1295
+        }
+      ]
+    },
+    {
+      "id": "D",
+      "title": "Energy",
+      "sourceSheet": "PROPOSITIONS",
+      "sourceUrl": "https://webbie1.sfpl.org/multimedia/pdf/elections/November5_2002.pdf",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 95835,
+        "no": 111255,
+        "undervotes": null,
+        "overvotes": null
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 7315,
+          "no": 10363,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1285
+        },
+        {
+          "district": 2,
+          "yes": 6426,
+          "no": 15609,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1286
+        },
+        {
+          "district": 3,
+          "yes": 6774,
+          "no": 9212,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1287
+        },
+        {
+          "district": 4,
+          "yes": 6211,
+          "no": 12416,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1288
+        },
+        {
+          "district": 5,
+          "yes": 13559,
+          "no": 9052,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1289
+        },
+        {
+          "district": 6,
+          "yes": 8084,
+          "no": 5994,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1290
+        },
+        {
+          "district": 7,
+          "yes": 7194,
+          "no": 14838,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1291
+        },
+        {
+          "district": 8,
+          "yes": 16785,
+          "no": 13172,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1292
+        },
+        {
+          "district": 9,
+          "yes": 10033,
+          "no": 5787,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1293
+        },
+        {
+          "district": 10,
+          "yes": 7326,
+          "no": 6571,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1294
+        },
+        {
+          "district": 11,
+          "yes": 6128,
+          "no": 8241,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1295
+        }
+      ]
+    },
+    {
+      "id": "E",
+      "title": "Water and Sewer Rates, Surplus Funds",
+      "sourceSheet": "PROPOSITIONS",
+      "sourceUrl": "https://webbie1.sfpl.org/multimedia/pdf/elections/November5_2002.pdf",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 108080,
+        "no": 87482,
+        "undervotes": null,
+        "overvotes": null
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 8495,
+          "no": 8216,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1285
+        },
+        {
+          "district": 2,
+          "yes": 9955,
+          "no": 11015,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1286
+        },
+        {
+          "district": 3,
+          "yes": 8064,
+          "no": 6876,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1287
+        },
+        {
+          "district": 4,
+          "yes": 7290,
+          "no": 10443,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1288
+        },
+        {
+          "district": 5,
+          "yes": 14077,
+          "no": 7058,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1289
+        },
+        {
+          "district": 6,
+          "yes": 8262,
+          "no": 4951,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1290
+        },
+        {
+          "district": 7,
+          "yes": 9396,
+          "no": 11653,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1291
+        },
+        {
+          "district": 8,
+          "yes": 18421,
+          "no": 9840,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1292
+        },
+        {
+          "district": 9,
+          "yes": 9610,
+          "no": 5114,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1293
+        },
+        {
+          "district": 10,
+          "yes": 7802,
+          "no": 5439,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1294
+        },
+        {
+          "district": 11,
+          "yes": 6708,
+          "no": 6877,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1295
+        }
+      ]
+    },
+    {
+      "id": "F",
+      "title": "Entertainment Commission Appointments",
+      "sourceSheet": "PROPOSITIONS",
+      "sourceUrl": "https://webbie1.sfpl.org/multimedia/pdf/elections/November5_2002.pdf",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 113470,
+        "no": 86627,
+        "undervotes": null,
+        "overvotes": null
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 8650,
+          "no": 8348,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1285
+        },
+        {
+          "district": 2,
+          "yes": 10907,
+          "no": 10553,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1286
+        },
+        {
+          "district": 3,
+          "yes": 8334,
+          "no": 6898,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1287
+        },
+        {
+          "district": 4,
+          "yes": 7578,
+          "no": 10253,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1288
+        },
+        {
+          "district": 5,
+          "yes": 15164,
+          "no": 6802,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1289
+        },
+        {
+          "district": 6,
+          "yes": 8839,
+          "no": 4806,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1290
+        },
+        {
+          "district": 7,
+          "yes": 9730,
+          "no": 11550,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1291
+        },
+        {
+          "district": 8,
+          "yes": 19114,
+          "no": 9995,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1292
+        },
+        {
+          "district": 9,
+          "yes": 10285,
+          "no": 5059,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1293
+        },
+        {
+          "district": 10,
+          "yes": 7954,
+          "no": 5518,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1294
+        },
+        {
+          "district": 11,
+          "yes": 6915,
+          "no": 6845,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1295
+        }
+      ]
+    },
+    {
+      "id": "G",
+      "title": "Elections Assistance",
+      "sourceSheet": "PROPOSITIONS",
+      "sourceUrl": "https://webbie1.sfpl.org/multimedia/pdf/elections/November5_2002.pdf",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 141052,
+        "no": 52467,
+        "undervotes": null,
+        "overvotes": null
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 11566,
+          "no": 4862,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1285
+        },
+        {
+          "district": 2,
+          "yes": 13719,
+          "no": 6849,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1286
+        },
+        {
+          "district": 3,
+          "yes": 10352,
+          "no": 4293,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1287
+        },
+        {
+          "district": 4,
+          "yes": 11270,
+          "no": 5971,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1288
+        },
+        {
+          "district": 5,
+          "yes": 17078,
+          "no": 4157,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1289
+        },
+        {
+          "district": 6,
+          "yes": 10293,
+          "no": 2975,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1290
+        },
+        {
+          "district": 7,
+          "yes": 13571,
+          "no": 7045,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1291
+        },
+        {
+          "district": 8,
+          "yes": 22123,
+          "no": 5968,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1292
+        },
+        {
+          "district": 9,
+          "yes": 11872,
+          "no": 3086,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1293
+        },
+        {
+          "district": 10,
+          "yes": 9765,
+          "no": 3303,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1294
+        },
+        {
+          "district": 11,
+          "yes": 9443,
+          "no": 3958,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1295
+        }
+      ]
+    },
+    {
+      "id": "H",
+      "title": "Police and Firefighter Retirement Benefits",
+      "sourceSheet": "PROPOSITIONS",
+      "sourceUrl": "https://webbie1.sfpl.org/multimedia/pdf/elections/November5_2002.pdf",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 132440,
+        "no": 73653,
+        "undervotes": null,
+        "overvotes": null
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 10996,
+          "no": 6621,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1285
+        },
+        {
+          "district": 2,
+          "yes": 14315,
+          "no": 7961,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1286
+        },
+        {
+          "district": 3,
+          "yes": 9976,
+          "no": 5829,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1287
+        },
+        {
+          "district": 4,
+          "yes": 10581,
+          "no": 8067,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1288
+        },
+        {
+          "district": 5,
+          "yes": 15985,
+          "no": 6332,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1289
+        },
+        {
+          "district": 6,
+          "yes": 9484,
+          "no": 4476,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1290
+        },
+        {
+          "district": 7,
+          "yes": 13093,
+          "no": 8992,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1291
+        },
+        {
+          "district": 8,
+          "yes": 20298,
+          "no": 9404,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1292
+        },
+        {
+          "district": 9,
+          "yes": 10463,
+          "no": 5055,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1293
+        },
+        {
+          "district": 10,
+          "yes": 8819,
+          "no": 5071,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1294
+        },
+        {
+          "district": 11,
+          "yes": 8430,
+          "no": 5845,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1295
+        }
+      ]
+    },
+    {
+      "id": "I",
+      "title": "Paid Parental Leave",
+      "sourceSheet": "PROPOSITIONS",
+      "sourceUrl": "https://webbie1.sfpl.org/multimedia/pdf/elections/November5_2002.pdf",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 111600,
+        "no": 96033,
+        "undervotes": null,
+        "overvotes": null
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 8860,
+          "no": 8902,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1285
+        },
+        {
+          "district": 2,
+          "yes": 9776,
+          "no": 12600,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1286
+        },
+        {
+          "district": 3,
+          "yes": 7597,
+          "no": 8188,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1287
+        },
+        {
+          "district": 4,
+          "yes": 7783,
+          "no": 10899,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1288
+        },
+        {
+          "district": 5,
+          "yes": 15701,
+          "no": 7012,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1289
+        },
+        {
+          "district": 6,
+          "yes": 8920,
+          "no": 5150,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1290
+        },
+        {
+          "district": 7,
+          "yes": 9037,
+          "no": 13046,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1291
+        },
+        {
+          "district": 8,
+          "yes": 18160,
+          "no": 11993,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1292
+        },
+        {
+          "district": 9,
+          "yes": 10485,
+          "no": 5391,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1293
+        },
+        {
+          "district": 10,
+          "yes": 8255,
+          "no": 5584,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1294
+        },
+        {
+          "district": 11,
+          "yes": 7026,
+          "no": 7268,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1295
+        }
+      ]
+    },
+    {
+      "id": "J",
+      "title": "Supervisors Salaries",
+      "sourceSheet": "PROPOSITIONS",
+      "sourceUrl": "https://webbie1.sfpl.org/multimedia/pdf/elections/November5_2002.pdf",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 111646,
+        "no": 89351,
+        "undervotes": null,
+        "overvotes": null
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 8481,
+          "no": 8643,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1285
+        },
+        {
+          "district": 2,
+          "yes": 9851,
+          "no": 11695,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1286
+        },
+        {
+          "district": 3,
+          "yes": 8055,
+          "no": 7203,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1287
+        },
+        {
+          "district": 4,
+          "yes": 7336,
+          "no": 10650,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1288
+        },
+        {
+          "district": 5,
+          "yes": 14876,
+          "no": 7041,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1289
+        },
+        {
+          "district": 6,
+          "yes": 9009,
+          "no": 4618,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1290
+        },
+        {
+          "district": 7,
+          "yes": 9322,
+          "no": 12197,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1291
+        },
+        {
+          "district": 8,
+          "yes": 19108,
+          "no": 10201,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1292
+        },
+        {
+          "district": 9,
+          "yes": 10380,
+          "no": 4945,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1293
+        },
+        {
+          "district": 10,
+          "yes": 8206,
+          "no": 5332,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1294
+        },
+        {
+          "district": 11,
+          "yes": 7022,
+          "no": 6826,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1295
+        }
+      ]
+    },
+    {
+      "id": "K",
+      "title": "Selection of Official Newspapers",
+      "sourceSheet": "PROPOSITIONS",
+      "sourceUrl": "https://webbie1.sfpl.org/multimedia/pdf/elections/November5_2002.pdf",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 71756,
+        "no": 119931,
+        "undervotes": null,
+        "overvotes": null
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 6001,
+          "no": 10354,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1285
+        },
+        {
+          "district": 2,
+          "yes": 5198,
+          "no": 15126,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1286
+        },
+        {
+          "district": 3,
+          "yes": 5221,
+          "no": 9216,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1287
+        },
+        {
+          "district": 4,
+          "yes": 5389,
+          "no": 11638,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1288
+        },
+        {
+          "district": 5,
+          "yes": 9617,
+          "no": 11368,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1289
+        },
+        {
+          "district": 6,
+          "yes": 5820,
+          "no": 7250,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1290
+        },
+        {
+          "district": 7,
+          "yes": 5946,
+          "no": 14606,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1291
+        },
+        {
+          "district": 8,
+          "yes": 12222,
+          "no": 15725,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1292
+        },
+        {
+          "district": 9,
+          "yes": 7408,
+          "no": 7334,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1293
+        },
+        {
+          "district": 10,
+          "yes": 4742,
+          "no": 8216,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1294
+        },
+        {
+          "district": 11,
+          "yes": 4192,
+          "no": 9098,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1295
+        }
+      ]
+    },
+    {
+      "id": "L",
+      "title": "Real Estate Tax",
+      "sourceSheet": "PROPOSITIONS",
+      "sourceUrl": "https://webbie1.sfpl.org/multimedia/pdf/elections/November5_2002.pdf",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 92163,
+        "no": 113902,
+        "undervotes": null,
+        "overvotes": null
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 7407,
+          "no": 10281,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1285
+        },
+        {
+          "district": 2,
+          "yes": 6477,
+          "no": 15865,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1286
+        },
+        {
+          "district": 3,
+          "yes": 7234,
+          "no": 8574,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1287
+        },
+        {
+          "district": 4,
+          "yes": 6386,
+          "no": 12190,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1288
+        },
+        {
+          "district": 5,
+          "yes": 13248,
+          "no": 9151,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1289
+        },
+        {
+          "district": 6,
+          "yes": 7779,
+          "no": 6049,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1290
+        },
+        {
+          "district": 7,
+          "yes": 6692,
+          "no": 15267,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1291
+        },
+        {
+          "district": 8,
+          "yes": 15333,
+          "no": 14565,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1292
+        },
+        {
+          "district": 9,
+          "yes": 9183,
+          "no": 6455,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1293
+        },
+        {
+          "district": 10,
+          "yes": 6642,
+          "no": 7139,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1294
+        },
+        {
+          "district": 11,
+          "yes": 5782,
+          "no": 8366,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1295
+        }
+      ]
+    },
+    {
+      "id": "M",
+      "title": "Economic Development",
+      "sourceSheet": "PROPOSITIONS",
+      "sourceUrl": "https://webbie1.sfpl.org/multimedia/pdf/elections/November5_2002.pdf",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 93404,
+        "no": 98127,
+        "undervotes": null,
+        "overvotes": null
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 7623,
+          "no": 8695,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1285
+        },
+        {
+          "district": 2,
+          "yes": 11272,
+          "no": 9299,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1286
+        },
+        {
+          "district": 3,
+          "yes": 7455,
+          "no": 7082,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1287
+        },
+        {
+          "district": 4,
+          "yes": 8000,
+          "no": 9106,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1288
+        },
+        {
+          "district": 5,
+          "yes": 9860,
+          "no": 11123,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1289
+        },
+        {
+          "district": 6,
+          "yes": 6872,
+          "no": 6245,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1290
+        },
+        {
+          "district": 7,
+          "yes": 9987,
+          "no": 10406,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1291
+        },
+        {
+          "district": 8,
+          "yes": 11982,
+          "no": 15759,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1292
+        },
+        {
+          "district": 9,
+          "yes": 6070,
+          "no": 8668,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1293
+        },
+        {
+          "district": 10,
+          "yes": 7172,
+          "no": 5710,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1294
+        },
+        {
+          "district": 11,
+          "yes": 7111,
+          "no": 6034,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1295
+        }
+      ]
+    },
+    {
+      "id": "N",
+      "title": "Adjusting Services and Payments to Homeless Individuals",
+      "sourceSheet": "PROPOSITIONS",
+      "sourceUrl": "https://webbie1.sfpl.org/multimedia/pdf/elections/November5_2002.pdf",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 125436,
+        "no": 84433,
+        "undervotes": null,
+        "overvotes": null
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 10884,
+          "no": 7023,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1285
+        },
+        {
+          "district": 2,
+          "yes": 17297,
+          "no": 5611,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1286
+        },
+        {
+          "district": 3,
+          "yes": 10436,
+          "no": 5831,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1287
+        },
+        {
+          "district": 4,
+          "yes": 12346,
+          "no": 6452,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1288
+        },
+        {
+          "district": 5,
+          "yes": 10913,
+          "no": 12106,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1289
+        },
+        {
+          "district": 6,
+          "yes": 7613,
+          "no": 6640,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1290
+        },
+        {
+          "district": 7,
+          "yes": 15602,
+          "no": 6663,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1291
+        },
+        {
+          "district": 8,
+          "yes": 17813,
+          "no": 12776,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1292
+        },
+        {
+          "district": 9,
+          "yes": 7071,
+          "no": 8793,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1293
+        },
+        {
+          "district": 10,
+          "yes": 7256,
+          "no": 6575,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1294
+        },
+        {
+          "district": 11,
+          "yes": 8205,
+          "no": 5963,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1295
+        }
+      ]
+    },
+    {
+      "id": "O",
+      "title": "Conditions for Providing Services and Payments to Homeless Individuals",
+      "sourceSheet": "PROPOSITIONS",
+      "sourceUrl": "https://webbie1.sfpl.org/multimedia/pdf/elections/November5_2002.pdf",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 98341,
+        "no": 106257,
+        "undervotes": null,
+        "overvotes": null
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 7795,
+          "no": 9664,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1285
+        },
+        {
+          "district": 2,
+          "yes": 7440,
+          "no": 14747,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1286
+        },
+        {
+          "district": 3,
+          "yes": 7341,
+          "no": 8397,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1287
+        },
+        {
+          "district": 4,
+          "yes": 6996,
+          "no": 11267,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1288
+        },
+        {
+          "district": 5,
+          "yes": 13743,
+          "no": 8763,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1289
+        },
+        {
+          "district": 6,
+          "yes": 8144,
+          "no": 5783,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1290
+        },
+        {
+          "district": 7,
+          "yes": 7526,
+          "no": 14185,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1291
+        },
+        {
+          "district": 8,
+          "yes": 14995,
+          "no": 14826,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1292
+        },
+        {
+          "district": 9,
+          "yes": 9913,
+          "no": 5658,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1293
+        },
+        {
+          "district": 10,
+          "yes": 7705,
+          "no": 5855,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1294
+        },
+        {
+          "district": 11,
+          "yes": 6743,
+          "no": 7112,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1295
+        }
+      ]
+    },
+    {
+      "id": "P",
+      "title": "Revenue Bond Oversight Committee",
+      "sourceSheet": "PROPOSITIONS",
+      "sourceUrl": "https://webbie1.sfpl.org/multimedia/pdf/elections/November5_2002.pdf",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 109577,
+        "no": 83843,
+        "undervotes": null,
+        "overvotes": null
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 9111,
+          "no": 7338,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1285
+        },
+        {
+          "district": 2,
+          "yes": 11481,
+          "no": 9242,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1286
+        },
+        {
+          "district": 3,
+          "yes": 8431,
+          "no": 6246,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1287
+        },
+        {
+          "district": 4,
+          "yes": 10243,
+          "no": 7185,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1288
+        },
+        {
+          "district": 5,
+          "yes": 11687,
+          "no": 9369,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1289
+        },
+        {
+          "district": 6,
+          "yes": 8099,
+          "no": 5074,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1290
+        },
+        {
+          "district": 7,
+          "yes": 12013,
+          "no": 8731,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1291
+        },
+        {
+          "district": 8,
+          "yes": 13675,
+          "no": 14181,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1292
+        },
+        {
+          "district": 9,
+          "yes": 7936,
+          "no": 6872,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1293
+        },
+        {
+          "district": 10,
+          "yes": 8355,
+          "no": 4776,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1294
+        },
+        {
+          "district": 11,
+          "yes": 8546,
+          "no": 4829,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1295
+        }
+      ]
+    },
+    {
+      "id": "Q",
+      "title": "Use of City Funds",
+      "sourceSheet": "PROPOSITIONS",
+      "sourceUrl": "https://webbie1.sfpl.org/multimedia/pdf/elections/November5_2002.pdf",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 131117,
+        "no": 63822,
+        "undervotes": null,
+        "overvotes": null
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 11094,
+          "no": 5467,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1285
+        },
+        {
+          "district": 2,
+          "yes": 14694,
+          "no": 6367,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1286
+        },
+        {
+          "district": 3,
+          "yes": 10113,
+          "no": 4640,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1287
+        },
+        {
+          "district": 4,
+          "yes": 12202,
+          "no": 5274,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1288
+        },
+        {
+          "district": 5,
+          "yes": 13419,
+          "no": 7864,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1289
+        },
+        {
+          "district": 6,
+          "yes": 9018,
+          "no": 4281,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1290
+        },
+        {
+          "district": 7,
+          "yes": 14830,
+          "no": 6088,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1291
+        },
+        {
+          "district": 8,
+          "yes": 17751,
+          "no": 10376,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1292
+        },
+        {
+          "district": 9,
+          "yes": 8750,
+          "no": 6097,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1293
+        },
+        {
+          "district": 10,
+          "yes": 9430,
+          "no": 3738,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1294
+        },
+        {
+          "district": 11,
+          "yes": 9816,
+          "no": 3630,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1295
+        }
+      ]
+    },
+    {
+      "id": "R",
+      "title": "Condominium Conversion with Certain Conditions",
+      "sourceSheet": "PROPOSITIONS",
+      "sourceUrl": "https://webbie1.sfpl.org/multimedia/pdf/elections/November5_2002.pdf",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 82089,
+        "no": 123129,
+        "undervotes": null,
+        "overvotes": null
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 7288,
+          "no": 10226,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1285
+        },
+        {
+          "district": 2,
+          "yes": 11966,
+          "no": 10272,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1286
+        },
+        {
+          "district": 3,
+          "yes": 6364,
+          "no": 9643,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1287
+        },
+        {
+          "district": 4,
+          "yes": 7975,
+          "no": 10220,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1288
+        },
+        {
+          "district": 5,
+          "yes": 6918,
+          "no": 15707,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1289
+        },
+        {
+          "district": 6,
+          "yes": 4668,
+          "no": 9298,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1290
+        },
+        {
+          "district": 7,
+          "yes": 10323,
+          "no": 11352,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1291
+        },
+        {
+          "district": 8,
+          "yes": 11548,
+          "no": 18396,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1292
+        },
+        {
+          "district": 9,
+          "yes": 4536,
+          "no": 11108,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1293
+        },
+        {
+          "district": 10,
+          "yes": 4989,
+          "no": 8600,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1294
+        },
+        {
+          "district": 11,
+          "yes": 5514,
+          "no": 8307,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1295
+        }
+      ]
+    },
+    {
+      "id": "S",
+      "title": "Medical Marijuana",
+      "sourceSheet": "PROPOSITIONS",
+      "sourceUrl": "https://webbie1.sfpl.org/multimedia/pdf/elections/November5_2002.pdf",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 127661,
+        "no": 78181,
+        "undervotes": null,
+        "overvotes": null
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 9977,
+          "no": 7609,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1285
+        },
+        {
+          "district": 2,
+          "yes": 11951,
+          "no": 10359,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1286
+        },
+        {
+          "district": 3,
+          "yes": 9457,
+          "no": 6239,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1287
+        },
+        {
+          "district": 4,
+          "yes": 8609,
+          "no": 9792,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1288
+        },
+        {
+          "district": 5,
+          "yes": 17311,
+          "no": 5379,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1289
+        },
+        {
+          "district": 6,
+          "yes": 9870,
+          "no": 4021,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1290
+        },
+        {
+          "district": 7,
+          "yes": 10757,
+          "no": 11072,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1291
+        },
+        {
+          "district": 8,
+          "yes": 22259,
+          "no": 7902,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1292
+        },
+        {
+          "district": 9,
+          "yes": 11245,
+          "no": 4484,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1293
+        },
+        {
+          "district": 10,
+          "yes": 8864,
+          "no": 4766,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1294
+        },
+        {
+          "district": 11,
+          "yes": 7361,
+          "no": 6558,
+          "undervotes": null,
+          "overvotes": null,
+          "sourceRow": 1295
+        }
+      ]
+    }
+  ]
+}

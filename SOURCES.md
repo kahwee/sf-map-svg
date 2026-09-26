@@ -96,3 +96,40 @@ Downloaded September 26, 2026 from the San Francisco Department of Elections:
 `data/elections/2026-06-02.json` contains Measures A–D, their citywide counts, and the 11 `SUP DIST n - Total` rows from workbook sheets 20–23. Each row retains its worksheet row number; metadata retains the workbook SHA-256. `scripts/import-election-results.py` extracts these with openpyxl (ingestion only), checks all district sums including under/overvotes, and cross-checks Yes/No citywide counts against the official HTML summary. Rerun with the downloaded workbook and summary paths. No original Site ballot overlays are reused.
 
 The Pages-only explorer calculates Yes / (Yes + No), excluding under/overvotes. Measure A uses the two-thirds threshold; B–D use a strict majority, as stated in the official summary. These are citywide outcomes, not district-level passage decisions. District counts are reported directly by Elections, not spatially assigned to neighborhoods. The existing 2022 district display map is reused unchanged. Election JSON is a separate website dataset, not a new npm package API; no live service or forthcoming-election coverage is claimed.
+
+## Historical local measures for the Pages explorer
+
+Downloaded September 26, 2026. Each snapshot contains **all local measures in
+the listed election**, not every election in the surrounding decade. All
+eleven district Yes/No totals reconcile to the citywide official totals.
+
+| Election | Final results source | Titles and thresholds | District method |
+| --- | --- | --- | --- |
+| November 5, 2002 | https://sfelections.org/results/20021105/SOV021105.xls | https://webbie1.sfpl.org/multimedia/pdf/elections/November5_2002.pdf | Official workbook `PROPOSITIONS` supervisorial rows; under/overvotes unavailable |
+| November 6, 2012 | https://sfelections.org/results/20121106/data/SOV_Nov2012.xls | https://sfelections.org/results/20121106/index.html and https://webbie1.sfpl.org/multimedia/pdf/elections/November6_2012.pdf | 596 official precincts grouped by DataSF's 2012 `supdist` field |
+| November 8, 2022 | https://www.sfelections.org/results/20221108/data/20221201/dsov.xlsx | https://sfelections.org/results/20221108/index.html | Official final district workbook rows |
+
+The 2012 historical precinct-to-district source is
+https://data.sfgov.org/resource/bsfq-aeyw.json?$limit=1000 . Its 605 records
+include 596 election precinct identifiers and the `supdist` attribute; joined
+mail-ballot and slash-combined precinct rows map to one district each. This
+2012 collection is used only to group the 2012 official vote rows. The
+crosswalk and workbook checksums are retained in the JSON. The 2002 voter
+pamphlet explicitly discusses the bond thresholds; 2012 A and B require
+two-thirds, as established by the parcel tax and bond measures.
+
+For 2022, the independent **final** summary workbook is
+https://www.sfelections.org/results/20221108/data/20221201/summary.xlsx and
+the certification is
+https://www.sfelections.org/results/20221108/data/20221201/N2022_CertificationLetter.pdf .
+The election summary HTML has older counts for some measures, so it is used
+only for titles, ballot questions, and the stated thresholds. The importer
+compares every citywide Yes, No, undervote, and overvote count with the final
+summary workbook. The 2002 official results index is
+https://sfelections.org/results/20021105w/index.html and the 2012 results
+index is https://sfelections.org/results/20121106/detail.php .
+
+`scripts/import-historical-measures.py` records input SHA-256 hashes and
+reconciles all 2002, 2012, and 2022 district totals. The election JSON files
+are Pages datasets; the historical district maps retain their existing
+display geometry, and no precinct polygons or raw workbook data are shipped.

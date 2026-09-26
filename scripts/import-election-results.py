@@ -15,6 +15,7 @@ workbook = openpyxl.load_workbook(workbook_path, read_only=True, data_only=True)
 summary = summary_path.read_text()
 base = 'https://sfelections.org/results/20260602/'
 result = {
+    'districtYear': 2022,
     'electionDate': '2026-06-02',
     'electionName': 'June 2, 2026 · Consolidated Statewide Direct Primary',
     'certifiedDate': '2026-06-25',

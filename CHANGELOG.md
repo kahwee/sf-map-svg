@@ -4,6 +4,12 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 1.3.7 — 2026-09-26
+
+- Expand the GitHub Pages measure explorer to 44 local measures across November 2002, November 2012, November 2022, and June 2026, covering all three supported district map years.
+- Keep election results and district maps in separate, on-demand JSON chunks; add a searchable measure list, election picker, shareable year-specific views, and dated exports.
+- Reconcile historical district vote totals to official citywide results and document source checksums and the 2012 precinct-to-district grouping method.
+
 ## 1.3.6 — 2026-09-26
 
 - Simplify district history playback to one JavaScript morph implementation, removing the larger CSS animation and fallback branch while preserving the moving boundaries and reduced-motion switch.

@@ -108,4 +108,4 @@ Neighborhood overview boundaries use a shared coordinate graph: connected bounda
 
 ## Election result snapshots (Pages only)
 
-`elections/2026-06-02.json` holds certified local-measure results for the June 2026 Pages explorer. It contains four measures, citywide counts, and eleven supervisorial district totals per measure, plus source URLs, workbook checksum, and source row references. It is not a GeoJSON collection or a public npm export. It does not change the default SFAR neighborhood dataset. See `SOURCES.md` and `scripts/import-election-results.py` for extraction and validation.
+`elections/catalog.json` indexes four local-measure election snapshots spanning the 2002, 2012, and 2022 district map vintages. Each snapshot provides citywide and all eleven district counts for every local measure in that election. The data is separate from GeoJSON and is not a public npm export. See `elections/README.md` for its schema, coverage, and extraction methods.

@@ -1,0 +1,1458 @@
+{
+  "districtYear": 2022,
+  "electionDate": "2022-11-08",
+  "electionName": "November 8, 2022 · Consolidated General Election",
+  "certifiedDate": "2022-12-01",
+  "downloadedDate": "2026-09-26",
+  "source": "https://www.sfelections.org/results/20221108/data/20221201/dsov.xlsx",
+  "summarySource": "https://www.sfelections.org/results/20221108/data/20221201/summary.xlsx",
+  "certificationSource": "https://www.sfelections.org/results/20221108/data/20221201/N2022_CertificationLetter.pdf",
+  "sourceSha256": "68d450db01488b5f8fd81fac0f70feaaf460dbc6bc36c1904816c813f72d8183",
+  "summarySha256": "f44473744f3632c6917d73e1176511e11f125cf58cdf6fb5812c88e0e0f9da35",
+  "geography": "2022 supervisorial districts; final official district workbook totals.",
+  "method": "Yes share = Yes / (Yes + No). Under/overvotes are excluded. District rows reconcile to countywide totals and the final summary workbook; the election HTML supplies titles and thresholds only.",
+  "measures": [
+    {
+      "id": "A",
+      "title": "Retiree Supplemental Cost of Living Adjustment; Retirement Board Contract with Executive Director",
+      "sourceSheet": "Sheet54",
+      "sourceUrl": "https://sfelections.org/results/20221108/index.html#a_english_53",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 187939,
+        "no": 100869,
+        "undervotes": 21153,
+        "overvotes": 95
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 17864,
+          "no": 10626,
+          "undervotes": 2041,
+          "overvotes": 7,
+          "sourceRow": 63
+        },
+        {
+          "district": 2,
+          "yes": 17870,
+          "no": 11741,
+          "undervotes": 2458,
+          "overvotes": 7,
+          "sourceRow": 67
+        },
+        {
+          "district": 3,
+          "yes": 13950,
+          "no": 8262,
+          "undervotes": 2176,
+          "overvotes": 9,
+          "sourceRow": 71
+        },
+        {
+          "district": 4,
+          "yes": 16012,
+          "no": 11995,
+          "undervotes": 2222,
+          "overvotes": 8,
+          "sourceRow": 75
+        },
+        {
+          "district": 5,
+          "yes": 17839,
+          "no": 6193,
+          "undervotes": 1881,
+          "overvotes": 14,
+          "sourceRow": 79
+        },
+        {
+          "district": 6,
+          "yes": 11313,
+          "no": 6017,
+          "undervotes": 1418,
+          "overvotes": 10,
+          "sourceRow": 83
+        },
+        {
+          "district": 7,
+          "yes": 19625,
+          "no": 12551,
+          "undervotes": 2114,
+          "overvotes": 5,
+          "sourceRow": 87
+        },
+        {
+          "district": 8,
+          "yes": 28350,
+          "no": 11584,
+          "undervotes": 2495,
+          "overvotes": 14,
+          "sourceRow": 91
+        },
+        {
+          "district": 9,
+          "yes": 19734,
+          "no": 6822,
+          "undervotes": 1556,
+          "overvotes": 7,
+          "sourceRow": 95
+        },
+        {
+          "district": 10,
+          "yes": 12690,
+          "no": 6701,
+          "undervotes": 1380,
+          "overvotes": 6,
+          "sourceRow": 99
+        },
+        {
+          "district": 11,
+          "yes": 12692,
+          "no": 8377,
+          "undervotes": 1412,
+          "overvotes": 8,
+          "sourceRow": 103
+        }
+      ]
+    },
+    {
+      "id": "B",
+      "title": "Public Works Department and Commission, Sanitation and Streets Department and Commission",
+      "sourceSheet": "Sheet55",
+      "sourceUrl": "https://sfelections.org/results/20221108/index.html#a_english_54",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 212066,
+        "no": 72349,
+        "undervotes": 25551,
+        "overvotes": 90
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 20939,
+          "no": 7080,
+          "undervotes": 2513,
+          "overvotes": 6,
+          "sourceRow": 63
+        },
+        {
+          "district": 2,
+          "yes": 22297,
+          "no": 6838,
+          "undervotes": 2927,
+          "overvotes": 14,
+          "sourceRow": 67
+        },
+        {
+          "district": 3,
+          "yes": 15874,
+          "no": 5995,
+          "undervotes": 2522,
+          "overvotes": 6,
+          "sourceRow": 71
+        },
+        {
+          "district": 4,
+          "yes": 20093,
+          "no": 7486,
+          "undervotes": 2654,
+          "overvotes": 4,
+          "sourceRow": 75
+        },
+        {
+          "district": 5,
+          "yes": 17975,
+          "no": 5702,
+          "undervotes": 2239,
+          "overvotes": 11,
+          "sourceRow": 79
+        },
+        {
+          "district": 6,
+          "yes": 12160,
+          "no": 4805,
+          "undervotes": 1785,
+          "overvotes": 8,
+          "sourceRow": 83
+        },
+        {
+          "district": 7,
+          "yes": 23543,
+          "no": 8151,
+          "undervotes": 2594,
+          "overvotes": 7,
+          "sourceRow": 87
+        },
+        {
+          "district": 8,
+          "yes": 30978,
+          "no": 8286,
+          "undervotes": 3166,
+          "overvotes": 13,
+          "sourceRow": 91
+        },
+        {
+          "district": 9,
+          "yes": 20081,
+          "no": 6155,
+          "undervotes": 1875,
+          "overvotes": 8,
+          "sourceRow": 95
+        },
+        {
+          "district": 10,
+          "yes": 13530,
+          "no": 5603,
+          "undervotes": 1639,
+          "overvotes": 5,
+          "sourceRow": 99
+        },
+        {
+          "district": 11,
+          "yes": 14596,
+          "no": 6248,
+          "undervotes": 1637,
+          "overvotes": 8,
+          "sourceRow": 103
+        }
+      ]
+    },
+    {
+      "id": "C",
+      "title": "Homelessness Oversight Commission",
+      "sourceSheet": "Sheet56",
+      "sourceUrl": "https://sfelections.org/results/20221108/index.html#a_english_55",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 196152,
+        "no": 94991,
+        "undervotes": 18828,
+        "overvotes": 85
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 18856,
+          "no": 9825,
+          "undervotes": 1852,
+          "overvotes": 5,
+          "sourceRow": 63
+        },
+        {
+          "district": 2,
+          "yes": 19265,
+          "no": 10748,
+          "undervotes": 2053,
+          "overvotes": 10,
+          "sourceRow": 67
+        },
+        {
+          "district": 3,
+          "yes": 15260,
+          "no": 7260,
+          "undervotes": 1872,
+          "overvotes": 5,
+          "sourceRow": 71
+        },
+        {
+          "district": 4,
+          "yes": 16558,
+          "no": 11630,
+          "undervotes": 2047,
+          "overvotes": 2,
+          "sourceRow": 75
+        },
+        {
+          "district": 5,
+          "yes": 18018,
+          "no": 6291,
+          "undervotes": 1608,
+          "overvotes": 10,
+          "sourceRow": 79
+        },
+        {
+          "district": 6,
+          "yes": 12063,
+          "no": 5441,
+          "undervotes": 1249,
+          "overvotes": 5,
+          "sourceRow": 83
+        },
+        {
+          "district": 7,
+          "yes": 20635,
+          "no": 11715,
+          "undervotes": 1929,
+          "overvotes": 16,
+          "sourceRow": 87
+        },
+        {
+          "district": 8,
+          "yes": 28914,
+          "no": 11259,
+          "undervotes": 2258,
+          "overvotes": 12,
+          "sourceRow": 91
+        },
+        {
+          "district": 9,
+          "yes": 19815,
+          "no": 6883,
+          "undervotes": 1414,
+          "overvotes": 7,
+          "sourceRow": 95
+        },
+        {
+          "district": 10,
+          "yes": 13165,
+          "no": 6339,
+          "undervotes": 1265,
+          "overvotes": 8,
+          "sourceRow": 99
+        },
+        {
+          "district": 11,
+          "yes": 13603,
+          "no": 7600,
+          "undervotes": 1281,
+          "overvotes": 5,
+          "sourceRow": 103
+        }
+      ]
+    },
+    {
+      "id": "D",
+      "title": "Affordable Housing – Initiative Petition",
+      "sourceSheet": "Sheet57",
+      "sourceUrl": "https://sfelections.org/results/20221108/index.html#a_english_56",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 141507,
+        "no": 146158,
+        "undervotes": 21823,
+        "overvotes": 182
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 12930,
+          "no": 15320,
+          "undervotes": 2258,
+          "overvotes": 12,
+          "sourceRow": 63
+        },
+        {
+          "district": 2,
+          "yes": 16757,
+          "no": 12523,
+          "undervotes": 2709,
+          "overvotes": 20,
+          "sourceRow": 67
+        },
+        {
+          "district": 3,
+          "yes": 11900,
+          "no": 10479,
+          "undervotes": 1964,
+          "overvotes": 21,
+          "sourceRow": 71
+        },
+        {
+          "district": 4,
+          "yes": 10995,
+          "no": 16616,
+          "undervotes": 2579,
+          "overvotes": 13,
+          "sourceRow": 75
+        },
+        {
+          "district": 5,
+          "yes": 12469,
+          "no": 11756,
+          "undervotes": 1650,
+          "overvotes": 17,
+          "sourceRow": 79
+        },
+        {
+          "district": 6,
+          "yes": 10608,
+          "no": 6748,
+          "undervotes": 1363,
+          "overvotes": 9,
+          "sourceRow": 83
+        },
+        {
+          "district": 7,
+          "yes": 14545,
+          "no": 17349,
+          "undervotes": 2347,
+          "overvotes": 23,
+          "sourceRow": 87
+        },
+        {
+          "district": 8,
+          "yes": 20759,
+          "no": 19051,
+          "undervotes": 2553,
+          "overvotes": 29,
+          "sourceRow": 91
+        },
+        {
+          "district": 9,
+          "yes": 11916,
+          "no": 14660,
+          "undervotes": 1510,
+          "overvotes": 15,
+          "sourceRow": 95
+        },
+        {
+          "district": 10,
+          "yes": 9636,
+          "no": 9694,
+          "undervotes": 1400,
+          "overvotes": 15,
+          "sourceRow": 99
+        },
+        {
+          "district": 11,
+          "yes": 8992,
+          "no": 11962,
+          "undervotes": 1490,
+          "overvotes": 8,
+          "sourceRow": 103
+        }
+      ]
+    },
+    {
+      "id": "E",
+      "title": "Affordable Housing – Board of Supervisors",
+      "sourceSheet": "Sheet58",
+      "sourceUrl": "https://sfelections.org/results/20221108/index.html#a_english_57",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 131569,
+        "no": 154021,
+        "undervotes": 23948,
+        "overvotes": 132
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 12493,
+          "no": 15543,
+          "undervotes": 2472,
+          "overvotes": 12,
+          "sourceRow": 63
+        },
+        {
+          "district": 2,
+          "yes": 10662,
+          "no": 18294,
+          "undervotes": 3040,
+          "overvotes": 13,
+          "sourceRow": 67
+        },
+        {
+          "district": 3,
+          "yes": 10503,
+          "no": 11684,
+          "undervotes": 2166,
+          "overvotes": 11,
+          "sourceRow": 71
+        },
+        {
+          "district": 4,
+          "yes": 11165,
+          "no": 16203,
+          "undervotes": 2824,
+          "overvotes": 11,
+          "sourceRow": 75
+        },
+        {
+          "district": 5,
+          "yes": 12944,
+          "no": 11125,
+          "undervotes": 1813,
+          "overvotes": 10,
+          "sourceRow": 79
+        },
+        {
+          "district": 6,
+          "yes": 7821,
+          "no": 9395,
+          "undervotes": 1504,
+          "overvotes": 8,
+          "sourceRow": 83
+        },
+        {
+          "district": 7,
+          "yes": 12839,
+          "no": 18841,
+          "undervotes": 2567,
+          "overvotes": 17,
+          "sourceRow": 87
+        },
+        {
+          "district": 8,
+          "yes": 17850,
+          "no": 21738,
+          "undervotes": 2784,
+          "overvotes": 20,
+          "sourceRow": 91
+        },
+        {
+          "district": 9,
+          "yes": 14954,
+          "no": 11478,
+          "undervotes": 1657,
+          "overvotes": 12,
+          "sourceRow": 95
+        },
+        {
+          "district": 10,
+          "yes": 9703,
+          "no": 9522,
+          "undervotes": 1508,
+          "overvotes": 12,
+          "sourceRow": 99
+        },
+        {
+          "district": 11,
+          "yes": 10635,
+          "no": 10198,
+          "undervotes": 1613,
+          "overvotes": 6,
+          "sourceRow": 103
+        }
+      ]
+    },
+    {
+      "id": "F",
+      "title": "Library Preservation Fund",
+      "sourceSheet": "Sheet59",
+      "sourceUrl": "https://sfelections.org/results/20221108/index.html#a_english_58",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 239141,
+        "no": 50453,
+        "undervotes": 20023,
+        "overvotes": 53
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 23317,
+          "no": 5254,
+          "undervotes": 1941,
+          "overvotes": 8,
+          "sourceRow": 63
+        },
+        {
+          "district": 2,
+          "yes": 23992,
+          "no": 5568,
+          "undervotes": 2443,
+          "overvotes": 6,
+          "sourceRow": 67
+        },
+        {
+          "district": 3,
+          "yes": 18445,
+          "no": 3872,
+          "undervotes": 2043,
+          "overvotes": 4,
+          "sourceRow": 71
+        },
+        {
+          "district": 4,
+          "yes": 21445,
+          "no": 6598,
+          "undervotes": 2158,
+          "overvotes": 2,
+          "sourceRow": 75
+        },
+        {
+          "district": 5,
+          "yes": 20977,
+          "no": 3226,
+          "undervotes": 1687,
+          "overvotes": 2,
+          "sourceRow": 79
+        },
+        {
+          "district": 6,
+          "yes": 14387,
+          "no": 2942,
+          "undervotes": 1398,
+          "overvotes": 1,
+          "sourceRow": 83
+        },
+        {
+          "district": 7,
+          "yes": 25900,
+          "no": 6378,
+          "undervotes": 1980,
+          "overvotes": 6,
+          "sourceRow": 87
+        },
+        {
+          "district": 8,
+          "yes": 35667,
+          "no": 4496,
+          "undervotes": 2220,
+          "overvotes": 9,
+          "sourceRow": 91
+        },
+        {
+          "district": 9,
+          "yes": 23303,
+          "no": 3426,
+          "undervotes": 1366,
+          "overvotes": 6,
+          "sourceRow": 95
+        },
+        {
+          "district": 10,
+          "yes": 15546,
+          "no": 3830,
+          "undervotes": 1363,
+          "overvotes": 6,
+          "sourceRow": 99
+        },
+        {
+          "district": 11,
+          "yes": 16162,
+          "no": 4863,
+          "undervotes": 1424,
+          "overvotes": 3,
+          "sourceRow": 103
+        }
+      ]
+    },
+    {
+      "id": "G",
+      "title": "Student Success Fund – Grants to the San Francisco Unified School District",
+      "sourceSheet": "Sheet60",
+      "sourceUrl": "https://sfelections.org/results/20221108/index.html#a_english_59",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 226718,
+        "no": 64768,
+        "undervotes": 18140,
+        "overvotes": 44
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 21713,
+          "no": 7047,
+          "undervotes": 1757,
+          "overvotes": 3,
+          "sourceRow": 63
+        },
+        {
+          "district": 2,
+          "yes": 22118,
+          "no": 7589,
+          "undervotes": 2297,
+          "overvotes": 5,
+          "sourceRow": 67
+        },
+        {
+          "district": 3,
+          "yes": 17333,
+          "no": 5167,
+          "undervotes": 1860,
+          "overvotes": 4,
+          "sourceRow": 71
+        },
+        {
+          "district": 4,
+          "yes": 19505,
+          "no": 8784,
+          "undervotes": 1910,
+          "overvotes": 4,
+          "sourceRow": 75
+        },
+        {
+          "district": 5,
+          "yes": 20882,
+          "no": 3456,
+          "undervotes": 1550,
+          "overvotes": 4,
+          "sourceRow": 79
+        },
+        {
+          "district": 6,
+          "yes": 13908,
+          "no": 3468,
+          "undervotes": 1350,
+          "overvotes": 2,
+          "sourceRow": 83
+        },
+        {
+          "district": 7,
+          "yes": 23602,
+          "no": 8917,
+          "undervotes": 1740,
+          "overvotes": 5,
+          "sourceRow": 87
+        },
+        {
+          "district": 8,
+          "yes": 33437,
+          "no": 6891,
+          "undervotes": 2058,
+          "overvotes": 6,
+          "sourceRow": 91
+        },
+        {
+          "district": 9,
+          "yes": 22857,
+          "no": 3992,
+          "undervotes": 1252,
+          "overvotes": 0,
+          "sourceRow": 95
+        },
+        {
+          "district": 10,
+          "yes": 15620,
+          "no": 3935,
+          "undervotes": 1187,
+          "overvotes": 3,
+          "sourceRow": 99
+        },
+        {
+          "district": 11,
+          "yes": 15743,
+          "no": 5522,
+          "undervotes": 1179,
+          "overvotes": 8,
+          "sourceRow": 103
+        }
+      ]
+    },
+    {
+      "id": "H",
+      "title": "City Elections in Even-Numbered Years",
+      "sourceSheet": "Sheet61",
+      "sourceUrl": "https://sfelections.org/results/20221108/index.html#a_english_60",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 203855,
+        "no": 82391,
+        "undervotes": 23367,
+        "overvotes": 57
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 19329,
+          "no": 8861,
+          "undervotes": 2326,
+          "overvotes": 4,
+          "sourceRow": 63
+        },
+        {
+          "district": 2,
+          "yes": 20099,
+          "no": 9022,
+          "undervotes": 2882,
+          "overvotes": 6,
+          "sourceRow": 67
+        },
+        {
+          "district": 3,
+          "yes": 15425,
+          "no": 6604,
+          "undervotes": 2326,
+          "overvotes": 9,
+          "sourceRow": 71
+        },
+        {
+          "district": 4,
+          "yes": 16960,
+          "no": 10620,
+          "undervotes": 2617,
+          "overvotes": 6,
+          "sourceRow": 75
+        },
+        {
+          "district": 5,
+          "yes": 18668,
+          "no": 5286,
+          "undervotes": 1932,
+          "overvotes": 6,
+          "sourceRow": 79
+        },
+        {
+          "district": 6,
+          "yes": 12429,
+          "no": 4713,
+          "undervotes": 1585,
+          "overvotes": 1,
+          "sourceRow": 83
+        },
+        {
+          "district": 7,
+          "yes": 21573,
+          "no": 10295,
+          "undervotes": 2392,
+          "overvotes": 4,
+          "sourceRow": 87
+        },
+        {
+          "district": 8,
+          "yes": 31788,
+          "no": 8052,
+          "undervotes": 2543,
+          "overvotes": 9,
+          "sourceRow": 91
+        },
+        {
+          "district": 9,
+          "yes": 21120,
+          "no": 5412,
+          "undervotes": 1566,
+          "overvotes": 3,
+          "sourceRow": 95
+        },
+        {
+          "district": 10,
+          "yes": 13298,
+          "no": 5874,
+          "undervotes": 1569,
+          "overvotes": 4,
+          "sourceRow": 99
+        },
+        {
+          "district": 11,
+          "yes": 13166,
+          "no": 7652,
+          "undervotes": 1629,
+          "overvotes": 5,
+          "sourceRow": 103
+        }
+      ]
+    },
+    {
+      "id": "I",
+      "title": "Vehicles on JFK Drive in Golden Gate Park and the Great Highway",
+      "sourceSheet": "Sheet62",
+      "sourceUrl": "https://sfelections.org/results/20221108/index.html#a_english_61",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 102689,
+        "no": 191641,
+        "undervotes": 15165,
+        "overvotes": 175
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 12785,
+          "no": 16702,
+          "undervotes": 1014,
+          "overvotes": 19,
+          "sourceRow": 63
+        },
+        {
+          "district": 2,
+          "yes": 10280,
+          "no": 19705,
+          "undervotes": 1998,
+          "overvotes": 26,
+          "sourceRow": 67
+        },
+        {
+          "district": 3,
+          "yes": 7640,
+          "no": 14864,
+          "undervotes": 1850,
+          "overvotes": 10,
+          "sourceRow": 71
+        },
+        {
+          "district": 4,
+          "yes": 13544,
+          "no": 15395,
+          "undervotes": 1255,
+          "overvotes": 9,
+          "sourceRow": 75
+        },
+        {
+          "district": 5,
+          "yes": 5677,
+          "no": 18974,
+          "undervotes": 1224,
+          "overvotes": 17,
+          "sourceRow": 79
+        },
+        {
+          "district": 6,
+          "yes": 5131,
+          "no": 12298,
+          "undervotes": 1291,
+          "overvotes": 8,
+          "sourceRow": 83
+        },
+        {
+          "district": 7,
+          "yes": 13464,
+          "no": 19473,
+          "undervotes": 1313,
+          "overvotes": 14,
+          "sourceRow": 87
+        },
+        {
+          "district": 8,
+          "yes": 9147,
+          "no": 31605,
+          "undervotes": 1606,
+          "overvotes": 34,
+          "sourceRow": 91
+        },
+        {
+          "district": 9,
+          "yes": 7143,
+          "no": 19679,
+          "undervotes": 1261,
+          "overvotes": 18,
+          "sourceRow": 95
+        },
+        {
+          "district": 10,
+          "yes": 7663,
+          "no": 11903,
+          "undervotes": 1170,
+          "overvotes": 9,
+          "sourceRow": 99
+        },
+        {
+          "district": 11,
+          "yes": 10215,
+          "no": 11043,
+          "undervotes": 1183,
+          "overvotes": 11,
+          "sourceRow": 103
+        }
+      ]
+    },
+    {
+      "id": "J",
+      "title": "Recreational Use of JFK Drive in Golden Gate Park",
+      "sourceSheet": "Sheet63",
+      "sourceUrl": "https://sfelections.org/results/20221108/index.html#a_english_62",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 181694,
+        "no": 106408,
+        "undervotes": 21496,
+        "overvotes": 72
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 16258,
+          "no": 12711,
+          "undervotes": 1548,
+          "overvotes": 3,
+          "sourceRow": 63
+        },
+        {
+          "district": 2,
+          "yes": 19224,
+          "no": 10334,
+          "undervotes": 2442,
+          "overvotes": 9,
+          "sourceRow": 67
+        },
+        {
+          "district": 3,
+          "yes": 14414,
+          "no": 7576,
+          "undervotes": 2367,
+          "overvotes": 7,
+          "sourceRow": 71
+        },
+        {
+          "district": 4,
+          "yes": 14030,
+          "no": 14369,
+          "undervotes": 1802,
+          "overvotes": 2,
+          "sourceRow": 75
+        },
+        {
+          "district": 5,
+          "yes": 18510,
+          "no": 5572,
+          "undervotes": 1801,
+          "overvotes": 9,
+          "sourceRow": 79
+        },
+        {
+          "district": 6,
+          "yes": 12394,
+          "no": 4719,
+          "undervotes": 1615,
+          "overvotes": 0,
+          "sourceRow": 83
+        },
+        {
+          "district": 7,
+          "yes": 17952,
+          "no": 14367,
+          "undervotes": 1934,
+          "overvotes": 11,
+          "sourceRow": 87
+        },
+        {
+          "district": 8,
+          "yes": 29729,
+          "no": 10206,
+          "undervotes": 2448,
+          "overvotes": 9,
+          "sourceRow": 91
+        },
+        {
+          "district": 9,
+          "yes": 17722,
+          "no": 8143,
+          "undervotes": 2227,
+          "overvotes": 9,
+          "sourceRow": 95
+        },
+        {
+          "district": 10,
+          "yes": 11129,
+          "no": 7997,
+          "undervotes": 1612,
+          "overvotes": 7,
+          "sourceRow": 99
+        },
+        {
+          "district": 11,
+          "yes": 10332,
+          "no": 10414,
+          "undervotes": 1700,
+          "overvotes": 6,
+          "sourceRow": 103
+        }
+      ]
+    },
+    {
+      "id": "L",
+      "title": "Sales Tax for Transportation Projects",
+      "sourceSheet": "Sheet64",
+      "sourceUrl": "https://sfelections.org/results/20221108/index.html#a_english_63",
+      "threshold": "two-thirds",
+      "citywide": {
+        "yes": 209246,
+        "no": 82220,
+        "undervotes": 18150,
+        "overvotes": 54
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 19454,
+          "no": 9317,
+          "undervotes": 1746,
+          "overvotes": 3,
+          "sourceRow": 63
+        },
+        {
+          "district": 2,
+          "yes": 20761,
+          "no": 8989,
+          "undervotes": 2252,
+          "overvotes": 7,
+          "sourceRow": 67
+        },
+        {
+          "district": 3,
+          "yes": 16342,
+          "no": 6123,
+          "undervotes": 1893,
+          "overvotes": 6,
+          "sourceRow": 71
+        },
+        {
+          "district": 4,
+          "yes": 16891,
+          "no": 11440,
+          "undervotes": 1871,
+          "overvotes": 1,
+          "sourceRow": 75
+        },
+        {
+          "district": 5,
+          "yes": 19796,
+          "no": 4516,
+          "undervotes": 1576,
+          "overvotes": 4,
+          "sourceRow": 79
+        },
+        {
+          "district": 6,
+          "yes": 13147,
+          "no": 4302,
+          "undervotes": 1274,
+          "overvotes": 5,
+          "sourceRow": 83
+        },
+        {
+          "district": 7,
+          "yes": 21779,
+          "no": 10681,
+          "undervotes": 1797,
+          "overvotes": 7,
+          "sourceRow": 87
+        },
+        {
+          "district": 8,
+          "yes": 33278,
+          "no": 7199,
+          "undervotes": 1908,
+          "overvotes": 7,
+          "sourceRow": 91
+        },
+        {
+          "district": 9,
+          "yes": 21411,
+          "no": 5356,
+          "undervotes": 1327,
+          "overvotes": 7,
+          "sourceRow": 95
+        },
+        {
+          "district": 10,
+          "yes": 13423,
+          "no": 6129,
+          "undervotes": 1191,
+          "overvotes": 2,
+          "sourceRow": 99
+        },
+        {
+          "district": 11,
+          "yes": 12964,
+          "no": 8168,
+          "undervotes": 1315,
+          "overvotes": 5,
+          "sourceRow": 103
+        }
+      ]
+    },
+    {
+      "id": "M",
+      "title": "Tax on Keeping Residential Units Vacant",
+      "sourceSheet": "Sheet65",
+      "sourceUrl": "https://sfelections.org/results/20221108/index.html#a_english_64",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 159374,
+        "no": 132989,
+        "undervotes": 17221,
+        "overvotes": 86
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 14850,
+          "no": 14072,
+          "undervotes": 1586,
+          "overvotes": 12,
+          "sourceRow": 63
+        },
+        {
+          "district": 2,
+          "yes": 13807,
+          "no": 16118,
+          "undervotes": 2070,
+          "overvotes": 14,
+          "sourceRow": 67
+        },
+        {
+          "district": 3,
+          "yes": 12606,
+          "no": 10001,
+          "undervotes": 1755,
+          "overvotes": 2,
+          "sourceRow": 71
+        },
+        {
+          "district": 4,
+          "yes": 13047,
+          "no": 15394,
+          "undervotes": 1758,
+          "overvotes": 4,
+          "sourceRow": 75
+        },
+        {
+          "district": 5,
+          "yes": 15944,
+          "no": 8455,
+          "undervotes": 1485,
+          "overvotes": 8,
+          "sourceRow": 79
+        },
+        {
+          "district": 6,
+          "yes": 10055,
+          "no": 7456,
+          "undervotes": 1208,
+          "overvotes": 9,
+          "sourceRow": 83
+        },
+        {
+          "district": 7,
+          "yes": 15738,
+          "no": 16806,
+          "undervotes": 1715,
+          "overvotes": 5,
+          "sourceRow": 87
+        },
+        {
+          "district": 8,
+          "yes": 23734,
+          "no": 16692,
+          "undervotes": 1950,
+          "overvotes": 16,
+          "sourceRow": 91
+        },
+        {
+          "district": 9,
+          "yes": 17396,
+          "no": 9420,
+          "undervotes": 1272,
+          "overvotes": 13,
+          "sourceRow": 95
+        },
+        {
+          "district": 10,
+          "yes": 10833,
+          "no": 8737,
+          "undervotes": 1173,
+          "overvotes": 2,
+          "sourceRow": 99
+        },
+        {
+          "district": 11,
+          "yes": 11364,
+          "no": 9838,
+          "undervotes": 1249,
+          "overvotes": 1,
+          "sourceRow": 103
+        }
+      ]
+    },
+    {
+      "id": "N",
+      "title": "Golden Gate Park Underground Parking Facility; Golden Gate Park Concourse Authority",
+      "sourceSheet": "Sheet66",
+      "sourceUrl": "https://sfelections.org/results/20221108/index.html#a_english_65",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 212678,
+        "no": 72117,
+        "undervotes": 24818,
+        "overvotes": 57
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 20611,
+          "no": 7625,
+          "undervotes": 2281,
+          "overvotes": 3,
+          "sourceRow": 63
+        },
+        {
+          "district": 2,
+          "yes": 21485,
+          "no": 7531,
+          "undervotes": 2987,
+          "overvotes": 6,
+          "sourceRow": 67
+        },
+        {
+          "district": 3,
+          "yes": 16023,
+          "no": 5679,
+          "undervotes": 2659,
+          "overvotes": 3,
+          "sourceRow": 71
+        },
+        {
+          "district": 4,
+          "yes": 18383,
+          "no": 9252,
+          "undervotes": 2564,
+          "overvotes": 4,
+          "sourceRow": 75
+        },
+        {
+          "district": 5,
+          "yes": 19229,
+          "no": 4555,
+          "undervotes": 2097,
+          "overvotes": 11,
+          "sourceRow": 79
+        },
+        {
+          "district": 6,
+          "yes": 13122,
+          "no": 3884,
+          "undervotes": 1717,
+          "overvotes": 5,
+          "sourceRow": 83
+        },
+        {
+          "district": 7,
+          "yes": 22657,
+          "no": 9151,
+          "undervotes": 2449,
+          "overvotes": 7,
+          "sourceRow": 87
+        },
+        {
+          "district": 8,
+          "yes": 32830,
+          "no": 6766,
+          "undervotes": 2791,
+          "overvotes": 5,
+          "sourceRow": 91
+        },
+        {
+          "district": 9,
+          "yes": 21190,
+          "no": 5035,
+          "undervotes": 1872,
+          "overvotes": 4,
+          "sourceRow": 95
+        },
+        {
+          "district": 10,
+          "yes": 13590,
+          "no": 5533,
+          "undervotes": 1617,
+          "overvotes": 5,
+          "sourceRow": 99
+        },
+        {
+          "district": 11,
+          "yes": 13558,
+          "no": 7106,
+          "undervotes": 1784,
+          "overvotes": 4,
+          "sourceRow": 103
+        }
+      ]
+    },
+    {
+      "id": "O",
+      "title": "Additional Parcel Tax for City College",
+      "sourceSheet": "Sheet67",
+      "sourceUrl": "https://sfelections.org/results/20221108/index.html#a_english_66",
+      "threshold": "majority",
+      "citywide": {
+        "yes": 106513,
+        "no": 183968,
+        "undervotes": 19128,
+        "overvotes": 61
+      },
+      "districts": [
+        {
+          "district": 1,
+          "yes": 10080,
+          "no": 18678,
+          "undervotes": 1757,
+          "overvotes": 5,
+          "sourceRow": 63
+        },
+        {
+          "district": 2,
+          "yes": 8320,
+          "no": 21316,
+          "undervotes": 2367,
+          "overvotes": 6,
+          "sourceRow": 67
+        },
+        {
+          "district": 3,
+          "yes": 8534,
+          "no": 13746,
+          "undervotes": 2080,
+          "overvotes": 4,
+          "sourceRow": 71
+        },
+        {
+          "district": 4,
+          "yes": 7953,
+          "no": 20486,
+          "undervotes": 1759,
+          "overvotes": 5,
+          "sourceRow": 75
+        },
+        {
+          "district": 5,
+          "yes": 11811,
+          "no": 12264,
+          "undervotes": 1812,
+          "overvotes": 5,
+          "sourceRow": 79
+        },
+        {
+          "district": 6,
+          "yes": 6366,
+          "no": 10972,
+          "undervotes": 1384,
+          "overvotes": 6,
+          "sourceRow": 83
+        },
+        {
+          "district": 7,
+          "yes": 10083,
+          "no": 22376,
+          "undervotes": 1798,
+          "overvotes": 7,
+          "sourceRow": 87
+        },
+        {
+          "district": 8,
+          "yes": 16485,
+          "no": 23633,
+          "undervotes": 2264,
+          "overvotes": 10,
+          "sourceRow": 91
+        },
+        {
+          "district": 9,
+          "yes": 12916,
+          "no": 13735,
+          "undervotes": 1446,
+          "overvotes": 4,
+          "sourceRow": 95
+        },
+        {
+          "district": 10,
+          "yes": 6827,
+          "no": 12697,
+          "undervotes": 1216,
+          "overvotes": 5,
+          "sourceRow": 99
+        },
+        {
+          "district": 11,
+          "yes": 7138,
+          "no": 14065,
+          "undervotes": 1245,
+          "overvotes": 4,
+          "sourceRow": 103
+        }
+      ]
+    }
+  ]
+}
