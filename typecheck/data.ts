@@ -30,3 +30,11 @@ renderSFMap({ year: 2020 });
 const name: string = rawNeighborhoods.features[0].properties.canonicalName;
 const count: number = catalog.neighborhoods.length;
 void [name, count];
+
+import { createNeighborhoodExplorer } from '@kahwee/sf-map-svg/explorer';
+const explorer = createNeighborhoodExplorer({ source: 'realtor', neighborhood: 'NoPa' });
+explorer.selectNeighborhood('Outer Mission');
+explorer.setSource('analysis');
+explorer.zoomBy(2);
+explorer.resetView();
+explorer.destroy();

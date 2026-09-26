@@ -26,13 +26,29 @@ For rendering changes, inspect the example page on desktop and at 390 px. Run `p
 
 ## Public npm releases
 
-1. Update the version and changelog.
-2. Run `pnpm check`, `pnpm demo`, and `pnpm build-storybook`.
-3. Inspect `pnpm pack` contents and smoke-test the archive in a clean consumer project.
-4. Commit and push the reviewed changes, then publish with `npm publish --access public`.
-5. Verify the published registry version and installation, then tag the released commit.
+GitHub Actions checks Node 22, 24, and 26 on pushes and pull requests. Each job checks formatting, data, types, and tests, builds the examples and Storybook, then installs a packed archive in a temporary consumer to verify the published entrypoints. Run the same package check locally with `pnpm test:package`.
 
-`publishConfig` fixes public access and the npm registry. Publishing requires npm authentication. Never include credentials, site account identifiers, original site application files, or unrelated YorkSF content. Only the map renderer, public geometry, tests, examples, and supporting documentation belong here.
+The `publish.yml` workflow publishes stable releases when a GitHub release is published, or when manually dispatched with an existing `vMAJOR.MINOR.PATCH` tag. It checks out that tag, requires its package version to match, reruns all checks, and publishes the exact archive that passed the consumer test. Prerelease tags are rejected. No package is published on normal pushes or pull requests.
+
+Before the first automated release, configure the package's npm Trusted Publisher settings:
+
+- Provider: GitHub Actions
+- Organization or user: `kahwee`
+- Repository: `sf-map-svg`
+- Workflow filename: `publish.yml`
+- Environment: leave blank (the workflow does not use a GitHub environment)
+- Allowed action: enable direct `npm publish`
+
+This npm-side trust configuration must match the workflow identity. The workflow uses a GitHub-hosted runner, Node 24, and `id-token: write`; it needs no stored npm token. See [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/) for setup. npm generates provenance when the repository and package meet its eligibility requirements; a private source repository does not receive public provenance. GitHub Actions must also be enabled with available runner minutes/billing before workflows can execute.
+
+To release:
+
+1. Update the version and changelog.
+2. Run `pnpm check`, `pnpm demo`, `pnpm build-storybook`, and `pnpm test:package`.
+3. Review and push the changes, tag the reviewed commit as `v<version>`, and publish its GitHub release.
+4. Inspect the publish workflow result, verify the registry version, and install that version in a clean project. A manual dispatch with the same tag can retry a failed attempt; npm rejects republishing an existing version.
+
+`publishConfig` fixes public access and the npm registry. Never include credentials, site account identifiers, original site application files, or unrelated YorkSF content. Only the map renderer, public geometry, tests, examples, and supporting documentation belong here. The software uses MIT; source geographic data retains the terms and attribution recorded in `SOURCES.md`.
 
 ## Interactive examples and dependency updates
 

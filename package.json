@@ -18,6 +18,10 @@
     "./geometry": {
       "types": "./src/geometry.d.ts",
       "import": "./src/geometry.js"
+    },
+    "./explorer": {
+      "types": "./src/explorer.d.ts",
+      "import": "./src/explorer.js"
     }
   },
   "files": [
@@ -40,13 +44,14 @@
     "data:catalog": "node scripts/build-data-catalog.mjs",
     "data:check": "node scripts/build-data-catalog.mjs --check",
     "typecheck": "tsc",
-    "data:normalize-realtor": "node scripts/normalize-realtor.mjs"
+    "data:normalize-realtor": "node scripts/normalize-realtor.mjs",
+    "test:package": "node scripts/smoke-package.mjs"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kahwee/sf-map-svg.git"
   },
-  "license": "UNLICENSED",
+  "license": "MIT",
   "engines": {
     "node": ">=22.12.0"
   },

@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Add a browser neighborhood explorer with alias search, selection, boundary zoom, and GeoJSON downloads.
+- Adapt explorer labels to zoom and viewport size while preserving static SVG defaults.
+- License software under MIT and add npm release automation and packaged-consumer checks.
+
 ## 0.3.0
 
 - Enable public npm distribution with explicit public registry access.
