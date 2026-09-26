@@ -1,16 +1,32 @@
 # Changelog
 
+User-visible changes are recorded here. Unreleased entries describe changes on `main` that are not part of a tagged package release.
+
+## Unreleased
+
+### Added
+
+- Public [GitHub Pages explorer](https://kahwee.github.io/sf-map-svg/) with neighborhood search, map modes, usage tips, SVG examples, and GeoJSON downloads.
+- Automatic Pages builds and deployment from `main`, plus `pnpm build:pages` for local previews.
+- Optional `@kahwee/sf-map-svg/transit` browser component and an [embeddable transit demo](https://kahwee.github.io/sf-map-svg/transit.html). The schematic BART journey connects official station locations with straight segments; it does not represent actual tracks or live service.
+- Play/pause controls, a keyboard-accessible journey slider, pause-on-hidden behavior, and a Storybook transit example. Animation starts paused.
+
+### Changed
+
+- Reorganize the README around installation, choosing an API, static and interactive options, geographic data, development, and Pages deployment.
+
+### Fixed
+
+- Release map listeners, observers, animation frames, and download URLs when explorer initialization fails. Add browser regression coverage for failed initialization.
+
 ## 1.0.0
 
 - Publish the stable 1.0 API with public npm access and a public source repository.
 - Add the reusable interactive map entrypoint, controlled viewport and selection APIs, keyboard/touch navigation, and marker selection.
 - Add interactive examples, Storybook stories, and viewport/navigation regression checks.
-
 - Add district/neighborhood explorer modes and a labels toggle, with fixed screen-size labels while zooming.
 - Add a master visible-label switch for standalone SVGs.
-
 - Add nine optional key-road landmarks from DataSF centerlines, public JSON, and zoom-aware explorer labels.
-
 - Add a transit-inspired map theme with pale water, quiet land, green parks, and blue station symbols.
 - Refine the neighborhood explorer presentation and map legend.
 - Add a transit example and Storybook preset.
@@ -29,11 +45,8 @@
 ## 0.3.0
 
 - Enable public npm distribution with explicit public registry access.
-
 - Remove realtor boundary sliver overlaps while preserving all 92 neighborhoods and their combined footprint; enforce disjoint interiors in regression tests.
-
 - Use the 92 SFAR realtor neighborhoods by default for map outlines, data lookup, and Storybook. Other source collections remain available.
-
 - Move all geographic data to exported canonical GeoJSON files, preserving district display extras.
 - Expose complete SF Find (117), analysis (41), and realtor (92) neighborhood collections with source-specific canonical names and documented aliases.
 - Add immutable data helpers, exact-name lookup, source-aware search, and a typed geometry export.
