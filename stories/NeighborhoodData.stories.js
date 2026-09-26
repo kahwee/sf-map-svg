@@ -5,8 +5,11 @@ import { createNeighborhoodExplorer } from '../src/explorer.ts';
 export default {
   title: 'Data/Neighborhood explorer',
   parameters: { layout: 'padded' },
-  args: { source: 'realtor', neighborhood: '' },
+  args: { source: 'realtor', neighborhood: '', mode: 'neighborhoods', labels: true, year: 2022 },
   argTypes: {
+    mode: { control: 'select', options: ['neighborhoods', 'districts'] },
+    labels: { control: 'boolean' },
+    year: { control: 'select', options: [2002, 2012, 2022] },
     source: { control: 'select', options: neighborhoodSources },
     neighborhood: {
       control: 'text',
@@ -16,7 +19,7 @@ export default {
   render: (args) => {
     const explorer = useMemo(
       () => createNeighborhoodExplorer(args),
-      [args.source, args.neighborhood],
+      [args.source, args.neighborhood, args.mode, args.labels, args.year],
     );
     useEffect(() => () => explorer.destroy(), [explorer]);
     return explorer;
@@ -41,3 +44,6 @@ export const Mobile = {
     },
   ],
 };
+
+export const DistrictNumbers = { args: { mode: 'districts' } };
+export const LabelsOff = { args: { labels: false } };

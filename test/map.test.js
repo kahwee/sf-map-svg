@@ -168,3 +168,16 @@ test('key roads are an optional layer independent of highways', () => {
   assert.ok(svg.includes('The Embarcadero'));
   assert.ok(!svg.includes('data-layer="highways"'));
 });
+
+test('master label switch hides text without removing map symbols or accessible titles', () => {
+  const document = new DOMParser().parseFromString(
+    renderSFMap({ labels: false, landmarks: true, bartStations: true, keyRoads: true }),
+    'image/svg+xml',
+  );
+  assert.equal(document.getElementsByTagName('text').length, 0);
+  assert.ok(document.getElementsByTagName('title').length > 8);
+  assert.ok(document.getElementsByTagName('circle').length >= 8);
+  const numbered = new DOMParser().parseFromString(renderSFMap(), 'image/svg+xml');
+  for (const text of Array.from(numbered.getElementsByTagName('text')))
+    assert.match(text.textContent, /^(?:[1-9]|10|11)$/);
+});

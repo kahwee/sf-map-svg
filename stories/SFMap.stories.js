@@ -12,6 +12,7 @@ export default {
     districtLines: true,
     districtFills: true,
     districtLabels: true,
+    labels: true,
     neighborhoodLines: false,
     highways: false,
     keyRoads: false,
@@ -30,6 +31,7 @@ export default {
     districtLines: { control: 'boolean' },
     districtFills: { control: 'boolean' },
     districtLabels: { control: 'boolean' },
+    labels: { control: 'boolean' },
     neighborhoodLines: { control: 'boolean' },
     highways: { control: 'boolean' },
     keyRoads: { control: 'boolean' },
@@ -103,4 +105,8 @@ export const KeyRoads = {
     bartStations: true,
     highways: true,
   },
+};
+
+export const LabelsOff = {
+  args: { labels: false, landmarks: true, bartStations: true, keyRoads: true },
 };

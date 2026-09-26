@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Add district/neighborhood explorer modes and a labels toggle, with fixed screen-size labels while zooming.
+- Add a master visible-label switch for standalone SVGs.
+
 - Add nine optional key-road landmarks from DataSF centerlines, public JSON, and zoom-aware explorer labels.
 
 - Add a transit-inspired map theme with pale water, quiet land, green parks, and blue station symbols.

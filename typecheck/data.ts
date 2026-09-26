@@ -38,6 +38,10 @@ import { createNeighborhoodExplorer } from '@kahwee/sf-map-svg/explorer';
 const explorer = createNeighborhoodExplorer({ source: 'realtor', neighborhood: 'NoPa' });
 explorer.selectNeighborhood('Outer Mission');
 explorer.setSource('analysis');
+explorer.setMode('districts');
+explorer.setLabels(false);
+// @ts-expect-error Unknown map modes must fail at compile time.
+explorer.setMode('unknown');
 explorer.zoomBy(2);
 explorer.resetView();
 explorer.destroy();

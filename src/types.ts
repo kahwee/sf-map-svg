@@ -17,6 +17,8 @@ export interface SFMapOptions {
   neighborhoodLines?: boolean;
   districtFills?: boolean;
   districtLabels?: boolean;
+  /** Hide all visible text labels while retaining geographic symbols and accessible titles. */
+  labels?: boolean;
   highways?: boolean;
   keyRoads?: boolean;
   landmarks?: boolean;
