@@ -1,10 +1,11 @@
 import type { Geometry } from '../data/types.js';
 import type { DistrictRow } from './data.js';
 import type { Project } from './geometry.js';
-import type { BartStation, Landmark } from './overlays.js';
+import type { BartStation, KeyRoad, Landmark } from './overlays.js';
 import type { MapMarker, SFMapOptions } from './types.js';
 
 interface LayerContext {
+  theme: NonNullable<SFMapOptions['theme']>;
   idPrefix: string;
   colors: Required<NonNullable<SFMapOptions['colors']>>;
   project: Project;
@@ -19,7 +20,7 @@ interface DistrictPath {
 import { escapeXml, number, overlayLabel, stroke } from './svg.js';
 
 export function districtFills(districts: readonly DistrictPath[], { idPrefix }: LayerContext) {
-  return `<g data-layer="district-fills" clip-path="url(#${idPrefix}-coast)">${districts.map((d) => `<path data-district="${d.id}" d="${d.path}" fill="${d.color}" fill-rule="evenodd"/>`).join('')}</g>`;
+  return `<g data-layer="district-fills" clip-path="url(#${idPrefix}-coast)">${districts.map((d) => `<path data-district="${d.id}" d="${d.path}" fill="${escapeXml(d.color)}" fill-rule="evenodd"/>`).join('')}</g>`;
 }
 export function districtLines(
   districts: readonly DistrictPath[],
@@ -32,9 +33,9 @@ export function landmarks(items: readonly Landmark[], { idPrefix, path, colors }
 }
 export function highways(
   items: readonly { route: string; geometry: Geometry }[],
-  { path, colors }: LayerContext,
+  { path, colors, theme }: LayerContext,
 ) {
-  return `<g data-layer="highways">${items.map((road) => `<path data-route="${escapeXml(road.route)}" d="${path(road.geometry)}" ${stroke(colors.highway, 1.4)}/>`).join('')}</g>`;
+  return `<g data-layer="highways">${items.map((road) => `<path data-route="${escapeXml(road.route)}" d="${path(road.geometry)}" ${stroke(colors.highway, theme === 'transit' ? 2 : 1.4)}/>`).join('')}</g>`;
 }
 export function neighborhoods(
   items: readonly { name: string; geometry: Geometry }[],
@@ -79,6 +80,18 @@ export function markers(items: readonly MapMarker[], { project, colors }: LayerC
     .map((marker) => {
       const [x, y] = project([marker.lng, marker.lat]).map(number);
       return `<circle data-marker-id="${escapeXml(marker.id)}" cx="${x}" cy="${y}" r="${marker.selected ? 8 : 5}" fill="${escapeXml(marker.color ?? (marker.selected ? colors.selected : colors.marker))}" stroke="#fff9e9" stroke-width="2" vector-effect="non-scaling-stroke"><title>${escapeXml(marker.label ?? marker.id)}</title></circle>`;
+    })
+    .join('')}</g>`;
+}
+
+export function keyRoads(items: readonly KeyRoad[], { idPrefix, path, colors }: LayerContext) {
+  return `<g data-layer="key-roads" clip-path="url(#${idPrefix}-coast)">${items.map((road) => `<path data-key-road="${escapeXml(road.id)}" d="${path(road.geometry)}" ${stroke(colors.road, 1)}><title>${escapeXml(road.name)}</title></path>`).join('')}</g>`;
+}
+export function keyRoadLabels(items: readonly KeyRoad[], { project }: LayerContext) {
+  return `<g data-layer="key-road-labels" ${overlayLabel} fill="#77736b">${items
+    .map((road) => {
+      const [x, y] = project(road.label);
+      return `<text x="${number(x)}" y="${number(y - 5)}" text-anchor="middle">${escapeXml(road.name)}</text>`;
     })
     .join('')}</g>`;
 }

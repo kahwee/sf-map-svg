@@ -104,6 +104,25 @@
       ]
     },
     {
+      "id": "key-roads",
+      "file": "key-roads.json",
+      "title": "Selected San Francisco road landmarks",
+      "featureCount": 9,
+      "definition": {
+        "kind": "selected-road-centerlines",
+        "description": "Nine selected road corridors for orientation, using active DataSF street segments. Geary St and Geary Blvd form one corridor. Not a complete road network or a claim of vehicle access."
+      },
+      "sources": [
+        {
+          "id": "datasf-streets",
+          "title": "DataSF Streets – Active and Retired",
+          "url": "https://data.sf.gov/resource/3psu-pn9h.geojson?%24where=active+%3D+true+AND+streetname+in+%28%27MARKET+ST%27%2C%27MISSION+ST%27%2C%27GEARY+BLVD%27%2C%27GEARY+ST%27%2C%27VAN+NESS+AVE%27%2C%2719TH+AVE%27%2C%27SUNSET+BLVD%27%2C%27THE+EMBARCADERO%27%2C%27COLUMBUS+AVE%27%2C%27DIVISADERO+ST%27%29&%24limit=5000&%24order=cnn",
+          "retrievedAt": "2026-09-26",
+          "licenseUrl": "https://datasf.org/opendata/terms-of-use/"
+        }
+      ]
+    },
+    {
       "id": "landmarks",
       "file": "landmarks.json",
       "title": "Selected San Francisco parks and landmarks",

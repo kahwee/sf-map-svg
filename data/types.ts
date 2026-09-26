@@ -100,3 +100,10 @@ export interface LandmarkProperties {
   readonly offset: readonly [number, number];
   readonly anchor: 'middle' | 'start' | 'end';
 }
+
+export interface KeyRoadProperties {
+  readonly name: string;
+  readonly sourceNames: readonly string[];
+  readonly label: Position;
+  readonly segmentIds: readonly string[];
+}

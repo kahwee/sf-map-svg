@@ -16,6 +16,7 @@ The renderer, `neighborhoods` convenience export, and `getNeighborhood` default 
 | `neighborhoods-realtor.json`  | All 92 SFAR areas in the August 2010 dataset                        |
 | `coast.json`                  | The renderer's common display coastline                             |
 | `highways.json`               | The original map's highway geometry                                 |
+| `key-roads.json` | Nine selected road corridors with source segment IDs and label anchors |
 | `landmarks.json`              | Six selected park/landmark property areas                           |
 | `bart-stations.json`          | Eight San Francisco station points                                  |
 | `catalog.json`                | Dataset index and searchable neighborhood metadata without geometry |

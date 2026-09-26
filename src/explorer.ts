@@ -2,6 +2,7 @@ import type { Bounds, NeighborhoodFeature, NeighborhoodSource } from '../data/in
 import {
   bartStations,
   getNeighborhood,
+  keyRoads,
   landmarks,
   neighborhoodCollections,
   searchNeighborhoods,
@@ -103,12 +104,74 @@ export function createNeighborhoodExplorer({
   root.setAttribute('aria-label', 'San Francisco neighborhood explorer');
   const style = element('style');
   style.textContent = `
-.sf-explorer{container:sf-neighborhood-explorer / inline-size;font:14px/1.5 system-ui,sans-serif;color:#304958;background:#fbfcf9;border:1px solid #d5dfdf;border-radius:16px;overflow:hidden;max-width:1120px;margin:auto}.sf-explorer *{box-sizing:border-box}.sf-explorer h2,.sf-explorer p{margin:0}.sf-explorer button,.sf-explorer input,.sf-explorer select,.sf-explorer a{font:inherit}.sf-explorer button,.sf-explorer select,.sf-explorer input{color:inherit;border:1px solid #becfd0;border-radius:8px;background:#fff;min-height:44px;padding:9px 12px}.sf-explorer button{cursor:pointer}.sf-explorer button:hover,.sf-explorer button[aria-pressed=true]{background:#e1eded;border-color:#547a7d}.sf-explorer :focus-visible{outline:3px solid #24789a;outline-offset:2px}.sf-explorer-header{padding:22px 24px;border-bottom:1px solid #d5dfdf}.sf-explorer-header h2{font-size:23px;letter-spacing:-.5px}.sf-explorer-header p{color:#60777d;margin-top:4px}.sf-explorer-body{display:grid;grid-template-columns:280px minmax(0,1fr);grid-template-areas:"panel map" "detail map";grid-template-rows:auto 1fr}.sf-explorer-panel{grid-area:panel;padding:18px;display:flex;flex-direction:column;gap:14px;border-right:1px solid #d5dfdf;min-width:0}.sf-explorer-panel label{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:650}.sf-explorer-panel input,.sf-explorer-panel select{width:100%;font-weight:400;font-size:14px}.sf-explorer-results{display:flex;flex-direction:column;gap:5px;max-height:255px;overflow:auto;padding:3px;margin:-3px;overscroll-behavior:contain}.sf-explorer-results button{text-align:left;flex-shrink:0}.sf-explorer-count,.sf-explorer-note{font-size:12px;color:#60777d}.sf-explorer-detail{grid-area:detail;border-top:1px solid #d5dfdf;border-right:1px solid #d5dfdf;padding:18px;overflow-wrap:anywhere;align-self:stretch}.sf-explorer-detail details{font-size:12px;margin-top:12px}.sf-explorer-detail summary{cursor:pointer;color:#526c74;min-height:32px}.sf-explorer-detail details p{margin-top:8px}.sf-explorer-detail h3{margin:0 0 5px;font-size:17px}.sf-explorer-detail p{font-size:12px;margin-bottom:10px}.sf-explorer-download{display:block;margin:8px 0;color:#245e76;text-underline-offset:3px}.sf-explorer-map-column{grid-area:map;min-width:0;background:#e7f0f3}.sf-explorer-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:12px;background:#f6f9f5}.sf-explorer-control-group{display:flex;align-items:center;gap:6px}.sf-explorer-toolbar button{min-width:44px;padding:6px 10px}.sf-explorer-zoom{font-size:12px;min-width:42px;text-align:center;font-variant-numeric:tabular-nums}.sf-explorer-canvas{position:relative;aspect-ratio:1;overflow:hidden;touch-action:pan-y}.sf-explorer-canvas>svg{display:block;width:100%;height:100%;max-width:none;cursor:grab;user-select:none}.sf-explorer-canvas>svg:active{cursor:grabbing}.sf-explorer-canvas path[data-neighborhood-id]{cursor:pointer}.sf-explorer-hint{padding:10px 14px;font-size:12px;color:#60777d;background:#f6f9f5}.sf-explorer text{pointer-events:none}.sf-explorer-status{padding:0 14px 12px;font-size:12px;background:#f6f9f5}.sf-explorer button:disabled{opacity:.45;cursor:default}@container sf-neighborhood-explorer (max-width:650px){.sf-explorer-body{grid-template-columns:1fr;grid-template-areas:"panel" "map" "detail";grid-template-rows:auto auto auto}.sf-explorer-header{padding:17px}.sf-explorer-header h2{font-size:21px}.sf-explorer-panel{border-right:0;border-bottom:1px solid #d5dfdf;padding:14px;gap:10px}.sf-explorer-results{max-height:140px}.sf-explorer-detail{padding:14px;border-right:0}.sf-explorer-toolbar{padding:8px;gap:6px}.sf-explorer-control-group{gap:4px}.sf-explorer-pan-controls{flex-basis:100%}.sf-explorer-toolbar button{padding:5px 8px}.sf-explorer-download{display:inline-block;margin:4px 14px 4px 0}}`;
+.sf-explorer{container:sf-neighborhood-explorer / inline-size;font:14px/1.5 system-ui,sans-serif;color:#18364f;background:#fff;border:1px solid #cedae3;border-radius:14px;overflow:hidden;max-width:1120px;margin:auto;box-shadow:0 8px 32px #18364f08}
+.sf-explorer *{box-sizing:border-box}
+.sf-explorer h2,.sf-explorer p{margin:0}
+.sf-explorer button,.sf-explorer input,.sf-explorer select,.sf-explorer a{font:inherit}
+.sf-explorer button,.sf-explorer select,.sf-explorer input{color:inherit;border:1px solid #c7d5df;border-radius:7px;background:#fff;min-height:44px;padding:9px 12px}
+.sf-explorer button{cursor:pointer;transition:background .12s,border-color .12s}
+.sf-explorer button:hover{background:#f0f6fa;border-color:#8ba9c0}
+.sf-explorer button[aria-pressed=true]{color:#123d63;background:#e6f1f9;border-color:#5689b0;font-weight:650}
+.sf-explorer :focus-visible{outline:3px solid #1676b8;outline-offset:2px}
+.sf-explorer-header{padding:24px;border-top:4px solid #163d61;border-bottom:1px solid #dce5eb}
+.sf-explorer-header h2{font-size:25px;line-height:1.25;font-weight:700;letter-spacing:-.7px}
+.sf-explorer-header p{color:#586f80;margin-top:8px;max-width:58ch}
+.sf-explorer-body{display:grid;grid-template-columns:280px minmax(0,1fr);grid-template-areas:"panel map" "detail map";grid-template-rows:auto 1fr}
+.sf-explorer-panel{grid-area:panel;padding:18px;display:flex;flex-direction:column;gap:14px;border-right:1px solid #dce5eb;min-width:0}
+.sf-explorer-panel label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:650}
+.sf-explorer-panel input,.sf-explorer-panel select{width:100%;font-weight:400;font-size:14px}
+.sf-explorer-panel input::placeholder{color:#6a7f8e}
+.sf-explorer-results{display:flex;flex-direction:column;gap:5px;max-height:255px;overflow:auto;padding:3px;margin:-3px;overscroll-behavior:contain}
+.sf-explorer-results button{text-align:left;flex-shrink:0}
+.sf-explorer-count,.sf-explorer-note{font-size:12px;color:#586f80}
+.sf-explorer-detail{grid-area:detail;border-top:1px solid #dce5eb;border-right:1px solid #dce5eb;padding:18px;overflow-wrap:anywhere;align-self:stretch;background:#fafcfd}
+.sf-explorer-detail details{font-size:12px;margin-top:12px}
+.sf-explorer-detail summary{cursor:pointer;color:#496578;min-height:32px}
+.sf-explorer-detail details p{margin-top:8px}
+.sf-explorer-detail h3{margin:0 0 7px;font-size:18px;line-height:1.3;letter-spacing:-.2px}
+.sf-explorer-detail p{font-size:12px;margin-bottom:10px}
+.sf-explorer-download{display:block;margin:8px 0;color:#12649c;text-underline-offset:3px}
+.sf-explorer-map-column{grid-area:map;min-width:0;background:#e4f2f8}
+.sf-explorer-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:12px;background:#fff;border-bottom:1px solid #dce5eb}
+.sf-explorer-control-group{display:flex;align-items:center;gap:6px}
+.sf-explorer-pan-controls{margin-left:auto}
+.sf-explorer-toolbar button{min-width:44px;padding:6px 10px}
+.sf-explorer-zoom{font-size:12px;min-width:42px;text-align:center;font-variant-numeric:tabular-nums;color:#496578}
+.sf-explorer-canvas{position:relative;aspect-ratio:1;overflow:hidden;touch-action:pan-y}
+.sf-explorer-canvas>svg{display:block;width:100%;height:100%;max-width:none;cursor:grab;user-select:none}
+.sf-explorer-canvas>svg:active{cursor:grabbing}
+.sf-explorer-canvas path[data-neighborhood-id]{cursor:pointer}
+.sf-explorer-legend{display:flex;flex-wrap:wrap;gap:8px 20px;padding:14px 16px 8px;background:#fff;border-top:1px solid #dce5eb;color:#496578;font-size:12px}
+.sf-explorer-legend-item{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.sf-explorer-legend-symbol{display:inline-block;flex:none;width:15px;height:11px;border-radius:2px}
+.sf-explorer-legend-bart{width:10px;height:10px;margin:0 2px;border:2px solid #0073ae;border-radius:50%;background:#fff}
+.sf-explorer-legend-park{background:#c6dfbd;border:1px solid #a8c69d}
+.sf-explorer-legend-road{height:2px;border-radius:2px;background:#bcc3c5}
+.sf-explorer-legend-highway{height:3px;border-radius:2px;background:#b9a18a}
+.sf-explorer-hint{padding:6px 16px 10px;font-size:12px;color:#586f80;background:#fff}
+.sf-explorer text{pointer-events:none}
+.sf-explorer-status{padding:0 16px 14px;font-size:12px;background:#fff;color:#496578}
+.sf-explorer button:disabled{opacity:.45;cursor:default}
+@container sf-neighborhood-explorer (max-width:650px){
+.sf-explorer-body{grid-template-columns:1fr;grid-template-areas:"panel" "map" "detail";grid-template-rows:auto auto auto}
+.sf-explorer-header{padding:18px}
+.sf-explorer-header h2{font-size:23px}
+.sf-explorer-header p{font-size:13px}
+.sf-explorer-panel{border-right:0;border-bottom:1px solid #dce5eb;padding:14px;gap:10px}
+.sf-explorer-results{max-height:140px}
+.sf-explorer-detail{padding:14px;border-right:0}
+.sf-explorer-toolbar{padding:8px;gap:6px}
+.sf-explorer-control-group{gap:4px}
+.sf-explorer-pan-controls{flex-basis:100%;margin-left:0}
+.sf-explorer-toolbar button{padding:5px 8px}
+.sf-explorer-legend{gap:8px 16px;padding:12px 14px 8px}
+.sf-explorer-download{display:inline-block;margin:4px 14px 4px 0}
+}`;
   root.append(style);
   const header = element('header', '', 'sf-explorer-header');
   header.append(
-    element('h2', 'San Francisco, neighborhood by neighborhood'),
-    element('p', 'Find a familiar name. Explore its boundary. Take the data with you.'),
+    element('h2', 'San Francisco neighborhoods'),
+    element('p', 'Explore the city, from familiar names to the places in between.'),
   );
   root.append(header);
   const body = element('div', '', 'sf-explorer-body');
@@ -146,14 +209,30 @@ export function createNeighborhoodExplorer({
   );
   const status = element('p', '', 'sf-explorer-status');
   status.setAttribute('aria-live', 'polite');
-  column.append(toolbar, canvas, hint, status);
+  const legend = element('div', '', 'sf-explorer-legend');
+  legend.setAttribute('aria-label', 'Map legend');
+  for (const [kind, label] of [
+    ['bart', 'BART station'],
+    ['park', 'Park'],
+    ['highway', 'Highway'],
+    ['road', 'Roads'],
+  ] as const) {
+    const entry = element('span', '', 'sf-explorer-legend-item');
+    const symbol = element('span', '', `sf-explorer-legend-symbol sf-explorer-legend-${kind}`);
+    symbol.setAttribute('aria-hidden', 'true');
+    entry.append(symbol, document.createTextNode(label));
+    legend.append(entry);
+  }
+  column.append(toolbar, canvas, legend, hint, status);
   body.append(panel, column, detail);
   root.append(body);
   const map = createSFMap({
     year,
+    theme: 'transit',
     districtLabels: false,
     districtLines: false,
     highways: true,
+    keyRoads: true,
     landmarks: true,
     bartStations: false,
   });
@@ -168,6 +247,7 @@ export function createNeighborhoodExplorer({
   );
   svg.removeAttribute('aria-labelledby');
   svg.querySelector('[data-layer="landmark-labels"]')?.remove();
+  svg.querySelector('[data-layer="key-road-labels"]')?.remove();
   const geography = svg.querySelector('[data-layer="geography"]');
   if (!geography) throw new Error('The renderer did not produce a geography layer.');
   const areas = svgElement('g', { 'data-layer': 'explorer-neighborhoods' });
@@ -199,7 +279,7 @@ export function createNeighborhoodExplorer({
       cx: station.point[0],
       cy: station.point[1],
       fill: '#fff',
-      stroke: '#24789a',
+      stroke: '#0073ae',
       'stroke-width': 2,
       'vector-effect': 'non-scaling-stroke',
     });
@@ -208,6 +288,11 @@ export function createNeighborhoodExplorer({
     station.node.append(title);
     stations.append(station.node);
   }
+  const roadItems = keyRoads.features.map((feature) => ({
+    point: map.project(feature.properties.label),
+    name: feature.properties.name,
+    kind: 'road',
+  }));
   const parkItems = landmarks.features.map((feature) => ({
     point: map.project(feature.properties.label),
     name: feature.properties.name,
@@ -272,7 +357,7 @@ export function createNeighborhoodExplorer({
     labelLayer.replaceChildren();
     const unit = view[2] / width,
       zoom = 800 / view[2];
-    for (const station of stationItems) station.node.setAttribute('r', String(3.7 * unit));
+    for (const station of stationItems) station.node.setAttribute('r', String(4.5 * unit));
     const selectedItem = items.find((item) => item.feature === selected);
     const candidates: LabelItem[] = [];
     if (selectedItem?.point)
@@ -291,6 +376,7 @@ export function createNeighborhoodExplorer({
           (width >= 550 && park.name === 'Presidio'),
       ),
     );
+    if (zoom >= 1.8) candidates.push(...roadItems);
     if (zoom >= (width < 500 ? 2.5 : 1.7))
       candidates.push(
         ...items
@@ -307,10 +393,10 @@ export function createNeighborhoodExplorer({
       );
     const measured = candidates.map((item) => {
       const node = svgElement('text', {
-        'font-size': 12 * unit,
+        'font-size': (item.kind === 'road' ? 11 : 12) * unit,
         'font-weight': item.kind === 'selected' ? 700 : 550,
-        fill: item.kind === 'bart' ? '#166783' : item.kind === 'park' ? '#3e6346' : '#304958',
-        stroke: '#f9fcf8',
+        fill: item.kind === 'park' ? '#426641' : item.kind === 'road' ? '#77736b' : '#163d61',
+        stroke: '#ffffff',
         'stroke-width': 3 * unit,
         'stroke-linejoin': 'round',
         'paint-order': 'stroke',
@@ -325,10 +411,15 @@ export function createNeighborhoodExplorer({
         y: (item.point[1] - view[1]) / unit,
         textWidth: node.getComputedTextLength() / unit,
         textHeight: 15,
-        offset: item.kind === 'bart' ? 9 : 0,
+        offset: item.kind === 'bart' ? 11 : 0,
       };
     });
-    const placed = layoutLabels(measured, width, width);
+    const stationBounds: Bounds[] = stationItems.map(({ point }) => {
+      const x = (point[0] - view[0]) / unit;
+      const y = (point[1] - view[1]) / unit;
+      return [x - 6, y - 6, x + 6, y + 6];
+    });
+    const placed = layoutLabels(measured, width, width, stationBounds);
     for (const item of measured) item.node.remove();
     for (const item of placed) {
       item.node.setAttribute('x', String(view[0] + item.left * unit));
@@ -419,10 +510,10 @@ export function createNeighborhoodExplorer({
     selected = feature;
     for (const item of items) {
       const active = item.feature === selected;
-      item.node.setAttribute('fill', active ? '#548f8a' : 'transparent');
-      item.node.setAttribute('fill-opacity', active ? '.3' : '1');
-      item.node.setAttribute('stroke', active ? '#245e65' : '#71838a');
-      item.node.setAttribute('stroke-width', active ? '2.5' : '.65');
+      item.node.setAttribute('fill', active ? '#408dbe' : 'transparent');
+      item.node.setAttribute('fill-opacity', active ? '.16' : '1');
+      item.node.setAttribute('stroke', active ? '#176ba2' : '#9caebc');
+      item.node.setAttribute('stroke-width', active ? '2.2' : '.55');
       if (active) areas.append(item.node);
     }
     const selectedItem = items.find((item) => item.feature === selected);
@@ -452,8 +543,8 @@ export function createNeighborhoodExplorer({
         'data-neighborhood-id': feature.id,
         fill: 'transparent',
         'fill-rule': 'evenodd',
-        stroke: '#71838a',
-        'stroke-width': '.65',
+        stroke: '#9caebc',
+        'stroke-width': '.55',
         'vector-effect': 'non-scaling-stroke',
       });
       const title = svgElement('title');

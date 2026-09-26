@@ -14,6 +14,7 @@ export default {
     districtLabels: true,
     neighborhoodLines: false,
     highways: false,
+    keyRoads: false,
     landmarks: false,
     bartStations: false,
     markers: [],
@@ -21,6 +22,7 @@ export default {
     title: 'San Francisco map',
   },
   argTypes: {
+    theme: { control: 'select', options: ['districts', 'transit'] },
     year: { control: 'select', options: districtYears },
     width: { control: { type: 'range', min: 320, max: 1200, step: 20 } },
     height: { control: { type: 'range', min: 320, max: 1200, step: 20 } },
@@ -30,6 +32,7 @@ export default {
     districtLabels: { control: 'boolean' },
     neighborhoodLines: { control: 'boolean' },
     highways: { control: 'boolean' },
+    keyRoads: { control: 'boolean' },
     landmarks: { control: 'boolean' },
     bartStations: { control: 'boolean' },
     markers: { control: 'object' },
@@ -78,3 +81,26 @@ export const CustomPalette = {
 export const LandmarksOnly = { args: { landmarks: true } };
 export const BARTOnly = { args: { bartStations: true } };
 export const Mobile = { args: { width: 390, height: 390, landmarks: true, bartStations: true } };
+
+export const Transit = {
+  args: {
+    theme: 'transit',
+    districtLabels: false,
+    districtLines: false,
+    landmarks: true,
+    bartStations: true,
+    highways: true,
+  },
+};
+
+export const KeyRoads = {
+  args: {
+    theme: 'transit',
+    keyRoads: true,
+    districtLabels: false,
+    districtLines: false,
+    landmarks: true,
+    bartStations: true,
+    highways: true,
+  },
+};

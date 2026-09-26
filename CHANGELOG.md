@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Add nine optional key-road landmarks from DataSF centerlines, public JSON, and zoom-aware explorer labels.
+
+- Add a transit-inspired map theme with pale water, quiet land, green parks, and blue station symbols.
+- Refine the neighborhood explorer presentation and map legend.
+- Add a transit example and Storybook preset.
+
+
 ## 0.4.1
 
 - Migrate library source to strict TypeScript 7 with generated JavaScript and declarations.
