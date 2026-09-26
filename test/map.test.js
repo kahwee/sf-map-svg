@@ -62,6 +62,38 @@ test('data-injected renderer needs no bundled geographic collection', () => {
   assert.doesNotMatch(result.svg, /data-layer="district-fills"/);
 });
 
+test('map overlays reject invalid numeric SVG attributes', () => {
+  const coast = {
+    type: 'Polygon',
+    coordinates: [
+      [
+        [-123, 37],
+        [-122, 37],
+        [-122, 38],
+        [-123, 38],
+        [-123, 37],
+      ],
+    ],
+  };
+  const line = {
+    type: 'LineString',
+    coordinates: [
+      [-123, 37],
+      [-122, 38],
+    ],
+  };
+  const render = (overlay) =>
+    createSFMapWithData(
+      { districtFills: false, districtLines: false, districtLabels: false, overlays: [overlay] },
+      { coast },
+    );
+  assert.throws(
+    () => render({ id: 'bad-width', geometry: line, strokeWidth: '1" onload="x' }),
+    /strokeWidth/,
+  );
+  assert.throws(() => render({ id: 'bad-opacity', geometry: line, fillOpacity: 2 }), /fillOpacity/);
+});
+
 import { DOMParser } from '@xmldom/xmldom';
 
 test('combined layers produce valid XML with resolvable clip paths for every district year', () => {

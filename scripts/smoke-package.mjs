@@ -51,6 +51,7 @@ import { neighborhoods, getNeighborhood } from '@kahwee/sf-map-svg/data';
 import * as geometry from '@kahwee/sf-map-svg/geometry';
 import { createNeighborhoodExplorer } from '@kahwee/sf-map-svg/explorer';
 import { createInteractiveSFMap } from '@kahwee/sf-map-svg/interactive';
+import { createInteractiveSFMapWithData } from '@kahwee/sf-map-svg/interactive-data';
 import realtor from '@kahwee/sf-map-svg/data/neighborhoods-realtor.json' with { type: 'json' };
 assert.match(renderSFMap({ landmarks: true, bartStations: true }), /<svg/);
 assert.equal(neighborhoods.features.length, 92);
@@ -59,6 +60,7 @@ assert.equal(getNeighborhood('NoPa').properties.canonicalName, 'North Panhandle'
 assert(Object.keys(geometry).length > 0);
 assert.equal(typeof createNeighborhoodExplorer, 'function');
 assert.equal(typeof createInteractiveSFMap, 'function');
+assert.equal(typeof createInteractiveSFMapWithData, 'function');
 console.log('Installed package entrypoints, JSON, rendering, aliases, and explorer import passed.');
 `,
   );
@@ -70,6 +72,7 @@ import { renderSFMap, type SFMapOptions } from '@kahwee/sf-map-svg';
 import { getNeighborhood, type NeighborhoodSource } from '@kahwee/sf-map-svg/data';
 import { createNeighborhoodExplorer } from '@kahwee/sf-map-svg/explorer';
 import { createInteractiveSFMap } from '@kahwee/sf-map-svg/interactive';
+import { createInteractiveSFMapWithData, type InteractiveSFMapData } from '@kahwee/sf-map-svg/interactive-data';
 import * as geometry from '@kahwee/sf-map-svg/geometry';
 const options: SFMapOptions = { width: 390, landmarks: true, bartStations: true };
 const source: NeighborhoodSource = 'realtor';
@@ -77,6 +80,8 @@ const svg: string = renderSFMap(options);
 const name: string | undefined = getNeighborhood('NoPa', { source })?.properties.canonicalName;
 const explorer: typeof createNeighborhoodExplorer = createNeighborhoodExplorer;
 void [svg, name, explorer, geometry, createInteractiveSFMap];
+const injected: InteractiveSFMapData = { map: { coast: { type: 'Polygon', coordinates: [] } }, neighborhoods: {} };
+void [createInteractiveSFMapWithData, injected];
 `,
   );
   execFileSync(

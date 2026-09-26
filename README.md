@@ -22,6 +22,7 @@ Use Node 22.12+ for server-side rendering. Browser components need a DOM and a b
 | Data-injected SVG | `@kahwee/sf-map-svg/custom-map` | Tree-shakeable renderer core with only the geographic data you provide |
 | Neighborhood explorer | `@kahwee/sf-map-svg/explorer` | Search, source selection, map controls, GeoJSON downloads |
 | Interactive map | `@kahwee/sf-map-svg/interactive` | Embeddable map and controls without the explorer sidebar |
+| Data-injected interactive map | `@kahwee/sf-map-svg/interactive-data` | Interactive shell without bundled geographic JSON |
 | Animated transit demo | `@kahwee/sf-map-svg/transit` | Optional, schematic BART journey with playback controls |
 | Geographic data | `@kahwee/sf-map-svg/data` | Source-aware lookup and canonical GeoJSON |
 
@@ -50,6 +51,38 @@ road, park, and station arrays. Use the canonical JSON subpaths documented in
 [`data/README.md`](data/README.md) as source; map each feature collection to the
 corresponding `SFMapData` records. The root entry remains convenient and includes the
 built-in datasets for backward compatibility.
+
+The same split is available for browser controls with
+`@kahwee/sf-map-svg/interactive-data`. Pass an `InteractiveSFMapData` object containing
+`map` (the `SFMapData` used by the static renderer) and only the neighborhood collections
+you want available. This keeps alternative neighborhood sources, unused district vintages,
+and optional layers out of that entry's bundle. The normal `/interactive` entry retains its
+built-in datasets and synchronous source switching.
+
+```js
+import coast from '@kahwee/sf-map-svg/data/coast.json' with { type: 'json' };
+import realtor from '@kahwee/sf-map-svg/data/neighborhoods-realtor.json' with { type: 'json' };
+import { createInteractiveSFMapWithData } from '@kahwee/sf-map-svg/interactive-data';
+
+const map = createInteractiveSFMapWithData(
+  {
+    map: { coast: coast.features[0].geometry },
+    neighborhoods: { realtor },
+  },
+  {
+    layers: {
+      districtFills: false,
+      districtLines: false,
+      districtLabels: false,
+      landmarks: false,
+      bartStations: false,
+      highways: false,
+      keyRoads: false,
+    },
+  },
+);
+document.querySelector('#map').append(map);
+```
 
 Embed the returned SVG markup directly in a page; in Astro, use `<div set:html={svg} />`. User-supplied text and attributes are XML escaped. Use a distinct `idPrefix` for each map when combining independently rendered SVGs.
 
