@@ -1,5 +1,7 @@
 # San Francisco SVG maps
 
+![District fills, optional neighborhood boundaries, and plain outlines](docs/map-preview.png)
+
 Private package extracted from KahWee’s **San Francisco District Map** Site. Draws a self-contained SVG with bundled geometry and no runtime dependencies, tiles, WebGL, or network requests.
 
 ```js
@@ -17,20 +19,20 @@ Write `svg` to a `.svg` file or embed it in your page. For Astro, render it with
 
 ## Layers and options
 
-| Option | Default | Purpose |
-| --- | --- | --- |
-| `year` | `2022` | District boundaries: `2002`, `2012`, or `2022` |
-| `districtLines` | `true` | Supervisorial district outlines |
-| `neighborhoodLines` | `false` | Dashed SF Find neighborhood outlines |
-| `districtFills` | `true` | Original Site’s eleven muted district colors |
-| `districtLabels` | `true` | District number badges |
-| `highways` | `false` | Original Site’s highway geometry |
-| `width`, `height` | `800`, `800` | SVG viewBox and intrinsic size |
-| `padding` | `28` | Space around the coast |
-| `markers` | `[]` | Points with `id`, `lng`, `lat`, optional `label`, `color`, `selected` |
-| `colors` | Built-in palette | Override `water`, `land`, `district`, `neighborhood`, `highway`, `label`, `marker`, `selected` |
-| `title` | `San Francisco map` | Accessible SVG title |
-| `idPrefix` | Unique per process | Set explicitly for deterministic output or independent server renders |
+| Option              | Default             | Purpose                                                                                        |
+| ------------------- | ------------------- | ---------------------------------------------------------------------------------------------- |
+| `year`              | `2022`              | District boundaries: `2002`, `2012`, or `2022`                                                 |
+| `districtLines`     | `true`              | Supervisorial district outlines                                                                |
+| `neighborhoodLines` | `false`             | Dashed SF Find neighborhood outlines                                                           |
+| `districtFills`     | `true`              | Original Site’s eleven muted district colors                                                   |
+| `districtLabels`    | `true`              | District number badges                                                                         |
+| `highways`          | `false`             | Original Site’s highway geometry                                                               |
+| `width`, `height`   | `800`, `800`        | SVG viewBox and intrinsic size                                                                 |
+| `padding`           | `28`                | Space around the coast                                                                         |
+| `markers`           | `[]`                | Points with `id`, `lng`, `lat`, optional `label`, `color`, `selected`                          |
+| `colors`            | Built-in palette    | Override `water`, `land`, `district`, `neighborhood`, `highway`, `label`, `marker`, `selected` |
+| `title`             | `San Francisco map` | Accessible SVG title                                                                           |
+| `idPrefix`          | Unique per process  | Set explicitly for deterministic output or independent server renders                          |
 
 For a plain outline map, set `districtFills: false`. Neighborhood areas are approximate **2006 SF Find areas**, not legal boundaries or a historical layer matched to the district year. See [SOURCES.md](SOURCES.md).
 
@@ -38,20 +40,31 @@ For a plain outline map, set `districtFills: false`. Neighborhood areas are appr
 
 ## Private installation
 
-The repository and GitHub npm package are private. Configure your project’s `.npmrc`:
-
-```ini
-@kahwee:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
-```
-
-Supply a GitHub token with package read access through your environment or CI secret, then run:
+The repository is private. You can install directly from GitHub with an authenticated SSH key:
 
 ```sh
-pnpm add @kahwee/sf-map-svg@0.1.0
+pnpm add git+ssh://git@github.com/kahwee/sf-map-svg.git#v0.1.0
 ```
 
-Never commit the token. Build systems consuming this package need the same read access. In a GitHub Actions consumer, grant that repository access in the package settings and use its `GITHUB_TOKEN` with `packages: read`.
+A private release also contains the package archive and ready-to-use SVG files.
+
+### npmjs (publication pending)
+
+Version 0.1.1 targets **npmjs with restricted access**. Once published, authenticate with an account that has access:
+
+```sh
+pnpm login --registry=https://registry.npmjs.org
+pnpm add @kahwee/sf-map-svg@0.1.1
+```
+
+For CI, provide a read-only npm token through a secret and use:
+
+```ini
+@kahwee:registry=https://registry.npmjs.org
+//registry.npmjs.org/:_authToken=${NPM_TOKEN}
+```
+
+Never commit the token. Private npm packages require an eligible paid npm account. See [the release workflow](CONTRIBUTING.md#private-npm-releases) for publishing and verification.
 
 ## Development
 
@@ -61,6 +74,6 @@ pnpm test
 pnpm demo
 ```
 
-Open `examples/generated/index.html` to compare district and neighborhood maps. Generated SVG files are there too. Tag a release as `v<package version>` to publish through GitHub Actions.
+Open `examples/generated/index.html` to compare district and neighborhood maps. Generated SVG files are there too. See [CONTRIBUTING.md](CONTRIBUTING.md) for source structure, checks and release steps. GitHub Actions runs validation; private npm publication is performed locally.
 
 The original renderer and its source manifest are retained under `provenance/sites/` for traceability; they are excluded from the published package. The package uses a small Mercator SVG renderer while retaining the Site’s boundary geometry, coastline, palette, district labels, and highway data.

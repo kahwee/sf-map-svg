@@ -1,17 +1,57 @@
 {
   "name": "@kahwee/sf-map-svg",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Offline SVG maps of San Francisco with district and optional neighborhood boundaries.",
   "type": "module",
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
-  "exports": {".": {"types": "./src/index.d.ts", "import": "./src/index.js"}},
-  "files": ["src", "README.md", "SOURCES.md", "LICENSE"],
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js"
+    }
+  },
+  "files": [
+    "src",
+    "README.md",
+    "SOURCES.md",
+    "LICENSE"
+  ],
   "sideEffects": false,
-  "scripts": {"test": "node --test", "demo": "node examples/build.mjs"},
-  "repository": {"type": "git", "url": "git+https://github.com/kahwee/sf-map-svg.git"},
-  "publishConfig": {"registry": "https://npm.pkg.github.com", "access": "restricted"},
+  "scripts": {
+    "test": "node --test",
+    "demo": "node examples/build.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "pnpm format:check && pnpm test",
+    "prepublishOnly": "pnpm check"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kahwee/sf-map-svg.git"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "restricted"
+  },
   "license": "UNLICENSED",
-  "engines": {"node": ">=22"},
-  "packageManager": "pnpm@12.0.0"
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@12.0.0",
+  "devDependencies": {
+    "@xmldom/xmldom": "^0.9.12",
+    "prettier": "^3.9.9"
+  },
+  "homepage": "https://github.com/kahwee/sf-map-svg#readme",
+  "bugs": {
+    "url": "https://github.com/kahwee/sf-map-svg/issues"
+  },
+  "keywords": [
+    "san-francisco",
+    "svg",
+    "maps",
+    "districts",
+    "geojson"
+  ]
 }
