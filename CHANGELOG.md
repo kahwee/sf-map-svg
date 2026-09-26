@@ -4,6 +4,11 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 1.5.0 — 2026-09-26
+
+- Add `controls.neighborhoodPicker`, `controls.markerPicker`, `controls.help`, and `controls.status` so compact embeds can drop redundant chrome. Hidden help remains the map's accessible description; a hidden status line remains a polite live region; source attribution stays visible.
+- Keep a configured `strings.chooseMarker` label after `setMarkers()` updates instead of reverting to “Choose marker”.
+
 ## 1.4.1 — 2026-09-26
 
 - Add a task-based example gallery and code recipes, with clearer routes among the Pages atlas, local measures, district history, transit, and lightweight map.

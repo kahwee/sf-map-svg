@@ -133,7 +133,26 @@ export interface NeighborhoodExplorerOptions {
       string
     >
   >;
-  controls?: Partial<Record<'zoom' | 'pan' | 'reset' | 'labels' | 'touch' | 'legend', boolean>>;
+  /**
+   * Independently hide chrome. `neighborhoodPicker` and `markerPicker` hide the native
+   * choosers (supply your own accessible list); `help` keeps the gesture help as the map's
+   * accessible description; `status` keeps a visually hidden live region. Attribution stays.
+   */
+  controls?: Partial<
+    Record<
+      | 'zoom'
+      | 'pan'
+      | 'reset'
+      | 'labels'
+      | 'touch'
+      | 'legend'
+      | 'neighborhoodPicker'
+      | 'markerPicker'
+      | 'help'
+      | 'status',
+      boolean
+    >
+  >;
 }
 export interface NeighborhoodExplorerElement extends HTMLElement {
   selectNeighborhood(name: string | null, options?: { fit?: boolean }): boolean;

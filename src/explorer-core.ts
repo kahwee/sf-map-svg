@@ -70,6 +70,8 @@ function svgElement<K extends keyof SVGElementTagNameMap>(
   return node;
 }
 
+let explorerCount = 0;
+
 /** Create an offline, browser-only neighborhood explorer. Call destroy() before disposal. */
 export function createNeighborhoodExplorerCore(
   {
@@ -224,6 +226,7 @@ export function createNeighborhoodExplorerCore(
 .sf-explorer-hint{padding:6px 16px 10px;font-size:12px;color:#586f80;background:#fff}
 .sf-explorer text{pointer-events:none}
 .sf-explorer-status{padding:0 16px 14px;font-size:12px;background:#fff;color:#496578}
+.sf-explorer-visually-hidden{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
 .sf-explorer[data-interface=map] .sf-explorer-body{display:block}
 .sf-explorer[data-interface=map] .sf-explorer-header,.sf-explorer[data-interface=map] .sf-explorer-panel,.sf-explorer[data-interface=map] .sf-explorer-detail{display:none}
 .sf-explorer-feature-controls{display:flex;flex-wrap:wrap;gap:8px;padding:10px;background:#fff}
@@ -311,6 +314,7 @@ export function createNeighborhoodExplorerCore(
       'Drag to pan · Ctrl/⌘ + scroll to zoom · Focus map: arrows pan, +/− zoom, Home resets. Touch: scroll the page, or enable Touch navigation to pan and pinch the map. Escape exits.',
     'sf-explorer-hint',
   );
+  hint.id = `sf-explorer-help-${++explorerCount}`;
   const status = element('p', '', 'sf-explorer-status');
   status.setAttribute('aria-live', 'polite');
   const legend = element('div', '', 'sf-explorer-legend');
@@ -933,13 +937,20 @@ export function createNeighborhoodExplorerCore(
           ? `${year} supervisorial districts. Numbers identify each district.`
           : `${formatSourceLabel(source)}. Select a neighborhood to begin.`;
   }
+  function syncFeatureControls() {
+    featureControls.hidden = neighborhoodLabel.hidden && markerLabel.hidden;
+  }
   function updateComposition() {
     const neighborhoodsVisible =
       enabled('neighborhoodLines') || (labels && enabled('neighborhoodLabels'));
     areas.style.display = neighborhoodsVisible ? '' : 'none';
     areas.style.pointerEvents = selectableNeighborhoods ? '' : 'none';
     neighborhoodLabel.hidden =
-      !neighborhoodsVisible || !selectableNeighborhoods || chrome === 'explorer';
+      !neighborhoodsVisible ||
+      !selectableNeighborhoods ||
+      chrome === 'explorer' ||
+      controls.neighborhoodPicker === false;
+    syncFeatureControls();
     for (const item of items) {
       item.node.setAttribute(
         'stroke-width',
@@ -1051,9 +1062,10 @@ export function createNeighborhoodExplorerCore(
       markerSelect.append(option);
       return { marker, point, node, dot, hit };
     });
-    markerLabel.hidden = !markerItems.length;
+    markerLabel.hidden = !markerItems.length || controls.markerPicker === false;
     if (markerLabel.firstChild)
-      markerLabel.firstChild.textContent = `Choose marker (${markerItems.length})`;
+      markerLabel.firstChild.textContent = `${strings.chooseMarker ?? 'Choose marker'} (${markerItems.length})`;
+    syncFeatureControls();
     const nextSelection =
       previous && ids.has(previous)
         ? previous
@@ -1070,6 +1082,12 @@ export function createNeighborhoodExplorerCore(
   }
   if (controls.labels === false) labelsButton.hidden = true;
   if (controls.legend === false) legend.hidden = true;
+  if (controls.help === false) {
+    // The instructions stay available to assistive technology as the map's description.
+    hint.hidden = true;
+    svg.setAttribute('aria-describedby', hint.id);
+  }
+  if (controls.status === false) status.classList.add('sf-explorer-visually-hidden');
   function setMode(next: ExplorerMode) {
     if (destroyed) return;
     if (!['neighborhoods', 'districts', 'basemap'].includes(next))

@@ -255,7 +255,19 @@ aliases. Import types including `InteractiveSFMapOptions`, `InteractiveSFMapElem
 | `overlays` | `[]` | GeoJSON line or polygon overlays with stable IDs and optional SVG styles |
 | `style` | Built-in tokens | Explorer CSS tokens: `ink`, `surface`, `accent`, `border`, `focus`, `controlGap`, `font` |
 | `strings` | English defaults | Replace visible map labels and gesture help for localization |
-| `controls` | All enabled | Independently hide `zoom`, `pan`, `reset`, `labels`, `touch`, or `legend`; source attribution remains visible |
+| `controls` | All enabled | Independently hide `zoom`, `pan`, `reset`, `labels`, `touch`, `legend`, `neighborhoodPicker`, `markerPicker`, `help`, or `status`; source attribution remains visible |
+
+For a compact embed, hide the native choosers only when the page already lists every
+marker or area as an accessible control. Hidden help remains the map's accessible
+description, and a hidden status line remains a polite live region:
+
+```js
+const map = createGuideMap({
+  interface: 'map',
+  controls: { labels: false, neighborhoodPicker: false, markerPicker: false, help: false, status: false },
+  strings: { chooseMarker: 'Place on map' }, // also used after setMarkers() updates
+});
+```
 
 Explicit layer options override mode defaults even after `setMode()`. District fills, outlines,
 and badges can therefore be composed with neighborhood names without requiring district

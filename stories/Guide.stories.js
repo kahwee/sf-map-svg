@@ -22,6 +22,8 @@ const route = {
 export default {
   title: 'Maps/Lightweight guide',
   tags: ['autodocs'],
+  // The map fills its container; a centered layout collapses it to zero width.
+  parameters: { layout: 'padded' },
   args: { narrow: false, zoomed: false, layers: {} },
   argTypes: {
     narrow: { control: 'boolean' },
@@ -47,4 +49,17 @@ export const NeighborhoodScale = { args: { zoomed: true } };
 export const Mobile390px = { args: { narrow: true } };
 export const IndependentRoadLabels = {
   args: { layers: { keyRoads: false, roadLabels: true } },
+};
+export const CompactEmbed = {
+  args: {
+    interface: 'map',
+    controls: {
+      labels: false,
+      neighborhoodPicker: false,
+      markerPicker: false,
+      help: false,
+      status: false,
+    },
+    strings: { chooseMarker: 'Place on map' },
+  },
 };

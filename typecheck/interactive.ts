@@ -14,3 +14,9 @@ map.selectMarker(null);
 map.setTouchNavigation(false);
 map.getSelection()?.source;
 map.destroy();
+
+createInteractiveSFMap({
+  interface: 'map',
+  controls: { neighborhoodPicker: false, markerPicker: false, help: false, status: false },
+  strings: { chooseMarker: 'Place on map' },
+}).destroy();
