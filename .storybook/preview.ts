@@ -1,7 +1,10 @@
-export default {
+import type { Preview } from '@storybook/html-vite';
+
+const preview: Preview = {
   parameters: {
     layout: 'centered',
     controls: { expanded: true },
+    a11y: { test: 'todo' },
     docs: {
       description: {
         component:
@@ -10,3 +13,5 @@ export default {
     },
   },
 };
+
+export default preview;

@@ -1,3 +1,4 @@
+import catalogUrl from '../data/catalog.json?url';
 import { neighborhoodSources, searchNeighborhoods } from '../data/index.ts';
 
 export default {
@@ -22,7 +23,7 @@ export default {
       'Same-name areas can have different boundaries. Each row keeps its definition source; these are not all distinct neighborhoods.';
     section.append(heading, note);
     const download = document.createElement('a');
-    download.href = new URL('./data/catalog.json', window.location.href).href;
+    download.href = catalogUrl;
     download.download = 'catalog.json';
     download.textContent = 'Download complete name catalog (JSON)';
     section.append(download);

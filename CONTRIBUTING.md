@@ -7,6 +7,8 @@ pnpm install --frozen-lockfile
 pnpm check
 pnpm demo
 pnpm build-storybook
+pnpm exec playwright install chromium
+pnpm test:stories
 ```
 
 ## Source layout
@@ -30,7 +32,7 @@ For rendering changes, inspect the example page on desktop and at 390 px. Run `p
 
 GitHub Actions checks Node 22, 24, and 26 on pushes and pull requests. Each job checks formatting, data, types, and tests, builds the examples and Storybook, then installs a packed archive in a temporary consumer to verify the published entrypoints. Run the same package check locally with `pnpm test:package`.
 
-The `publish.yml` workflow publishes stable releases when a GitHub release is published, or when manually dispatched with an existing `vMAJOR.MINOR.PATCH` tag. It checks out that tag, requires its package version to match, reruns all checks, and publishes the exact archive that passed the consumer test. Prerelease tags are rejected. No package is published on normal pushes or pull requests.
+The `publish.yml` workflow publishes stable releases when a GitHub release is published, or when manually dispatched with an existing `vMAJOR.MINOR.PATCH` tag. It checks out that tag, requires its package version to match, reruns all checks including Chromium Storybook interactions, and publishes the exact archive that passed the consumer test. Prerelease tags are rejected. No package is published on normal pushes or pull requests.
 
 Before the first automated release, configure the package's npm Trusted Publisher settings:
 
@@ -46,7 +48,7 @@ This npm-side trust configuration must match the workflow identity. The workflow
 To release:
 
 1. Update the version and changelog.
-2. Run `pnpm check`, `pnpm demo`, `pnpm build-storybook`, and `pnpm test:package`.
+2. Run `pnpm check`, `pnpm demo`, `pnpm build-storybook`, `pnpm test:stories`, and `pnpm test:package`.
 3. Review and push the changes, tag the reviewed commit as `v<version>`, and publish its GitHub release.
 4. Inspect the publish workflow result, verify the registry version, and install that version in a clean project. A manual dispatch with the same tag can retry a failed attempt; npm rejects republishing an existing version.
 
@@ -54,9 +56,9 @@ To release:
 
 ## Interactive examples and dependency updates
 
-Run `pnpm storybook` and edit `stories/SFMap.stories.js`. Keep Stories using the public API so examples exercise the same renderer consumers use. Add stories for new layers or substantial options. Do not reuse a fixed `idPrefix` across stories because Docs renders several maps on one page.
+Run `pnpm storybook` and edit `stories/SFMap.stories.js`. Keep Stories using the public API so examples exercise the same renderer consumers use. Add stories for new layers or substantial options. Do not reuse a fixed `idPrefix` across stories because Docs renders several maps on one page. Storybook 10 runs Chromium interaction checks through Vitest; tag focused stories with `ci` and add a `play` function for behavior that needs browser coverage. The accessible guide story checks route overlays, overlapping marker selection, and keyboard input. Run `pnpm exec playwright install chromium` once locally before `pnpm test:stories`.
 
-Dependabot proposes weekly npm and GitHub Actions updates. Keep Storybook packages on matching versions and review the CI results before merging. `pnpm audit` checks known advisories. The package must retain zero runtime dependencies.
+Dependabot proposes weekly npm and GitHub Actions updates. Keep Storybook packages on matching versions and review the CI results before merging. Run `pnpm audit` to check known advisories and `pnpm outdated` to review available updates. React, Vitest, and Playwright are development dependencies for Storybook testing; the published package must retain zero runtime dependencies.
 
 ## Renderer and geographic data structure
 

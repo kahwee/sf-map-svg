@@ -4,6 +4,12 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 1.5.1 — 2026-09-26
+
+- Run focused Storybook 10 browser interactions and accessibility checks in CI and before npm publishing, covering overlapping markers, route overlays, and keyboard selection.
+- Validate certified proposition district sums against city totals in the data test suite.
+- Keep Biome and the development dependency set current after an audit and outdated-package review.
+
 ## 1.5.0 — 2026-09-26
 
 - Add `controls.neighborhoodPicker`, `controls.markerPicker`, `controls.help`, and `controls.status` so compact embeds can drop redundant chrome. Hidden help remains the map's accessible description; a hidden status line remains a polite live region; source attribution stays visible.

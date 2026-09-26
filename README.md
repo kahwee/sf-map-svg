@@ -382,10 +382,11 @@ pnpm install --frozen-lockfile
 pnpm check            # formatting, data catalog, types, and tests
 pnpm demo             # generated SVGs and example pages
 pnpm build-storybook  # static component documentation
+pnpm test:stories     # Storybook 10 browser checks in Chromium
 pnpm test:package     # install and check the packed package
 ```
 
-Use `pnpm format` to apply Biome formatting and safe lint fixes. Run `pnpm storybook` for interactive component examples at http://127.0.0.1:6006. CI runs checks on Node 22, 24, and 26. See [CONTRIBUTING.md](CONTRIBUTING.md) for source structure and release instructions.
+Use `pnpm format` to apply Biome formatting and safe lint fixes. Install Chromium once with `pnpm exec playwright install chromium` before local Storybook tests. Run `pnpm storybook` for interactive component examples at http://127.0.0.1:6006. CI runs package checks on Node 22, 24, and 26 plus Chromium Storybook checks on Node 24. See [CONTRIBUTING.md](CONTRIBUTING.md) for source structure and release instructions.
 
 ### Browser verification
 

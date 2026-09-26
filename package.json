@@ -1,6 +1,6 @@
 {
   "name": "@kahwee/sf-map-svg",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Offline SVG maps of San Francisco with district boundaries, parks, landmarks, and BART stations.",
   "type": "module",
   "main": "./dist/src/index.js",
@@ -110,6 +110,7 @@
   "sideEffects": false,
   "scripts": {
     "test": "pnpm build && node --test",
+    "test:stories": "pnpm build && vitest run --project=storybook",
     "demo": "pnpm build && node examples/build.mjs",
     "format": "biome check --write .",
     "format:check": "biome format .",
@@ -126,6 +127,7 @@
     "test:package": "node scripts/smoke-package.mjs",
     "build": "node scripts/build.mjs",
     "lint": "biome check .",
+    "audit": "pnpm audit --audit-level high",
     "prepack": "pnpm build",
     "build:pages": "pnpm build && node scripts/build-pages.mjs"
   },
@@ -140,13 +142,20 @@
   "packageManager": "pnpm@12.0.0",
   "devDependencies": {
     "@biomejs/biome": "2.5.14",
+    "@storybook/addon-a11y": "10.6.0",
     "@storybook/addon-docs": "^10.6.0",
+    "@storybook/addon-vitest": "10.6.0",
     "@storybook/html-vite": "^10.6.0",
+    "@vitest/browser-playwright": "^4.1.11",
     "@xmldom/xmldom": "^0.9.12",
+    "playwright": "^1.63.0",
     "polygon-clipping": "^0.15.7",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "storybook": "^10.6.0",
     "typescript": "^7.0.2",
-    "vite": "^8.3.1"
+    "vite": "^8.3.1",
+    "vitest": "^4.1.11"
   },
   "homepage": "https://kahwee.github.io/sf-map-svg/",
   "bugs": {
