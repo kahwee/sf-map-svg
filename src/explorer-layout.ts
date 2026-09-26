@@ -1,18 +1,31 @@
+import type { Bounds, Geometry, Position } from '../data/index.js';
 import { positions } from './geometry.js';
 
-export function projectedBounds(geometry, project) {
+type Project = (position: Position) => [number, number];
+export type View = [number, number, number];
+export interface LabelCandidate {
+  x: number;
+  y: number;
+  textWidth: number;
+  textHeight?: number;
+  offset?: number;
+}
+export type PlacedLabel<T> = T & { left: number; top: number; box: Bounds };
+
+export function projectedBounds(geometry: Geometry, project: Project): Bounds {
   return positions(geometry)
     .map(project)
-    .reduce(
+    .reduce<[number, number, number, number]>(
       (b, [x, y]) => [Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)],
       [Infinity, Infinity, -Infinity, -Infinity],
     );
 }
 
 /** Find an interior label anchor using even-odd scanline intervals, including holes. */
-export function interiorAnchor(geometry, project) {
+export function interiorAnchor(geometry: Geometry, project: Project): [number, number] | undefined {
+  if (geometry.type !== 'Polygon' && geometry.type !== 'MultiPolygon') return undefined;
   const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
-  let best;
+  let best: [number, number] | undefined;
   let bestScore = -Infinity;
   for (const polygon of polygons) {
     const rings = polygon.map((ring) => ring.map(project));
@@ -44,11 +57,11 @@ export function interiorAnchor(geometry, project) {
   return best;
 }
 
-export function clampView([x, y, size]) {
+export function clampView([x, y, size]: View): View {
   size = Math.max(800 / 12, Math.min(800, size));
   return [Math.max(0, Math.min(800 - size, x)), Math.max(0, Math.min(800 - size, y)), size];
 }
-export function fitBounds([minX, minY, maxX, maxY], padding = 0.18) {
+export function fitBounds([minX, minY, maxX, maxY]: Bounds, padding = 0.18): View {
   const size = Math.max(
     800 / 12,
     Math.min(800, Math.max(maxX - minX, maxY - minY) * (1 + padding * 2)),
@@ -57,8 +70,12 @@ export function fitBounds([minX, minY, maxX, maxY], padding = 0.18) {
 }
 
 /** Candidates arrive in priority order and carry measured screen-pixel widths. */
-export function layoutLabels(candidates, width, height) {
-  const placed = [];
+export function layoutLabels<T extends LabelCandidate>(
+  candidates: readonly T[],
+  width: number,
+  height: number,
+): PlacedLabel<T>[] {
+  const placed: PlacedLabel<T>[] = [];
   for (const candidate of candidates) {
     const { x, y, textWidth, textHeight = 15, offset = 0 } = candidate;
     const alternatives = offset
@@ -69,7 +86,7 @@ export function layoutLabels(candidates, width, height) {
         ]
       : [[x - textWidth / 2, y - textHeight / 2]];
     for (const [left, top] of alternatives) {
-      const box = [left - 3, top - 3, left + textWidth + 3, top + textHeight + 3];
+      const box: Bounds = [left - 3, top - 3, left + textWidth + 3, top + textHeight + 3];
       if (box[0] < 2 || box[1] < 2 || box[2] > width - 2 || box[3] > height - 2) continue;
       if (
         placed.some(

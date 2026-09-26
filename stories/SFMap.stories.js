@@ -1,4 +1,4 @@
-import { renderSFMap, districtYears } from '../src/index.js';
+import { districtYears, renderSFMap } from '../src/index.ts';
 
 export default {
   title: 'Maps/San Francisco',

@@ -4,9 +4,10 @@ export type Geometry =
   | { readonly type: 'Point'; readonly coordinates: Position }
   | { readonly type: 'LineString' | 'MultiPoint'; readonly coordinates: readonly Position[] }
   | {
-      readonly type: 'Polygon' | 'MultiLineString';
+      readonly type: 'Polygon';
       readonly coordinates: readonly (readonly Position[])[];
     }
+  | { readonly type: 'MultiLineString'; readonly coordinates: readonly (readonly Position[])[] }
   | {
       readonly type: 'MultiPolygon';
       readonly coordinates: readonly (readonly (readonly Position[])[])[];
@@ -89,29 +90,13 @@ export interface Catalog {
   }[];
   readonly neighborhoods: readonly NeighborhoodEntry[];
 }
-export declare const coast: FeatureCollection<{ readonly name: string }>;
-export declare const districtMaps: Readonly<
-  Record<2002 | 2012 | 2022, FeatureCollection<DistrictProperties>>
->;
-export declare const neighborhoods: FeatureCollection<NeighborhoodProperties>;
-export declare const neighborhoodCollections: Readonly<
-  Record<NeighborhoodSource, FeatureCollection<NeighborhoodProperties>>
->;
-export declare const neighborhoodSources: readonly NeighborhoodSource[];
-export declare const highways: FeatureCollection<{ readonly route: string }>;
-export declare const landmarks: FeatureCollection<{
+
+export type NeighborhoodFeature = Feature<NeighborhoodProperties>;
+export type PolygonGeometry = Extract<Geometry, { readonly type: 'Polygon' }>;
+export type MultiPolygonGeometry = Extract<Geometry, { readonly type: 'MultiPolygon' }>;
+export interface LandmarkProperties {
   readonly name: string;
   readonly label: Position;
   readonly offset: readonly [number, number];
   readonly anchor: 'middle' | 'start' | 'end';
-}>;
-export declare const bartStations: FeatureCollection<{ readonly name: string }>;
-export declare const catalog: Catalog;
-export declare function getNeighborhood(
-  name: string,
-  options?: { source?: NeighborhoodSource },
-): Feature<NeighborhoodProperties> | undefined;
-export declare function searchNeighborhoods(
-  query?: string,
-  options?: { source?: NeighborhoodSource },
-): NeighborhoodEntry[];
+}

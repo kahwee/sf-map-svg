@@ -1,4 +1,3 @@
-import type { Position } from '../data/index.js';
 export type DistrictYear = 2002 | 2012 | 2022;
 export interface MapMarker {
   id: string;
@@ -40,12 +39,3 @@ export interface SFMapOptions {
     >
   >;
 }
-export declare const districtYears: readonly DistrictYear[];
-export declare const neighborhoodNames: readonly string[];
-export declare const districtColors: readonly string[];
-export declare function createSFMap(options?: SFMapOptions): {
-  svg: string;
-  project: (coordinates: Position) => [number, number];
-  viewBox: [number, number, number, number];
-};
-export declare function renderSFMap(options?: SFMapOptions): string;

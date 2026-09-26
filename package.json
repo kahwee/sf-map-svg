@@ -3,49 +3,51 @@
   "version": "0.4.1",
   "description": "Offline SVG maps of San Francisco with district boundaries, parks, landmarks, and BART stations.",
   "type": "module",
-  "main": "./src/index.js",
-  "types": "./src/index.d.ts",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.d.ts",
-      "import": "./src/index.js"
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
     },
     "./data": {
-      "types": "./data/index.d.ts",
-      "import": "./data/index.js"
+      "types": "./dist/data/index.d.ts",
+      "import": "./dist/data/index.js"
     },
-    "./data/*.json": "./data/*.json",
+    "./data/*.json": "./dist/data/*.json",
     "./geometry": {
-      "types": "./src/geometry.d.ts",
-      "import": "./src/geometry.js"
+      "types": "./dist/src/geometry.d.ts",
+      "import": "./dist/src/geometry.js"
     },
     "./explorer": {
-      "types": "./src/explorer.d.ts",
-      "import": "./src/explorer.js"
+      "types": "./dist/src/explorer.d.ts",
+      "import": "./dist/src/explorer.js"
     }
   },
   "files": [
-    "src",
+    "dist",
     "README.md",
     "SOURCES.md",
-    "LICENSE",
-    "data"
+    "LICENSE"
   ],
   "sideEffects": false,
   "scripts": {
-    "test": "node --test",
-    "demo": "node examples/build.mjs",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "check": "pnpm format:check && pnpm data:check && pnpm typecheck && pnpm test",
+    "test": "pnpm build && node --test",
+    "demo": "pnpm build && node examples/build.mjs",
+    "format": "biome check --write .",
+    "format:check": "biome format .",
+    "check": "pnpm lint && pnpm data:check && pnpm typecheck && pnpm test",
     "prepublishOnly": "pnpm check",
-    "storybook": "storybook dev -p 6006 --host 127.0.0.1 --no-open",
-    "build-storybook": "storybook build",
+    "storybook": "pnpm build && storybook dev -p 6006 --host 127.0.0.1 --no-open",
+    "build-storybook": "pnpm build && storybook build",
     "data:catalog": "node scripts/build-data-catalog.mjs",
     "data:check": "node scripts/build-data-catalog.mjs --check",
-    "typecheck": "tsc",
+    "typecheck": "pnpm build && tsc -p tsconfig.json",
     "data:normalize-realtor": "node scripts/normalize-realtor.mjs",
-    "test:package": "node scripts/smoke-package.mjs"
+    "test:package": "node scripts/smoke-package.mjs",
+    "build": "node scripts/build.mjs",
+    "lint": "biome check .",
+    "prepack": "pnpm build"
   },
   "repository": {
     "type": "git",
@@ -57,11 +59,11 @@
   },
   "packageManager": "pnpm@12.0.0",
   "devDependencies": {
+    "@biomejs/biome": "2.5.14",
     "@storybook/addon-docs": "^10.6.0",
     "@storybook/html-vite": "^10.6.0",
     "@xmldom/xmldom": "^0.9.12",
     "polygon-clipping": "^0.15.7",
-    "prettier": "^3.9.9",
     "storybook": "^10.6.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.1"

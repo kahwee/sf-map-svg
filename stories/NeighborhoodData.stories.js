@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'storybook/preview-api';
-import { createNeighborhoodExplorer } from '../src/explorer.js';
-import { neighborhoodSources } from '../data/index.js';
+import { neighborhoodSources } from '../data/index.ts';
+import { createNeighborhoodExplorer } from '../src/explorer.ts';
 
 export default {
   title: 'Data/Neighborhood explorer',

@@ -1,4 +1,4 @@
-import { searchNeighborhoods, neighborhoodSources } from '../data/index.js';
+import { neighborhoodSources, searchNeighborhoods } from '../data/index.ts';
 
 export default {
   title: 'Data/Neighborhood catalog',

@@ -1,7 +1,7 @@
-import test from 'node:test';
 import assert from 'node:assert/strict';
-import { interiorAnchor, fitBounds, clampView, layoutLabels } from '../src/explorer-layout.js';
-import { createNeighborhoodExplorer } from '../src/explorer.js';
+import test from 'node:test';
+import { createNeighborhoodExplorer } from '../dist/src/explorer.js';
+import { clampView, fitBounds, interiorAnchor, layoutLabels } from '../dist/src/explorer-layout.js';
 
 const ring = (x1, y1, x2, y2) => [
   [x1, y1],

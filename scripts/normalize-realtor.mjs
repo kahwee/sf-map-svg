@@ -1,5 +1,5 @@
-import { readFile, writeFile, rename } from 'node:fs/promises';
 import assert from 'node:assert/strict';
+import { readFile, rename, writeFile } from 'node:fs/promises';
 import polygonClipping from 'polygon-clipping';
 import { findOverlaps, removeOverlaps } from './lib/topology.js';
 

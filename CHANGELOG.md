@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Migrate library source to strict TypeScript 7 with generated JavaScript and declarations.
+- Replace Prettier with Biome formatting, import organization, and recommended lint rules.
+
 ## 0.4.0
 
 - Add a browser neighborhood explorer with alias search, selection, boundary zoom, and GeoJSON downloads.
