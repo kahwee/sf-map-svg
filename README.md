@@ -381,7 +381,7 @@ synthetic pointer tests do not establish physical-device compatibility.
 
 ## GitHub Pages
 
-The [live explorer](https://kahwee.github.io/sf-map-svg/) provides neighborhood search, 2022 district views, SVG examples, and GeoJSON downloads. Its source is in `website/` and uses the public explorer API.
+The [civic atlas](https://kahwee.github.io/sf-map-svg/) leads with certified June 2026 ballot measure results. Visitors can select a measure and district, switch Yes/No shading, compare the official 2002, 2012, and 2022 district maps, and play a schematic BART journey. The boundary animation reveals one dated map after another; it never invents intermediate district geometry. Playback is user initiated, pauses when the page is hidden, and switches instantly when reduced motion is requested. The lightweight neighborhood guide loads on demand. The full [ballot measures explorer](https://kahwee.github.io/sf-map-svg/measures.html) retains comparison and download controls.
 
 ```sh
 pnpm build:pages             # local preview

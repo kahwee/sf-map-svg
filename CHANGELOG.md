@@ -4,6 +4,12 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 1.3.2 — 2026-09-26
+
+- Rebuild GitHub Pages as a civic atlas led by interactive June 2026 ballot measure results, with district selection and clear citywide outcomes.
+- Showcase 2002, 2012, and 2022 district maps together and add a controllable boundary reveal that respects reduced-motion settings.
+- Bring the schematic BART journey into the homepage with one-click playback and keep the guide map available on demand.
+
 ## 1.3.1 — 2026-09-26
 
 - Rework the GitHub Pages homepage around the lightweight guide map and show the released bundle-size comparison.

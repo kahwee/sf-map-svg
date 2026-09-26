@@ -67,6 +67,9 @@ try {
   await mkdir('pages-dist/maps', { recursive: true });
   for (const [name, options] of Object.entries({
     districts: {},
+    'districts-2002': { year: 2002 },
+    'districts-2012': { year: 2012 },
+    'districts-2022': { year: 2022 },
     transit: {
       theme: 'transit',
       keyRoads: true,
