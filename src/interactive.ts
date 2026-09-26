@@ -3,6 +3,7 @@ import type { NeighborhoodExplorerOptions } from './types.js';
 
 export type {
   InteractiveLayers,
+  MapOverlay,
   MapPadding,
   MapViewport,
   NeighborhoodExplorerElement as InteractiveSFMapElement,

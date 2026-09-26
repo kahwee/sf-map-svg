@@ -9,6 +9,19 @@ export interface MapMarker {
   selected?: boolean;
   color?: string;
 }
+export interface MapOverlay {
+  id: string;
+  geometry: Extract<
+    Geometry,
+    { type: 'LineString' | 'MultiLineString' | 'Polygon' | 'MultiPolygon' }
+  >;
+  stroke?: string;
+  strokeWidth?: number;
+  fill?: string;
+  fillOpacity?: number;
+  visible?: boolean;
+  label?: string;
+}
 export interface SFMapOptions {
   theme?: 'districts' | 'transit';
   width?: number;
@@ -26,6 +39,7 @@ export interface SFMapOptions {
   landmarks?: boolean;
   bartStations?: boolean;
   markers?: MapMarker[];
+  overlays?: readonly MapOverlay[];
   title?: string;
   idPrefix?: string;
   colors?: Partial<
@@ -96,6 +110,28 @@ export interface NeighborhoodExplorerOptions {
   markerColor?: string;
   selectedMarkerColor?: string;
   onMarkerActivate?: (marker: MapMarker) => void;
+  overlays?: readonly MapOverlay[];
+  onOverlayActivate?: (overlay: MapOverlay) => void;
+  /** Stable theme tokens consumed by the explorer chrome. */
+  style?: Partial<
+    Record<'ink' | 'surface' | 'accent' | 'border' | 'focus' | 'controlGap' | 'font', string>
+  >;
+  strings?: Partial<
+    Record<
+      | 'title'
+      | 'mode'
+      | 'source'
+      | 'search'
+      | 'chooseNeighborhood'
+      | 'chooseMarker'
+      | 'touchNavigation'
+      | 'reset'
+      | 'emptyResults'
+      | 'gestureHelp',
+      string
+    >
+  >;
+  controls?: Partial<Record<'zoom' | 'pan' | 'reset' | 'labels' | 'touch' | 'legend', boolean>>;
 }
 export interface NeighborhoodExplorerElement extends HTMLElement {
   selectNeighborhood(name: string | null, options?: { fit?: boolean }): boolean;
@@ -113,6 +149,7 @@ export interface NeighborhoodExplorerElement extends HTMLElement {
   /** Explicitly engage map touch gestures; false restores page gestures. */
   setTouchNavigation(enabled: boolean): void;
   setMarkers(markers: readonly MapMarker[]): void;
+  setOverlays(overlays: readonly MapOverlay[]): void;
   selectMarker(id: string | null, options?: { fit?: boolean }): boolean;
   getSelectedMarker(): MapMarker | null;
   destroy(): void;

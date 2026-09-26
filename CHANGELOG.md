@@ -13,6 +13,13 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 - Build public Pages demos and SVG downloads from the published npm version, with visible release metadata, installation copying, release links, and social previews.
 - Refresh Pages after successful publishing and improve mobile layout and release documentation.
 
+## 1.2.0
+
+### Added
+
+- Add `@kahwee/sf-map-svg/custom-map`, a data-injected renderer entry point that lets consumers bundle only the geographic datasets they provide.
+- Add public styled geographic overlays, explorer theme tokens, configurable labels, and optional controls.
+
 ## 1.1.0
 
 ### Added

@@ -19,6 +19,7 @@ Use Node 22.12+ for server-side rendering. Browser components need a DOM and a b
 | Start with | Entry point | What you get |
 | --- | --- | --- |
 | Static SVG | `@kahwee/sf-map-svg` | SVG markup, projection helpers, optional layers |
+| Data-injected SVG | `@kahwee/sf-map-svg/custom-map` | Tree-shakeable renderer core with only the geographic data you provide |
 | Neighborhood explorer | `@kahwee/sf-map-svg/explorer` | Search, source selection, map controls, GeoJSON downloads |
 | Interactive map | `@kahwee/sf-map-svg/interactive` | Embeddable map and controls without the explorer sidebar |
 | Animated transit demo | `@kahwee/sf-map-svg/transit` | Optional, schematic BART journey with playback controls |
@@ -40,6 +41,15 @@ const svg = renderSFMap({
 
 await writeFile('san-francisco.svg', svg);
 ```
+
+For smaller browser bundles, import `createSFMapWithData` from
+`@kahwee/sf-map-svg/custom-map` and pass only the geographic assets your map uses.
+That entry point does not import the package's built-in JSON collections. Its `SFMapData`
+requires the coast and accepts selected district vintages plus optional neighborhood,
+road, park, and station arrays. Use the canonical JSON subpaths documented in
+[`data/README.md`](data/README.md) as source; map each feature collection to the
+corresponding `SFMapData` records. The root entry remains convenient and includes the
+built-in datasets for backward compatibility.
 
 Embed the returned SVG markup directly in a page; in Astro, use `<div set:html={svg} />`. User-supplied text and attributes are XML escaped. Use a distinct `idPrefix` for each map when combining independently rendered SVGs.
 
@@ -159,6 +169,10 @@ aliases. Import types including `InteractiveSFMapOptions`, `InteractiveSFMapElem
 | `markerRadius` / `markerHitSize` | `6` / `44` | Screen-pixel visible radius and tap-target diameter, independent of zoom; selected radius grows by 2px |
 | `markerColor` / `selectedMarkerColor` | `#245b61` / `#f04f32` | Default marker colors; individual `marker.color` overrides the unselected color |
 | `onMarkerActivate` | Unset | Called when a non-null marker selection changes, including programmatic changes |
+| `overlays` | `[]` | GeoJSON line or polygon overlays with stable IDs and optional SVG styles |
+| `style` | Built-in tokens | Explorer CSS tokens: `ink`, `surface`, `accent`, `border`, `focus`, `controlGap`, `font` |
+| `strings` | English defaults | Replace visible map labels and gesture help for localization |
+| `controls` | All enabled | Independently hide `zoom`, `pan`, `reset`, `labels`, `touch`, or `legend`; source attribution remains visible |
 
 Explicit layer options override mode defaults even after `setMode()`. District fills, outlines,
 and badges can therefore be composed with neighborhood names without requiring district
@@ -204,6 +218,11 @@ unknown identities. `getSelection()` and `getSelectedMarker()` read current sele
 when needed. `setMode(mode)` resets the viewport. Repeating the same viewport or selection
 emits no change event, avoiding state feedback loops. All events bubble. Call `destroy()`
 before removing the element to release listeners, observers, frames, and download URLs.
+`setOverlays(overlays)` replaces all consumer overlays; each overlay has a unique `id`,
+WGS84 `LineString`, `MultiLineString`, `Polygon`, or `MultiPolygon` geometry, optional
+`stroke`, `strokeWidth`, `fill`, `fillOpacity`, `visible`, and accessible `label`. Overlays
+track every pan, zoom, resize, and source change and render above geography but below markers.
+They are decorative and do not participate in label collision layout.
 
 ### Dense markers
 

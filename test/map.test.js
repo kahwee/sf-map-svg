@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { createSFMapWithData } from '../dist/src/custom-map.js';
 import { createSFMap, districtYears, neighborhoodNames, renderSFMap } from '../dist/src/index.js';
 
 test('each historical map has eleven districts and finite standalone SVG geometry', () => {
@@ -38,6 +39,27 @@ test('escapes labels and rejects invalid projections and dimensions', () => {
 });
 test('explicit ids make output deterministic', () => {
   assert.equal(renderSFMap({ idPrefix: 'example' }), renderSFMap({ idPrefix: 'example' }));
+});
+
+test('data-injected renderer needs no bundled geographic collection', () => {
+  const coast = {
+    type: 'Polygon',
+    coordinates: [
+      [
+        [-123, 37],
+        [-122, 37],
+        [-122, 38],
+        [-123, 38],
+        [-123, 37],
+      ],
+    ],
+  };
+  const result = createSFMapWithData(
+    { districtFills: false, districtLines: false, districtLabels: false },
+    { coast },
+  );
+  assert.match(result.svg, /data-layer="coast"/);
+  assert.doesNotMatch(result.svg, /data-layer="district-fills"/);
 });
 
 import { DOMParser } from '@xmldom/xmldom';
