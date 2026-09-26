@@ -1,4 +1,5 @@
 // Run via agent-browser eval after serving the repository root; no test runtime dependency.
+import { createNeighborhoodExplorer } from '../dist/src/explorer.js';
 import { createInteractiveSFMap } from '../dist/src/interactive.js';
 
 export async function checkInteractiveBrowser() {
@@ -171,6 +172,49 @@ export async function checkInteractiveBrowser() {
         JSON.stringify(stopped) === JSON.stringify(map.getViewport()),
         'Destroy leaves navigation listener',
       );
+    }
+    // Failed construction must release resources even though no element is returned.
+    const disconnect = ResizeObserver.prototype.disconnect;
+    const abort = AbortController.prototype.abort;
+    const createURL = URL.createObjectURL;
+    const revokeURL = URL.revokeObjectURL;
+    const pendingURLs = new Set();
+    let disconnected = 0,
+      aborted = 0;
+    ResizeObserver.prototype.disconnect = function () {
+      disconnected++;
+      return disconnect.call(this);
+    };
+    AbortController.prototype.abort = function (...args) {
+      aborted++;
+      return abort.apply(this, args);
+    };
+    URL.createObjectURL = function (blob) {
+      const url = createURL.call(this, blob);
+      pendingURLs.add(url);
+      return url;
+    };
+    URL.revokeObjectURL = function (url) {
+      pendingURLs.delete(url);
+      return revokeURL.call(this, url);
+    };
+    try {
+      for (const factory of [createInteractiveSFMap, createNeighborhoodExplorer]) {
+        let rejected = false;
+        try {
+          factory({ markers: [{ id: 'bad', lng: NaN, lat: 37.77 }] });
+        } catch (error) {
+          rejected = error instanceof RangeError;
+        }
+        check(rejected, 'Invalid initial marker must reject construction');
+      }
+      check(disconnected === 2 && aborted === 2, 'Failed construction leaked browser resources');
+      check(pendingURLs.size === 0, 'Failed explorer construction leaked download URLs');
+    } finally {
+      ResizeObserver.prototype.disconnect = disconnect;
+      AbortController.prototype.abort = abort;
+      URL.createObjectURL = createURL;
+      URL.revokeObjectURL = revokeURL;
     }
     const plain = createInteractiveSFMap({
       layers: { landmarks: false, bartStations: false, highways: false, keyRoads: false },

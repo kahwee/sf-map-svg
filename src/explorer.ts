@@ -1079,16 +1079,21 @@ export function createNeighborhoodExplorer({
       releaseDownloads();
     },
   });
-  const initialMode = mode;
-  setSource(source);
-  if (neighborhood !== undefined) selectNeighborhood(neighborhood);
-  setMode(initialMode);
-  if (initialMode === 'neighborhoods' && selected) {
-    const selectedItem = items.find((item) => item.feature === selected);
-    if (selectedItem) setView(fitBounds(selectedItem.bounds));
+  try {
+    const initialMode = mode;
+    setSource(source);
+    if (neighborhood !== undefined) selectNeighborhood(neighborhood);
+    setMode(initialMode);
+    if (initialMode === 'neighborhoods' && selected) {
+      const selectedItem = items.find((item) => item.feature === selected);
+      if (selectedItem) setView(fitBounds(selectedItem.bounds));
+    }
+    setLabels(labels);
+    setTouchNavigation(false);
+    setMarkers(initialMarkers);
+  } catch (error) {
+    explorer.destroy();
+    throw error;
   }
-  setLabels(labels);
-  setTouchNavigation(false);
-  setMarkers(initialMarkers);
   return explorer;
 }
