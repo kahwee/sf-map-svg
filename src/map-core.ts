@@ -1,5 +1,6 @@
 import type { Geometry, Position } from '../data/types.js';
 import type { DistrictYear, SFMapOptions } from './types.js';
+import { validateMarkers, validateOverlays } from './validation.js';
 
 export type { DistrictYear, MapMarker, MapOverlay, SFMapOptions } from './types.js';
 
@@ -110,6 +111,8 @@ export function createSFMapWithData(options: SFMapOptions, data: SFMapData) {
     title = 'San Francisco map',
     idPrefix = `sf-map-${++sequence}`,
   } = options;
+  validateMarkers(markers);
+  validateOverlays(options.overlays ?? []);
   const roadLabels = options.roadLabels ?? keyRoads;
   if (
     ![width, height, padding].every(Number.isFinite) ||
@@ -178,20 +181,6 @@ export function createSFMapWithData(options: SFMapOptions, data: SFMapData) {
   if (labels && roadLabels) parts.push(layers.keyRoadLabels(roadData, context));
   if (bartStations) parts.push(layers.bartStations(stationData, context));
   for (const overlay of options.overlays ?? []) {
-    if (!overlay.id || !/^[A-Za-z0-9_-]+$/.test(overlay.id))
-      throw new TypeError(
-        'Overlay IDs must contain only letters, numbers, underscores, or hyphens.',
-      );
-    if (
-      overlay.strokeWidth !== undefined &&
-      (!Number.isFinite(overlay.strokeWidth) || overlay.strokeWidth < 0)
-    )
-      throw new RangeError('Overlay strokeWidth must be a finite nonnegative number.');
-    if (
-      overlay.fillOpacity !== undefined &&
-      (!Number.isFinite(overlay.fillOpacity) || overlay.fillOpacity < 0 || overlay.fillOpacity > 1)
-    )
-      throw new RangeError('Overlay fillOpacity must be a finite number from 0 to 1.');
     parts.push(
       `<path data-overlay-id="${escapeXml(overlay.id)}"${overlay.label ? ` aria-label="${escapeXml(overlay.label)}"` : ''} d="${path(overlay.geometry)}" fill="${escapeXml(overlay.fill ?? 'none')}" fill-opacity="${overlay.fillOpacity ?? 1}" stroke="${escapeXml(overlay.stroke ?? colors.road)}" stroke-width="${overlay.strokeWidth ?? 2}" vector-effect="non-scaling-stroke"${overlay.visible === false ? ' display="none"' : ''}/>`,
     );

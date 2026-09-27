@@ -1,4 +1,3 @@
-import { createSFMap, renderSFMap } from '@kahwee/sf-map-svg';
 import {
   catalog,
   districtMaps,
@@ -10,6 +9,7 @@ import rawNeighborhoods from '@kahwee/sf-map-svg/data/neighborhoods-realtor.json
   type: 'json',
 };
 import { geometryPath } from '@kahwee/sf-map-svg/geometry';
+import { createSFMap, renderSFMap } from '@kahwee/sf-map-svg/legacy';
 
 const source: NeighborhoodSource = 'realtor';
 const mission = getNeighborhood('Inner Mission', { source });

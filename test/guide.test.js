@@ -61,3 +61,25 @@ test('detailed guide data loads selected geography without adding historical dat
     '280',
   ]);
 });
+
+test('static overview and shell are server-safe, escaped and use guide geography', async () => {
+  const { createGuideSVG, createGuideShell } = await import('../dist/src/guide-static.js');
+  const { createSFMapWithData } = await import('../dist/src/custom-map.js');
+  const options = {
+    idPrefix: 'overview',
+    labels: false,
+    markers: [{ id: 'x', lng: -122.43, lat: 37.76, radius: 9, label: '<script>bad</script>' }],
+  };
+  const svg = createGuideSVG(options).svg;
+  assert.ok(svg.includes('&lt;script&gt;'));
+  assert.ok(svg.includes('r="9"'));
+  assert.equal(
+    createGuideSVG(options).project([-122.43, 37.76]).join(),
+    createSFMapWithData(options, guideMapData.map).project([-122.43, 37.76]).join(),
+  );
+  assert.ok(createGuideShell(options).includes(svg));
+  assert.throws(
+    () => createGuideSVG({ markers: [{ id: 'x', lng: 0, lat: 0, radius: NaN }] }),
+    /radius/,
+  );
+});

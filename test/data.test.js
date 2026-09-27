@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
-import { createSFMap } from '@kahwee/sf-map-svg';
 import {
   catalog,
   districtMaps,
@@ -12,6 +11,7 @@ import {
   searchNeighborhoods,
 } from '@kahwee/sf-map-svg/data';
 import { geometryPath, positions } from '@kahwee/sf-map-svg/geometry';
+import { createSFMap } from '@kahwee/sf-map-svg/legacy';
 import digests from './fixtures/geometry-digests.json' with { type: 'json' };
 
 const hash = (value) => createHash('sha256').update(JSON.stringify(value)).digest('hex');

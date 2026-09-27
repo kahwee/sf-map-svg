@@ -2,7 +2,8 @@ export type Position = readonly [number, number, ...number[]];
 export type Bounds = readonly [number, number, number, number];
 export type Geometry =
   | { readonly type: 'Point'; readonly coordinates: Position }
-  | { readonly type: 'LineString' | 'MultiPoint'; readonly coordinates: readonly Position[] }
+  | { readonly type: 'LineString'; readonly coordinates: readonly Position[] }
+  | { readonly type: 'MultiPoint'; readonly coordinates: readonly Position[] }
   | {
       readonly type: 'Polygon';
       readonly coordinates: readonly (readonly Position[])[];

@@ -8,6 +8,8 @@ export interface MapMarker {
   label?: string;
   selected?: boolean;
   color?: string;
+  /** Visible radius in screen pixels (interactive), SVG units (static). */
+  radius?: number;
 }
 export interface MapOverlay {
   id: string;
@@ -89,13 +91,38 @@ export interface NeighborhoodSelection {
   source: NeighborhoodSource;
   feature: NeighborhoodFeature;
 }
-export interface NeighborhoodExplorerOptions {
+export interface MapFeatures {
+  /** Opt-in camera motion; reduced-motion always takes precedence. */
+  motion?: boolean | { duration?: number };
+  markerEntrance?: boolean | { duration?: number; stagger?: number };
+  selectedMarkerRing?: boolean | { color?: string; width?: number; gap?: number };
+  /** Screen-space clustering. The selected marker and full chooser remain available. */
+  clustering?: boolean | { radius?: number };
+  northArrow?: boolean;
+  scaleBar?: boolean;
+}
+export interface NeighborhoodExplorerOptions extends MapFeatures {
   mode?: ExplorerMode;
   labels?: boolean;
   source?: NeighborhoodSource;
   neighborhood?: string;
   year?: DistrictYear;
   theme?: SFMapOptions['theme'];
+  colors?: SFMapOptions['colors'];
+  labelStyle?: { fontFamily?: string; fontWeight?: number; haloColor?: string };
+  areaStyle?: {
+    selectedFill?: string;
+    selectedStroke?: string;
+    hoverFill?: string;
+    hoverStroke?: string;
+  };
+  legend?: {
+    builtins?: boolean;
+    hidden?: readonly ('bart' | 'park' | 'highway' | 'road')[];
+    items?: readonly { label: string; color: string }[];
+  };
+  attribution?: 'full' | 'compact';
+
   /** Explorer chrome or the reusable map with only controls and attribution. */
   interface?: 'explorer' | 'map';
   /** Independent overrides; omitted layers follow mode defaults. */
@@ -127,6 +154,9 @@ export interface NeighborhoodExplorerOptions {
       | 'chooseNeighborhood'
       | 'chooseMarker'
       | 'touchNavigation'
+      | 'touchNavigationLabel'
+      | 'touchNavigationExitLabel'
+      | 'touchNavigationDone'
       | 'reset'
       | 'emptyResults'
       | 'gestureHelp',
@@ -154,24 +184,39 @@ export interface NeighborhoodExplorerOptions {
     >
   >;
 }
+export interface CameraOptions {
+  animate?: boolean;
+  duration?: number;
+}
 export interface NeighborhoodExplorerElement extends HTMLElement {
-  selectNeighborhood(name: string | null, options?: { fit?: boolean }): boolean;
+  /** Append positioned HTML children here; coordinates are relative to this layer. */
+  readonly overlayElement: HTMLDivElement;
+  projectToScreen(lng: number, lat: number): { x: number; y: number; visible: boolean };
+  stopAnimation(): void;
+  /** Atomic patch; false disables, undefined resets a feature to its default. */
+  setFeatures(patch: MapFeatures): void;
+  getFeatures(): MapFeatures;
+  /** Layer overrides; undefined restores mode defaults. Preserves camera and selection. */
+  setLayers(patch: InteractiveLayers): void;
+  /** Chrome switches are independent. */
+  setControls(patch: NonNullable<NeighborhoodExplorerOptions['controls']>): void;
+  selectNeighborhood(name: string | null, options?: { fit?: boolean } & CameraOptions): boolean;
   getSelection(): NeighborhoodSelection | null;
   setSource(source: NeighborhoodSource): void;
   setMode(mode: ExplorerMode): void;
   setLabels(visible: boolean): void;
-  resetView(): void;
-  zoomBy(factor: number): void;
-  panBy(x: number, y: number): void;
+  resetView(options?: CameraOptions): void;
+  zoomBy(factor: number, options?: CameraOptions): void;
+  panBy(x: number, y: number, options?: CameraOptions): void;
   getViewport(): MapViewport;
-  setViewport(view: MapViewport): void;
+  setViewport(view: MapViewport, options?: CameraOptions): void;
   /** Fit WGS84 geometry, including Point, MultiPoint, or a GeometryCollection. */
-  fitGeometry(geometry: Geometry, padding?: number | MapPadding): void;
+  fitGeometry(geometry: Geometry, padding?: number | MapPadding, options?: CameraOptions): void;
   /** Explicitly engage map touch gestures; false restores page gestures. */
   setTouchNavigation(enabled: boolean): void;
   setMarkers(markers: readonly MapMarker[]): void;
   setOverlays(overlays: readonly MapOverlay[]): void;
-  selectMarker(id: string | null, options?: { fit?: boolean }): boolean;
+  selectMarker(id: string | null, options?: { fit?: boolean } & CameraOptions): boolean;
   getSelectedMarker(): MapMarker | null;
   destroy(): void;
 }
@@ -180,3 +225,12 @@ export interface NeighborhoodExplorerElement extends HTMLElement {
 export interface TransitAnimationElement extends HTMLElement {
   destroy(): void;
 }
+
+export type {
+  MapAppearance,
+  MapCamera,
+  MapConfiguration,
+  MapController,
+  MapEvents,
+  MapOptions,
+} from './controller-types.js';

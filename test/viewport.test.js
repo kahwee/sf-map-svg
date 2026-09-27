@@ -46,3 +46,19 @@ test('interactive entry point imports without a browser and validates label rang
   assert.throws(() => createInteractiveSFMap(), /browser document/);
   assert.throws(() => createInteractiveSFMap({ labelSize: { min: 16, max: 12 } }), /label sizes/);
 });
+
+test('sparse and malformed viewport/bounds arrays never admit NaN into the camera', () => {
+  for (const value of [
+    new Array(3),
+    Object.assign(new Array(3), { 2: 800 }),
+    null,
+    '0,0,800',
+    {},
+    [0, 0, 800, 2],
+  ])
+    assert.throws(() => validateViewport(value), /Viewport/);
+  for (const bounds of [[], new Array(4), [0, 0, 100], [0, 0, 100, 100, 200]])
+    assert.throws(() => fitViewport(bounds, 390), /Fit requires/);
+  for (const padding of [null, [], { lef: 10 }, { left: '10' }])
+    assert.throws(() => fitViewport([0, 0, 100, 100], 390, padding));
+});

@@ -46,13 +46,19 @@ try {
     join(temp, 'smoke.mjs'),
     `
 import assert from 'node:assert/strict';
-import { renderSFMap } from '@kahwee/sf-map-svg';
+import { createMap, renderMap } from '@kahwee/sf-map-svg';
+assert.equal(typeof createMap, 'function');
+assert.match(renderMap({ coast: { type: 'Polygon', coordinates: [[[-122.5, 37.7], [-122.4, 37.7], [-122.4, 37.8], [-122.5, 37.7]]] } }).svg, /<svg/);
+import { renderSFMap } from '@kahwee/sf-map-svg/legacy';
 import { neighborhoods, getNeighborhood } from '@kahwee/sf-map-svg/data';
 import * as geometry from '@kahwee/sf-map-svg/geometry';
 import { createNeighborhoodExplorer } from '@kahwee/sf-map-svg/explorer';
 import { createInteractiveSFMap } from '@kahwee/sf-map-svg/interactive';
 import { createInteractiveSFMapWithData } from '@kahwee/sf-map-svg/interactive-data';
 import { createGuideMap, guideMapData, loadGuideDetailedData } from '@kahwee/sf-map-svg/guide';
+import { createGuideSVG, createGuideShell } from '@kahwee/sf-map-svg/guide/static';
+assert.match(createGuideSVG().svg, /<svg/);
+assert.match(createGuideShell(), /sf-guide-shell/);
 import realtor from '@kahwee/sf-map-svg/data/neighborhoods-realtor.json' with { type: 'json' };
 assert.match(renderSFMap({ landmarks: true, bartStations: true }), /<svg/);
 assert.equal(neighborhoods.features.length, 92);
@@ -72,14 +78,18 @@ console.log('Installed package entrypoints, JSON, rendering, aliases, and explor
   await writeFile(
     join(temp, 'consumer.mts'),
     `
-import { renderSFMap, type SFMapOptions } from '@kahwee/sf-map-svg';
+import { renderSFMap, type SFMapOptions } from '@kahwee/sf-map-svg/legacy';
 import { getNeighborhood, type NeighborhoodSource } from '@kahwee/sf-map-svg/data';
 import { createNeighborhoodExplorer } from '@kahwee/sf-map-svg/explorer';
 import { createInteractiveSFMap } from '@kahwee/sf-map-svg/interactive';
 import { createInteractiveSFMapWithData, type InteractiveSFMapData } from '@kahwee/sf-map-svg/interactive-data';
 import { createGuideMap, guideMapData, loadGuideDetailedData } from '@kahwee/sf-map-svg/guide';
 import * as geometry from '@kahwee/sf-map-svg/geometry';
-const options: SFMapOptions = { width: 390, landmarks: true, bartStations: true };
+import { createMap, type MapOptions } from '@kahwee/sf-map-svg';
+const v2: MapOptions = { features: { motion: true }, appearance: { colors: { water: '#fff' } } };
+const controller = () => createMap(guideMapData, v2);
+void controller;
+const options: SFMapOptions = { width: 390, landmarks: true, bartStations: true, overlays: [{ id: 'route', geometry: { type: 'LineString', coordinates: [[-122.4, 37.7], [-122.41, 37.71]] } }] };
 const source: NeighborhoodSource = 'realtor';
 const svg: string = renderSFMap(options);
 const name: string | undefined = getNeighborhood('NoPa', { source })?.properties.canonicalName;

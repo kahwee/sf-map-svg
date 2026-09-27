@@ -6,6 +6,7 @@ import type {
   NeighborhoodProperties,
 } from '../data/types.js';
 import type { InteractiveSFMapData } from './explorer-data.js';
+import { deepFreeze } from './immutable.js';
 
 /** Load detailed selected geography only after the caller requests it. */
 export async function loadGuideDetailedData(): Promise<InteractiveSFMapData> {
@@ -24,7 +25,7 @@ export async function loadGuideDetailedData(): Promise<InteractiveSFMapData> {
   const detailedHighways = highwayData.default as unknown as FeatureCollection<{ route: string }>;
   const detailedParks = parkData.default as unknown as FeatureCollection<LandmarkProperties>;
   const detailedStations = bartData.default as unknown as FeatureCollection<{ name: string }>;
-  return {
+  return deepFreeze({
     map: {
       coast: coastData.default.features[0].geometry as unknown as Geometry,
       neighborhoods: detailedNeighborhoods.features.map((feature) => ({
@@ -54,5 +55,5 @@ export async function loadGuideDetailedData(): Promise<InteractiveSFMapData> {
       ),
     },
     neighborhoods: { realtor: detailedNeighborhoods },
-  };
+  });
 }

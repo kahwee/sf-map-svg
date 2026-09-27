@@ -16,7 +16,9 @@ pnpm test:stories:coverage
 
 | Path              | Responsibility                                          |
 | ----------------- | ------------------------------------------------------- |
-| `src/index.ts`    | Public API, options, accessible SVG, layers and markers |
+| `src/api.ts`, `src/map.ts`, `src/static.ts` | v2 data-free exports, controller ownership, static rendering |
+| `src/configuration.ts`, `src/controller-types.ts` | Grouped API validation and public controller contracts |
+| `src/index.ts` | Compatibility static renderer (`/legacy`) |
 | `src/geometry.ts` | Mercator projection and GeoJSON path conversion         |
 | `src/data.ts`     | Internal adapter over canonical JSON geometry           |
 | `src/types.ts`  | Public TypeScript declarations                          |
@@ -50,7 +52,7 @@ To release:
 
 1. Update the version and changelog.
 2. Run `pnpm check`, `pnpm demo`, `pnpm build-storybook`, `pnpm test:stories:coverage`, and `pnpm test:package`.
-3. Review and push the changes, tag the reviewed commit as `v<version>`, and publish its GitHub release.
+3. Record a dated `## <version> — YYYY-MM-DD` changelog section covering every change. Generate the full GitHub release body with `node scripts/release-notes.mjs > release-notes.md` (keep the temporary file outside Git), review and push the changes, tag the reviewed commit as `v<version>`, and publish its GitHub release with that body. The publish workflow rejects notes that omit any of the versioned changelog section.
 4. Inspect the publish workflow result, verify the registry version, and install that version in a clean project. A manual dispatch with the same tag can retry a failed attempt; npm rejects republishing an existing version.
 
 `publishConfig` fixes public access and the npm registry. Never include credentials, site account identifiers, original site application files, or unrelated YorkSF content. Only the map renderer, public geometry, tests, examples, and supporting documentation belong here. The software uses MIT; source geographic data retains the terms and attribution recorded in `SOURCES.md`.

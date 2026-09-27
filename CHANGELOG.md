@@ -4,6 +4,46 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 2.0.0 — 2026-09-27
+
+Version 2 makes geography an explicit dependency and separates the application API
+from its DOM element. This keeps small consumers small, gives configuration one
+consistent home, and makes animation and subscription ownership predictable.
+
+**Migration:** [Complete v1 → v2 guide, with before/after examples](https://github.com/kahwee/sf-map-svg/blob/v2.0.0/docs/migration-v2.md).
+**API:** [README](https://github.com/kahwee/sf-map-svg/blob/v2.0.0/README.md).
+**Consumer performance:** [Integration guide](https://github.com/kahwee/sf-map-svg/blob/v2.0.0/docs/consumer-integration.md).
+
+### Breaking changes
+
+- The root export now provides data-free `createMap(data, options)` and `renderMap(data, options)`. Move old `createSFMap`, `renderSFMap`, `neighborhoodNames`, `districtColors`, `districtYears`, and legacy static type imports to `/legacy` for an incremental migration. Existing named subpaths retain their compatibility APIs.
+- `createMap` returns a controller: mount `map.element`. Features belong in `features`, styling in `appearance`; flat spellings are rejected. Use `configure({ features, layers, controls })`, `camera.*`, and typed `on()` subscriptions. Appearance is construction-only.
+- The controller throws on operations after disposal; `destroy()` and unsubscribe remain idempotent. Configuration rejects unknown/malformed keys and invalid ranges. Marker/overlay IDs must be unique. Shared guide geography is immutable; clone before deriving custom data.
+
+### Added
+
+- Data-free `/map` and `/static` entrypoints, configuration-only `/presets`, detached configuration snapshots, and all-groups validation before configuration updates. Camera pan, zoom, reset, fit and set accept consistent animation options.
+- Palette, label font/weight/halo, selected/hover neighborhood styling, custom legend entries, compact expandable attribution, and independent visible/accessibility touch labels.
+- Opt-in eased camera motion and staggered marker entrances, respecting reduced motion, interruption, preference changes, and disposal.
+- Per-pin radii, selected rings, deterministic screen-space clustering and accessible marker choice, HTML overlay placement, screen projection, north arrow and approximate scale bar.
+- Server-safe overview `createGuideSVG` / `createGuideShell` and compact `mountGuideMap`, using matching simplified geography and reserved layout rows.
+- Coastline-only basemaps without neighborhood datasets. SFAR remains the default when supplied; alternative-only data selects the available source.
+- Full migration documentation, public examples, adversarial API contract matrix, production import-graph/size budgets, and automatic verification that GitHub release notes contain the complete changelog. The npm archive now includes CHANGELOG.md.
+
+### Fixed and hardened
+
+- Reentrant camera and selection callbacks cannot revive obsolete animation or overwrite a newer selection. Failed source, marker, overlay, feature, layer and control updates preserve existing state.
+- Runtime controls remain independent, feature toggles preserve camera/selection, and unrelated configuration updates no longer interrupt motion. Hiding touch controls returns gestures to the page.
+- Revoke obsolete cluster handlers immediately when markers, selection or clustering settings change; v2 overlay activation is wired to typed events for mouse and keyboard users.
+- Keyboard focus remains reachable through filtering and clustering; removed overlays lose listeners. Construction failures and repeated destruction clean up observers, listeners and asynchronous work.
+- Detached selection/event snapshots prevent accidental mutation of renderer state. Malformed/sparse viewports, coordinates, padding, overlay geometry and misspelled options are rejected. Corrected public `LineString` overlay typing.
+- Root static imports tree-shake away browser code and all geographic JSON. Renderer, camera, clustering, configuration and validation have separate internal boundaries; rendering remains offline with zero runtime dependencies.
+
+### Validation and bundle guidance
+
+- Covered by Node regression tests, Chromium Storybook interactions/coverage, declaration tests, clean packed-consumer installation, and desktop/390px browser inspection. Required checks include demo, Storybook and Pages builds.
+- Representative production gzip measurements: v2 root **22.8 KiB without geography**; static-only root import **4.5 KiB**; compatibility guide including overview geography **110.2 KiB**. Consumer output varies. Runtime switches do not remove imported code or data; use narrow entrypoints, explicit datasets and lazy detail loading.
+
 ## 1.5.2 — 2026-09-26
 
 - Run every Storybook story as a Chromium/Vitest browser check and publish an LCOV and JSON coverage artifact for the renderer, with baseline regression thresholds.

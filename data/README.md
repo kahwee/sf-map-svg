@@ -4,6 +4,10 @@ The JSON files here are the geographic source of truth, not generated copies of 
 
 The renderer, `neighborhoods` convenience export, and `getNeighborhood` default to the **92 SFAR realtor areas**. Import `neighborhoods-realtor.json` directly for that same geometry. The filename `neighborhoods.json` continues to identify the separate SF Find collection.
 
+Certified candidate vote snapshots are separate, optional JSON imports under
+[`candidates/`](candidates/README.md). They do not change the geographic
+renderer or its default bundle.
+
 ## Available files
 
 | File                          | Contents                                                            |
@@ -95,7 +99,7 @@ Lookup is exact after case/punctuation normalization, returns `undefined` for an
 ## Draw a neighborhood with the existing projection
 
 ```js
-import { createSFMap } from '@kahwee/sf-map-svg';
+import { createSFMap } from '@kahwee/sf-map-svg/legacy';
 import { getNeighborhood } from '@kahwee/sf-map-svg/data';
 import { geometryPath } from '@kahwee/sf-map-svg/geometry';
 

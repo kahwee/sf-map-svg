@@ -1,14 +1,14 @@
 {
   "name": "@kahwee/sf-map-svg",
-  "version": "1.5.2",
+  "version": "2.0.0",
   "description": "Offline SVG maps of San Francisco with district boundaries, parks, landmarks, and BART stations.",
   "type": "module",
-  "main": "./dist/src/index.js",
-  "types": "./dist/src/index.d.ts",
+  "main": "./dist/src/api.js",
+  "types": "./dist/src/api.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/src/index.d.ts",
-      "import": "./dist/src/index.js"
+      "types": "./dist/src/api.d.ts",
+      "import": "./dist/src/api.js"
     },
     "./custom-map": {
       "types": "./dist/src/custom-map.d.ts",
@@ -63,6 +63,7 @@
       "import": "./dist/data/stations.js"
     },
     "./data/*.json": "./dist/data/*.json",
+    "./data/candidates/*.json": "./dist/data/candidates/*.json",
     "./geometry": {
       "types": "./dist/src/geometry.d.ts",
       "import": "./dist/src/geometry.js"
@@ -98,6 +99,26 @@
     "./transit": {
       "types": "./dist/src/transit.d.ts",
       "import": "./dist/src/transit.js"
+    },
+    "./guide/static": {
+      "types": "./dist/src/guide-static.d.ts",
+      "import": "./dist/src/guide-static.js"
+    },
+    "./legacy": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    },
+    "./map": {
+      "types": "./dist/src/map.d.ts",
+      "import": "./dist/src/map.js"
+    },
+    "./static": {
+      "types": "./dist/src/static.d.ts",
+      "import": "./dist/src/static.js"
+    },
+    "./presets": {
+      "types": "./dist/src/presets.d.ts",
+      "import": "./dist/src/presets.js"
     }
   },
   "files": [
@@ -105,7 +126,12 @@
     "docs/EXAMPLES.md",
     "README.md",
     "SOURCES.md",
-    "LICENSE"
+    "LICENSE",
+    "docs/consumer-integration.md",
+    "docs/api-audit.md",
+    "docs/guide-bundle-report.md",
+    "docs/migration-v2.md",
+    "CHANGELOG.md"
   ],
   "sideEffects": false,
   "scripts": {
@@ -115,7 +141,7 @@
     "demo": "pnpm build && node examples/build.mjs",
     "format": "biome check --write .",
     "format:check": "biome format .",
-    "check": "pnpm peers check && pnpm lint && pnpm data:check && pnpm typecheck && pnpm test",
+    "check": "pnpm peers check && pnpm lint && pnpm data:check && pnpm typecheck && pnpm test && pnpm test:bundle",
     "prepublishOnly": "pnpm check",
     "storybook": "pnpm build && storybook dev -p 6006 --host 127.0.0.1 --no-open",
     "build-storybook": "pnpm build && storybook build",
@@ -130,7 +156,9 @@
     "lint": "biome check .",
     "audit": "pnpm audit --audit-level high",
     "prepack": "pnpm build",
-    "build:pages": "pnpm build && node scripts/build-pages.mjs"
+    "build:pages": "pnpm build && node scripts/build-pages.mjs",
+    "test:bundle": "node scripts/report-guide-bundle.mjs --check",
+    "release:notes": "node scripts/release-notes.mjs"
   },
   "repository": {
     "type": "git",

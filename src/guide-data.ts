@@ -12,6 +12,7 @@ import type {
   NeighborhoodProperties,
 } from '../data/types.js';
 import type { InteractiveSFMapData } from './explorer-data.js';
+import { deepFreeze } from './immutable.js';
 
 const neighborhoodData = neighborhoods as unknown as FeatureCollection<NeighborhoodProperties>;
 const highwayData = highways as unknown as FeatureCollection<{ route: string }>;
@@ -20,7 +21,7 @@ const roadData = roads as unknown as FeatureCollection<KeyRoadProperties>;
 const stationData = bart as unknown as FeatureCollection<{ name: string }>;
 
 /** Compact, source-aware geography with no district or alternate-neighborhood files. */
-export const guideMapData: InteractiveSFMapData = {
+export const guideMapData: InteractiveSFMapData = deepFreeze({
   map: {
     coast: coast.features[0].geometry as unknown as Geometry,
     neighborhoods: neighborhoodData.features.map((feature) => ({
@@ -50,4 +51,4 @@ export const guideMapData: InteractiveSFMapData = {
     ),
   },
   neighborhoods: { realtor: neighborhoodData },
-};
+});

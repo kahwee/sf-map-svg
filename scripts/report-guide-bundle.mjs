@@ -50,8 +50,30 @@ async function bundle(entry) {
   };
 }
 
+const v2 = await bundle('src/api.ts');
+const staticOnly = await bundle('scripts/fixtures/static-consumer.ts');
+for (const [name, entry] of [
+  ['v2 root', v2],
+  ['static renderer', staticOnly],
+]) {
+  if (entry.modules.some((module) => /\/data\/.*\.json$/.test(module)))
+    throw new Error(`${name} imported geography`);
+}
+if (
+  staticOnly.modules.some((module) =>
+    /\/(explorer-core|navigation|camera|clusters)\.ts$/.test(module),
+  )
+)
+  throw new Error('Static renderer imported interactive runtime');
+if (v2.gzip > 35 * 1024 || staticOnly.gzip > 10 * 1024)
+  throw new Error('v2 renderer exceeds its gzip budget');
+const renderer = await bundle('src/interactive-data.ts');
+if (renderer.modules.some((module) => /\/data\/.*\.json$/.test(module)))
+  throw new Error('Data-free renderer imported geography');
+if (renderer.gzip > 35 * 1024) throw new Error('Renderer exceeds 35 KiB gzip budget');
 const previous = await bundle('src/interactive.ts');
 const guide = await bundle('src/guide.ts');
+if (guide.gzip > 125 * 1024) throw new Error('Guide exceeds 125 KiB initial gzip budget');
 const selected = guide.modules.map((module) => module.replaceAll('\\', '/'));
 const forbidden = selected.filter((module) =>
   /data\/(districts-|neighborhoods\.json|neighborhoods-analysis\.json|catalog\.json)/.test(module),
@@ -99,7 +121,10 @@ Generated ${new Date().toISOString().slice(0, 10)} by \`pnpm report:guide\` with
 
 | Entry | Initial JS, raw | Initial JS, gzip | Explicit detail JS, gzip |
 | --- | ---: | ---: | ---: |
+| v2 root (explicit data) | ${(v2.raw / 1024).toFixed(1)} KB | ${(v2.gzip / 1024).toFixed(1)} KB | — |
+| v2 static renderer | ${(staticOnly.raw / 1024).toFixed(1)} KB | ${(staticOnly.gzip / 1024).toFixed(1)} KB | — |
 | Compatibility interactive (before) | ${(previous.raw / 1024).toFixed(1)} KB | ${(previous.gzip / 1024).toFixed(1)} KB | — |
+| Data-free interactive renderer | ${(renderer.raw / 1024).toFixed(1)} KB | ${(renderer.gzip / 1024).toFixed(1)} KB | — |
 | Guide preset (after) | ${(guide.raw / 1024).toFixed(1)} KB | ${(guide.gzip / 1024).toFixed(1)} KB | ${(guide.detailGzip / 1024).toFixed(1)} KB |
 
 **Change in initial gzip:** ${percent}% smaller. **500 KB target:** ${guide.gzip < 500 * 1024 ? 'met' : 'not met'}.
@@ -110,13 +135,22 @@ The initial guide chunk graph includes only the overview coast, SFAR realtor nei
 
 ${guide.files.map((file) => `- \`${file}\``).join('\n')}
 `;
-await import('node:fs/promises').then(({ mkdir, writeFile }) =>
-  mkdir(new URL('../docs/', import.meta.url), { recursive: true }).then(() =>
-    writeFile(new URL('../docs/guide-bundle-report.md', import.meta.url), report),
-  ),
+if (!process.argv.includes('--check'))
+  await import('node:fs/promises').then(({ mkdir, writeFile }) =>
+    mkdir(new URL('../docs/', import.meta.url), { recursive: true }).then(() =>
+      writeFile(new URL('../docs/guide-bundle-report.md', import.meta.url), report),
+    ),
+  );
+console.log(
+  `v2 root: ${(v2.gzip / 1024).toFixed(1)} KiB gzip; static only: ${(staticOnly.gzip / 1024).toFixed(1)} KiB gzip`,
 );
+console.log(`Data-free renderer: ${(renderer.gzip / 1024).toFixed(1)} KB gzip`);
 console.log(`Compatibility entry: ${(previous.gzip / 1024).toFixed(1)} KB gzip`);
 console.log(
   `Guide initial entry: ${(guide.gzip / 1024).toFixed(1)} KB gzip; detail on request: ${(guide.detailGzip / 1024).toFixed(1)} KB gzip`,
 );
-console.log(`Dataset inclusion verified; wrote docs/guide-bundle-report.md`);
+console.log(
+  process.argv.includes('--check')
+    ? 'Dataset inclusion and size budgets verified.'
+    : 'Dataset inclusion verified; wrote docs/guide-bundle-report.md',
+);

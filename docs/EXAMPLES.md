@@ -16,7 +16,7 @@ Choose by task. All snippets use the public package API; browser examples need a
 
 ```ts
 import { writeFile } from 'node:fs/promises';
-import { renderSFMap } from '@kahwee/sf-map-svg';
+import { renderSFMap } from '@kahwee/sf-map-svg/legacy';
 
 const svg = renderSFMap({
   year: 2022,
@@ -85,3 +85,13 @@ Coordinates are WGS84 `[longitude, latitude]`. The overlay follows pan and zoom.
 [Open the interactive explorer](https://kahwee.github.io/sf-map-svg/propositions.html). It uses the public `custom-map` renderer with only the 2022 district and coast datasets and colors each district from the [certified results JSON](../data/propositions/2024-11-05.json). The JSON includes all ten statewide propositions on the November 2024 ballot, with Yes and No counts for each of San Francisco's eleven supervisorial districts. Its scope is SF votes, not statewide totals or voter demographics.
 
 The [import script](../scripts/import-2024-propositions.py) checks each district sum against the official citywide count. [Geographic and election sources](../SOURCES.md) explain the provenance.
+
+## Motion and compact guide embeds
+
+The runnable `examples/generated/interactive.html` now demonstrates camera motion,
+staggered marker entrances, clustering, selected marker rings, a custom legend,
+compact sources, a north arrow, and a metric scale. Storybook's **Checks / Consumer
+API** includes executable motion, reduced-motion, and progressive-shell checks.
+See [consumer integration](consumer-integration.md) for server and browser recipes.
+
+For the v2 controller and explicit data imports, see [the migration guide](migration-v2.md).

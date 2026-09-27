@@ -33,7 +33,9 @@ try {
     );
     packageRoot = join(temporary, 'node_modules/@kahwee/sf-map-svg');
   }
-  const { version } = JSON.parse(await readFile(join(packageRoot, 'package.json'), 'utf8'));
+  const { version, exports: packageExports } = JSON.parse(
+    await readFile(join(packageRoot, 'package.json'), 'utf8'),
+  );
   if (!/^\d+\.\d+\.\d+$/.test(version)) throw new Error('Expected a stable package version');
   const releaseLabel = released ? `v${version} · Available on npm` : `v${version} · Local preview`;
   await build({
@@ -46,7 +48,7 @@ try {
         '@kahwee/sf-map-svg/guide': join(packageRoot, 'dist/src/guide.js'),
         '@kahwee/sf-map-svg/explorer': join(packageRoot, 'dist/src/explorer.js'),
         '@kahwee/sf-map-svg/transit': join(packageRoot, 'dist/src/transit.js'),
-        '@kahwee/sf-map-svg': join(packageRoot, 'dist/src/index.js'),
+        '@kahwee/sf-map-svg': join(packageRoot, packageExports['.'].import),
       },
     },
     plugins: [

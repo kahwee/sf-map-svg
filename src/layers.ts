@@ -82,8 +82,10 @@ export function bartStations(
 export function markers(items: readonly MapMarker[], { project, colors }: LayerContext) {
   return `<g data-layer="markers">${items
     .map((marker) => {
+      if (marker.radius !== undefined && (!Number.isFinite(marker.radius) || marker.radius <= 0))
+        throw new RangeError('Marker radius must be positive and finite.');
       const [x, y] = project([marker.lng, marker.lat]).map(number);
-      return `<circle data-marker-id="${escapeXml(marker.id)}" cx="${x}" cy="${y}" r="${marker.selected ? 8 : 5}" fill="${escapeXml(marker.color ?? (marker.selected ? colors.selected : colors.marker))}" stroke="#fff9e9" stroke-width="2" vector-effect="non-scaling-stroke"><title>${escapeXml(marker.label ?? marker.id)}</title></circle>`;
+      return `<circle data-marker-id="${escapeXml(marker.id)}" cx="${x}" cy="${y}" r="${marker.radius ?? (marker.selected ? 8 : 5)}" fill="${escapeXml(marker.color ?? (marker.selected ? colors.selected : colors.marker))}" stroke="#fff9e9" stroke-width="2" vector-effect="non-scaling-stroke"><title>${escapeXml(marker.label ?? marker.id)}</title></circle>`;
     })
     .join('')}</g>`;
 }

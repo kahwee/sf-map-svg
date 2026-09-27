@@ -14,7 +14,7 @@ Self-contained SVG maps of San Francisco, with precise coastlines, soft district
 | --- | --- | --- |
 | Explore real election data | [California propositions by SF district](https://kahwee.github.io/sf-map-svg/propositions.html) or [local measures](https://kahwee.github.io/sf-map-svg/measures.html) | `custom-map` |
 | Make a small interactive city map | [Neighborhood guide](https://kahwee.github.io/sf-map-svg/#explore-more-title) | `/guide` |
-| Render a static or custom SVG | [Code recipes](docs/EXAMPLES.md) | Root or `/custom-map` |
+| Render a static or custom SVG | [Code recipes](docs/EXAMPLES.md) | `/static` or `/custom-map` |
 | Animate a route | [BART journey](https://kahwee.github.io/sf-map-svg/transit.html) | `/transit` or overlays |
 
 ## Install
@@ -27,7 +27,9 @@ Use Node 22.12+ for server-side rendering. Browser components need a DOM and a b
 
 | Start with | Entry point | What you get |
 | --- | --- | --- |
-| Static SVG | `@kahwee/sf-map-svg` | SVG markup, projection helpers, optional layers |
+| v2 controller | `@kahwee/sf-map-svg` or `/map` | Explicit data, grouped options, managed events and camera |
+| v2 static SVG | `@kahwee/sf-map-svg/static` | Server-safe rendering with explicit data |
+| Compatibility static SVG | `@kahwee/sf-map-svg/legacy` | Original renderer with bundled geography |
 | Data-injected SVG | `@kahwee/sf-map-svg/custom-map` | Tree-shakeable renderer core with only the geographic data you provide |
 | Neighborhood explorer | `@kahwee/sf-map-svg/explorer` | Search, source selection, map controls, GeoJSON downloads |
 | Interactive map | `@kahwee/sf-map-svg/interactive` | Embeddable map and controls without the explorer sidebar |
@@ -38,11 +40,44 @@ Use Node 22.12+ for server-side rendering. Browser components need a DOM and a b
 | Metadata search | `@kahwee/sf-map-svg/data/catalog` | Search names without polygon geometry |
 | SFAR lookup | `@kahwee/sf-map-svg/data/realtor` | Default neighborhoods without alternative sources |
 
+## Version 2: explicit data and a controller
+
+```js
+import { createMap } from '@kahwee/sf-map-svg';
+import { guideMapData } from '@kahwee/sf-map-svg/guide/data';
+import { guideOptions } from '@kahwee/sf-map-svg/presets';
+
+const map = createMap(guideMapData, {
+  ...guideOptions,
+  features: { motion: true, markerEntrance: true, clustering: true },
+  appearance: { colors: { water: '#e6f1f5' } },
+});
+document.querySelector('#map').append(map.element);
+map.configure({ features: { motion: false }, controls: { pan: false } });
+const unsubscribe = map.on('markerchange', ({ marker }) => console.log(marker?.id));
+map.camera.reset({ animate: false });
+// On component disposal: map.destroy();
+```
+
+The root and `/map` include no geography; `/static` includes no interactive runtime.
+`guide/data` supplies only overview geography; `/presets` supplies configuration only.
+Camera methods share `{ animate, duration }`. `configure()` accepts the same feature,
+layer and control groups as construction and validates the entire patch before applying
+it. Appearance is construction-only. The controller's `on()` returns an unsubscribe
+function and disposal removes all its subscriptions. Operations after disposal throw;
+`destroy()` itself is idempotent.
+
+`renderMap(data, options)` from `/static` returns `{ svg, project, ... }` and needs only
+`StaticMapData` (for example, `guideMapData.map`). Static options retain their SVG-unit
+semantics; camera/motion/control options belong exclusively to the browser controller.
+See [v2 migration and architecture](docs/migration-v2.md) for breaking changes,
+configuration resets, and bundle boundaries. Existing subpaths remain compatibility APIs.
+
 ## Render a static map
 
 ```js
 import { writeFile } from 'node:fs/promises';
-import { renderSFMap } from '@kahwee/sf-map-svg';
+import { renderSFMap } from '@kahwee/sf-map-svg/legacy';
 
 const svg = renderSFMap({
   landmarks: true,
@@ -61,8 +96,8 @@ That entry point does not import the package's built-in JSON collections. Its `S
 requires the coast and accepts selected district vintages plus optional neighborhood,
 road, park, and station arrays. Use the canonical JSON subpaths documented in
 [`data/README.md`](data/README.md) as source; map each feature collection to the
-corresponding `SFMapData` records. The root entry remains convenient and includes the
-built-in datasets for backward compatibility.
+corresponding `SFMapData` records. The `/legacy` entry includes the built-in datasets for migration. The v2 root
+imports no geographic JSON.
 
 In tree-shaking bundlers, importing a single symbol from `/data` retains only the
 modules that symbol uses.
@@ -449,3 +484,107 @@ Embed the Pages demo with `<iframe src="https://kahwee.github.io/sf-map-svg/tran
 ## Ballot measures explorer
 
 [Explore local ballot measures](https://kahwee.github.io/sf-map-svg/measures.html): 44 measures from the November 2002, November 2012, November 2022, and June 2026 elections, across all three supported district map vintages. Pick an election, search its measures, inspect a district, compare two measures, and download an SVG, CSV, or the sourced JSON. The page includes touch pan/zoom, keyboard district selection, a sortable district table, and shareable year-specific views. Each election's results and district map load on demand. This is an archive of four elections, not every intervening election or a live results service. See [the election data schema](data/elections/README.md) and [SOURCES.md](SOURCES.md) for methods and source links.
+
+### Motion, styling, and progressive embeds
+
+The guide now exposes the same `colors` palette as the static renderer. Existing
+appearance and immediate camera movement remain the defaults. See
+[consumer integration recommendations](docs/consumer-integration.md) for the
+complete example, bundle choices, progressive shell, and testing contract.
+
+```js
+import { createGuideMap } from '@kahwee/sf-map-svg/guide/map';
+
+const map = createGuideMap({
+  colors: { water: '#202d38', land: '#34434a', park: '#42624d',
+    road: '#728080', neighborhood: '#64767e', label: '#f1f3ee' },
+  labelStyle: { fontFamily: 'DM Sans, system-ui, sans-serif', fontWeight: 550,
+    haloColor: '#34434a' },
+  motion: { duration: 400 },
+  markerEntrance: { duration: 450, stagger: 35 },
+  selectedMarkerRing: { color: '#f1f3ee', width: 2, gap: 3 },
+  clustering: { radius: 32 },
+  attribution: 'compact',
+  legend: { items: [{ label: 'Places', color: '#cf8757' }] },
+  northArrow: true,
+  scaleBar: true,
+  strings: { touchNavigation: 'Touch pan', touchNavigationLabel: 'Enable touch pan',
+    touchNavigationDone: 'Done', touchNavigationExitLabel: 'Restore page scrolling' },
+});
+document.querySelector('#map').append(map);
+```
+
+| Option | Contract |
+| --- | --- |
+| `colors` | Static palette keys: water, land, district, neighborhood, highway, road, park, landmark, BART (`bart`), label, marker, selected |
+| `labelStyle` | `fontFamily`, numeric `fontWeight`, `haloColor`; the application loads any custom font |
+| `areaStyle` | `selectedFill`, `selectedStroke`, `hoverFill`, `hoverStroke`; applies to selectable neighborhoods |
+| `motion` | `false` by default; `true` uses 320ms, or `{ duration }` in milliseconds |
+| `markerEntrance` | `false` by default; `true` uses 420ms and 35ms stagger, or `{ duration, stagger }`; only newly introduced IDs animate, delay capped at 1s |
+| `MapMarker.radius` | Per-marker visible radius; interactive units are CSS pixels, static units are SVG units |
+| `selectedMarkerRing` | Optional `{ color, width, gap }` in CSS pixels; preserves the hit target |
+| `clustering` | `false` by default; `true` or `{ radius }` groups nearby screen positions; selected pin remains independent |
+| `legend` | `{ builtins: false, items: [{ label, color }] }` replaces built-ins; omit `builtins` to append custom entries; `hidden` hides selected built-ins (`bart`, `park`, `highway`, `road`) |
+| `attribution` | `'full'` (default) or `'compact'`; compact keeps full provenance in a native disclosure |
+| `northArrow`, `scaleBar` | Optional canvas furniture; scale is approximate at central SF latitude, in metric units |
+
+`setViewport(view, { animate, duration })`, `fitGeometry(geometry, padding,
+{ animate, duration })`, `selectMarker(id, { fit, animate, duration })`, and
+`selectNeighborhood(name, { fit, animate, duration })` accept per-call motion
+controls. `animate: true` opts in even when global motion is disabled.
+`stopAnimation()` freezes the camera at its current viewport. A new camera
+operation replaces the previous transition; pointer gestures interrupt it.
+Reduced-motion preference overrides all animation requests. `destroy()` cancels
+camera frames, marker animations, listeners, and resize observation.
+
+`map.overlayElement` is a public HTML overlay slot. `map.projectToScreen(lng, lat)`
+returns `{ x, y, visible }` in CSS pixels relative to that slot. Call it after
+mounting; reposition your callout on `viewportchange` and `mapresize`.
+The slot ignores pointer events; interactive children can set `pointer-events:auto`.
+`clusteractivate` emits `{ markers }` and fits their geographic extent. Coincident
+pins cannot separate through zoom; retain the full native marker chooser or an
+accessible external list. `--sf-marker-index` on each marker is a stable entrance
+index hook, but the built-in animation avoids the need to style internal SVG.
+
+For server rendering, `createGuideSVG(options)` from `@kahwee/sf-map-svg/guide/static`
+uses the same simplified geography as the browser guide with one import.
+`createGuideShell(options)` also reserves compact toolbar, legend, and attribution
+rows; pass its `.sf-guide-shell` element to `mountGuideMap(shell, options)` from
+`@kahwee/sf-map-svg/guide/map`. By default, this compact layout hides the native
+pickers, pan buttons, label switch, help, and visible status; explicit control overrides are honored. Provide an accessible
+external place list. The toolbar and legend scroll horizontally if needed.
+
+### Reconfigure without rebuilding
+
+Construction options remain backward-compatible. Use these atomic patches for
+runtime switches; they preserve the map element, viewport, markers, and selection:
+
+```js
+map.setFeatures({ motion: false, clustering: true, selectedMarkerRing: true });
+map.setLayers({ landmarks: false, bartStations: true, roadLabels: false });
+map.setControls({ zoom: false, reset: true, touch: true });
+```
+
+`setFeatures` accepts the exported `MapFeatures` interface: `motion`,
+`markerEntrance`, `clustering`, `selectedMarkerRing`, `northArrow`, and `scaleBar`.
+Every feature accepts `false` to disable; the first four also accept `true` for
+built-in settings or an options object. Omitted patch keys retain their settings;
+`undefined` resets that key to the default. Options objects **replace** the previous
+object for that feature; they do not deep-merge. `getFeatures()` returns a detached,
+normalized snapshot. Changing motion cancels the current transition; changing
+entrance settings cancels active entrances and applies to future new marker IDs.
+
+`setLayers` accepts `InteractiveLayers`; `undefined` restores the mode default.
+Geometry, associated labels, built-in legend entries, and attribution update
+together. Roads and road labels remain independent switches. Toggling does not
+remove geography already imported into a client bundle.
+
+`setControls` accepts the same keys as `controls`. Hiding zoom no longer hides
+Reset, Labels, or Touch. Hiding the touch button disengages touch navigation so
+page scrolling stays recoverable. Unknown switch names and invalid values throw
+before modifying state. After `destroy()`, setters are no-ops and disposal can be
+repeated safely. Getters return the last state; screen projection still requires
+a mounted, visible canvas.
+
+For configuration precedence, malformed inputs, callback reentrancy, and lifecycle
+ownership, see the [maintainer API audit](docs/api-audit.md).
