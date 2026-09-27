@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createInteractiveSFMap } from '../dist/src/interactive.js';
+import { fullMapData } from '../dist/src/full-data.js';
+import { createMap } from '../dist/src/map.js';
 import { fitViewport, validateViewport } from '../dist/src/viewport.js';
 
 test('viewport restore clamps safely and rejects invalid state', () => {
@@ -43,8 +44,11 @@ test('point fitting caps zoom, invalid bounds and impossible padding fail', () =
 });
 
 test('interactive entry point imports without a browser and validates label ranges', () => {
-  assert.throws(() => createInteractiveSFMap(), /browser document/);
-  assert.throws(() => createInteractiveSFMap({ labelSize: { min: 16, max: 12 } }), /label sizes/);
+  assert.throws(() => createMap(fullMapData), /browser document/);
+  assert.throws(
+    () => createMap(fullMapData, { appearance: { labelSize: { min: 16, max: 12 } } }),
+    /label sizes/,
+  );
 });
 
 test('sparse and malformed viewport/bounds arrays never admit NaN into the camera', () => {

@@ -14,14 +14,14 @@ const places = [
 const controllers = new WeakMap<HTMLElement, MapController>();
 const lifecycle = createStoryLifecycle();
 const meta = {
-  title: 'Start here/V2 interactive map',
+  title: 'Start here/Interactive map',
   tags: ['autodocs'],
   parameters: {
     layout: 'padded',
     docs: {
       description: {
         component:
-          'The v2 root contains no geographic JSON. Import `createMap` from `@kahwee/sf-map-svg`, `guideMapData` from `@kahwee/sf-map-svg/guide/data`, and optional `guideOptions` from `@kahwee/sf-map-svg/presets`. Mount `map.element`; call `map.destroy()` when your view is removed. Controls below change construction options without changing the source data.',
+          'The root contains no geographic JSON. Import `createMap` from `@kahwee/sf-map-svg`, `guideMapData` from `@kahwee/sf-map-svg/guide/data`, and optional `guideOptions` from `@kahwee/sf-map-svg/presets`. Mount `map.element`; call `map.destroy()` when your view is removed. Controls below change construction options without changing the source data.',
       },
     },
   },

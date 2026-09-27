@@ -42,64 +42,64 @@ try {
     }
   }
   assert.match(await readFile(join(installed, 'LICENSE'), 'utf8'), /MIT License/);
+  for (const removed of [
+    './legacy',
+    './custom-map',
+    './explorer',
+    './interactive',
+    './interactive-data',
+  ])
+    assert.equal(manifest.exports[removed], undefined, `${removed} must be removed`);
   await writeFile(
     join(temp, 'smoke.mjs'),
     `
 import assert from 'node:assert/strict';
 import { createMap, renderMap } from '@kahwee/sf-map-svg';
-assert.equal(typeof createMap, 'function');
-assert.match(renderMap({ coast: { type: 'Polygon', coordinates: [[[-122.5, 37.7], [-122.4, 37.7], [-122.4, 37.8], [-122.5, 37.7]]] } }).svg, /<svg/);
-import { renderSFMap } from '@kahwee/sf-map-svg/legacy';
+import { fullMapData } from '@kahwee/sf-map-svg/data/full';
+import { staticMapData } from '@kahwee/sf-map-svg/data/static';
 import { neighborhoods, getNeighborhood } from '@kahwee/sf-map-svg/data';
 import * as geometry from '@kahwee/sf-map-svg/geometry';
-import { createNeighborhoodExplorer } from '@kahwee/sf-map-svg/explorer';
-import { createInteractiveSFMap } from '@kahwee/sf-map-svg/interactive';
-import { createInteractiveSFMapWithData } from '@kahwee/sf-map-svg/interactive-data';
 import { createGuideMap, guideMapData, loadGuideDetailedData } from '@kahwee/sf-map-svg/guide';
 import { createGuideSVG, createGuideShell } from '@kahwee/sf-map-svg/guide/static';
-assert.match(createGuideSVG().svg, /<svg/);
-assert.match(createGuideShell(), /sf-guide-shell/);
 import realtor from '@kahwee/sf-map-svg/data/neighborhoods-realtor.json' with { type: 'json' };
 import candidates from '@kahwee/sf-map-svg/data/candidates/2024-11-05.json' with { type: 'json' };
-assert.match(renderSFMap({ landmarks: true, bartStations: true }), /<svg/);
+assert.equal(typeof createMap, 'function');
+assert.match(renderMap(fullMapData.map, { landmarks: true, bartStations: true }).svg, /<svg/);
+assert.equal(
+  renderMap(staticMapData, { idPrefix: 'smoke-static' }).svg,
+  renderMap(fullMapData.map, { idPrefix: 'smoke-static' }).svg,
+);
+assert.match(createGuideSVG().svg, /<svg/);
+assert.match(createGuideShell(), /sf-guide-shell/);
 assert.equal(neighborhoods.features.length, 92);
 assert.equal(realtor.features.length, 92);
 assert.equal(candidates.contests.length, 9);
 assert.equal(getNeighborhood('NoPa').properties.canonicalName, 'North Panhandle');
 assert(Object.keys(geometry).length > 0);
-assert.equal(typeof createNeighborhoodExplorer, 'function');
-assert.equal(typeof createInteractiveSFMap, 'function');
-assert.equal(typeof createInteractiveSFMapWithData, 'function');
 assert.equal(typeof createGuideMap, 'function');
 assert.equal(typeof loadGuideDetailedData, 'function');
 assert.equal(guideMapData.neighborhoods.realtor.features.length, 92);
-console.log('Installed package entrypoints, JSON, rendering, aliases, and explorer import passed.');
+console.log('Installed v3 package entrypoints, JSON, rendering, aliases, and guide import passed.');
 `,
   );
   execFileSync(process.execPath, ['smoke.mjs'], { cwd: temp, stdio: 'inherit' });
   await writeFile(
     join(temp, 'consumer.mts'),
     `
-import { renderSFMap, type SFMapOptions } from '@kahwee/sf-map-svg/legacy';
+import { createMap, renderMap, type MapOptions, type StaticMapOptions } from '@kahwee/sf-map-svg';
+import { fullMapData } from '@kahwee/sf-map-svg/data/full';
+import { staticMapData } from '@kahwee/sf-map-svg/data/static';
 import { getNeighborhood, type NeighborhoodSource } from '@kahwee/sf-map-svg/data';
-import { createNeighborhoodExplorer } from '@kahwee/sf-map-svg/explorer';
-import { createInteractiveSFMap } from '@kahwee/sf-map-svg/interactive';
-import { createInteractiveSFMapWithData, type InteractiveSFMapData } from '@kahwee/sf-map-svg/interactive-data';
 import { createGuideMap, guideMapData, loadGuideDetailedData } from '@kahwee/sf-map-svg/guide';
 import * as geometry from '@kahwee/sf-map-svg/geometry';
-import { createMap, type MapOptions } from '@kahwee/sf-map-svg';
-const v2: MapOptions = { features: { motion: true }, appearance: { colors: { water: '#fff' } } };
-const controller = () => createMap(guideMapData, v2);
-void controller;
-const options: SFMapOptions = { width: 390, landmarks: true, bartStations: true, overlays: [{ id: 'route', geometry: { type: 'LineString', coordinates: [[-122.4, 37.7], [-122.41, 37.71]] } }] };
+const options: MapOptions = { features: { motion: true }, appearance: { colors: { water: '#fff' } } };
+const controller = () => createMap(fullMapData, options);
+const staticOptions: StaticMapOptions = { width: 390, landmarks: true, bartStations: true, overlays: [{ id: 'route', geometry: { type: 'LineString', coordinates: [[-122.4, 37.7], [-122.41, 37.71]] } }] };
+const svg: string = renderMap(fullMapData.map, staticOptions).svg;
+const staticSvg: string = renderMap(staticMapData).svg;
 const source: NeighborhoodSource = 'realtor';
-const svg: string = renderSFMap(options);
 const name: string | undefined = getNeighborhood('NoPa', { source })?.properties.canonicalName;
-const explorer: typeof createNeighborhoodExplorer = createNeighborhoodExplorer;
-void [svg, name, explorer, geometry, createInteractiveSFMap];
-const injected: InteractiveSFMapData = { map: { coast: { type: 'Polygon', coordinates: [] } }, neighborhoods: {} };
-void [createInteractiveSFMapWithData, injected];
-void [createGuideMap, loadGuideDetailedData, guideMapData];
+void [controller, svg, staticSvg, name, geometry, createGuideMap, loadGuideDetailedData, guideMapData];
 `,
   );
   execFileSync(

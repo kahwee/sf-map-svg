@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/html-vite';
 import { expect, waitFor } from 'storybook/test';
 import { createGuideMap, mountGuideMap } from '../src/guide-map.js';
 import { createGuideShell } from '../src/guide-static.js';
-import type { InteractiveSFMapElement } from '../src/interactive-data.js';
+import type { NeighborhoodExplorerElement as InteractiveSFMapElement } from '../src/types.js';
 
 let map: InteractiveSFMapElement;
 const markers = [

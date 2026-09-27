@@ -5,7 +5,7 @@ const spotStory =
 const phoneStory =
   '/storybook-static/iframe.html?id=data-one-spot-three-san-franciscos--phone-390&viewMode=story';
 const staticStory =
-  '/storybook-static/iframe.html?id=start-here-v2-static-svg--phone-390&viewMode=story';
+  '/storybook-static/iframe.html?id=start-here-static-svg--phone-390&viewMode=story';
 
 async function ready(page) {
   await page.locator('.spot-explorer').waitFor();

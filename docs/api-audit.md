@@ -63,18 +63,9 @@ Exercise enable/disable round trips and callbacks that synchronously request a
 second update. Add published-type and bundle regressions when the import graph or
 public types change. Update this matrix when introducing a new interaction.
 
-## Verification for this change
+## Verification for version 3
 
-- `pnpm check`: 59 Node tests, types, lint, source catalog and bundle budgets passed.
-- `pnpm test:stories:coverage`: 60 Chromium stories passed.
-- `pnpm demo`, `pnpm build-storybook`, and clean-install `pnpm test:package` passed.
-- Production guide: 110.2 KB gzip; data-free compatibility renderer: 21.8 KB gzip, as reported by
-  `pnpm report:guide` (the report script uses 1024-byte units).
-- Isolated agent-browser inspection of generated static SVG examples and the
-  interactive example at desktop and 390px found no page overflow or browser
-  errors. Interactive labels remained collision-filtered at both widths. Browser
-  screenshots were kept outside the repository and the session was closed.
-
-The independent pre-release review reproduced and closed stale cluster activation
-and checked the v2 overlay event bridge. See the controller and robustness stories
-for pointer/keyboard activation, reentrant replacement, and revoked old nodes.
+- `pnpm check` covers Node regressions, types, lint, catalog topology, and bundle budgets.
+- `pnpm test:stories:coverage` runs Chromium stories and reports browser coverage.
+- `pnpm demo`, `pnpm build-storybook`, `pnpm test:package`, and `pnpm test:visual` cover examples, rendered stories, packed consumer imports, and reviewed map screenshots.
+- The packed consumer asserts removed compatibility entry points are absent.

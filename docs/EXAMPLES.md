@@ -16,18 +16,19 @@ Choose by task. All snippets use the public package API; browser examples need a
 
 ```ts
 import { writeFile } from 'node:fs/promises';
-import { renderSFMap } from '@kahwee/sf-map-svg/legacy';
+import { renderMap } from '@kahwee/sf-map-svg';
+import { fullMapData } from '@kahwee/sf-map-svg/data/full';
 
-const svg = renderSFMap({
+const svg = renderMap(fullMapData.map, {
   year: 2022,
   landmarks: true,
   bartStations: true,
   idPrefix: 'example',
-});
+}).svg;
 await writeFile('districts.svg', svg);
 ```
 
-The legacy entry includes built-in geography for convenience. The modern root and `/static` accept explicit geography. See the [full option list](../README.md#static-options).
+The full preset imports all packaged geography. For smaller bundles, pass selected data to the root or `/static` renderer. See the [static recipe](../README.md#static-svg).
 
 For an election choropleth, use `renderMap(data, { year, districtStyle })` or
 `createMap({ map: data, districts: districtMaps, neighborhoods: {} }, options)`.
@@ -50,18 +51,19 @@ The guide includes selected coast, SFAR neighborhoods, parks, roads, and station
 ## Selected geography
 
 ```ts
-import { createInteractiveSFMapWithData } from '@kahwee/sf-map-svg/interactive-data';
+import { createMap } from '@kahwee/sf-map-svg';
 import coast from '@kahwee/sf-map-svg/data/coast.json' with { type: 'json' };
 import realtor from '@kahwee/sf-map-svg/data/neighborhoods-realtor.json' with { type: 'json' };
 
-const map = createInteractiveSFMapWithData(
+const map = createMap(
   {
     map: { coast: coast.features[0].geometry },
     neighborhoods: { realtor },
   },
   { mode: 'neighborhoods', layers: { highways: false, keyRoads: false } },
 );
-document.querySelector('#map')?.append(map);
+document.querySelector('#map')?.append(map.element);
+// On unmount: map.destroy();
 ```
 
 This imports one neighborhood definition source. To omit its geometry too, import catalog metadata alone from `/data/catalog`.
@@ -89,7 +91,7 @@ Coordinates are WGS84 `[longitude, latitude]`. The overlay follows pan and zoom.
 
 ## California propositions by SF district
 
-[Open the interactive explorer](https://kahwee.github.io/sf-map-svg/propositions.html). It uses the public `custom-map` renderer with only the 2022 district and coast datasets and colors each district from the [certified results JSON](../data/propositions/2024-11-05.json). The JSON includes all ten statewide propositions on the November 2024 ballot, with Yes and No counts for each of San Francisco's eleven supervisorial districts. Its scope is SF votes, not statewide totals or voter demographics.
+[Open the interactive explorer](https://kahwee.github.io/sf-map-svg/propositions.html). It uses the public static renderer with only the 2022 district and coast datasets and colors each district from the [certified results JSON](../data/propositions/2024-11-05.json). The JSON includes all ten statewide propositions on the November 2024 ballot, with Yes and No counts for each of San Francisco's eleven supervisorial districts. Its scope is SF votes, not statewide totals or voter demographics.
 
 The [import script](../scripts/import-2024-propositions.py) checks each district sum against the official citywide count. [Geographic and election sources](../SOURCES.md) explain the provenance.
 
@@ -101,4 +103,4 @@ compact sources, a north arrow, and a metric scale. Storybook's **Checks / Consu
 API** includes executable motion, reduced-motion, and progressive-shell checks.
 See [consumer integration](consumer-integration.md) for server and browser recipes.
 
-For the v2 controller and explicit data imports, see [the migration guide](migration-v2.md).
+For the controller and explicit data imports, see [the v3 migration guide](migration-v3.md).

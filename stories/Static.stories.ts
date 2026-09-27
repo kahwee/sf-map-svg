@@ -6,7 +6,7 @@ import { guideMapData } from '../src/guide-data.ts';
 type DemoArgs = { parks: boolean; stations: boolean; roads: boolean };
 let renderCount = 0;
 const meta = {
-  title: 'Start here/V2 static SVG',
+  title: 'Start here/Static SVG',
   tags: ['autodocs'],
   parameters: {
     layout: 'padded',
@@ -35,7 +35,7 @@ const meta = {
       bartStations: stations,
       highways: roads,
       keyRoads: roads,
-      idPrefix: `storybook-v2-static-${++renderCount}`,
+      idPrefix: `storybook-static-${++renderCount}`,
     });
     const frame = document.createElement('div');
     frame.style.cssText = 'width:100%;max-width:800px;margin:auto';

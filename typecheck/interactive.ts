@@ -1,52 +1,47 @@
-import { createInteractiveSFMap, type MapViewport } from '../dist/src/interactive.js';
+import { createMap, type MapViewport } from '@kahwee/sf-map-svg';
+import { fullMapData } from '@kahwee/sf-map-svg/data/full';
 
-const map = createInteractiveSFMap({
+const map = createMap(fullMapData, {
   mode: 'basemap',
-  labelSize: { min: 12, max: 16 },
+  appearance: { labelSize: { min: 12, max: 16 } },
   layers: { districtFills: false },
   markers: [],
 });
-const view: MapViewport = map.getViewport();
-map.setViewport(view);
-map.fitGeometry({ type: 'MultiPoint', coordinates: [[-122.42, 37.77]] }, { bottom: 60 });
+const view: MapViewport = map.camera.get();
+map.camera.set(view);
+map.camera.fit(
+  { type: 'MultiPoint', coordinates: [[-122.42, 37.77]] },
+  { padding: { bottom: 60 } },
+);
 map.selectNeighborhood(null, { fit: false });
 map.selectMarker(null);
 map.setTouchNavigation(false);
-map.getSelection()?.source;
+map.getSelectedNeighborhood()?.source;
 map.destroy();
 
-createInteractiveSFMap({
-  interface: 'map',
-  controls: { neighborhoodPicker: false, markerPicker: false, help: false, status: false },
-  strings: { chooseMarker: 'Place on map' },
-}).destroy();
-
-// Consumer-facing enhancement options and coordinate/camera APIs.
-const enhanced = createInteractiveSFMap({
-  colors: { land: '#223344' },
-  labelStyle: { fontFamily: 'DM Sans', haloColor: '#223344' },
-  motion: { duration: 300 },
-  markerEntrance: true,
-  clustering: { radius: 40 },
+const enhanced = createMap(fullMapData, {
+  appearance: {
+    colors: { land: '#223344' },
+    labelStyle: { fontFamily: 'DM Sans', haloColor: '#223344' },
+  },
+  features: { motion: { duration: 300 }, markerEntrance: true, clustering: { radius: 40 } },
   markers: [{ id: 'place', lng: -122.4, lat: 37.7, radius: 8 }],
   legend: { hidden: ['road'], items: [{ label: 'Place', color: '#123456' }] },
 });
-enhanced.setViewport([0, 0, 800], { animate: false });
+enhanced.camera.set([0, 0, 800], { animate: false });
 enhanced.selectMarker('place', { duration: 250 });
 enhanced.projectToScreen(-122.4, 37.7).visible satisfies boolean;
 enhanced.overlayElement satisfies HTMLDivElement;
-enhanced.stopAnimation();
-
-enhanced.setFeatures({ motion: false, clustering: true, selectedMarkerRing: false });
-enhanced.setFeatures({ motion: { duration: 180 }, scaleBar: undefined });
-enhanced.setLayers({ landmarks: false, roadLabels: true });
-enhanced.setControls({ zoom: false, reset: true });
+enhanced.camera.stop();
+enhanced.configure({ features: { motion: false, clustering: true, selectedMarkerRing: false } });
+enhanced.configure({ features: { motion: { duration: 180 }, scaleBar: undefined } });
+enhanced.configure({ layers: { landmarks: false, roadLabels: true } });
+enhanced.configure({ controls: { zoom: false, reset: true } });
 // @ts-expect-error Feature switches must be typed, not arbitrary truthy strings.
-enhanced.setFeatures({ clustering: 'yes' });
+enhanced.configure({ features: { clustering: 'yes' } });
 // @ts-expect-error Misspelled layer options are not silently accepted.
-enhanced.setLayers({ park: false });
+enhanced.configure({ layers: { park: false } });
 
-// Every documented overlay geometry must work through the shipped declaration.
 for (const overlay of [
   {
     id: 'line',

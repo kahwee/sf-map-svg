@@ -1,5 +1,6 @@
+import { staticMapData } from '@kahwee/sf-map-svg/data/static';
 import { geometryPath, rawProject } from '@kahwee/sf-map-svg/geometry';
-import { createSFMap } from '@kahwee/sf-map-svg/legacy';
+import { renderMap } from '@kahwee/sf-map-svg/static';
 import { identifySpot } from './spot-model.js';
 
 const svgNS = 'http://www.w3.org/2000/svg';
@@ -52,7 +53,7 @@ export function mountSpotExplorer(host, options = {}) {
 
   function draw() {
     const result = identifySpot(point);
-    const base = createSFMap({
+    const base = renderMap(staticMapData, {
       year,
       districtFills: false,
       districtLines: true,

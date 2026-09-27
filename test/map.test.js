@@ -1,11 +1,16 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createSFMapWithData } from '../dist/src/custom-map.js';
-import { createSFMap, districtYears, neighborhoodNames, renderSFMap } from '../dist/src/index.js';
+import { fullMapData } from '../dist/src/full-data.js';
+import { renderMap } from '../dist/src/static.js';
+
+const districtYears = [2002, 2012, 2022];
+const neighborhoodNames = fullMapData.map.neighborhoods.map(({ name }) => name);
+const create = (options = {}) => renderMap(fullMapData.map, options);
+const render = (options = {}) => create(options).svg;
 
 test('each historical map has eleven districts and finite standalone SVG geometry', () => {
   for (const year of districtYears) {
-    const svg = renderSFMap({ year });
+    const svg = render({ year });
     assert.equal((svg.match(/data-district=/g) ?? []).length, 22);
     assert.ok(!/NaN|Infinity|<image|<script|https?:\/\/(?!www.w3.org)/.test(svg));
     assert.ok(!svg.includes('data-layer="neighborhood-lines"'));
@@ -16,14 +21,14 @@ test('neighborhood layer is optional and contains every named area', () => {
   assert.ok(neighborhoodNames.includes('Inner Mission'));
   assert.ok(neighborhoodNames.includes('Outer Mission'));
   assert.ok(neighborhoodNames.includes('North Panhandle'));
-  const svg = renderSFMap({ neighborhoodLines: true, districtLines: false });
+  const svg = render({ neighborhoodLines: true, districtLines: false });
   assert.equal((svg.match(/data-neighborhood=/g) ?? []).length, 92);
   assert.ok(!svg.includes('data-layer="district-lines"'));
   assert.ok(svg.includes('SFAR realtor neighborhood areas, defined in August 2010'));
   assert.ok(!svg.includes('SF Find neighborhood areas'));
 });
 test('projection places SF points inside map and matches marker coordinates', () => {
-  const map = createSFMap({ markers: [{ id: 'park', lng: -122.4269, lat: 37.7596 }] });
+  const map = create({ markers: [{ id: 'park', lng: -122.4269, lat: 37.7596 }] });
   const [x, y] = map.project([-122.4269, 37.7596]);
   assert.ok(x > 28 && x < 772 && y > 28 && y < 772);
   assert.ok(map.svg.includes(`cx="${Number(x.toFixed(2))}" cy="${Number(y.toFixed(2))}"`));
@@ -31,14 +36,14 @@ test('projection places SF points inside map and matches marker coordinates', ()
   assert.ok(map.project([-122.4, 37.7596])[0] > x);
 });
 test('escapes labels and rejects invalid projections and dimensions', () => {
-  assert.ok(renderSFMap({ title: '<script>&"' }).includes('&lt;script&gt;&amp;&quot;'));
-  assert.throws(() => renderSFMap({ year: 2020 }), RangeError);
-  assert.throws(() => renderSFMap({ width: 0 }), RangeError);
-  assert.throws(() => renderSFMap({ idPrefix: 'bad"' }), TypeError);
-  assert.throws(() => createSFMap().project([0, 90]), RangeError);
+  assert.ok(render({ title: '<script>&"' }).includes('&lt;script&gt;&amp;&quot;'));
+  assert.throws(() => render({ year: 2020 }), RangeError);
+  assert.throws(() => render({ width: 0 }), RangeError);
+  assert.throws(() => render({ idPrefix: 'bad"' }), TypeError);
+  assert.throws(() => create().project([0, 90]), RangeError);
 });
 test('explicit ids make output deterministic', () => {
-  assert.equal(renderSFMap({ idPrefix: 'example' }), renderSFMap({ idPrefix: 'example' }));
+  assert.equal(render({ idPrefix: 'example' }), render({ idPrefix: 'example' }));
 });
 
 test('data-injected renderer needs no bundled geographic collection', () => {
@@ -54,9 +59,9 @@ test('data-injected renderer needs no bundled geographic collection', () => {
       ],
     ],
   };
-  const result = createSFMapWithData(
-    { districtFills: false, districtLines: false, districtLabels: false },
+  const result = renderMap(
     { coast },
+    { districtFills: false, districtLines: false, districtLabels: false },
   );
   assert.match(result.svg, /data-layer="coast"/);
   assert.doesNotMatch(result.svg, /data-layer="district-fills"/);
@@ -83,9 +88,9 @@ test('map overlays reject invalid numeric SVG attributes', () => {
     ],
   };
   const render = (overlay) =>
-    createSFMapWithData(
-      { districtFills: false, districtLines: false, districtLabels: false, overlays: [overlay] },
+    renderMap(
       { coast },
+      { districtFills: false, districtLines: false, districtLabels: false, overlays: [overlay] },
     );
   assert.throws(
     () => render({ id: 'bad-width', geometry: line, strokeWidth: '1" onload="x' }),
@@ -100,7 +105,7 @@ test('combined layers produce valid XML with resolvable clip paths for every dis
   for (const year of districtYears) {
     for (const neighborhoodLines of [false, true]) {
       const errors = [];
-      const svg = renderSFMap({
+      const svg = render({
         year,
         neighborhoodLines,
         highways: true,
@@ -124,10 +129,10 @@ test('combined layers produce valid XML with resolvable clip paths for every dis
 });
 
 test('landmarks and BART are independent optional geographic overlays', () => {
-  const baseline = renderSFMap();
+  const baseline = render();
   assert.ok(!baseline.includes('data-layer="landmarks"'));
   assert.ok(!baseline.includes('data-layer="bart-stations"'));
-  const parks = renderSFMap({ landmarks: true });
+  const parks = render({ landmarks: true });
   assert.equal((parks.match(/data-landmark=/g) ?? []).length, 6);
   assert.ok(parks.includes('Golden Gate Park'));
   const document = new DOMParser().parseFromString(parks, 'image/svg+xml');
@@ -140,7 +145,7 @@ test('landmarks and BART are independent optional geographic overlays', () => {
     assert.ok(!/NaN|Infinity/.test(park.getAttribute('d')));
   }
   assert.ok(!parks.includes('data-layer="bart-stations"'));
-  const map = createSFMap({ bartStations: true, colors: { bart: '#123456' } });
+  const map = create({ bartStations: true, colors: { bart: '#123456' } });
   assert.equal((map.svg.match(/data-bart-station=/g) ?? []).length, 8);
   assert.ok(!map.svg.includes('data-layer="landmarks"'));
   assert.ok(!map.svg.includes('Daly City'));
@@ -152,10 +157,10 @@ test('landmarks and BART are independent optional geographic overlays', () => {
 });
 
 test('rejects overflowing and out-of-range longitude before writing SVG coordinates', () => {
-  const map = createSFMap();
+  const map = create();
   for (const lng of [1e308, -1e308, 181, -181, Infinity, NaN]) {
     assert.throws(() => map.project([lng, 37.77]), RangeError);
-    assert.throws(() => renderSFMap({ markers: [{ id: 'bad', lng, lat: 37.77 }] }), RangeError);
+    assert.throws(() => render({ markers: [{ id: 'bad', lng, lat: 37.77 }] }), RangeError);
   }
 });
 
@@ -167,14 +172,14 @@ test('optional layers work independently and preserve unique district IDs', () =
     bartStations: 'bart-stations',
   };
   for (const [option, layer] of Object.entries(options)) {
-    const svg = renderSFMap({ [option]: true });
+    const svg = render({ [option]: true });
     assert.ok(svg.includes(`data-layer="${layer}"`));
     for (const [otherOption, otherLayer] of Object.entries(options)) {
       if (otherOption !== option) assert.ok(!svg.includes(`data-layer="${otherLayer}"`));
     }
   }
   for (const year of districtYears) {
-    const document = new DOMParser().parseFromString(renderSFMap({ year }), 'image/svg+xml');
+    const document = new DOMParser().parseFromString(render({ year }), 'image/svg+xml');
     for (const layer of ['district-fills', 'district-lines']) {
       const group = Array.from(document.getElementsByTagName('g')).find(
         (g) => g.getAttribute('data-layer') === layer,
@@ -192,7 +197,7 @@ test('optional layers work independently and preserve unique district IDs', () =
 test('transit custom land color cannot inject SVG attributes', () => {
   const color = 'red" onpointerover="alert(1)';
   const document = new DOMParser().parseFromString(
-    renderSFMap({ theme: 'transit', colors: { land: color } }),
+    render({ theme: 'transit', colors: { land: color } }),
     'image/svg+xml',
   );
   const fills = Array.from(document.getElementsByTagName('path')).filter(
@@ -206,8 +211,8 @@ test('transit custom land color cannot inject SVG attributes', () => {
 });
 
 test('key roads are an optional layer independent of highways', () => {
-  assert.ok(!renderSFMap().includes('data-layer="key-roads"'));
-  const svg = renderSFMap({ keyRoads: true, colors: { road: '#123456' } });
+  assert.ok(!render().includes('data-layer="key-roads"'));
+  const svg = render({ keyRoads: true, colors: { road: '#123456' } });
   const document = new DOMParser().parseFromString(svg, 'image/svg+xml');
   const roads = Array.from(document.getElementsByTagName('path')).filter((p) =>
     p.hasAttribute('data-key-road'),
@@ -221,17 +226,16 @@ test('key roads are an optional layer independent of highways', () => {
   assert.ok(svg.includes('Market St'));
   assert.ok(svg.includes('The Embarcadero'));
   assert.ok(!svg.includes('data-layer="highways"'));
-  const geometryWithoutLabels = renderSFMap({ keyRoads: true, roadLabels: false });
+  const geometryWithoutLabels = render({ keyRoads: true, roadLabels: false });
   assert.ok(geometryWithoutLabels.includes('data-layer="key-roads"'));
   assert.ok(!geometryWithoutLabels.includes('data-layer="key-road-labels"'));
-  const labelsWithoutGeometry = renderSFMap({ keyRoads: false, roadLabels: true });
+  const labelsWithoutGeometry = render({ keyRoads: false, roadLabels: true });
   assert.ok(!labelsWithoutGeometry.includes('data-layer="key-roads"'));
   assert.ok(labelsWithoutGeometry.includes('data-layer="key-road-labels"'));
 });
 
 test('custom road hierarchy cannot inject SVG attributes', () => {
-  const svg = createSFMapWithData(
-    { districtFills: false, districtLines: false, keyRoads: true, roadLabels: false },
+  const svg = renderMap(
     {
       coast: {
         type: 'Polygon',
@@ -263,6 +267,7 @@ test('custom road hierarchy cannot inject SVG attributes', () => {
         },
       ],
     },
+    { districtFills: false, districtLines: false, keyRoads: true, roadLabels: false },
   ).svg;
   assert.match(svg, /data-key-road-level="primary"/);
   assert.doesNotMatch(svg, /onload=/);
@@ -270,13 +275,13 @@ test('custom road hierarchy cannot inject SVG attributes', () => {
 
 test('master label switch hides text without removing map symbols or accessible titles', () => {
   const document = new DOMParser().parseFromString(
-    renderSFMap({ labels: false, landmarks: true, bartStations: true, keyRoads: true }),
+    render({ labels: false, landmarks: true, bartStations: true, keyRoads: true }),
     'image/svg+xml',
   );
   assert.equal(document.getElementsByTagName('text').length, 0);
   assert.ok(document.getElementsByTagName('title').length > 8);
   assert.ok(document.getElementsByTagName('circle').length >= 8);
-  const numbered = new DOMParser().parseFromString(renderSFMap(), 'image/svg+xml');
+  const numbered = new DOMParser().parseFromString(render(), 'image/svg+xml');
   for (const text of Array.from(numbered.getElementsByTagName('text')))
     assert.match(text.textContent, /^(?:[1-9]|10|11)$/);
 });

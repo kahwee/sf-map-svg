@@ -115,11 +115,11 @@ try {
     base: './',
     resolve: {
       alias: {
-        '@kahwee/sf-map-svg/custom-map': join(packageRoot, 'dist/src/custom-map.js'),
+        '@kahwee/sf-map-svg/static': join(packageRoot, packageExports['./static'].import),
+        '@kahwee/sf-map-svg/data/full': join(packageRoot, packageExports['./data/full'].import),
+        '@kahwee/sf-map-svg/data/static': join(packageRoot, packageExports['./data/static'].import),
         '@kahwee/sf-map-svg/guide': join(packageRoot, 'dist/src/guide.js'),
-        '@kahwee/sf-map-svg/explorer': join(packageRoot, 'dist/src/explorer.js'),
         '@kahwee/sf-map-svg/geometry': join(packageRoot, 'dist/src/geometry.js'),
-        '@kahwee/sf-map-svg/legacy': join(packageRoot, 'dist/src/index.js'),
         '@kahwee/sf-map-svg/transit': join(packageRoot, 'dist/src/transit.js'),
         '@kahwee/sf-map-svg': join(packageRoot, packageExports['.'].import),
       },
@@ -152,7 +152,10 @@ try {
       },
     },
   });
-  const { renderSFMap } = await import(pathToFileURL(join(packageRoot, 'dist/src/index.js')).href);
+  const [{ renderMap }, { fullMapData }] = await Promise.all([
+    import(pathToFileURL(join(packageRoot, packageExports['./static'].import)).href),
+    import(pathToFileURL(join(packageRoot, packageExports['./data/full'].import)).href),
+  ]);
   await mkdir('pages-dist/maps/display', { recursive: true });
   await mkdir('pages-dist/maps/thumb', { recursive: true });
   for (const [name, options] of Object.entries({
@@ -171,7 +174,7 @@ try {
     },
     neighborhoods: { neighborhoodLines: true },
   })) {
-    const svg = renderSFMap({ ...options, idPrefix: name });
+    const svg = renderMap(fullMapData.map, { ...options, idPrefix: name }).svg;
     await writeFile(`pages-dist/maps/${name}.svg`, svg);
     // Display copies: the full-precision files above remain the downloads.
     if (name.startsWith('districts-'))

@@ -99,11 +99,12 @@ Lookup is exact after case/punctuation normalization, returns `undefined` for an
 ## Draw a neighborhood with the existing projection
 
 ```js
-import { createSFMap } from '@kahwee/sf-map-svg/legacy';
+import { renderMap } from '@kahwee/sf-map-svg';
+import { fullMapData } from '@kahwee/sf-map-svg/data/full';
 import { getNeighborhood } from '@kahwee/sf-map-svg/data';
 import { geometryPath } from '@kahwee/sf-map-svg/geometry';
 
-const map = createSFMap({ districtFills: false });
+const map = renderMap(fullMapData.map, { districtFills: false });
 const mission = getNeighborhood('Inner Mission');
 const pathData = geometryPath(mission.geometry, map.project);
 // Use pathData as an SVG <path d="..."> over map.svg.

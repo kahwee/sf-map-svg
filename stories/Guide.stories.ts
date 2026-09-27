@@ -43,7 +43,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Compatibility convenience preset from `@kahwee/sf-map-svg/guide`. For a new controller with explicit geography, see **Start here / V2 interactive map**. The guide keeps a compact overview and loads details only when requested.',
+          'Focused convenience preset from `@kahwee/sf-map-svg/guide`. For a new controller with explicit geography, see **Start here / Interactive map**. The guide keeps a compact overview and loads details only when requested.',
       },
     },
   },

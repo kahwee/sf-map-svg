@@ -8,7 +8,8 @@ type ExplorerArgs = {
 
 import type { Meta, StoryObj } from '@storybook/html-vite';
 import { neighborhoodSources } from '../data/index.ts';
-import { createNeighborhoodExplorer } from '../src/explorer.ts';
+import { fullMapData } from '../src/full-data.ts';
+import { createMap } from '../src/map.ts';
 import { createStoryLifecycle } from './lifecycle.ts';
 
 const lifecycle = createStoryLifecycle();
@@ -28,9 +29,9 @@ const meta = {
   },
   beforeEach: lifecycle.beforeEach,
   render: (args, { id }) => {
-    const explorer = createNeighborhoodExplorer(args);
+    const explorer = createMap(fullMapData, args);
     lifecycle.track(id, () => explorer.destroy());
-    return explorer;
+    return explorer.element;
   },
 } satisfies Meta<ExplorerArgs>;
 

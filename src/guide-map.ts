@@ -1,20 +1,27 @@
+import { createNeighborhoodExplorerCore } from './explorer-core.js';
 import { guideMapData } from './guide-data.js';
-import type { InteractiveSFMapElement, InteractiveSFMapOptions } from './interactive-data.js';
-import { createInteractiveSFMapWithData } from './interactive-data.js';
 import { guideOptions } from './presets.js';
+import type {
+  NeighborhoodExplorerElement as InteractiveSFMapElement,
+  NeighborhoodExplorerOptions as InteractiveSFMapOptions,
+} from './types.js';
 import { validateExplorerOptions } from './validation.js';
 
 /** Guide map preset: SFAR neighborhoods, major parks, BART, and curated roads. */
 export function createGuideMap(options: InteractiveSFMapOptions = {}): InteractiveSFMapElement {
   validateExplorerOptions(options);
-  return createInteractiveSFMapWithData(guideMapData, {
-    mode: 'neighborhoods',
-    ...options,
-    layers: {
-      ...guideOptions.layers,
-      ...options.layers,
+  return createNeighborhoodExplorerCore(
+    {
+      mode: 'neighborhoods',
+      ...options,
+      layers: {
+        ...guideOptions.layers,
+        ...options.layers,
+      },
+      interface: 'map',
     },
-  });
+    guideMapData,
+  );
 }
 
 /** Enhance createGuideShell() in place with a fixed compact chrome layout.

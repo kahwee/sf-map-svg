@@ -4,6 +4,23 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 3.0.0 — 2026-09-27
+
+Version 3 removes the deprecated compatibility APIs. Applications must migrate before upgrading. The data-free root API introduced in version 2 remains the supported API.
+
+### Breaking changes
+
+- Remove the `/legacy`, `/custom-map`, `/explorer`, `/interactive`, and `/interactive-data` package entry points and their bundled-data factories. These imports fail to resolve in v3; they are removed, not merely marked deprecated.
+- Replace `renderSFMap(options)` with `renderMap(fullMapData.map, options).svg`, `createSFMap(options)` with `renderMap(fullMapData.map, options)`, and `createSFMapWithData(options, data)` with `renderMap(data, options)`.
+- Replace `createNeighborhoodExplorer(options)` and `createInteractiveSFMap(options)` with `createMap(fullMapData, options)`; mount the returned controller's `.element` and call `.destroy()` on unmount. Replace `createInteractiveSFMapWithData(data, options)` with `createMap(data, options)`.
+- Import complete packaged geography explicitly from `/data/full`, or compose smaller data from `/data/*`. The root import continues to bundle no geography. Existing `/guide` and `/transit` entries remain available.
+
+### Migration and verification
+
+- Add a [v3 migration guide](docs/migration-v3.md) with import and method mappings. Update README, runnable examples, Storybook, Pages generation, TypeScript contracts, and packed-consumer checks to use the supported API.
+- Preserve the generated SVG output for the old complete-data preset while making that data an explicit import. Keep the guide's narrow overview and detailed-data loading.
+- Add `/data/static` for the complete static map without interactive lookup collections; use it on the Pages spot explorer so its detailed coast and labels retain their reviewed appearance without pulling in unused collections.
+
 ## 2.2.0 — 2026-09-27
 
 - Add “One spot, three San Franciscos” to Pages and Storybook, comparing the same location across district, neighborhood, and transit views.

@@ -1,4 +1,4 @@
-import { createSFMapWithData } from '@kahwee/sf-map-svg/custom-map';
+import { renderMap } from '@kahwee/sf-map-svg/static';
 import coast from '../data/coast.json';
 import catalog from '../data/elections/catalog.json';
 import {
@@ -156,15 +156,12 @@ function enableGestures(svg) {
 }
 function makeMap(hostId, prefix) {
   const host = $(hostId);
-  host.innerHTML = createSFMapWithData(
-    {
-      year: election.districtYear,
-      title: 'San Francisco ballot measure district map',
-      idPrefix: prefix,
-      colors: { water: '#edf4f4' },
-    },
-    mapData,
-  ).svg;
+  host.innerHTML = renderMap(mapData, {
+    year: election.districtYear,
+    title: 'San Francisco ballot measure district map',
+    idPrefix: prefix,
+    colors: { water: '#edf4f4' },
+  }).svg;
   const svg = host.querySelector('svg');
   svg.style.height = '100%';
   svg.setAttribute('role', 'group');

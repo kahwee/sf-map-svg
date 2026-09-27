@@ -64,7 +64,7 @@ test('detailed guide data loads selected geography without adding historical dat
 
 test('static overview and shell are server-safe, escaped and use guide geography', async () => {
   const { createGuideSVG, createGuideShell } = await import('../dist/src/guide-static.js');
-  const { createSFMapWithData } = await import('../dist/src/custom-map.js');
+  const { renderMap } = await import('../dist/src/static.js');
   const options = {
     idPrefix: 'overview',
     labels: false,
@@ -75,7 +75,7 @@ test('static overview and shell are server-safe, escaped and use guide geography
   assert.ok(svg.includes('r="9"'));
   assert.equal(
     createGuideSVG(options).project([-122.43, 37.76]).join(),
-    createSFMapWithData(options, guideMapData.map).project([-122.43, 37.76]).join(),
+    renderMap(guideMapData.map, options).project([-122.43, 37.76]).join(),
   );
   assert.ok(createGuideShell(options).includes(svg));
   assert.throws(

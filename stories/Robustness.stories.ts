@@ -2,9 +2,11 @@ import type { Meta, StoryObj } from '@storybook/html-vite';
 import { expect, waitFor } from 'storybook/test';
 import { guideMapData } from '../src/guide-data.js';
 import { createGuideMap } from '../src/guide-map.js';
-import type { InteractiveSFMapElement } from '../src/interactive-data.js';
-import { createInteractiveSFMapWithData } from '../src/interactive-data.js';
-import type { MapFeatures } from '../src/types.js';
+import { createMap } from '../src/map.js';
+import type {
+  NeighborhoodExplorerElement as InteractiveSFMapElement,
+  MapFeatures,
+} from '../src/types.js';
 
 const pins = [
   { id: 'a', lng: -122.4269, lat: 37.7596, label: 'First place' },
@@ -229,13 +231,14 @@ export const ConflictingLayersAndFailedSource: Story = {
     const collection = structuredClone(source);
     const bad = structuredClone(collection.features[0]);
     (bad as unknown as { geometry: unknown }).geometry = { type: 'Polygon', coordinates: [] };
-    const other = createInteractiveSFMapWithData(
+    const otherController = createMap(
       {
         ...guideMapData,
         neighborhoods: { realtor: collection, analysis: { ...collection, features: [bad] } },
       },
       { mode: 'basemap' },
     );
+    const other = otherController.element as InteractiveSFMapElement;
     map.after(other);
     try {
       other.setViewport([100, 100, 400]);
@@ -252,7 +255,7 @@ export const ConflictingLayersAndFailedSource: Story = {
       ).toBe('none');
       expect(other.getViewport()).toEqual([100, 100, 400]);
     } finally {
-      other.destroy();
+      otherController.destroy();
       other.remove();
     }
   },

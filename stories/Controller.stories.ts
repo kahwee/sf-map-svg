@@ -7,7 +7,7 @@ import { createMap, type MapController } from '../src/map.js';
 
 let map: MapController;
 const meta = {
-  title: 'Checks/V2 controller',
+  title: 'Checks/Controller',
   beforeEach: () => () => map?.destroy(),
   render: () => {
     map = createMap(guideMapData, {

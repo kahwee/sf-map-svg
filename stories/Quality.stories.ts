@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/html-vite';
 import { expect } from 'storybook/test';
 import { createGuideMap } from '../src/guide.ts';
-import type { InteractiveSFMapElement } from '../src/interactive-data.ts';
+import type { NeighborhoodExplorerElement as InteractiveSFMapElement } from '../src/types.ts';
 
 let currentMap: InteractiveSFMapElement | undefined;
 

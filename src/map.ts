@@ -1,8 +1,9 @@
 import { validateCameraOptions } from './camera.js';
 import { expandMapOptions, prepareConfiguration } from './configuration.js';
 import type { MapController, MapEvents, MapOptions } from './controller-types.js';
+import { createNeighborhoodExplorerCore } from './explorer-core.js';
+import type { InteractiveSFMapData } from './explorer-data.js';
 import { controlKeys, layerKeys } from './features.js';
-import { createInteractiveSFMapWithData, type InteractiveSFMapData } from './interactive-data.js';
 import { assertOptions } from './validation.js';
 
 export type * from './controller-types.js';
@@ -32,10 +33,15 @@ export function createMap(data: InteractiveSFMapData, options: MapOptions = {}):
       controls: options.controls,
     },
   );
-  const element = createInteractiveSFMapWithData(data, {
-    ...expanded,
-    onOverlayActivate: () => {},
-  });
+  const element = createNeighborhoodExplorerCore(
+    {
+      mode: 'basemap',
+      ...expanded,
+      interface: 'map',
+      onOverlayActivate: () => {},
+    },
+    data,
+  );
   const subscriptions = new Set<() => void>();
   let destroyed = false;
   function active() {

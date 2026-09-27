@@ -67,11 +67,6 @@ if (
   throw new Error('Static renderer imported interactive runtime');
 if (v2.gzip > 35 * 1024 || staticOnly.gzip > 10 * 1024)
   throw new Error('v2 renderer exceeds its gzip budget');
-const renderer = await bundle('src/interactive-data.ts');
-if (renderer.modules.some((module) => /\/data\/.*\.json$/.test(module)))
-  throw new Error('Data-free renderer imported geography');
-if (renderer.gzip > 35 * 1024) throw new Error('Renderer exceeds 35 KiB gzip budget');
-const previous = await bundle('src/interactive.ts');
 const guide = await bundle('src/guide.ts');
 if (guide.gzip > 125 * 1024) throw new Error('Guide exceeds 125 KiB initial gzip budget');
 const selected = guide.modules.map((module) => module.replaceAll('\\', '/'));
@@ -114,20 +109,17 @@ if (detailedDataModules.length !== expectedDetails.length)
 for (const suffix of expectedDetails)
   if (!detailedDataModules.some((module) => module.endsWith(suffix)))
     throw new Error(`Explicit detail graph is missing ${suffix}`);
-const percent = (((previous.gzip - guide.gzip) / previous.gzip) * 100).toFixed(1);
 const report = `# Guide bundle size report
 
-Generated ${new Date().toISOString().slice(0, 10)} by \`pnpm report:guide\` with Vite production minification and gzip compression. Each emitted JS chunk is compressed independently. The before measurement uses the compatibility \`@kahwee/sf-map-svg/interactive\` entry; the after measurement uses \`@kahwee/sf-map-svg/guide\` initial static imports.
+Generated ${new Date().toISOString().slice(0, 10)} by \`pnpm report:guide\` with Vite production minification and gzip compression. Each emitted JS chunk is compressed independently. The report measures the explicit-data v3 root and the optional \`@kahwee/sf-map-svg/guide\` preset.
 
 | Entry | Initial JS, raw | Initial JS, gzip | Explicit detail JS, gzip |
 | --- | ---: | ---: | ---: |
-| v2 root (explicit data) | ${(v2.raw / 1024).toFixed(1)} KB | ${(v2.gzip / 1024).toFixed(1)} KB | — |
-| v2 static renderer | ${(staticOnly.raw / 1024).toFixed(1)} KB | ${(staticOnly.gzip / 1024).toFixed(1)} KB | — |
-| Compatibility interactive (before) | ${(previous.raw / 1024).toFixed(1)} KB | ${(previous.gzip / 1024).toFixed(1)} KB | — |
-| Data-free interactive renderer | ${(renderer.raw / 1024).toFixed(1)} KB | ${(renderer.gzip / 1024).toFixed(1)} KB | — |
-| Guide preset (after) | ${(guide.raw / 1024).toFixed(1)} KB | ${(guide.gzip / 1024).toFixed(1)} KB | ${(guide.detailGzip / 1024).toFixed(1)} KB |
+| v3 root (explicit data) | ${(v2.raw / 1024).toFixed(1)} KB | ${(v2.gzip / 1024).toFixed(1)} KB | — |
+| v3 static renderer | ${(staticOnly.raw / 1024).toFixed(1)} KB | ${(staticOnly.gzip / 1024).toFixed(1)} KB | — |
+| Guide preset | ${(guide.raw / 1024).toFixed(1)} KB | ${(guide.gzip / 1024).toFixed(1)} KB | ${(guide.detailGzip / 1024).toFixed(1)} KB |
 
-**Change in initial gzip:** ${percent}% smaller. **500 KB target:** ${guide.gzip < 500 * 1024 ? 'met' : 'not met'}.
+**500 KB target:** ${guide.gzip < 500 * 1024 ? 'met' : 'not met'}.
 
 The initial guide chunk graph includes only the overview coast, SFAR realtor neighborhoods, major parks, selected highways, six selected streets, and BART points. It excludes historical districts, SF Find neighborhoods, analysis neighborhoods, and the full catalog. Detailed coast, selected SFAR boundaries, parks, selected highway routes, streets, and BART data are in dynamic chunks and load only when \`loadGuideDetailedData()\` is called. The data inclusion assertions run as part of this report command.
 
@@ -142,10 +134,8 @@ if (!process.argv.includes('--check'))
     ),
   );
 console.log(
-  `v2 root: ${(v2.gzip / 1024).toFixed(1)} KiB gzip; static only: ${(staticOnly.gzip / 1024).toFixed(1)} KiB gzip`,
+  `v3 root: ${(v2.gzip / 1024).toFixed(1)} KiB gzip; static only: ${(staticOnly.gzip / 1024).toFixed(1)} KiB gzip`,
 );
-console.log(`Data-free renderer: ${(renderer.gzip / 1024).toFixed(1)} KB gzip`);
-console.log(`Compatibility entry: ${(previous.gzip / 1024).toFixed(1)} KB gzip`);
 console.log(
   `Guide initial entry: ${(guide.gzip / 1024).toFixed(1)} KB gzip; detail on request: ${(guide.detailGzip / 1024).toFixed(1)} KB gzip`,
 );

@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createNeighborhoodExplorer } from '../dist/src/explorer.js';
 import { clampView, fitBounds, interiorAnchor, layoutLabels } from '../dist/src/explorer-layout.js';
-import { createInteractiveSFMapWithData } from '../dist/src/interactive-data.js';
+import { fullMapData } from '../dist/src/full-data.js';
+import { createMap } from '../dist/src/map.js';
 
 const ring = (x1, y1, x2, y2) => [
   [x1, y1],
@@ -62,8 +62,7 @@ test('screen labels prioritize selected areas, avoid collisions, and stay inside
 });
 
 test('explorer module imports on the server but requires a document to mount', () => {
-  assert.throws(() => createNeighborhoodExplorer(), /browser document/);
-  assert.equal(typeof createInteractiveSFMapWithData, 'function');
+  assert.throws(() => createMap(fullMapData), /browser document/);
 });
 
 test('labels reserve space around station symbols even when station text is hidden', () => {

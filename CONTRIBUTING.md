@@ -16,9 +16,9 @@ pnpm test:stories:coverage
 
 | Path              | Responsibility                                          |
 | ----------------- | ------------------------------------------------------- |
-| `src/api.ts`, `src/map.ts`, `src/static.ts` | v2 data-free exports, controller ownership, static rendering |
+| `src/api.ts`, `src/map.ts`, `src/static.ts` | v3 data-free exports, controller ownership, static rendering |
 | `src/configuration.ts`, `src/controller-types.ts` | Grouped API validation and public controller contracts |
-| `src/index.ts` | Compatibility static renderer (`/legacy`) |
+| `src/full-data.ts` | Explicit complete geographic preset (`/data/full`) |
 | `src/geometry.ts` | Mercator projection and GeoJSON path conversion         |
 | `src/data.ts`     | Internal adapter over canonical JSON geometry           |
 | `src/types.ts`  | Public TypeScript declarations                          |
@@ -59,7 +59,7 @@ To release:
 
 ## Interactive examples and dependency updates
 
-Run `pnpm storybook` and update `stories/V2Map.stories.ts` or `stories/V2Static.stories.ts` for new public v2 behavior. Keep copyable imports, controls, and interaction checks aligned with the public API. `stories/SFMap.stories.ts` and `stories/Interactive.stories.ts` document compatibility entrypoints under **Legacy**. Add stories for new layers or substantial options. Do not reuse a fixed `idPrefix` across stories because Docs renders several maps on one page. Phone stories set the Storybook canvas to 390 px, and the accessibility addon fails Chromium story tests on violations by default. Use a story-level `a11y.test: 'todo'` only with a documented reason for a known issue. Storybook 10 and Vitest run every story as a Chromium rendering check; add a `play` function for behavior that needs interaction coverage. The accessible guide story checks route overlays, overlapping marker selection, and keyboard input. Run `pnpm exec playwright install chromium` once locally before `pnpm test:stories`.
+Run `pnpm storybook` and update `stories/Map.stories.ts` or `stories/Static.stories.ts` for new public behavior. Keep copyable imports, controls, and interaction checks aligned with the public API. Add stories for new layers or substantial options. Do not reuse a fixed `idPrefix` across stories because Docs renders several maps on one page. Phone stories set the Storybook canvas to 390 px, and the accessibility addon fails Chromium story tests on violations by default. Use a story-level `a11y.test: 'todo'` only with a documented reason for a known issue. Storybook 10 and Vitest run every story as a Chromium rendering check; add a `play` function for behavior that needs interaction coverage. The accessible guide story checks route overlays, overlapping marker selection, and keyboard input. Run `pnpm exec playwright install chromium` once locally before `pnpm test:stories`.
 
 `pnpm test:stories:coverage` writes JSON summary and LCOV reports to `coverage/storybook/`. Coverage includes library code in `src/` and excludes stories, generated files, and geographic JSON. It measures code reached by Storybook browser checks; Node tests still run separately through `pnpm test`. The coverage floor is deliberately below the current browser baseline to catch large regressions without presenting this as complete library coverage. GitHub CI uploads the report as an artifact even if a browser check fails. npm publishing and Pages deployment also require this check to pass.
 

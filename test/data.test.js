@@ -10,11 +10,13 @@ import {
   neighborhoods,
   searchNeighborhoods,
 } from '@kahwee/sf-map-svg/data';
+import { fullMapData } from '@kahwee/sf-map-svg/data/full';
 import { geometryPath, positions } from '@kahwee/sf-map-svg/geometry';
-import { createSFMap } from '@kahwee/sf-map-svg/legacy';
+import { renderMap } from '@kahwee/sf-map-svg/static';
 import digests from './fixtures/geometry-digests.json' with { type: 'json' };
 
 const hash = (value) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
+const create = (options = {}) => renderMap(fullMapData.map, options);
 test('district GeoJSON preserves all original geometry, extras, and unique districts', () => {
   for (const [year, collection] of Object.entries(districtMaps)) {
     assert.deepEqual(
@@ -95,14 +97,14 @@ test('lookup handles aliases without conflating Mission and Outer Mission or sou
   assert.ok(searchNeighborhoods('', { source: 'analysis' }).every((r) => r.source === 'analysis'));
 });
 test('public helper data is immutable and cannot alter subsequent renders', () => {
-  const before = createSFMap({ idPrefix: 'immutable', neighborhoodLines: true }).svg;
+  const before = create({ idPrefix: 'immutable', neighborhoodLines: true }).svg;
   assert.throws(() => {
     getNeighborhood('Inner Mission').geometry.coordinates[0][0][0][0] = 0;
   }, TypeError);
   assert.throws(() => {
     districtMaps[2022].features[0].properties.labelPoints[0][0] = 0;
   }, TypeError);
-  assert.equal(createSFMap({ idPrefix: 'immutable', neighborhoodLines: true }).svg, before);
+  assert.equal(create({ idPrefix: 'immutable', neighborhoodLines: true }).svg, before);
 });
 test('every JSON asset is exported, finite, and matches its catalog count', async () => {
   for (const dataset of catalog.datasets) {
@@ -136,7 +138,7 @@ test('every JSON asset is exported, finite, and matches its catalog count', asyn
   );
 });
 test('exported geometry helper projects a selected neighborhood onto the map', () => {
-  const map = createSFMap();
+  const map = create();
   const path = geometryPath(getNeighborhood('Inner Mission').geometry, map.project);
   assert.match(path, /^M/);
   assert.ok(!/NaN|Infinity/.test(path));
