@@ -30,6 +30,7 @@ jobs:
       - run: pnpm check
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:stories:coverage
+      - run: pnpm build-storybook
       - name: Wait for the published version
         if: github.event_name == 'workflow_run'
         env:
@@ -46,6 +47,7 @@ jobs:
           echo "npm has not exposed $version yet; rerun this workflow after registry processing."
           exit 1
       - run: pnpm build:pages --released
+      - run: pnpm test:visual
       - run: pnpm test:pages
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5

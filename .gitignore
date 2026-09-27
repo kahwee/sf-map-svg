@@ -5,6 +5,7 @@ examples/generated/
 
 storybook-static/
 coverage/
+test-results/
 *storybook.log
 
 dist/

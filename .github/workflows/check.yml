@@ -43,8 +43,17 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:stories:coverage
+      - run: pnpm build-storybook
       - run: pnpm build:pages
+      - run: pnpm test:visual
       - run: pnpm test:pages
+      - name: Upload visual differences
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: visual-differences
+          path: test-results/visual/
+          if-no-files-found: ignore
       - name: Summarize Storybook coverage
         if: always()
         run: |
