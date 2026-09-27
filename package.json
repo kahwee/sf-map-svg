@@ -147,8 +147,8 @@
     "@storybook/addon-docs": "^10.6.0",
     "@storybook/addon-vitest": "10.6.0",
     "@storybook/html-vite": "^10.6.0",
-    "@vitest/browser-playwright": "^4.1.11",
-    "@vitest/coverage-v8": "4.1.11",
+    "@vitest/browser-playwright": "^5.0.1",
+    "@vitest/coverage-v8": "5.0.1",
     "@xmldom/xmldom": "^0.9.12",
     "playwright": "^1.63.0",
     "polygon-clipping": "^0.15.7",
@@ -157,7 +157,7 @@
     "storybook": "^10.6.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.1",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.1"
   },
   "homepage": "https://kahwee.github.io/sf-map-svg/",
   "bugs": {
