@@ -25,7 +25,7 @@ pnpm test:stories:coverage
 
 Keep runtime dependencies at zero. Library source is strict TypeScript 7. `pnpm build` emits JavaScript, declarations, and imported JSON to `dist/`; package exports point at that build. Do not maintain parallel handwritten declarations. Tests exercise the compiled output; Storybook imports TypeScript source for live reload.
 
-Use `pnpm format` for Biome formatting, import organization, and safe lint fixes; `pnpm lint` checks formatting and recommended lint rules. Canonical geographic JSON and generated output are excluded. Biome does not format Markdown or GitHub workflow YAML. Changes to the API need matching declarations and documentation. Geometry changes need dated source records in `SOURCES.md`.
+Use `pnpm format` for Biome formatting, import organization, and safe lint fixes; `pnpm check` checks dependency peers, formatting, data, types, and tests. Canonical geographic JSON and generated output are excluded. Biome does not format Markdown or GitHub workflow YAML. Changes to the API need matching declarations and documentation. Geometry changes need dated source records in `SOURCES.md`.
 
 For rendering changes, inspect the example page on desktop and at 390 px. Run `pnpm check` and inspect `pnpm pack` contents before releasing. Never include credentials, node_modules, or source extraction credentials in the repository or archive.
 
@@ -61,7 +61,7 @@ Run `pnpm storybook` and edit `stories/SFMap.stories.js`. Keep stories using the
 
 `pnpm test:stories:coverage` writes JSON summary and LCOV reports to `coverage/storybook/`. Coverage includes library code in `src/` and excludes stories, generated files, and geographic JSON. It measures code reached by Storybook browser checks; Node tests still run separately through `pnpm test`. The coverage floor is deliberately below the current browser baseline to catch large regressions without presenting this as complete library coverage. GitHub CI uploads the report as an artifact even if a browser check fails. npm publishing and Pages deployment also require this check to pass.
 
-Dependabot proposes weekly npm and GitHub Actions updates, grouping Storybook, Vitest, and GitHub Actions updates by family. Keep Storybook packages on matching versions and keep Vitest within the addon peer range; review the CI results before merging. The weekly maintenance workflow runs `pnpm audit --audit-level high`; run `pnpm outdated` to review available updates. React, Vitest, and Playwright are development dependencies for Storybook testing; the published package must retain zero runtime dependencies.
+Dependabot proposes weekly npm and GitHub Actions updates, grouping Storybook, Vitest, and GitHub Actions updates by family. Keep Storybook packages on matching versions and keep Vitest within the addon peer range; `pnpm check` rejects peer conflicts. The weekly maintenance workflow also checks peers and runs `pnpm audit --audit-level high`; run `pnpm outdated` to review available updates. React, Vitest, and Playwright are development dependencies for Storybook testing; the published package must retain zero runtime dependencies.
 
 ## Renderer and geographic data structure
 

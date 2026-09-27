@@ -115,7 +115,7 @@
     "demo": "pnpm build && node examples/build.mjs",
     "format": "biome check --write .",
     "format:check": "biome format .",
-    "check": "pnpm lint && pnpm data:check && pnpm typecheck && pnpm test",
+    "check": "pnpm peers check && pnpm lint && pnpm data:check && pnpm typecheck && pnpm test",
     "prepublishOnly": "pnpm check",
     "storybook": "pnpm build && storybook dev -p 6006 --host 127.0.0.1 --no-open",
     "build-storybook": "pnpm build && storybook build",
@@ -140,7 +140,7 @@
   "engines": {
     "node": ">=22.12.0"
   },
-  "packageManager": "pnpm@12.0.0",
+  "packageManager": "pnpm@12.6.0",
   "devDependencies": {
     "@biomejs/biome": "2.5.14",
     "@storybook/addon-a11y": "10.6.0",
