@@ -451,6 +451,8 @@ synthetic pointer tests do not establish physical-device compatibility.
 
 ## GitHub Pages
 
+The [one spot, three San Franciscos map](https://kahwee.github.io/sf-map-svg/spot.html) lets visitors pick a point and compare its SFAR, SF Find, and analysis neighborhood definitions, then inspect its supervisorial district on the 2002, 2012, and 2022 display maps. The same comparison appears in Storybook under **Data / One spot, three San Franciscos**. A source outline is drawn from that source's polygon; clicking the map runs point-in-polygon lookup against the canonical geographic collections. The page makes no address or legal-boundary claim.
+
 The [civic atlas](https://kahwee.github.io/sf-map-svg/) leads with certified June 2026 ballot measure results. Visitors can select a measure and district, switch Yes/No shading, compare the official 2002, 2012, and 2022 district maps, and play a schematic BART journey. The boundary animation morphs matched district outlines between dated SVGs. Intermediate shapes illustrate the change; each completed year uses its exact published geometry. Playback is user initiated, pauses when the page is hidden, and switches instantly when reduced motion is requested. The lightweight neighborhood guide loads on demand. The full [ballot measures explorer](https://kahwee.github.io/sf-map-svg/measures.html) spans all three district map years with four separately sourced election snapshots.
 
 The [candidate vote explorer](https://kahwee.github.io/sf-map-svg/candidates.html) maps
