@@ -6,10 +6,12 @@ import type { View } from './explorer-layout.js';
 import { fitBounds, interiorAnchor, layoutLabels, projectedBounds } from './explorer-layout.js';
 import { controlKeys, layerKeys, normalizeFeatures, validateSwitchPatch } from './features.js';
 import { geometryPath } from './geometry.js';
-import { createSFMapWithData, districtColors } from './map-core.js';
+import { createSFMapWithData, districtColors, getLayerPathsWithData } from './map-core.js';
 import { attachNavigation } from './navigation.js';
 import type {
   CameraOptions,
+  DistrictSelection,
+  DistrictYear,
   ExplorerMode,
   InteractiveLayers,
   MapFeatures,
@@ -95,6 +97,7 @@ export function createNeighborhoodExplorerCore(
     colors = {},
     labelStyle = {},
     areaStyle = {},
+    districtStyle: initialDistrictStyle,
     motion = false,
     markerEntrance = false,
     selectedMarkerRing,
@@ -424,6 +427,7 @@ export function createNeighborhoodExplorerCore(
       districtLabels: false,
       districtLines: true,
       districtFills: true,
+      districtStyle: initialDistrictStyle,
       highways: true,
       keyRoads: true,
       roadLabels: false,
@@ -483,7 +487,7 @@ export function createNeighborhoodExplorerCore(
     const color = districtColors[Number(path.dataset.district) - 1];
     if (color) path.setAttribute('fill', color);
   }
-  const districtItems: LabelItem[] = (data.districts?.[year]?.features ?? []).flatMap((feature) =>
+  let districtItems: LabelItem[] = (data.districts?.[year]?.features ?? []).flatMap((feature) =>
     feature.properties.labelPoints.map((point) => ({
       point: map.project(point),
       name: String(feature.properties.district),
@@ -502,6 +506,175 @@ export function createNeighborhoodExplorerCore(
   geography.append(areas, stations, labelLayer, overlayLayer, markerLayer);
   let view: View = [0, 0, 800];
   let selected: NeighborhoodFeature | undefined;
+  let selectedDistrict: number | null = null;
+  let hoveredDistrict: number | null = null;
+  let districtStyle = initialDistrictStyle;
+  let districtTransition: Animation | undefined;
+  root.dataset.year = String(year);
+  function districtRow(id: number) {
+    return data.map.districts?.[year]?.find((district) => district.id === id);
+  }
+  function districtSelection(
+    id: number | null,
+  ): DistrictSelection | { id: null; year: DistrictYear; district: null } {
+    const district = id === null ? undefined : districtRow(id);
+    return district
+      ? { id: district.id, year, district: structuredClone(district) }
+      : { id: null, year, district: null };
+  }
+  function getSelectedDistrict(): DistrictSelection | null {
+    return selectedDistrict === null
+      ? null
+      : (districtSelection(selectedDistrict) as DistrictSelection);
+  }
+  function updateDistrictAppearance() {
+    const rows = data.map.districts?.[year] ?? [];
+    for (const row of rows) {
+      const styled = districtStyle?.(row);
+      const active = selectedDistrict === row.id;
+      const hovered = hoveredDistrict === row.id;
+      const fill = svg.querySelector<SVGPathElement>(
+        `[data-layer="district-fills"] [data-district="${row.id}"]`,
+      );
+      const line = svg.querySelector<SVGPathElement>(
+        `[data-layer="district-lines"] [data-district="${row.id}"]`,
+      );
+      if (fill) {
+        fill.setAttribute(
+          'fill',
+          styled?.fill ??
+            (theme === 'transit' ? (colors.land ?? '#fcfcf8') : districtColors[row.id - 1]),
+        );
+        if (styled?.opacity === undefined) fill.removeAttribute('fill-opacity');
+        else fill.setAttribute('fill-opacity', String(styled.opacity));
+        fill.setAttribute('role', 'button');
+        fill.setAttribute('aria-label', `District ${row.id}, ${year}`);
+        fill.setAttribute('aria-pressed', String(active));
+        fill.setAttribute('tabindex', row.id === 1 ? '0' : '-1');
+        fill.style.cursor = 'pointer';
+      }
+      if (line) {
+        line.setAttribute(
+          'stroke',
+          active
+            ? (colors.selected ?? '#f04f32')
+            : hovered
+              ? '#163e56'
+              : (styled?.stroke ?? colors.district ?? '#a7b8c0'),
+        );
+        line.setAttribute('stroke-width', active ? '3' : hovered ? '2.2' : '1.1');
+        const lineInteractive = !enabled('districtFills') && enabled('districtLines');
+        line.style.pointerEvents = lineInteractive ? 'stroke' : 'none';
+        if (lineInteractive) {
+          line.setAttribute('role', 'button');
+          line.setAttribute('aria-label', `District ${row.id}, ${year}`);
+          line.setAttribute('aria-pressed', String(active));
+          line.setAttribute('tabindex', row.id === 1 ? '0' : '-1');
+          line.style.cursor = 'pointer';
+        } else {
+          line.removeAttribute('role');
+          line.removeAttribute('aria-label');
+          line.removeAttribute('aria-pressed');
+          line.removeAttribute('tabindex');
+        }
+        if (styled?.opacity === undefined) line.removeAttribute('stroke-opacity');
+        else line.setAttribute('stroke-opacity', String(styled.opacity));
+      }
+    }
+  }
+  function selectDistrict(id: number | null, options: { fit?: boolean } & CameraOptions = {}) {
+    if (destroyed) return false;
+    validateCameraOptions(options);
+    if (id !== null && (!Number.isInteger(id) || !districtRow(id))) return false;
+    const changed = selectedDistrict !== id;
+    selectedDistrict = id;
+    if (id === null) delete root.dataset.selectedDistrict;
+    else root.dataset.selectedDistrict = String(id);
+    updateDistrictAppearance();
+    const selectedRow = id === null ? undefined : districtRow(id);
+    if (selectedRow && options.fit) fitGeometry(selectedRow.geometry, undefined, options);
+    status.textContent =
+      id === null ? 'District selection cleared.' : `District ${id} selected, ${year} boundaries.`;
+    if (changed)
+      root.dispatchEvent(
+        new CustomEvent('districtchange', { bubbles: true, detail: districtSelection(id) }),
+      );
+    return true;
+  }
+  function setDistrictStyle(style: typeof districtStyle) {
+    if (destroyed) return;
+    if (style !== undefined && typeof style !== 'function')
+      throw new TypeError('districtStyle must be a function.');
+    createSFMapWithData({ year, districtStyle: style, districtLabels: false }, data.map);
+    districtStyle = style;
+    updateDistrictAppearance();
+  }
+  function setDistrictYear(next: DistrictYear, options: CameraOptions = {}) {
+    if (destroyed) return;
+    validateCameraOptions(options);
+    if (![2002, 2012, 2022].includes(next))
+      throw new RangeError('District year must be 2002, 2012, or 2022.');
+    if (!data.map.districts?.[next] || !data.districts?.[next])
+      throw new RangeError(`No ${next} district dataset was supplied.`);
+    if (next === year) return;
+    const geometry = getLayerPathsWithData({ year: next }, data.map);
+    createSFMapWithData({ year: next, districtStyle, districtLabels: false }, data.map);
+    const previousYear = year;
+    districtTransition?.cancel();
+    for (const layer of districtLayers) {
+      const old =
+        options.animate && !reducedMotion.matches ? (layer.cloneNode(true) as SVGGElement) : null;
+      if (old) {
+        old.setAttribute('aria-hidden', 'true');
+        old.style.pointerEvents = 'none';
+        layer.after(old);
+        districtTransition = old.animate([{ opacity: 1 }, { opacity: 0 }], {
+          duration: options.duration ?? 280,
+          easing: 'ease-out',
+        });
+        districtTransition.finished.then(() => old.remove()).catch(() => old.remove());
+      }
+      layer.replaceChildren(
+        ...geometry.districts.map((district) =>
+          svgElement('path', {
+            'data-district': district.id,
+            d: district.path,
+            ...(layer.dataset.layer === 'district-fills'
+              ? { 'fill-rule': 'evenodd' }
+              : { fill: 'none', 'stroke-width': 1.1 }),
+          }),
+        ),
+      );
+    }
+    year = next;
+    hoveredDistrict = null;
+    root.dataset.year = String(year);
+    svg.dataset.year = String(year);
+    districtItems = (data.districts[next]?.features ?? []).flatMap((feature) =>
+      feature.properties.labelPoints.map((point) => ({
+        point: map.project(point),
+        name: String(feature.properties.district),
+        kind: 'district',
+      })),
+    );
+    if (selectedDistrict !== null && !districtRow(selectedDistrict)) selectedDistrict = null;
+    if (selectedDistrict === null) delete root.dataset.selectedDistrict;
+    updateDistrictAppearance();
+    updateComposition();
+    scheduleLabels();
+    status.textContent = `${year} supervisorial districts.`;
+    root.dispatchEvent(
+      new CustomEvent('districtyearchange', { bubbles: true, detail: { year, previousYear } }),
+    );
+    if (selectedDistrict !== null)
+      root.dispatchEvent(
+        new CustomEvent('districtchange', {
+          bubbles: true,
+          detail: districtSelection(selectedDistrict),
+        }),
+      );
+  }
+  updateDistrictAppearance();
   let items: NeighborhoodItem[] = [];
   let destroyed = false;
   let initialized = false;
@@ -1353,6 +1526,7 @@ export function createNeighborhoodExplorerCore(
       const key = layer.dataset.layer === 'district-fills' ? 'districtFills' : 'districtLines';
       layer.style.display = enabled(key) ? '' : 'none';
     }
+    updateDistrictAppearance();
     const districtsVisible =
       enabled('districtFills') || enabled('districtLines') || (labels && enabled('districtLabels'));
     const descriptions = ['San Francisco map.'];
@@ -1373,7 +1547,7 @@ export function createNeighborhoodExplorerCore(
     if (title) title.textContent = 'San Francisco map';
     svg.setAttribute(
       'aria-label',
-      `${description} Arrow keys pan; plus and minus zoom; Home resets. Neighborhoods: brackets move focus; Enter selects. The neighborhood and marker menus include every supplied item.`,
+      `${description} Arrow keys pan; plus and minus zoom; Home resets. Districts and neighborhoods: brackets move focus; Enter selects. The neighborhood and marker menus include every supplied item.`,
     );
     attribution.textContent = description;
     scheduleLabels();
@@ -1639,6 +1813,36 @@ export function createNeighborhoodExplorerCore(
   listen(markerSelect, 'change', () => selectMarker(markerSelect.value || null));
   listen(svg, 'keydown', (event) => {
     const target = event.target instanceof SVGElement ? event.target : null;
+    const districtId = Number(target?.dataset.district);
+    if (
+      target?.closest('[data-layer="district-fills"], [data-layer="district-lines"]') &&
+      districtRow(districtId)
+    ) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        selectDistrict(districtId);
+        root.dispatchEvent(
+          new CustomEvent('districtactivate', {
+            bubbles: true,
+            detail: districtSelection(districtId),
+          }),
+        );
+        target.focus();
+      } else if (event.key === '[' || event.key === ']') {
+        event.preventDefault();
+        const rows = data.map.districts?.[year] ?? [];
+        const index = rows.findIndex((row) => row.id === districtId);
+        const next = rows[(index + (event.key === ']' ? 1 : rows.length - 1)) % rows.length];
+        const activeLayer = enabled('districtFills') ? 'district-fills' : 'district-lines';
+        const nextNode = svg.querySelector<SVGPathElement>(
+          `[data-layer="${activeLayer}"] [data-district="${next.id}"]`,
+        );
+        target.setAttribute('tabindex', '-1');
+        nextNode?.setAttribute('tabindex', '0');
+        nextNode?.focus();
+      }
+      return;
+    }
     const id = target?.dataset.neighborhoodId;
     if (!id || !selectableNeighborhoods) return;
     if (event.key === 'Enter' || event.key === ' ') {
@@ -1669,12 +1873,56 @@ export function createNeighborhoodExplorerCore(
     }
   });
   listen(svg, 'click', (event) => {
+    const district =
+      event.target instanceof Element
+        ? event.target.closest<SVGPathElement>(
+            '[data-layer="district-fills"] [data-district], [data-layer="district-lines"] [data-district]',
+          )
+        : null;
+    if (district?.dataset.district) {
+      const id = Number(district.dataset.district);
+      selectDistrict(id);
+      root.dispatchEvent(
+        new CustomEvent('districtactivate', { bubbles: true, detail: districtSelection(id) }),
+      );
+      return;
+    }
     const node =
       event.target instanceof Element
         ? event.target.closest<SVGElement>('[data-neighborhood-id]')
         : null;
     if (selectableNeighborhoods && node?.dataset.neighborhoodId)
       selectNeighborhood(node.dataset.neighborhoodId);
+  });
+  listen(svg, 'pointerover', (event) => {
+    const district =
+      event.target instanceof Element
+        ? event.target.closest<SVGPathElement>(
+            '[data-layer="district-fills"] [data-district], [data-layer="district-lines"] [data-district]',
+          )
+        : null;
+    const id = district?.dataset.district ? Number(district.dataset.district) : null;
+    if (id === hoveredDistrict) return;
+    hoveredDistrict = id;
+    updateDistrictAppearance();
+    root.dispatchEvent(
+      new CustomEvent('districthover', { bubbles: true, detail: districtSelection(id) }),
+    );
+  });
+  listen(svg, 'pointerout', (event) => {
+    if (
+      event.relatedTarget instanceof Element &&
+      event.relatedTarget.closest(
+        '[data-layer="district-fills"] [data-district], [data-layer="district-lines"] [data-district]',
+      )
+    )
+      return;
+    if (hoveredDistrict === null) return;
+    hoveredDistrict = null;
+    updateDistrictAppearance();
+    root.dispatchEvent(
+      new CustomEvent('districthover', { bubbles: true, detail: districtSelection(null) }),
+    );
   });
   listen(svg, 'pointerdown', stopAnimation);
   let observer: ResizeObserver | undefined;
@@ -1686,6 +1934,10 @@ export function createNeighborhoodExplorerCore(
   const explorer = Object.assign(root, {
     selectNeighborhood,
     getSelection,
+    selectDistrict,
+    getSelectedDistrict,
+    setDistrictYear,
+    setDistrictStyle,
     getViewport,
     setViewport: moveView,
     stopAnimation,

@@ -27,7 +27,14 @@ const svg = renderSFMap({
 await writeFile('districts.svg', svg);
 ```
 
-The root entry includes the built-in geography for convenience. See the [full option list](../README.md#static-options).
+The legacy entry includes built-in geography for convenience. The modern root and `/static` accept explicit geography. See the [full option list](../README.md#static-options).
+
+For an election choropleth, use `renderMap(data, { year, districtStyle })` or
+`createMap({ map: data, districts: districtMaps, neighborhoods: {} }, options)`.
+The controller exposes `setDistrictYear`, `setDistrictStyle`, `selectDistrict`, and typed
+district events; `getLayerPaths(data, { year })` returns fitted paths without SVG markup.
+See the [complete election recipe](../README.md#election-district-api) and the Storybook
+“Election choropleth” example.
 
 ## Lightweight interactive guide
 

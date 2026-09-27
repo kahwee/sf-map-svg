@@ -61,6 +61,75 @@ export const districtColors = Object.freeze([
   '#cbdcd1',
   '#dfddc9',
 ]);
+/** Canonical geometry in the same fitted coordinate space used by renderMap. */
+export function getLayerPathsWithData(options: SFMapOptions, data: SFMapData, complete = true) {
+  const { width = 800, height = 800, padding = 28, year = 2022 } = options;
+  if (
+    ![width, height, padding].every(Number.isFinite) ||
+    width <= 0 ||
+    height <= 0 ||
+    padding < 0 ||
+    padding * 2 >= Math.min(width, height)
+  )
+    throw new RangeError('Use positive dimensions and padding smaller than half the map.');
+  if (!districtYears.includes(year))
+    throw new RangeError('District year must be 2002, 2012, or 2022.');
+  const coastPoints = positions(data.coast).map(rawProject);
+  const [minX, minY, maxX, maxY] = coastPoints.reduce<[number, number, number, number]>(
+    (b, [x, y]) => [Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)],
+    [Infinity, Infinity, -Infinity, -Infinity],
+  );
+  const scale = Math.min(
+    (width - padding * 2) / (maxX - minX),
+    (height - padding * 2) / (maxY - minY),
+  );
+  const project = (coordinates: Position): [number, number] => {
+    const [x, y] = rawProject(coordinates);
+    const point: [number, number] = [
+      (x - (minX + maxX) / 2) * scale + width / 2,
+      (y - (minY + maxY) / 2) * scale + height / 2,
+    ];
+    if (!point.every(Number.isFinite))
+      throw new RangeError('Projected coordinates must be finite; use smaller map dimensions.');
+    return point;
+  };
+  const path = (geometry: Geometry | null | undefined) => geometryPath(geometry, project);
+  return {
+    year,
+    viewBox: [0, 0, width, height] as [number, number, number, number],
+    project,
+    coast: path(data.coast),
+    districts: (complete || options.districtFills !== false || options.districtLines !== false
+      ? (data.districts?.[year] ?? [])
+      : []
+    ).map((district) => ({
+      id: district.id,
+      geometry: path(district.geometry),
+      extras: path(district.extras),
+      path: path(district.geometry) + path(district.extras),
+    })),
+    neighborhoods: (complete ? (data.neighborhoods ?? []) : []).map((item) => ({
+      name: item.name,
+      path: path(item.geometry),
+    })),
+    highways: (complete ? (data.highways ?? []) : []).map((item) => ({
+      route: item.route,
+      path: path(item.geometry),
+    })),
+    landmarks: (complete ? (data.landmarks ?? []) : []).map((item) => ({
+      id: item.id,
+      path: path(item.geometry),
+    })),
+    keyRoads: (complete ? (data.keyRoads ?? []) : []).map((item) => ({
+      id: item.id,
+      path: path(item.geometry),
+    })),
+    bartStations: (complete ? (data.bartStations ?? []) : []).map((item) => ({
+      id: item.id,
+      point: project(item.coordinates),
+    })),
+  };
+}
 const defaults = {
   water: '#e7f0f3',
   land: '#f1f3ee',
@@ -96,7 +165,6 @@ export function createSFMapWithData(options: SFMapOptions, data: SFMapData) {
     theme = 'districts',
     width = 800,
     height = 800,
-    padding = 28,
     year = 2022,
     districtLines = true,
     neighborhoodLines = false,
@@ -114,16 +182,6 @@ export function createSFMapWithData(options: SFMapOptions, data: SFMapData) {
   validateMarkers(markers);
   validateOverlays(options.overlays ?? []);
   const roadLabels = options.roadLabels ?? keyRoads;
-  if (
-    ![width, height, padding].every(Number.isFinite) ||
-    width <= 0 ||
-    height <= 0 ||
-    padding < 0 ||
-    padding * 2 >= Math.min(width, height)
-  )
-    throw new RangeError('Use positive dimensions and padding smaller than half the map.');
-  if (!districtYears.includes(year))
-    throw new RangeError('District year must be 2002, 2012, or 2022.');
   if (!/^[A-Za-z][A-Za-z0-9_-]*$/.test(idPrefix))
     throw new TypeError(
       'idPrefix must start with a letter and contain only letters, numbers, underscores, or hyphens.',
@@ -131,27 +189,10 @@ export function createSFMapWithData(options: SFMapOptions, data: SFMapData) {
   if (theme !== 'districts' && theme !== 'transit')
     throw new TypeError('Theme must be districts or transit.');
   const colors = { ...defaults, ...(theme === 'transit' ? transitColors : {}), ...options.colors };
-  const coastPoints = positions(data.coast).map(rawProject);
-  const [minX, minY, maxX, maxY] = coastPoints.reduce<[number, number, number, number]>(
-    (b, [x, y]) => [Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)],
-    [Infinity, Infinity, -Infinity, -Infinity],
-  );
-  const scale = Math.min(
-    (width - padding * 2) / (maxX - minX),
-    (height - padding * 2) / (maxY - minY),
-  );
-  const project = (coordinates: Position): [number, number] => {
-    const [x, y] = rawProject(coordinates);
-    const point: [number, number] = [
-      (x - (minX + maxX) / 2) * scale + width / 2,
-      (y - (minY + maxY) / 2) * scale + height / 2,
-    ];
-    if (!point.every(Number.isFinite))
-      throw new RangeError('Projected coordinates must be finite; use smaller map dimensions.');
-    return point;
-  };
+  const geometry = getLayerPathsWithData(options, data, false);
+  const { project } = geometry;
   const path = (geometry: Geometry | null | undefined) => geometryPath(geometry, project);
-  const coastPath = path(data.coast);
+  const coastPath = geometry.coast;
   const districts = data.districts?.[year] ?? [];
   const landmarkData = data.landmarks ?? [];
   const roadData = data.keyRoads ?? [];
@@ -159,11 +200,16 @@ export function createSFMapWithData(options: SFMapOptions, data: SFMapData) {
   const context = { project, path, colors, idPrefix, theme, labels };
   const districtPaths =
     districtFills || districtLines
-      ? districts.map((d) => ({
-          id: d.id,
-          path: path(d.geometry) + path(d.extras),
-          color: theme === 'transit' ? colors.land : districtColors[d.id - 1],
-        }))
+      ? districts.map((d, index) => {
+          const style = validateDistrictStyle(options.districtStyle?.(d));
+          return {
+            id: d.id,
+            path: geometry.districts[index]?.path ?? '',
+            stroke: style.stroke,
+            opacity: style.opacity,
+            color: style.fill ?? (theme === 'transit' ? colors.land : districtColors[d.id - 1]),
+          };
+        })
       : [];
   const parts = [
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" role="img" aria-labelledby="${idPrefix}-title" data-sf-map="" data-year="${year}" style="max-width:100%;height:auto"><title id="${idPrefix}-title">${escapeXml(title)}</title><desc>San Francisco supervisorial district boundaries (${year}).${neighborhoodLines ? ' Dashed lines show SFAR realtor neighborhood areas, defined in August 2010.' : ''}${landmarks ? ' Highlighted areas show six parks and landmarks.' : ''}${keyRoads ? ' Thin gray lines show selected road corridors.' : ''}${bartStations ? ' Rings mark the eight San Francisco BART stations.' : ''} Geometry from DataSF${bartStations ? ' and BART' : ''}. See package SOURCES.md.</desc><defs><clipPath id="${idPrefix}-coast"><path d="${coastPath}" fill-rule="evenodd" clip-rule="evenodd"/></clipPath></defs><rect width="${width}" height="${height}" fill="${escapeXml(colors.water)}"/><g data-layer="geography"><path data-layer="coast" d="${coastPath}" fill="${escapeXml(colors.land)}" fill-rule="evenodd"/>`,
@@ -191,4 +237,24 @@ export function createSFMapWithData(options: SFMapOptions, data: SFMapData) {
     project,
     viewBox: [0, 0, width, height] as [number, number, number, number],
   };
+}
+
+function validateDistrictStyle(
+  style: ReturnType<NonNullable<SFMapOptions['districtStyle']>> | undefined,
+) {
+  if (style === undefined) return {};
+  if (!style || typeof style !== 'object' || Array.isArray(style))
+    throw new TypeError('districtStyle must return a style object.');
+  for (const key of Object.keys(style))
+    if (!['fill', 'stroke', 'opacity'].includes(key))
+      throw new TypeError(`Unknown district style: ${key}`);
+  for (const key of ['fill', 'stroke'] as const)
+    if (style[key] !== undefined && typeof style[key] !== 'string')
+      throw new TypeError(`${key} must be a string.`);
+  if (
+    style.opacity !== undefined &&
+    (!Number.isFinite(style.opacity) || style.opacity < 0 || style.opacity > 1)
+  )
+    throw new RangeError('District opacity must be between 0 and 1.');
+  return style;
 }

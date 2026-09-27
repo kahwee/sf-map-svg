@@ -1,6 +1,16 @@
 import type { Geometry, NeighborhoodFeature, NeighborhoodSource } from '../data/types.js';
 
 export type DistrictYear = 2002 | 2012 | 2022;
+export interface DistrictSelection {
+  id: number;
+  year: DistrictYear;
+  district: import('./map-core.js').DistrictRowData;
+}
+export interface DistrictStyle {
+  fill?: string;
+  stroke?: string;
+  opacity?: number;
+}
 export interface MapMarker {
   id: string;
   lng: number;
@@ -33,6 +43,8 @@ export interface SFMapOptions {
   districtLines?: boolean;
   neighborhoodLines?: boolean;
   districtFills?: boolean;
+  /** Style each supervisorial district without taking over SVG rendering. */
+  districtStyle?: (district: import('./map-core.js').DistrictRowData) => DistrictStyle;
   districtLabels?: boolean;
   /** Hide all visible text labels while retaining geographic symbols and accessible titles. */
   labels?: boolean;
@@ -116,6 +128,7 @@ export interface NeighborhoodExplorerOptions extends MapFeatures {
     hoverFill?: string;
     hoverStroke?: string;
   };
+  districtStyle?: SFMapOptions['districtStyle'];
   legend?: {
     builtins?: boolean;
     hidden?: readonly ('bart' | 'park' | 'highway' | 'road')[];
@@ -202,6 +215,10 @@ export interface NeighborhoodExplorerElement extends HTMLElement {
   setControls(patch: NonNullable<NeighborhoodExplorerOptions['controls']>): void;
   selectNeighborhood(name: string | null, options?: { fit?: boolean } & CameraOptions): boolean;
   getSelection(): NeighborhoodSelection | null;
+  selectDistrict(id: number | null, options?: { fit?: boolean } & CameraOptions): boolean;
+  getSelectedDistrict(): DistrictSelection | null;
+  setDistrictYear(year: DistrictYear, options?: CameraOptions): void;
+  setDistrictStyle(style: SFMapOptions['districtStyle']): void;
   setSource(source: NeighborhoodSource): void;
   setMode(mode: ExplorerMode): void;
   setLabels(visible: boolean): void;

@@ -39,6 +39,7 @@ const optionKeys = [
   'colors',
   'labelStyle',
   'areaStyle',
+  'districtStyle',
   'motion',
   'markerEntrance',
   'selectedMarkerRing',
@@ -66,6 +67,8 @@ const optionKeys = [
 ];
 export function validateExplorerOptions(options: NeighborhoodExplorerOptions) {
   assertOptions(options, 'map', optionKeys);
+  if (options.districtStyle !== undefined && typeof options.districtStyle !== 'function')
+    throw new TypeError('districtStyle must be a function.');
   for (const key of ['labels', 'selectableNeighborhoods'] as const)
     if (options[key] !== undefined && typeof options[key] !== 'boolean')
       throw new TypeError(`${key} must be boolean.`);

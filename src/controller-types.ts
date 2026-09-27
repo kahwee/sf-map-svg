@@ -1,6 +1,9 @@
 import type { Geometry, NeighborhoodSource } from '../data/types.js';
 import type {
   CameraOptions,
+  DistrictSelection,
+  DistrictStyle,
+  DistrictYear,
   InteractiveLayers,
   MapFeatures,
   MapMarker,
@@ -17,6 +20,7 @@ export type MapAppearance = Pick<
   | 'colors'
   | 'labelStyle'
   | 'areaStyle'
+  | 'districtStyle'
   | 'labelSize'
   | 'style'
   | 'markerRadius'
@@ -46,6 +50,10 @@ export interface MapConfigurationSnapshot {
   controls: MapControls;
 }
 export interface MapEvents {
+  districtchange: DistrictSelection | { id: null; year: DistrictYear; district: null };
+  districthover: DistrictSelection | { id: null; year: DistrictYear; district: null };
+  districtactivate: DistrictSelection;
+  districtyearchange: { year: DistrictYear; previousYear: DistrictYear };
   markerchange: { id: string | null; marker: MapMarker | null };
   neighborhoodchange:
     | NeighborhoodSelection
@@ -79,6 +87,12 @@ export interface MapController {
   getSelectedMarker(): MapMarker | null;
   selectNeighborhood(name: string | null, options?: CameraOptions & { fit?: boolean }): boolean;
   getSelectedNeighborhood(): NeighborhoodSelection | null;
+  selectDistrict(id: number | null, options?: CameraOptions & { fit?: boolean }): boolean;
+  getSelectedDistrict(): DistrictSelection | null;
+  setDistrictYear(year: DistrictYear, options?: CameraOptions): void;
+  setDistrictStyle(
+    style: ((district: DistrictSelection['district']) => DistrictStyle) | undefined,
+  ): void;
   setSource(source: NeighborhoodSource): void;
   setMode(mode: NonNullable<MapOptions['mode']>): void;
   setLabels(visible: boolean): void;

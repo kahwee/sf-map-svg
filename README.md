@@ -70,6 +70,9 @@ function and disposal removes all its subscriptions. Operations after disposal t
 `renderMap(data, options)` from `/static` returns `{ svg, project, ... }` and needs only
 `StaticMapData` (for example, `guideMapData.map`). Static options retain their SVG-unit
 semantics; camera/motion/control options belong exclusively to the browser controller.
+`getLayerPaths(data, options)` returns the same fitted projection and canonical coast,
+district, neighborhood, highway, landmark, road, and station paths without making SVG markup.
+`DistrictYear`, `DistrictRowData`, and `DistrictStyle` are exported types from the root and `/static`.
 See [v2 migration and architecture](docs/migration-v2.md) for breaking changes,
 configuration resets, and bundle boundaries. Existing subpaths remain compatibility APIs.
 
@@ -179,6 +182,7 @@ Embed the returned SVG markup directly in a page; in Astro, use `<div set:html={
 | `neighborhoodLines` | `false` | Dashed SFAR realtor neighborhood outlines |
 | `theme` | `'districts'` | Use `'transit'` for pale blue water, ivory land, green parks, and blue BART symbols; custom `colors` still take precedence |
 | `districtFills` | `true` | Original Site’s eleven muted district colors |
+| `districtStyle` | — | Per-district callback returning optional `fill`, `stroke`, and `opacity` (0–1); applies to both static SVG and the interactive map |
 | `labels` | `true` | Master switch for visible map text; symbols and accessible titles remain |
 | `districtLabels` | `true` | District number badges |
 | `highways` | `false` | Original Site’s highway geometry |
@@ -196,6 +200,54 @@ Embed the returned SVG markup directly in a page; in Astro, use `<div set:html={
 For a plain outline map, set `districtFills: false`. Neighborhood areas are **August 2010 SFAR realtor areas**, not legal boundaries or a historical layer matched to the district year. See [SOURCES.md](SOURCES.md).
 
 `createSFMap(options)` returns `{ svg, project, viewBox }`. `project([longitude, latitude])` gives matching SVG coordinates for custom overlays. Named exports also include `districtYears`, `districtColors`, and `neighborhoodNames`.
+
+### Election district API
+
+Supply canonical district rows for each boundary year and return a style for each district:
+
+```ts
+import { createMap, getLayerPaths, renderMap, type StaticMapData } from '@kahwee/sf-map-svg';
+import { districtMaps } from '@kahwee/sf-map-svg/data/districts';
+import coast from '@kahwee/sf-map-svg/data/coast.json' with { type: 'json' };
+
+const districts = Object.fromEntries(
+  Object.entries(districtMaps).map(([year, collection]) => [year, collection.features.map(({ geometry, properties }) => ({
+    id: properties.district,
+    label: properties.label,
+    labelPoints: properties.labelPoints,
+    geometry,
+    extras: properties.displayExtras,
+  }))]),
+) as StaticMapData['districts'];
+const data: StaticMapData = { coast: coast.features[0].geometry as StaticMapData['coast'], districts };
+const shares = new Map([[1, 0.62], [2, 0.48]]); // Replace with your vote data.
+const districtStyle = (district: { id: number }) => ({
+  fill: (shares.get(district.id) ?? 0) >= 0.5 ? '#498c79' : '#cfdfd6',
+  stroke: '#49665f',
+});
+const { svg } = renderMap(data, { year: 2022, districtStyle });
+const paths = getLayerPaths(data, { year: 2022 }); // paths.districts[0].geometry / .extras / .path
+
+const map = createMap({ map: data, districts: districtMaps, neighborhoods: {} }, {
+  mode: 'districts', year: 2022, appearance: { districtStyle },
+});
+document.querySelector('#map')?.append(map.element);
+map.on('districtchange', ({ id, year }) => console.log(id, year));
+map.on('districtactivate', ({ id }) => console.log('activated', id));
+map.on('districthover', ({ id }) => console.log('hovered', id));
+map.setDistrictYear(2012, { animate: true }); // Crossfades; reduced motion disables the fade.
+map.selectDistrict(1, { fit: true });
+map.setDistrictStyle(districtStyle); // Recompute colors after your vote data changes.
+// On component disposal: map.destroy();
+```
+
+District paths are keyboard buttons: Tab enters the district layer, brackets move among districts,
+and Enter or Space selects and activates one. `getSelectedDistrict()` returns a detached
+`{ id, year, district }` snapshot. `setDistrictYear()` preserves the camera and an existing
+district selection, changes labels and paths in place, and emits `districtyearchange`.
+It requires both district rows and label features for the requested year; unavailable years
+throw without changing the map. The `animate` option crossfades boundary sets rather than
+morphing polygons with different topology.
 
 Use `theme: 'transit'` for pale water, ivory land, green parks, and blue BART symbols. Custom `colors` override the preset. Park and station overlays represent current source geography, independently of the district year; stations outside San Francisco, including Daly City, are excluded.
 

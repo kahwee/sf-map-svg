@@ -8,6 +8,7 @@ const appearanceKeys = [
   'colors',
   'labelStyle',
   'areaStyle',
+  'districtStyle',
   'labelSize',
   'style',
   'markerRadius',

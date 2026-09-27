@@ -4,6 +4,10 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Add first-class election choropleths: static and interactive `districtStyle`, live district year/style setters, district selection and activation events, keyboard interaction, and a reduced-motion-aware year crossfade.
+- Export `getLayerPaths` for canonical fitted layer geometry and `DistrictYear`, `DistrictRowData`, and `DistrictStyle` from the modern entrypoints.
+- Add an official-election Storybook example covering three boundary years, vote-share coloring, mobile layout, keyboard selection, year changes, and accessibility checks.
+
 ## 2.1.0 — 2026-09-27
 
 - Pages site: add motion and a dark theme. Cross-document View Transitions keep the header still and morph example titles into page titles; the home hero is an interactive dot map of the 2022 districts; entrances, count-ups, growing charts, and hover/focus micro-interactions respect reduced motion and print. The site adds no library.

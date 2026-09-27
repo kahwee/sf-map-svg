@@ -4,7 +4,7 @@ import * as api from '../dist/src/api.js';
 import { expandMapOptions, prepareConfiguration } from '../dist/src/configuration.js';
 
 test('v2 root is server-safe and requires explicit geography', () => {
-  assert.deepEqual(Object.keys(api).sort(), ['createMap', 'renderMap']);
+  assert.deepEqual(Object.keys(api).sort(), ['createMap', 'getLayerPaths', 'renderMap']);
   assert.equal(typeof api.createMap, 'function');
 });
 test('v2 options have a single home and reject ambiguous legacy spellings', () => {

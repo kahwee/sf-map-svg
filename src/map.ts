@@ -9,6 +9,9 @@ export type * from './controller-types.js';
 export type { InteractiveSFMapData as MapData } from './explorer-data.js';
 export type {
   CameraOptions,
+  DistrictSelection,
+  DistrictStyle,
+  DistrictYear,
   InteractiveLayers,
   MapFeatures,
   MapMarker,
@@ -85,6 +88,10 @@ export function createMap(data: InteractiveSFMapData, options: MapOptions = {}):
       if (
         ![
           'markerchange',
+          'districtchange',
+          'districthover',
+          'districtactivate',
+          'districtyearchange',
           'neighborhoodchange',
           'overlayactivate',
           'clusteractivate',
@@ -112,6 +119,10 @@ export function createMap(data: InteractiveSFMapData, options: MapOptions = {}):
     getSelectedMarker: use(element.getSelectedMarker),
     selectNeighborhood: use(element.selectNeighborhood),
     getSelectedNeighborhood: use(element.getSelection),
+    selectDistrict: use(element.selectDistrict),
+    getSelectedDistrict: use(element.getSelectedDistrict),
+    setDistrictYear: use(element.setDistrictYear),
+    setDistrictStyle: use(element.setDistrictStyle),
     setSource: use(element.setSource),
     setMode: use(element.setMode),
     setLabels: use(element.setLabels),

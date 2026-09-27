@@ -16,18 +16,20 @@ interface DistrictPath {
   id: number;
   path: string;
   color: string;
+  stroke?: string;
+  opacity?: number;
 }
 
 import { escapeXml, number, overlayLabel, stroke } from './svg.js';
 
 export function districtFills(districts: readonly DistrictPath[], { idPrefix }: LayerContext) {
-  return `<g data-layer="district-fills" clip-path="url(#${idPrefix}-coast)">${districts.map((d) => `<path data-district="${d.id}" d="${d.path}" fill="${escapeXml(d.color)}" fill-rule="evenodd"/>`).join('')}</g>`;
+  return `<g data-layer="district-fills" clip-path="url(#${idPrefix}-coast)">${districts.map((d) => `<path data-district="${d.id}" d="${d.path}" fill="${escapeXml(d.color)}"${d.opacity === undefined ? '' : ` fill-opacity="${d.opacity}"`} fill-rule="evenodd"/>`).join('')}</g>`;
 }
 export function districtLines(
   districts: readonly DistrictPath[],
   { idPrefix, colors }: LayerContext,
 ) {
-  return `<g data-layer="district-lines" clip-path="url(#${idPrefix}-coast)">${districts.map((d) => `<path data-district="${d.id}" d="${d.path}" ${stroke(colors.district, 1.1)}/>`).join('')}</g>`;
+  return `<g data-layer="district-lines" clip-path="url(#${idPrefix}-coast)">${districts.map((d) => `<path data-district="${d.id}" d="${d.path}" ${stroke(d.stroke ?? colors.district, 1.1)}${d.opacity === undefined ? '' : ` stroke-opacity="${d.opacity}"`}/>`).join('')}</g>`;
 }
 export function landmarks(items: readonly Landmark[], { idPrefix, path, colors }: LayerContext) {
   return `<g data-layer="landmarks" clip-path="url(#${idPrefix}-coast)">${items.map((item) => `<path data-landmark="${escapeXml(item.id)}" d="${path(item.geometry)}" fill="${escapeXml(colors.park)}" fill-rule="evenodd"><title>${escapeXml(item.name)}</title></path>`).join('')}</g>`;
