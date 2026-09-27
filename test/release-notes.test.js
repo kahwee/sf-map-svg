@@ -7,9 +7,12 @@ test('release notes contain every change for the package version and exclude oth
   const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
   const changelog = readFileSync(new URL('../CHANGELOG.md', import.meta.url), 'utf8');
   const result = releaseNotes(changelog, pkg.version);
-  assert.match(result, /Breaking/);
-  assert.match(result, /migration-v2/);
-  assert.ok(!result.includes('## 1.5.2'));
+  assert.ok(result.startsWith(`## ${pkg.version} — `));
+  assert.equal(result.match(/^## /gm)?.length, 1);
+  assert.match(result, /\n- /);
+  const v2Notes = releaseNotes(changelog, '2.0.0');
+  assert.match(v2Notes, /Breaking/);
+  assert.match(v2Notes, /migration-v2/);
 });
 test('missing, duplicate, undated or empty release sections cannot generate notes', () => {
   for (const content of [

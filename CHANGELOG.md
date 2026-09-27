@@ -4,6 +4,8 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 2.1.0 — 2026-09-27
+
 - Pages site: add motion and a dark theme. Cross-document View Transitions keep the header still and morph example titles into page titles; the home hero is an interactive dot map of the 2022 districts; entrances, count-ups, growing charts, and hover/focus micro-interactions respect reduced motion and print. The site adds no library.
 - Pages site: load simplified display maps and thumbnails instead of full-precision SVGs and bundled GeoJSON (candidate and proposition explorers drop from about 391 KB to 12 KB of compressed JavaScript and CSS); add dark map thumbnails, a favicon, a 404 page, a sitemap, per-page social tags, theme-colored browser bars, and a browser smoke test with size budgets that gates deployment.
 - Add six optional San Francisco candidate vote snapshots (2016–2026), a Pages explorer, official source records, and a dataset import script.

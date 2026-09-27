@@ -2,8 +2,7 @@
 
 `catalog.json` lists six certified election snapshots. Each election JSON is
 separate so the Pages explorer fetches only the selected year. Local builds
-ship these files as optional JSON subpaths; they will be available from npm
-after the next package release. For example:
+ship these files as optional JSON subpaths. For example:
 
 ```js
 import results from '@kahwee/sf-map-svg/data/candidates/2024-11-05.json' with { type: 'json' };

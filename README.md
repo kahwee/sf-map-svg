@@ -458,8 +458,8 @@ The [candidate vote explorer](https://kahwee.github.io/sf-map-svg/candidates.htm
 San Francisco elections from 2016 to 2026. It loads one election JSON on
 demand, marks districts only partly eligible for House or legislative races,
 and keeps the 2012 and 2022 supervisorial map vintages distinct. Applications
-can import a snapshot explicitly from a local build, and from npm after the
-next package release, without adding it to the default renderer:
+can import a snapshot explicitly from npm without adding it to the default
+renderer:
 
 ```js
 import election from '@kahwee/sf-map-svg/data/candidates/2024-11-05.json' with { type: 'json' };
