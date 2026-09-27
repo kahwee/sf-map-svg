@@ -17,9 +17,9 @@ Choose by task. All snippets use the public package API; browser examples need a
 ```ts
 import { writeFile } from 'node:fs/promises';
 import { renderMap } from '@kahwee/sf-map-svg';
-import { fullMapData } from '@kahwee/sf-map-svg/data/full';
+import { staticMapData } from '@kahwee/sf-map-svg/data/static';
 
-const svg = renderMap(fullMapData.map, {
+const svg = renderMap(staticMapData, {
   year: 2022,
   landmarks: true,
   bartStations: true,
@@ -28,14 +28,13 @@ const svg = renderMap(fullMapData.map, {
 await writeFile('districts.svg', svg);
 ```
 
-The full preset imports all packaged geography. For smaller bundles, pass selected data to the root or `/static` renderer. See the [static recipe](../README.md#static-svg).
+The static preset includes the packaged map layers without interactive lookup collections. For smaller bundles, pass selected data to the root or `/static` renderer. See the [static recipe](../README.md#static-svg).
 
 For an election choropleth, use `renderMap(data, { year, districtStyle })` or
 `createMap({ map: data, districts: districtMaps, neighborhoods: {} }, options)`.
 The controller exposes `setDistrictYear`, `setDistrictStyle`, `selectDistrict`, and typed
 district events; `getLayerPaths(data, { year })` returns fitted paths without SVG markup.
-See the [complete election recipe](../README.md#election-district-api) and the Storybook
-“Election choropleth” example.
+See the [Storybook election choropleth](../stories/ElectionMap.stories.ts) for a working example.
 
 ## Lightweight interactive guide
 
@@ -46,7 +45,7 @@ const map = createGuideMap({ layers: { roadLabels: false } });
 document.querySelector('#map')?.append(map);
 ```
 
-The guide includes selected coast, SFAR neighborhoods, parks, roads, and stations. Detailed geography loads only when explicitly requested; see the [guide recipe](../README.md#render-a-static-map).
+The guide includes selected coast, SFAR neighborhoods, parks, roads, and stations. Detailed geography loads only when explicitly requested; see the [consumer guide recipe](consumer-integration.md).
 
 ## Selected geography
 

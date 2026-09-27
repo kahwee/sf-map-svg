@@ -15,4 +15,4 @@ document.querySelector('#map')?.append(map.element);
 map.destroy();
 ```
 
-For server rendering, import `renderMap` from the root and pass `guideMapData.map` or another explicit `StaticMapData`. Import `/data/full` only if the complete packaged geography is required. All rendering stays offline and has zero runtime dependencies. The guide's detailed geography loads only when `loadGuideDetailedData()` is called.
+For server rendering, import `renderMap` from the root and pass `guideMapData.map`, `staticMapData` from `/data/static`, or another explicit `StaticMapData`. Import `/data/full` when interactive lookup collections are also required. All rendering stays offline and has zero runtime dependencies. The guide's detailed geography loads only when `loadGuideDetailedData()` is called.

@@ -4,14 +4,14 @@ Version 3 removes the deprecated compatibility entry points and their bundled-da
 
 | Version 2 import or call | Version 3 replacement |
 | --- | --- |
-| `/legacy` `renderSFMap(options)` | `renderMap(fullMapData.map, options).svg` |
-| `/legacy` `createSFMap(options)` | `renderMap(fullMapData.map, options)` |
+| `/legacy` `renderSFMap(options)` | `renderMap(staticMapData, options).svg` |
+| `/legacy` `createSFMap(options)` | `renderMap(staticMapData, options)` |
 | `/custom-map` `createSFMapWithData(options, data)` | `renderMap(data, options)` |
 | `/explorer` `createNeighborhoodExplorer(options)` | `createMap(fullMapData, options)`; mount `.element` |
 | `/interactive` `createInteractiveSFMap(options)` | `createMap(fullMapData, { mode: 'basemap', ...options })`; mount `.element` |
 | `/interactive-data` `createInteractiveSFMapWithData(data, options)` | `createMap(data, options)`; mount `.element` |
 
-`fullMapData` comes from `@kahwee/sf-map-svg/data/full`. It is an explicit import of all packaged geography. For smaller bundles, use `staticMapData` from `/data/static` for SVGs, construct data from individual `/data/*` modules, or use `guideMapData` from `/guide/data`. There is no implicit geographic data in the root import.
+`staticMapData` comes from `@kahwee/sf-map-svg/data/static` and includes the complete static map. `fullMapData` comes from `/data/full` and adds the interactive lookup collections. For smaller bundles, construct data from individual `/data/*` modules or use `guideMapData` from `/guide/data`. There is no implicit geographic data in the root import.
 
 ```ts
 import { createMap, renderMap } from '@kahwee/sf-map-svg';

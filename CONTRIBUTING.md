@@ -19,6 +19,7 @@ pnpm test:stories:coverage
 | `src/api.ts`, `src/map.ts`, `src/static.ts` | v3 data-free exports, controller ownership, static rendering |
 | `src/configuration.ts`, `src/controller-types.ts` | Grouped API validation and public controller contracts |
 | `src/full-data.ts` | Explicit complete geographic preset (`/data/full`) |
+| `src/static-data.ts` | Explicit static geographic preset (`/data/static`) |
 | `src/geometry.ts` | Mercator projection and GeoJSON path conversion         |
 | `src/data.ts`     | Internal adapter over canonical JSON geometry           |
 | `src/types.ts`  | Public TypeScript declarations                          |
@@ -71,7 +72,7 @@ Dependabot proposes weekly npm and GitHub Actions updates, grouping Storybook, V
 
 - `data/*.json`: canonical GeoJSON, source definitions, names, aliases, and rendering anchors; no duplicate geometry in JavaScript.
 - `data/index.ts` and `data/types.ts`: immutable data helpers and typed name lookup, separate from the map renderer.
-- `src/layers.ts`: small layer renderers; drawing order remains explicit in `src/index.ts`.
+- `src/layers.ts`: small layer renderers; drawing order remains explicit in `src/map-core.ts`.
 - `src/svg.ts`: shared XML escaping, numeric formatting, and stroke attributes.
 - `scripts/build-data-catalog.mjs`: deterministic metadata-only catalog generator. Run `pnpm data:catalog`; `pnpm check` rejects a stale catalog.
 - `stories/NeighborhoodData.stories.ts`: source-aware neighborhood lookup and projection example.

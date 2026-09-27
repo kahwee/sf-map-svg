@@ -716,6 +716,7 @@ button:focus-visible {
   margin: 0;
   background: transparent;
   padding: 4px 8px;
+  overflow-x: auto;
 }
 .build-install {
   display: flex;

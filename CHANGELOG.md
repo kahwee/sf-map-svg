@@ -4,6 +4,13 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 3.0.1 — 2026-09-27
+
+- Narrow the complete-data presets to their direct geographic modules without changing rendered SVGs or public API behavior.
+- Correct stale contributing and example documentation links, add a local Markdown link check to `pnpm check`, and show the v3 controller API on the Pages homepage.
+- Skip the early push-triggered Pages build while a new package version is still processing on npm; the successful release workflow deploys that version from the registry.
+- Serve local visual snapshots with the same streaming Node HTTP approach as the Pages browser check, avoiding intermittent resets while loading large optional map data.
+
 ## 3.0.0 — 2026-09-27
 
 Version 3 removes the deprecated compatibility APIs. Applications must migrate before upgrading. The data-free root API introduced in version 2 remains the supported API.

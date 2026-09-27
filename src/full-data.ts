@@ -1,4 +1,5 @@
-import { districtMaps, neighborhoodCollections } from '../data/index.js';
+import { districtMaps } from '../data/districts.js';
+import { neighborhoodCollections } from '../data/lookup.js';
 import { deepFreeze } from './immutable.js';
 import type { MapData } from './map.js';
 import { staticMapData } from './static-data.js';

@@ -1,4 +1,6 @@
-import { bartStations, keyRoads, landmarks } from '../data/index.js';
+import { landmarks } from '../data/landmarks.js';
+import { keyRoads } from '../data/roads.js';
+import { bartStations } from '../data/stations.js';
 import data from './data.js';
 import { deepFreeze } from './immutable.js';
 import type { StaticMapData } from './static.js';

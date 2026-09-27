@@ -1,6 +1,6 @@
 {
   "name": "@kahwee/sf-map-svg",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Offline SVG maps of San Francisco with district boundaries, parks, landmarks, and BART stations.",
   "type": "module",
   "main": "./dist/src/api.js",
@@ -130,7 +130,8 @@
     "demo": "pnpm build && node examples/build.mjs",
     "format": "biome check --write .",
     "format:check": "biome format .",
-    "check": "pnpm peers check && pnpm lint && pnpm data:check && pnpm typecheck && pnpm typecheck:stories && pnpm test && pnpm test:bundle",
+    "check": "pnpm peers check && pnpm lint && pnpm check:docs && pnpm data:check && pnpm typecheck && pnpm typecheck:stories && pnpm test && pnpm test:bundle",
+    "check:docs": "node scripts/check-docs.mjs",
     "prepublishOnly": "pnpm check",
     "storybook": "pnpm build && storybook dev -p 6006 --host 127.0.0.1 --no-open",
     "build-storybook": "pnpm build && storybook build",

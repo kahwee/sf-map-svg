@@ -16,16 +16,16 @@ Node 22.12+ is required for server rendering. Browser maps need a DOM and a bund
 
 ```ts
 import { renderMap } from '@kahwee/sf-map-svg';
-import { fullMapData } from '@kahwee/sf-map-svg/data/full';
+import { staticMapData } from '@kahwee/sf-map-svg/data/static';
 
-const { svg, project, viewBox } = renderMap(fullMapData.map, {
+const { svg, project, viewBox } = renderMap(staticMapData, {
   year: 2022,
   landmarks: true,
   bartStations: true,
 });
 ```
 
-`renderMap(data, options)` returns SVG markup and matching projection helpers. Import `/data/full` only when all packaged geography is needed. For static rendering without interactive lookup collections, import `staticMapData` from `/data/static`. Small maps can compose selected JSON exports from `/data/*` and pass them as `StaticMapData`. `getLayerPaths(data, options)` returns fitted geographic paths without SVG markup.
+`renderMap(data, options)` returns SVG markup and matching projection helpers. `/data/static` includes the complete static map without interactive lookup collections. Small maps can compose selected JSON exports from `/data/*` and pass them as `StaticMapData`. `getLayerPaths(data, options)` returns fitted geographic paths without SVG markup.
 
 Static options include `theme`, `width`, `height`, `padding`, `year` (2002, 2012, 2022), `districtLines`, `districtFills`, `districtStyle`, `districtLabels`, `neighborhoodLines`, `labels`, `highways`, `keyRoads`, `roadLabels`, `landmarks`, `bartStations`, `markers`, `overlays`, `title`, `idPrefix`, and `colors`. Each optional layer is independent. User-supplied text and attributes are escaped in SVG output.
 
