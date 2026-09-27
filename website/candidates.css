@@ -1,0 +1,60 @@
+.candidate-picker {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  background: #fff;
+  border: 1px solid #dce4dc;
+  border-radius: 16px;
+  padding: 18px;
+  margin: 14px 0 14px;
+}
+.candidate-picker label {
+  display: grid;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 13px;
+}
+.candidate-picker select {
+  font: inherit;
+  min-height: 44px;
+  min-width: 0;
+  width: 100%;
+  border: 1px solid #aebeb8;
+  border-radius: 8px;
+  background: #fff;
+  color: #244747;
+  padding: 6px 10px;
+}
+.candidate-picker :focus-visible,
+.district-list button:focus-visible {
+  outline: 3px solid #ae5b3e;
+  outline-offset: 2px;
+}
+#candidate-status {
+  min-height: 20px;
+  color: #49655d;
+  margin: 0 0 16px;
+  font-size: 13px;
+}
+#candidate-list button[aria-pressed="true"] {
+  border-color: #256967;
+  background: #eef6f0;
+}
+#candidate-map svg {
+  width: min(100%, 570px);
+  height: min(100%, 570px);
+  flex: none;
+}
+@media (max-width: 750px) {
+  .candidate-picker {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .prop-grid {
+    grid-template-columns: 1fr;
+  }
+  .prop-map {
+    height: 380px;
+    min-height: 0;
+  }
+}

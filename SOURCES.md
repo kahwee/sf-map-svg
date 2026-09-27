@@ -1,5 +1,39 @@
 # Geometry and provenance
 
+## Candidate votes in San Francisco, 2016–2026
+
+Downloaded September 26, 2026 from the San Francisco Department of Elections'
+final district statements of vote. The files under `data/candidates/`
+contain 56 candidate contests across six elections, with candidate vote counts
+for San Francisco citywide and supervisorial districts. Original workbooks are
+ingestion inputs and are not distributed.
+
+| Election | Final official workbook | Supervisorial map vintage |
+| --- | --- | --- |
+| November 8, 2016 | https://www.sfelections.org/results/20161108/data/20161206/20161206_sov.xlsx | 2012 |
+| November 6, 2018 | https://www.sfelections.org/results/20181106/data/20181127/20181127_sov.xlsx | 2012 |
+| November 3, 2020 | https://www.sfelections.org/results/20201103/data/20201201/20201201_dsov.xlsx | 2012 |
+| November 8, 2022 | https://www.sfelections.org/results/20221108/data/20221201/dsov.xlsx | 2022 |
+| November 5, 2024 | https://www.sfelections.org/results/20241105/data/20241203/dsov.xlsx | 2022 |
+| June 2, 2026 | https://sfelections.org/results/20260602/data/20260625/dsov.xlsx | 2022 |
+
+The [Department's election data catalog](https://sfelections.org/tools/election_data/datasets.php)
+indexes related election materials. `scripts/import-candidate-results.py` records
+each input SHA-256 in the corresponding JSON and reconciles candidate totals,
+under/overvotes, and all eleven supervisorial areas against the official SF
+total. The 2016 and 2018 workbooks contain explicit district and neighborhood
+summary sections. Later workbooks supply dedicated district statements. A
+missing supervisorial row in a congressional or legislative contest means that
+district was outside the eligible contest area; it is not a zero vote share.
+The 2024 Treasurer workbook reports one additional cumulative vote and two
+undervotes outside the supervisorial rows, retained in `unassigned` and the
+citywide total.
+All pages use candidate / total valid contest votes, not a two-party share.
+The archive excludes ranked-choice local races, primary contests before 2026,
+and other election dates; it does not claim to represent all SF elections.
+Historical neighborhood labels in election workbooks are not substituted for
+the independent neighborhood boundary datasets in this repository.
+
 ## California propositions in San Francisco
 
 Downloaded September 26, 2026 from the San Francisco Department of Elections' [final November 5, 2024 results](https://sfelections.org/results/20241105w/detail.html):

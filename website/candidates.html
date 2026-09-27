@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Explore certified San Francisco candidate votes by supervisorial district across elections from 2016 to 2026.">
+  <link rel="canonical" href="https://kahwee.github.io/sf-map-svg/candidates.html">
+  <title>Candidate votes in San Francisco · SF / SVG</title><link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./style.css"><link rel="stylesheet" href="./propositions.css"><link rel="stylesheet" href="./candidates.css">
+</head>
+<body>
+  <a class="skip" href="#candidate-explorer">Skip to candidate map</a>
+  <header class="shell"><nav aria-label="Main navigation"><a class="brand" href="./">SF / SVG</a><div><a href="./">Atlas home</a><a href="./measures.html">Local measures</a><a href="./propositions.html">California propositions</a></div><a href="https://github.com/kahwee/sf-map-svg">GitHub ↗</a></nav></header>
+  <main class="shell prop-main" id="candidate-explorer">
+    <div class="prop-intro"><p class="eyebrow">Certified SF election archive · 2016–2026</p><h1>Who SF voted for.</h1><p>Choose an election, office, and candidate. See where votes varied across the city’s eleven supervisorial districts.</p><p class="scope"><strong>Votes cast in SF.</strong> These maps do not show statewide outcomes or identify individual voters. House and state legislative contests cover only eligible parts of the city.</p></div>
+    <section aria-label="Choose an election contest and candidate" class="candidate-picker">
+      <label for="candidate-election">Election<select id="candidate-election"></select></label>
+      <label for="candidate-contest">Office and district<select id="candidate-contest"></select></label>
+      <label for="candidate-person">Candidate<select id="candidate-person"></select></label>
+    </section>
+    <p id="candidate-status" role="status" aria-live="polite"></p>
+    <div class="prop-grid"><section class="prop-map-panel" aria-label="Candidate vote map"><div class="panel-heading"><div><p class="eyebrow">Supervisorial boundaries</p><h2 id="candidate-map-title">Candidate vote share</h2></div><button type="button" id="candidate-clear" hidden>Show all districts</button></div><div id="candidate-map" class="prop-map"><p role="status">Loading map…</p></div><div class="map-key"><span id="candidate-low">0%</span><span class="map-ramp" aria-hidden="true"></span><span id="candidate-high">100%</span></div><p class="map-note">Colors use a fixed 0–100% scale. Gray means no eligible ballots. A dashed outline means only part of that supervisorial district was eligible. Select a district with a pointer or Tab and Enter.</p></section><section class="prop-results" aria-labelledby="candidate-results-title"><div class="panel-heading"><div><p class="eyebrow">Compare places</p><h2 id="candidate-results-title">District results</h2></div></div><p id="candidate-selection" aria-live="polite"></p><div id="candidate-list" class="district-list"></div></section></div>
+    <section class="prop-method" aria-labelledby="candidate-method-title"><div><p class="eyebrow">Source and method</p><h2 id="candidate-method-title">Read the vote</h2><p id="candidate-method">Candidate share is the selected candidate’s votes divided by all valid votes in that contest. It includes votes for other candidates in the denominator. District results are votes cast within SF, not a demographic profile.</p><p id="candidate-geography"></p></div><div class="source-actions"><a id="candidate-workbook" href="https://sfelections.org/">Official certified workbook ↗</a><a id="candidate-json" href="./data/candidates/catalog.json" download>Download this election JSON ↓</a><a href="./data/candidates/catalog.json" download>Download archive catalog ↓</a><p>Map renderer %RELEASE_LABEL%. Each election is a separate download and loads only when selected.</p></div></section>
+  </main><footer class="shell"><span>SF / SVG · %RELEASE_LABEL%</span><a href="./examples.html">More examples</a><a href="https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md">Data sources</a></footer>
+  <script type="module" src="./candidates.js"></script>
+</body></html>

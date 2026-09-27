@@ -67,6 +67,7 @@ try {
           'website/transit.html',
           'website/measures.html',
           'website/propositions.html',
+          'website/candidates.html',
           'website/examples.html',
         ],
       },
@@ -95,6 +96,7 @@ try {
   await mkdir('pages-dist/data', { recursive: true });
   await cp('data/elections', 'pages-dist/data/elections', { recursive: true });
   await cp('data/propositions', 'pages-dist/data/propositions', { recursive: true });
+  await cp('data/candidates', 'pages-dist/data/candidates', { recursive: true });
   await cp('docs/map-preview.png', 'pages-dist/social-preview.png');
   await writeFile(
     'pages-dist/release.json',

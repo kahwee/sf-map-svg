@@ -1,0 +1,40 @@
+{
+  "elections": [
+    {
+      "date": "2016-11-08",
+      "label": "2016 November general",
+      "file": "2016-11-08.json",
+      "contestCount": 4
+    },
+    {
+      "date": "2018-11-06",
+      "label": "2018 November general",
+      "file": "2018-11-06.json",
+      "contestCount": 11
+    },
+    {
+      "date": "2020-11-03",
+      "label": "2020 November general",
+      "file": "2020-11-03.json",
+      "contestCount": 6
+    },
+    {
+      "date": "2022-11-08",
+      "label": "2022 November general",
+      "file": "2022-11-08.json",
+      "contestCount": 14
+    },
+    {
+      "date": "2024-11-05",
+      "label": "2024 November general",
+      "file": "2024-11-05.json",
+      "contestCount": 9
+    },
+    {
+      "date": "2026-06-02",
+      "label": "2026 June primary",
+      "file": "2026-06-02.json",
+      "contestCount": 12
+    }
+  ]
+}

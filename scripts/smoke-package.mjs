@@ -60,9 +60,11 @@ import { createGuideSVG, createGuideShell } from '@kahwee/sf-map-svg/guide/stati
 assert.match(createGuideSVG().svg, /<svg/);
 assert.match(createGuideShell(), /sf-guide-shell/);
 import realtor from '@kahwee/sf-map-svg/data/neighborhoods-realtor.json' with { type: 'json' };
+import candidates from '@kahwee/sf-map-svg/data/candidates/2024-11-05.json' with { type: 'json' };
 assert.match(renderSFMap({ landmarks: true, bartStations: true }), /<svg/);
 assert.equal(neighborhoods.features.length, 92);
 assert.equal(realtor.features.length, 92);
+assert.equal(candidates.contests.length, 9);
 assert.equal(getNeighborhood('NoPa').properties.canonicalName, 'North Panhandle');
 assert(Object.keys(geometry).length > 0);
 assert.equal(typeof createNeighborhoodExplorer, 'function');

@@ -453,6 +453,21 @@ synthetic pointer tests do not establish physical-device compatibility.
 
 The [civic atlas](https://kahwee.github.io/sf-map-svg/) leads with certified June 2026 ballot measure results. Visitors can select a measure and district, switch Yes/No shading, compare the official 2002, 2012, and 2022 district maps, and play a schematic BART journey. The boundary animation morphs matched district outlines between dated SVGs. Intermediate shapes illustrate the change; each completed year uses its exact published geometry. Playback is user initiated, pauses when the page is hidden, and switches instantly when reduced motion is requested. The lightweight neighborhood guide loads on demand. The full [ballot measures explorer](https://kahwee.github.io/sf-map-svg/measures.html) spans all three district map years with four separately sourced election snapshots.
 
+The [candidate vote explorer](https://kahwee.github.io/sf-map-svg/candidates.html) maps
+56 certified federal, statewide, and state legislative contests across six
+San Francisco elections from 2016 to 2026. It loads one election JSON on
+demand, marks districts only partly eligible for House or legislative races,
+and keeps the 2012 and 2022 supervisorial map vintages distinct. Applications
+can import a snapshot explicitly from a local build, and from npm after the
+next package release, without adding it to the default renderer:
+
+```js
+import election from '@kahwee/sf-map-svg/data/candidates/2024-11-05.json' with { type: 'json' };
+```
+
+See the [candidate schema](data/candidates/README.md), [source records](SOURCES.md),
+and [next dataset ideas](docs/data-opportunities.md).
+
 ```sh
 pnpm build:pages             # local preview
 pnpm build:pages --released  # use the current npm release

@@ -4,6 +4,8 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Add six optional San Francisco candidate vote snapshots (2016–2026), a Pages explorer, official source records, and a dataset import script.
+
 ## 2.0.0 — 2026-09-27
 
 Version 2 makes geography an explicit dependency and separates the application API
