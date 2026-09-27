@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/html-vite';
 import { expect, waitFor } from 'storybook/test';
+import { districtMaps } from '../data/districts.js';
+import mapData from '../src/data.js';
 import { guideMapData } from '../src/guide-data.js';
 import { createMap, type MapController } from '../src/map.js';
 
@@ -119,5 +121,41 @@ export const OverlayEvents: Story = {
     map.setOverlays([]);
     overlay?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(calls).toBe(2);
+  },
+};
+
+export const DistrictUpdatesAreAtomic: Story = {
+  render: () => {
+    map = createMap(
+      {
+        map: { coast: mapData.coast, districts: { 2022: mapData.districts?.[2022] } },
+        districts: { 2022: districtMaps[2022] },
+        neighborhoods: {},
+      },
+      {
+        mode: 'districts',
+        year: 2022,
+        layers: { districtFills: false, districtLines: true, districtLabels: true },
+      },
+    );
+    return map.element;
+  },
+  play: async () => {
+    const line = map.element.querySelector<SVGPathElement>(
+      '[data-layer="district-lines"] [data-district="1"]',
+    );
+    expect(line?.getAttribute('role')).toBe('button');
+    line?.focus();
+    line?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    expect(map.getSelectedDistrict()?.id).toBe(1);
+    const before = map.camera.get();
+    expect(() => map.setDistrictYear(2012)).toThrow('No 2012 district dataset');
+    expect(map.element.dataset.year).toBe('2022');
+    expect(map.getSelectedDistrict()?.year).toBe(2022);
+    expect(map.camera.get()).toEqual(before);
+    expect(() => map.setDistrictStyle(() => ({ opacity: 2 }))).toThrow();
+    expect(line?.getAttribute('stroke')).toBeTruthy();
+    expect(map.selectDistrict(null, { fit: false })).toBe(true);
+    expect(map.getSelectedDistrict()).toBeNull();
   },
 };

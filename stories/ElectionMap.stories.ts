@@ -180,6 +180,11 @@ export const Explore: Story = {
     await userEvent.selectOptions(picker, '2002');
     expect(controller.getSelectedDistrict()).toMatchObject({ id: 2, year: 2002 });
     expect(map.querySelector('[data-layer="district-fills"] [data-district="2"]')).toBeTruthy();
+    await waitFor(() =>
+      expect(map.querySelectorAll('[data-layer="district-fills"] [data-district]')).toHaveLength(
+        11,
+      ),
+    );
   },
 };
 

@@ -627,6 +627,12 @@ export function createNeighborhoodExplorerCore(
       if (old) {
         old.setAttribute('aria-hidden', 'true');
         old.style.pointerEvents = 'none';
+        for (const path of old.querySelectorAll('[data-district]')) {
+          path.removeAttribute('tabindex');
+          path.removeAttribute('role');
+          path.removeAttribute('aria-label');
+          path.removeAttribute('aria-pressed');
+        }
         layer.after(old);
         districtTransition = old.animate([{ opacity: 1 }, { opacity: 0 }], {
           duration: options.duration ?? 280,
