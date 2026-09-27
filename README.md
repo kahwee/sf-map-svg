@@ -387,7 +387,7 @@ pnpm test:stories:coverage # Chromium checks plus renderer coverage report
 pnpm test:package     # install and check the packed package
 ```
 
-Use `pnpm format` to apply Biome formatting and safe lint fixes. Install Chromium once with `pnpm exec playwright install chromium` before local Storybook tests. Run `pnpm storybook` for interactive component examples at http://127.0.0.1:6006. The coverage command writes `coverage/storybook/coverage-summary.json` and `lcov.info` for `src/` TypeScript only. CI runs package checks on Node 22, 24, and 26 plus Chromium Storybook checks on Node 24, and uploads the coverage report. See [CONTRIBUTING.md](CONTRIBUTING.md) for source structure and release instructions.
+Use `pnpm format` to apply Biome formatting and safe lint fixes. Install Chromium once with `pnpm exec playwright install chromium` before local Storybook tests. Run `pnpm storybook` for interactive component examples at http://127.0.0.1:6006. The coverage command writes `coverage/storybook/coverage-summary.json` and `lcov.info` for `src/` TypeScript only. CI runs package and Chromium Storybook checks on Node 26 and uploads the coverage report. See [CONTRIBUTING.md](CONTRIBUTING.md) for source structure and release instructions.
 
 ### Browser verification
 

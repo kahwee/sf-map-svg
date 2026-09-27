@@ -31,7 +31,7 @@ For rendering changes, inspect the example page on desktop and at 390 px. Run `p
 
 ## Public npm releases
 
-GitHub Actions checks Node 22, 24, and 26 on pushes and pull requests. Each job checks formatting, data, types, and tests, builds the examples, Storybook, and the offline Pages preview, then installs a packed archive in a temporary consumer to verify the published entrypoints. A separate Chromium job runs Storybook interactions and coverage. Run the same package check locally with `pnpm test:package`.
+GitHub Actions checks Node 26 on pushes and pull requests. The package job checks formatting, data, types, and tests, builds the examples, Storybook, and the offline Pages preview, then installs a packed archive in a temporary consumer to verify the published entrypoints. A separate Chromium job runs Storybook interactions and coverage on Node 26. Run the same package check locally with `pnpm test:package`.
 
 The `publish.yml` workflow publishes stable releases when a GitHub release is published, or when manually dispatched with an existing `vMAJOR.MINOR.PATCH` tag. It checks out that tag, requires its package version to match, reruns all checks including Chromium Storybook interactions, and publishes the exact archive that passed the consumer test. Prerelease tags are rejected. No package is published on normal pushes or pull requests.
 
@@ -44,7 +44,7 @@ Before the first automated release, configure the package's npm Trusted Publishe
 - Environment: leave blank (the workflow does not use a GitHub environment)
 - Allowed action: enable direct `npm publish`
 
-This npm-side trust configuration must match the workflow identity. The workflow uses a GitHub-hosted runner, Node 24, and `id-token: write`; it needs no stored npm token. See [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/) for setup. npm generates provenance when the repository and package meet its eligibility requirements; a private source repository does not receive public provenance. GitHub Actions must also be enabled with available runner minutes/billing before workflows can execute.
+This npm-side trust configuration must match the workflow identity. The workflow uses a GitHub-hosted runner, Node 26, and `id-token: write`; it needs no stored npm token. See [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/) for setup. npm generates provenance when the repository and package meet its eligibility requirements; a private source repository does not receive public provenance. GitHub Actions must also be enabled with available runner minutes/billing before workflows can execute.
 
 To release:
 
