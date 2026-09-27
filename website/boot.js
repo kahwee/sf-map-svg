@@ -7,7 +7,13 @@
   root.classList.add('js');
   try {
     const theme = localStorage.getItem('sf-theme');
-    if (theme === 'dark' || theme === 'light') root.dataset.theme = theme;
+    if (theme === 'dark' || theme === 'light') {
+      root.dataset.theme = theme;
+      // An explicit choice overrides the system-matched browser bar color.
+      const color = theme === 'dark' ? '#0e1a1a' : '#f8f8f2';
+      for (const meta of document.querySelectorAll('meta[name="theme-color"]'))
+        meta.content = color;
+    }
   } catch {
     // Storage can be unavailable; the system theme then applies.
   }

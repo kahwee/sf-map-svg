@@ -46,6 +46,7 @@ jobs:
           echo "npm has not exposed $version yet; rerun this workflow after registry processing."
           exit 1
       - run: pnpm build:pages --released
+      - run: pnpm test:pages
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:

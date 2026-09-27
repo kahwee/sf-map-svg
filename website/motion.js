@@ -16,13 +16,35 @@ function applyTheme(theme) {
   } catch {
     // Storage can be unavailable; the choice then lasts for this page only.
   }
-  syncToggle();
+  for (const meta of document.querySelectorAll('meta[name="theme-color"]'))
+    meta.content = theme === 'dark' ? '#0e1a1a' : '#f8f8f2';
+  const pending = syncToggle();
   root.dispatchEvent(new CustomEvent('themechange', { detail: theme }));
+  return pending;
 }
 
 const toggle = document.querySelector('.theme-toggle');
 function syncToggle() {
   toggle?.setAttribute('aria-pressed', String(currentTheme() === 'dark'));
+  return syncImages();
+}
+
+/**
+ * Map images carry a dark twin in data-dark-src. Returns decode promises for
+ * swapped images on screen, so a theme wipe can wait for them.
+ */
+function syncImages() {
+  const dark = currentTheme() === 'dark';
+  const pending = [];
+  for (const image of document.querySelectorAll('img[data-dark-src]')) {
+    image.dataset.lightSrc ??= image.getAttribute('src');
+    const source = dark ? image.dataset.darkSrc : image.dataset.lightSrc;
+    if (image.getAttribute('src') === source) continue;
+    image.setAttribute('src', source);
+    const box = image.getBoundingClientRect();
+    if (box.bottom > 0 && box.top < innerHeight) pending.push(image.decode().catch(() => {}));
+  }
+  return pending;
 }
 
 toggle?.addEventListener('click', () => {
@@ -36,7 +58,9 @@ toggle?.addEventListener('click', () => {
   const y = box.top + box.height / 2;
   const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
   root.classList.add('theme-wiping');
-  const transition = document.startViewTransition(() => applyTheme(next));
+  const transition = document.startViewTransition(async () => {
+    await Promise.all(applyTheme(next));
+  });
   transition.ready
     .then(() =>
       root.animate(
@@ -83,3 +107,9 @@ function setupReveals() {
   }
 }
 setupReveals();
+
+// ---------- Scroll progress only where there is something to scroll ----------
+const markScrollable = () =>
+  root.classList.toggle('can-scroll', root.scrollHeight > innerHeight + 40);
+new ResizeObserver(markScrollable).observe(document.body);
+addEventListener('resize', markScrollable);

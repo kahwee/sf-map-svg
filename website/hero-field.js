@@ -199,8 +199,9 @@ export function createHeroField(figure, svg) {
     if (current >= 0) context.fill();
   }
 
+  // Full frame rate while the pointer steers; 30fps when the city runs on its own.
   const tick = (time) => {
-    draw(time, false);
+    if (pointer.strength > 0.02 || last === undefined || time - last >= 32) draw(time, false);
     frame = requestAnimationFrame(tick);
   };
   const running = () => frame !== 0;

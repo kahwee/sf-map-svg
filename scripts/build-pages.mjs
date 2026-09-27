@@ -4,6 +4,15 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { build } from 'vite';
+import { simplifySvg } from './simplify-svg.mjs';
+
+// Display maps render at most ~700 CSS px from an 800-unit view box, so 0.3 units
+// stays under half a device pixel even at 2x. Thumbnails render near 125 px.
+const displayTolerance = 0.3;
+const thumbTolerance = 1.2;
+/** Dark thumbnail: only the water changes, matching inline maps in dark mode. */
+const darkWater = (svg) =>
+  svg.replace(/(<rect width="800" height="800" fill=")#[0-9a-f]{6}("\/>)/, '$1#10242a$2');
 
 const themeToggle =
   '<button class="theme-toggle" type="button" aria-pressed="false" aria-label="Dark theme">' +
@@ -14,11 +23,35 @@ const themeToggle =
   'stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg></button>';
 const arrowDirections = { '→': 'e', '▶': 'e', '↗': 'ne', '↓': 's' };
 
-/** Shared page chrome for motion: boot script, stylesheet, theme toggle, arrows, split titles. */
-function addSiteMotion(html, boot) {
+const siteUrl = 'https://kahwee.github.io/sf-map-svg/';
+const attribute = (value) => value.replaceAll('&', '&amp;').replaceAll('"', '&quot;');
+
+/** Social tags for pages that do not declare their own, from title, description, and canonical. */
+function socialTags(page) {
+  if (page.includes('property="og:title"')) return '';
+  const title = page.match(/<title>([^<]+)<\/title>/)?.[1];
+  const description = page.match(/<meta name="description" content="([^"]+)">/)?.[1];
+  const url = page.match(/<link rel="canonical" href="([^"]+)">/)?.[1];
+  if (!title || !url) return '';
+  return [
+    `<meta property="og:title" content="${attribute(title)}">`,
+    description ? `<meta property="og:description" content="${description}">` : '',
+    '<meta property="og:type" content="website">',
+    `<meta property="og:url" content="${url}">`,
+    `<meta property="og:image" content="${siteUrl}social-preview.png">`,
+    '<meta name="twitter:card" content="summary_large_image">',
+  ].join('');
+}
+
+/** Shared page chrome: icon, theme color, social tags, boot script, motion, arrows, split titles. */
+function addSiteChrome(html, boot) {
   let page = html.replace(
+    '<link rel="icon" href="data:,">',
+    '<link rel="icon" href="./favicon.svg" type="image/svg+xml">',
+  );
+  page = page.replace(
     '</head>',
-    `<script>${boot}</script><link rel="expect" href="#page-end" blocking="render"><link rel="stylesheet" href="./motion.css"></head>`,
+    `${socialTags(page)}<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8f8f2"><meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0e1a1a"><script>${boot}</script><link rel="expect" href="#page-end" blocking="render"><link rel="stylesheet" href="./motion.css"></head>`,
   );
   page = page.replace(
     '</body>',
@@ -91,8 +124,8 @@ try {
     },
     plugins: [
       {
-        name: 'site-motion',
-        transformIndexHtml: { order: 'pre', handler: (html) => addSiteMotion(html, boot) },
+        name: 'site-chrome',
+        transformIndexHtml: { order: 'pre', handler: (html) => addSiteChrome(html, boot) },
       },
       {
         name: 'release-metadata',
@@ -111,12 +144,14 @@ try {
           'website/propositions.html',
           'website/candidates.html',
           'website/examples.html',
+          'website/404.html',
         ],
       },
     },
   });
   const { renderSFMap } = await import(pathToFileURL(join(packageRoot, 'dist/src/index.js')).href);
-  await mkdir('pages-dist/maps', { recursive: true });
+  await mkdir('pages-dist/maps/display', { recursive: true });
+  await mkdir('pages-dist/maps/thumb', { recursive: true });
   for (const [name, options] of Object.entries({
     districts: {},
     'districts-2002': { year: 2002 },
@@ -133,13 +168,34 @@ try {
     },
     neighborhoods: { neighborhoodLines: true },
   })) {
-    await writeFile(`pages-dist/maps/${name}.svg`, renderSFMap({ ...options, idPrefix: name }));
+    const svg = renderSFMap({ ...options, idPrefix: name });
+    await writeFile(`pages-dist/maps/${name}.svg`, svg);
+    // Display copies: the full-precision files above remain the downloads.
+    if (name.startsWith('districts-'))
+      await writeFile(`pages-dist/maps/display/${name}.svg`, simplifySvg(svg, displayTolerance));
+    if (name.startsWith('districts-') || name === 'transit') {
+      const thumb = simplifySvg(svg, name === 'transit' ? 0.6 : thumbTolerance);
+      await writeFile(`pages-dist/maps/thumb/${name}.svg`, thumb);
+      await writeFile(`pages-dist/maps/thumb/${name}-dark.svg`, darkWater(thumb));
+    }
   }
   await mkdir('pages-dist/data', { recursive: true });
   await cp('data/elections', 'pages-dist/data/elections', { recursive: true });
   await cp('data/propositions', 'pages-dist/data/propositions', { recursive: true });
   await cp('data/candidates', 'pages-dist/data/candidates', { recursive: true });
   await cp('docs/map-preview.png', 'pages-dist/social-preview.png');
+  const pages = [
+    '',
+    'examples.html',
+    'measures.html',
+    'candidates.html',
+    'propositions.html',
+    'transit.html',
+  ];
+  await writeFile(
+    'pages-dist/sitemap.xml',
+    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${pages.map((page) => `  <url><loc>${siteUrl}${page}</loc></url>`).join('\n')}\n</urlset>\n`,
+  );
   await writeFile(
     'pages-dist/release.json',
     `${JSON.stringify({ version, source: released ? 'npm' : 'local' })}\n`,

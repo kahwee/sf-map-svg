@@ -696,21 +696,22 @@ tbody tr[data-selected="true"] {
     display: flex;
     flex-direction: column;
     justify-content: start;
-    gap: 3px;
-    padding: 4px;
+    gap: 2px;
+    padding: 3px 4px;
     text-align: center;
     flex: 0 0 96px;
-    min-height: 48px;
-    max-height: 48px;
+    /* Letter (18) + gap (2) + two 11.5px title lines + padding fit without clipping descenders. */
+    min-height: 50px;
+    max-height: 50px;
   }
   .measure-letter {
-    width: 20px;
-    height: 20px;
-    font-size: 12px;
+    width: 18px;
+    height: 18px;
+    font-size: 11px;
   }
   .card-title {
     font-size: 10px;
-    line-height: 1.2;
+    line-height: 1.15;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;

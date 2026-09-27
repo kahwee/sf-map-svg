@@ -1,31 +1,16 @@
-import { createSFMapWithData } from '@kahwee/sf-map-svg/custom-map';
-import coast from '../data/coast.json';
-import districts from '../data/districts-2022.json';
 import results from '../data/propositions/2024-11-05.json';
+import { displayMapCopy } from './display-map.js';
 import { shareColor, yesShare } from './measures-model.js';
-import { growMap } from './motion-kit.js';
+import { growMap, reorderList } from './motion-kit.js';
 
 const $ = (id) => document.getElementById(id);
 const numbers = new Intl.NumberFormat('en-US');
 const percent = (value) => `${(value * 100).toFixed(1)}%`;
-const mapData = {
-  coast: coast.features[0].geometry,
-  districts: {
-    2022: districts.features.map(({ geometry, properties }) => ({
-      id: properties.district,
-      label: properties.label,
-      labelPoints: properties.labelPoints,
-      geometry,
-      extras: properties.displayExtras,
-    })),
-  },
-};
-const svgMarkup = createSFMapWithData(
-  { year: 2022, title: 'California proposition votes in San Francisco', idPrefix: 'props' },
-  mapData,
-).svg;
-$('prop-map').innerHTML = svgMarkup;
-const map = $('prop-map').querySelector('svg');
+const map = await displayMapCopy(2022, {
+  idPrefix: 'props',
+  title: 'California proposition votes in San Francisco',
+});
+$('prop-map').replaceChildren(map);
 map.style.height = '100%';
 map.style.width = '100%';
 growMap($('prop-map'));
@@ -88,12 +73,15 @@ function render() {
     path.setAttribute('aria-pressed', String(district.district === selected));
     path.querySelector('title').textContent = label;
   }
-  $('district-list').replaceChildren(
-    ...[...proposition.districts]
+  reorderList(
+    $('district-list'),
+    'district',
+    [...proposition.districts]
       .sort((a, b) => yesShare(b) - yesShare(a))
       .map((district, index) => {
         const button = document.createElement('button');
         button.type = 'button';
+        button.dataset.district = String(district.district);
         button.setAttribute('aria-pressed', String(district.district === selected));
         button.setAttribute(
           'aria-label',

@@ -43,6 +43,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:stories:coverage
+      - run: pnpm build:pages
+      - run: pnpm test:pages
       - name: Summarize Storybook coverage
         if: always()
         run: |

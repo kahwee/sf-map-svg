@@ -83,3 +83,32 @@ export function replay(target, className = 'tick') {
   void target.offsetWidth;
   target.classList.add(className);
 }
+
+/**
+ * Replace a keyed list and glide surviving rows from their old positions (FLIP).
+ * Keyboard focus follows the focused row's key across the re-render.
+ */
+export function reorderList(container, key, children) {
+  const before = new Map();
+  for (const child of container.children)
+    before.set(child.dataset[key], child.getBoundingClientRect().top);
+  const focused = container.contains(document.activeElement)
+    ? document.activeElement.closest(`[data-${key}]`)?.dataset[key]
+    : undefined;
+  container.replaceChildren(...children);
+  if (focused !== undefined)
+    [...container.children]
+      .find((child) => child.dataset[key] === focused)
+      ?.focus({ preventScroll: true });
+  if (prefersReducedMotion() || !before.size) return;
+  for (const child of container.children) {
+    const top = before.get(child.dataset[key]);
+    if (top === undefined) continue;
+    const delta = top - child.getBoundingClientRect().top;
+    if (Math.abs(delta) < 1) continue;
+    child.animate([{ transform: `translateY(${delta}px)` }, { transform: 'none' }], {
+      duration: 560,
+      easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+    });
+  }
+}

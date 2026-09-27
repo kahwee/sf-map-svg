@@ -1,4 +1,5 @@
 import election from '../data/elections/2026-06-02.json';
+import { loadDisplayMap } from './display-map.js';
 import { createDistrictMorph } from './district-morph.ts';
 import { createHeroField } from './hero-field.js';
 import { noShareColor, passed, shareColor, yesShare } from './measures-model.js';
@@ -15,7 +16,6 @@ const shortTitles = {
 const format = new Intl.NumberFormat('en-US');
 const pct = (share) => (share === null ? 'No votes' : `${(share * 100).toFixed(2)}%`);
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-const mapCache = new Map();
 let measure = election.measures[0];
 let mode = 'yes';
 let district = 0;
@@ -29,6 +29,7 @@ let playing = false;
 let activeTransit;
 let activeGuide;
 let shownShare = 0;
+let staggeredMeasure;
 
 function element(tag, text, className) {
   const item = document.createElement(tag);
@@ -37,20 +38,14 @@ function element(tag, text, className) {
   return item;
 }
 
-function loadYear(year) {
-  if (!mapCache.has(year)) {
-    mapCache.set(
-      year,
-      fetch(`./maps/districts-${year}.svg`).then(async (response) => {
-        if (!response.ok) throw new Error(`Could not load ${year} district map`);
-        const documentSvg = new DOMParser().parseFromString(await response.text(), 'image/svg+xml');
-        if (documentSvg.querySelector('parsererror'))
-          throw new Error(`Invalid ${year} district map`);
-        return documentSvg.documentElement;
-      }),
-    );
-  }
-  return mapCache.get(year);
+const loadYear = loadDisplayMap;
+
+/** A decorative arrow that nudges on hover, matching the build-time arrows. */
+function arrow(glyph) {
+  const span = element('span', glyph, 'arrow');
+  span.dataset.dir = 'e';
+  span.setAttribute('aria-hidden', 'true');
+  return span;
 }
 
 function cloneMap(source) {
@@ -154,7 +149,10 @@ function updateResults() {
     'result-note',
   );
   $('home-result-detail').replaceChildren(label, title, percentage, outcome, bar, counts, note);
-  staggerChildren($('home-result-detail'));
+  // Re-stagger only for a new measure; district and mode changes just count and grow.
+  if (staggeredMeasure !== measure.id) staggerChildren($('home-result-detail'));
+  else $('home-result-detail').classList.remove('swap-in');
+  staggeredMeasure = measure.id;
 }
 
 async function initResults() {
@@ -302,7 +300,7 @@ function stopPlayback() {
   activeTransition?.cancel();
   activeTransition = undefined;
   updateHistoryLabel();
-  $('history-play').textContent = 'Play the change ▶';
+  $('history-play').replaceChildren('Play the change', arrow('▶'));
   $('history-play').setAttribute('aria-label', 'Play district boundary history');
 }
 

@@ -158,6 +158,7 @@
     "prepack": "pnpm build",
     "build:pages": "pnpm build && node scripts/build-pages.mjs",
     "test:bundle": "node scripts/report-guide-bundle.mjs --check",
+    "test:pages": "node scripts/check-pages.mjs",
     "release:notes": "node scripts/release-notes.mjs"
   },
   "repository": {

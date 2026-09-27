@@ -1,9 +1,7 @@
-import { createSFMapWithData } from '@kahwee/sf-map-svg/custom-map';
 import catalog from '../data/candidates/catalog.json';
-import coast from '../data/coast.json';
-import districts from '../data/districts-2022.json';
+import { displayMapCopy } from './display-map.js';
 import { shareColor } from './measures-model.js';
-import { growMap } from './motion-kit.js';
+import { growMap, reorderList } from './motion-kit.js';
 
 const $ = (id) => document.getElementById(id);
 const numbers = new Intl.NumberFormat('en-US');
@@ -23,26 +21,11 @@ for (const choice of catalog.elections)
   );
 async function makeMap(year) {
   if (year === mapYear) return;
-  const collection =
-    year === 2022 ? districts : (await import('../data/districts-2012.json')).default;
-  const mapData = {
-    coast: coast.features[0].geometry,
-    districts: {
-      [year]: collection.features.map(({ geometry, properties }) => ({
-        id: properties.district,
-        label: properties.label,
-        labelPoints: properties.labelPoints,
-        geometry,
-        extras: properties.displayExtras,
-      })),
-    },
-  };
-  const result = createSFMapWithData(
-    { year, title: 'Candidate votes cast in San Francisco', idPrefix: 'candidates' },
-    mapData,
-  );
-  $('candidate-map').innerHTML = result.svg;
-  const map = $('candidate-map').querySelector('svg');
+  const map = await displayMapCopy(year, {
+    idPrefix: 'candidates',
+    title: 'Candidate votes cast in San Francisco',
+  });
+  $('candidate-map').replaceChildren(map);
   growMap($('candidate-map'));
   map.setAttribute('role', 'group');
   map.setAttribute(
@@ -92,12 +75,15 @@ function render() {
     path.setAttribute('aria-pressed', String(row.district === district));
     path.querySelector('title').textContent = label;
   }
-  $('candidate-list').replaceChildren(
-    ...[...contest.districts]
+  reorderList(
+    $('candidate-list'),
+    'district',
+    [...contest.districts]
       .sort((a, b) => (share(b) ?? -1) - (share(a) ?? -1))
       .map((row, index) => {
         const button = document.createElement('button');
         button.type = 'button';
+        button.dataset.district = String(row.district);
         button.setAttribute('aria-pressed', String(district === row.district));
         const label = document.createElement('span');
         label.textContent = `District ${row.district}`;

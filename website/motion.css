@@ -316,6 +316,10 @@ html.theme-wiping * {
 .split .w > span {
   display: inline-block;
 }
+/* Copying the heading should yield its visible words once, not twice. */
+.split > .sr-only {
+  user-select: none;
+}
 .count {
   font-variant-numeric: tabular-nums;
   counter-reset: n var(--n);
@@ -666,7 +670,8 @@ footer a:is(:hover, :focus-visible)::after {
 /* ---------- Scroll-linked (linear by design: progress follows the scroll) ---------- */
 @supports (animation-timeline: scroll()) {
   @media (prefers-reduced-motion: no-preference) {
-    body::after {
+    /* motion.js adds .can-scroll; a zero-length scroll timeline would otherwise paint a full bar. */
+    .can-scroll body::after {
       content: "";
       position: fixed;
       inset: 0 0 auto;
@@ -692,6 +697,9 @@ footer a:is(:hover, :focus-visible)::after {
 @keyframes progress {
   from {
     transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
   }
 }
 @keyframes drift {

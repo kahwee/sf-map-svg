@@ -80,4 +80,6 @@ Read `data/README.md` before changing schemas or names. Keep canonical names sco
 
 `pnpm build:pages` builds an offline local preview from the current compiled package and labels it as a local preview. `pnpm build:pages --released` installs npm’s current stable version into a temporary directory, bundles its browser components, and generates its SVG downloads. It requires registry access; the deployed site needs no runtime CDN or registry requests. `pages-dist/release.json` records the version and source.
 
+The Pages build also writes display copies of the district maps (`maps/display/`) and thumbnails with dark twins (`maps/thumb/`), simplified for their on-screen size by `scripts/simplify-svg.mjs`. The full-precision SVGs in `maps/` stay unchanged for download. After `pnpm build:pages`, run `pnpm test:pages` to check every page in Chromium for script errors, failed requests, sideways scrolling, layout shift, and compressed size budgets; CI runs it before each deploy. For visual changes, still inspect pages at desktop and 390 px in both themes.
+
 Pages deploys on `main` updates and after a successful npm publishing workflow. Release-triggered builds wait up to five minutes for npm to expose the exact published version. If processing takes longer, rerun the failed Pages workflow.
