@@ -9,8 +9,17 @@ updates:
         patterns:
           - storybook
           - '@storybook/*'
+      vitest:
+        patterns:
+          - vitest
+          - '@vitest/*'
     open-pull-requests-limit: 5
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+    groups:
+      actions:
+        patterns:
+          - 'actions/*'
+          - 'pnpm/action-setup'

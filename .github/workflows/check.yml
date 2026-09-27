@@ -28,6 +28,7 @@ jobs:
       - run: pnpm check
       - run: pnpm demo
       - run: pnpm build-storybook
+      - run: pnpm build:pages
       - run: pnpm test:package
   stories:
     runs-on: ubuntu-latest
@@ -63,7 +64,7 @@ jobs:
           fi
       - name: Upload Storybook coverage
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: storybook-coverage
           path: coverage/storybook/
