@@ -1,2 +1,7 @@
 allowBuilds:
   esbuild: true
+# Storybook 10.6.0's Vitest addon works with Vitest 5 in this project's browser suite,
+# but its published peer ranges stop at 4. Remove these overrides when Storybook updates them.
+overrides:
+  '@storybook/addon-vitest@10.6.0>vitest': '^4.0.0 || ^5.0.0'
+  '@storybook/addon-vitest@10.6.0>@vitest/browser-playwright': '^4.0.0 || ^5.0.0'
