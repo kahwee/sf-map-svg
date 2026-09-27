@@ -1,12 +1,123 @@
 /* biome-ignore-all lint/style/noDescendingSpecificity: page and explorer selectors target independent elements. */
+/* Explicit theme values also work in CSS bundlers that lower light-dark(). */
 :root {
-  --spot-ink: light-dark(#183b3e, #e5eee8);
-  --spot-muted: light-dark(#587074, #a7c1ba);
-  --spot-line: light-dark(#ccdcd5, #38524e);
-  --spot-paper: light-dark(#f8f8f2, #0e1a1a);
-  --spot-card: light-dark(#fffefa, #182b29);
-  --spot-coral: light-dark(#a94430, #f1a082);
-  --spot-sea: light-dark(#ecf4ef, #10262a);
+  --spot-tone-1: #183b3e;
+  --spot-tone-2: #587074;
+  --spot-tone-3: #ccdcd5;
+  --spot-tone-4: #f8f8f2;
+  --spot-tone-5: #fffefa;
+  --spot-tone-6: #a94430;
+  --spot-tone-7: #ecf4ef;
+  --spot-tone-8: #f8f2e8;
+  --spot-tone-9: #e5eee6;
+  --spot-tone-10: #d2e5db;
+  --spot-tone-11: #c7644b;
+  --spot-tone-12: #f3a39031;
+  --spot-tone-13: #319d8a;
+  --spot-tone-14: #8ad7be24;
+  --spot-tone-15: #aa9d52;
+  --spot-tone-16: #e8d67a22;
+  --spot-tone-17: #294b3a12;
+  --spot-tone-18: #688c801f;
+  --spot-tone-19: #dc8d741f;
+  --spot-tone-20: #bc7359;
+  --spot-tone-21: #eb7e5845;
+  --spot-tone-22: #a44e39;
+  --spot-tone-23: #5bb79e45;
+  --spot-tone-24: #257f70;
+  --spot-tone-25: #d2bd5f50;
+  --spot-tone-26: #93812a;
+  --spot-tone-27: #fff8e9ca;
+  --spot-tone-28: #fff;
+  --spot-tone-29: #fafbf7;
+  --spot-tone-30: #fff;
+  --spot-tone-31: #267e6c;
+  --spot-tone-32: #75651f;
+  --spot-tone-33: #edf2e9;
+  --spot-tone-34: #f7f8f1;
+}
+:root[data-theme="dark"] {
+  --spot-tone-1: #e5eee8;
+  --spot-tone-2: #a7c1ba;
+  --spot-tone-3: #38524e;
+  --spot-tone-4: #0e1a1a;
+  --spot-tone-5: #182b29;
+  --spot-tone-6: #f1a082;
+  --spot-tone-7: #10262a;
+  --spot-tone-8: #263d39;
+  --spot-tone-9: #1d3633;
+  --spot-tone-10: #152c2b;
+  --spot-tone-11: #f1a082;
+  --spot-tone-12: #c7644b22;
+  --spot-tone-13: #72cbb7;
+  --spot-tone-14: #72cbb722;
+  --spot-tone-15: #dfd083;
+  --spot-tone-16: #e8d67a15;
+  --spot-tone-17: #0003;
+  --spot-tone-18: #0002;
+  --spot-tone-19: #dfac8430;
+  --spot-tone-20: #efae84;
+  --spot-tone-21: #ff9d6b35;
+  --spot-tone-22: #ffc0a3;
+  --spot-tone-23: #69d9b135;
+  --spot-tone-24: #9ae9cb;
+  --spot-tone-25: #d5c97835;
+  --spot-tone-26: #eadb91;
+  --spot-tone-27: #fcf1dfad;
+  --spot-tone-28: #21413d;
+  --spot-tone-29: #1c302e;
+  --spot-tone-30: #243b37;
+  --spot-tone-31: #89dabe;
+  --spot-tone-32: #e2d279;
+  --spot-tone-33: #1b2d2b;
+  --spot-tone-34: #172725;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --spot-tone-1: #e5eee8;
+    --spot-tone-2: #a7c1ba;
+    --spot-tone-3: #38524e;
+    --spot-tone-4: #0e1a1a;
+    --spot-tone-5: #182b29;
+    --spot-tone-6: #f1a082;
+    --spot-tone-7: #10262a;
+    --spot-tone-8: #263d39;
+    --spot-tone-9: #1d3633;
+    --spot-tone-10: #152c2b;
+    --spot-tone-11: #f1a082;
+    --spot-tone-12: #c7644b22;
+    --spot-tone-13: #72cbb7;
+    --spot-tone-14: #72cbb722;
+    --spot-tone-15: #dfd083;
+    --spot-tone-16: #e8d67a15;
+    --spot-tone-17: #0003;
+    --spot-tone-18: #0002;
+    --spot-tone-19: #dfac8430;
+    --spot-tone-20: #efae84;
+    --spot-tone-21: #ff9d6b35;
+    --spot-tone-22: #ffc0a3;
+    --spot-tone-23: #69d9b135;
+    --spot-tone-24: #9ae9cb;
+    --spot-tone-25: #d5c97835;
+    --spot-tone-26: #eadb91;
+    --spot-tone-27: #fcf1dfad;
+    --spot-tone-28: #21413d;
+    --spot-tone-29: #1c302e;
+    --spot-tone-30: #243b37;
+    --spot-tone-31: #89dabe;
+    --spot-tone-32: #e2d279;
+    --spot-tone-33: #1b2d2b;
+    --spot-tone-34: #172725;
+  }
+}
+:root {
+  --spot-ink: var(--spot-tone-1);
+  --spot-muted: var(--spot-tone-2);
+  --spot-line: var(--spot-tone-3);
+  --spot-paper: var(--spot-tone-4);
+  --spot-card: var(--spot-tone-5);
+  --spot-coral: var(--spot-tone-6);
+  --spot-sea: var(--spot-tone-7);
 }
 html {
   scroll-behavior: smooth;
@@ -85,8 +196,8 @@ html {
   aspect-ratio: 1;
   border-radius: 50%;
   background:
-    radial-gradient(circle at 48% 47%, light-dark(#f8f2e8, #263d39) 0 22%, transparent 23%),
-    radial-gradient(circle at 45% 45%, light-dark(#e5eee6, #1d3633), light-dark(#d2e5db, #152c2b));
+    radial-gradient(circle at 48% 47%, var(--spot-tone-8) 0 22%, transparent 23%),
+    radial-gradient(circle at 45% 45%, var(--spot-tone-9), var(--spot-tone-10));
   overflow: hidden;
   box-shadow: inset 0 0 0 1px var(--spot-line);
 }
@@ -102,16 +213,16 @@ html {
   transform: rotate(-24deg);
 }
 .orbit-one {
-  border-color: light-dark(#c7644b, #f1a082);
-  background: light-dark(#f3a39031, #c7644b22);
+  border-color: var(--spot-tone-11);
+  background: var(--spot-tone-12);
 }
 .orbit-two {
   width: 51%;
   height: 58%;
   left: 29%;
   top: 16%;
-  border-color: light-dark(#319d8a, #72cbb7);
-  background: light-dark(#8ad7be24, #72cbb722);
+  border-color: var(--spot-tone-13);
+  background: var(--spot-tone-14);
   transform: rotate(28deg);
 }
 .orbit-three {
@@ -119,8 +230,8 @@ html {
   height: 46%;
   left: 15%;
   top: 32%;
-  border-color: light-dark(#aa9d52, #dfd083);
-  background: light-dark(#e8d67a22, #e8d67a15);
+  border-color: var(--spot-tone-15);
+  background: var(--spot-tone-16);
   transform: rotate(63deg);
 }
 .spot-orbit-center {
@@ -172,7 +283,7 @@ html {
   border-radius: 26px;
   background: var(--spot-card);
   overflow: hidden;
-  box-shadow: 0 30px 65px light-dark(#294b3a12, #0003);
+  box-shadow: 0 30px 65px var(--spot-tone-17);
 }
 .spot-toolbar {
   display: flex;
@@ -267,36 +378,36 @@ html {
   width: min(100%, 660px);
   height: auto;
   cursor: crosshair;
-  filter: drop-shadow(0 12px 22px light-dark(#688c801f, #0002));
+  filter: drop-shadow(0 12px 22px var(--spot-tone-18));
 }
 .spot-overlays {
   transition: opacity 0.25s ease;
 }
 .spot-district-outline {
-  fill: light-dark(#dc8d741f, #dfac8430);
-  stroke: light-dark(#bc7359, #efae84);
+  fill: var(--spot-tone-19);
+  stroke: var(--spot-tone-20);
   stroke-width: 2.6;
   stroke-dasharray: 4 6;
   vector-effect: non-scaling-stroke;
 }
 .spot-source-outline {
-  fill: light-dark(#eb7e5845, #ff9d6b35);
-  stroke: light-dark(#a44e39, #ffc0a3);
+  fill: var(--spot-tone-21);
+  stroke: var(--spot-tone-22);
   stroke-width: 3.4;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
 }
 .spot-source-sf-find {
-  fill: light-dark(#5bb79e45, #69d9b135);
-  stroke: light-dark(#257f70, #9ae9cb);
+  fill: var(--spot-tone-23);
+  stroke: var(--spot-tone-24);
 }
 .spot-source-analysis {
-  fill: light-dark(#d2bd5f50, #d5c97835);
-  stroke: light-dark(#93812a, #eadb91);
+  fill: var(--spot-tone-25);
+  stroke: var(--spot-tone-26);
 }
 .spot-pin-halo {
-  fill: light-dark(#fff8e9ca, #fcf1dfad);
-  stroke: light-dark(#fff, #21413d);
+  fill: var(--spot-tone-27);
+  stroke: var(--spot-tone-28);
   stroke-width: 1.5;
 }
 .spot-pin {
@@ -355,7 +466,7 @@ html {
   border: 1px solid var(--spot-line);
   border-left: 4px solid transparent;
   border-radius: 11px;
-  background: light-dark(#fafbf7, #1c302e);
+  background: var(--spot-tone-29);
   color: var(--spot-ink);
   font: inherit;
   cursor: pointer;
@@ -369,7 +480,7 @@ html {
   box-shadow: 0 4px 12px #0001;
 }
 .spot-source-card[aria-pressed="true"] {
-  background: light-dark(#fff, #243b37);
+  background: var(--spot-tone-30);
   border-left-color: var(--spot-coral);
   box-shadow: 0 3px 14px #0001;
 }
@@ -392,10 +503,10 @@ html {
   text-transform: uppercase;
 }
 .spot-card-sf-find .spot-card-tag {
-  color: light-dark(#267e6c, #89dabe);
+  color: var(--spot-tone-31);
 }
 .spot-card-analysis .spot-card-tag {
-  color: light-dark(#75651f, #e2d279);
+  color: var(--spot-tone-32);
 }
 .spot-source-card strong {
   margin-top: 3px;
@@ -422,7 +533,7 @@ html {
   margin-top: 14px;
   padding: 4px;
   border-radius: 12px;
-  background: light-dark(#edf2e9, #1b2d2b);
+  background: var(--spot-tone-33);
 }
 .spot-years button {
   border: 0;
@@ -452,7 +563,7 @@ html {
   align-items: start;
   padding: 18px 38px;
   border-top: 1px solid var(--spot-line);
-  background: light-dark(#f7f8f1, #172725);
+  background: var(--spot-tone-34);
 }
 .spot-note span {
   color: var(--spot-coral);

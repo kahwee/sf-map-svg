@@ -1,7 +1,10 @@
+type CatalogArgs = { query: string; source: 'all' | 'realtor' | 'sf-find' | 'analysis' };
+
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import catalogUrl from '../data/catalog.json?url';
 import { neighborhoodSources, searchNeighborhoods } from '../data/index.ts';
 
-export default {
+const meta = {
   title: 'Data/Neighborhood catalog',
   args: { query: '', source: 'realtor' },
   argTypes: {
@@ -53,8 +56,12 @@ export default {
     section.append(table);
     return section;
   },
-};
-export const RealtorNeighborhoods = {};
-export const AllDefinitions = { args: { source: 'all' } };
-export const MissionNames = { args: { query: 'mission' } };
-export const SFFind = { args: { source: 'sf-find' } };
+} satisfies Meta<CatalogArgs>;
+
+export default meta;
+type Story = StoryObj<CatalogArgs>;
+
+export const RealtorNeighborhoods: Story = {};
+export const AllDefinitions: Story = { args: { source: 'all' } };
+export const MissionNames: Story = { args: { query: 'mission' } };
+export const SFFind: Story = { args: { source: 'sf-find' } };

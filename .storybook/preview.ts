@@ -4,7 +4,26 @@ const preview: Preview = {
   parameters: {
     layout: 'centered',
     controls: { expanded: true },
-    a11y: { test: 'todo' },
+    a11y: { test: 'error' },
+    viewport: {
+      options: {
+        desktop1280: {
+          name: 'Desktop 1280',
+          styles: { width: '1280px', height: '900px' },
+          type: 'desktop',
+        },
+        mobile390: {
+          name: 'Phone 390',
+          styles: { width: '390px', height: '844px' },
+          type: 'mobile',
+        },
+      },
+    },
+    options: {
+      storySort: {
+        order: ['Start here', 'Maps', 'Data', 'Legacy', 'Checks'],
+      },
+    },
     docs: {
       description: {
         component:

@@ -424,13 +424,15 @@ pnpm test:package     # install and check the packed package
 
 Use `pnpm format` to apply Biome formatting and safe lint fixes. Install Chromium once with `pnpm exec playwright install chromium` before local Storybook tests. Run `pnpm storybook` for interactive component examples at http://127.0.0.1:6006. The coverage command writes `coverage/storybook/coverage-summary.json` and `lcov.info` for `src/` TypeScript only. CI runs package and Chromium Storybook checks on Node 26 and uploads the coverage report. See [CONTRIBUTING.md](CONTRIBUTING.md) for source structure and release instructions.
 
+In Storybook, start with **Start here / V2 interactive map** and **Start here / V2 static SVG** for copyable public imports and live layer controls. The phone stories use a 390 px Storybook viewport; the toolbar also offers a 1280 px desktop viewport. **Maps** shows the guide and transit components, **Data** compares source definitions, **Legacy** documents compatibility entrypoints, and **Checks** contains deeper controller regressions. Accessibility violations fail Storybook browser tests by default.
+
 ### Browser verification
 
 
 Run `pnpm demo` and serve the repository root. `examples/generated/index.html` covers static
 maps, `explorer.html` covers the full explorer, and `interactive.html` covers independently
 controlled neighborhood selection, 36 overlapping sample markers, and fit/save/restore hooks.
-Storybook **Maps / Reusable interactive map** includes both themes, selectable neighborhoods,
+Storybook **Legacy / Interactive map** includes both themes, selectable neighborhoods,
 independent layers, dense markers, and a 390px example.
 
 With that server running, the browser regression checks can be run through the installed CLI:

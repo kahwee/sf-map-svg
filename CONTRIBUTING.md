@@ -59,7 +59,7 @@ To release:
 
 ## Interactive examples and dependency updates
 
-Run `pnpm storybook` and edit `stories/SFMap.stories.js`. Keep stories using the public API so examples exercise the same renderer consumers use. Add stories for new layers or substantial options. Do not reuse a fixed `idPrefix` across stories because Docs renders several maps on one page. Storybook 10 and Vitest run every story as a Chromium rendering check; add a `play` function for behavior that needs interaction coverage. The accessible guide story checks route overlays, overlapping marker selection, and keyboard input. Run `pnpm exec playwright install chromium` once locally before `pnpm test:stories`.
+Run `pnpm storybook` and update `stories/V2Map.stories.ts` or `stories/V2Static.stories.ts` for new public v2 behavior. Keep copyable imports, controls, and interaction checks aligned with the public API. `stories/SFMap.stories.ts` and `stories/Interactive.stories.ts` document compatibility entrypoints under **Legacy**. Add stories for new layers or substantial options. Do not reuse a fixed `idPrefix` across stories because Docs renders several maps on one page. Phone stories set the Storybook canvas to 390 px, and the accessibility addon fails Chromium story tests on violations by default. Use a story-level `a11y.test: 'todo'` only with a documented reason for a known issue. Storybook 10 and Vitest run every story as a Chromium rendering check; add a `play` function for behavior that needs interaction coverage. The accessible guide story checks route overlays, overlapping marker selection, and keyboard input. Run `pnpm exec playwright install chromium` once locally before `pnpm test:stories`.
 
 `pnpm test:stories:coverage` writes JSON summary and LCOV reports to `coverage/storybook/`. Coverage includes library code in `src/` and excludes stories, generated files, and geographic JSON. It measures code reached by Storybook browser checks; Node tests still run separately through `pnpm test`. The coverage floor is deliberately below the current browser baseline to catch large regressions without presenting this as complete library coverage. GitHub CI uploads the report as an artifact even if a browser check fails. npm publishing and Pages deployment also require this check to pass.
 
@@ -72,7 +72,7 @@ Dependabot proposes weekly npm and GitHub Actions updates, grouping Storybook, V
 - `src/layers.ts`: small layer renderers; drawing order remains explicit in `src/index.ts`.
 - `src/svg.ts`: shared XML escaping, numeric formatting, and stroke attributes.
 - `scripts/build-data-catalog.mjs`: deterministic metadata-only catalog generator. Run `pnpm data:catalog`; `pnpm check` rejects a stale catalog.
-- `stories/NeighborhoodData.stories.js`: source-aware neighborhood lookup and projection example.
+- `stories/NeighborhoodData.stories.ts`: source-aware neighborhood lookup and projection example.
 
 Read `data/README.md` before changing schemas or names. Keep canonical names scoped to their definition source, preserve source labels, and cite alias evidence. New geometry requires a source record. Do not merge same-name polygons from different source collections. Tests include pre-migration geometry digests to catch accidental loss of district display extras.
 

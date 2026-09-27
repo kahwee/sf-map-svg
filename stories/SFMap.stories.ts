@@ -1,8 +1,18 @@
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import { districtYears, renderSFMap } from '../src/index.ts';
+import type { SFMapOptions } from '../src/types.ts';
 
-export default {
-  title: 'Maps/San Francisco',
+const meta = {
+  title: 'Legacy/Static renderer',
   tags: ['autodocs'],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Compatibility API from `@kahwee/sf-map-svg/legacy`. For new maps, start with **Start here / V2 static SVG**, which takes explicit geography.',
+      },
+    },
+  },
   render: (args) => renderSFMap(args),
   args: {
     year: 2022,
@@ -41,20 +51,23 @@ export default {
     colors: { control: 'object' },
     title: { control: 'text' },
   },
-};
+} satisfies Meta<SFMapOptions>;
 
-export const Districts = {};
-export const LandmarksAndBART = {
+export default meta;
+type Story = StoryObj<SFMapOptions>;
+
+export const Districts: Story = {};
+export const LandmarksAndBART: Story = {
   name: 'Landmarks and BART',
   args: { landmarks: true, bartStations: true, highways: true },
 };
-export const Neighborhoods = { args: { neighborhoodLines: true } };
-export const Outline = {
+export const Neighborhoods: Story = { args: { neighborhoodLines: true } };
+export const Outline: Story = {
   args: { districtFills: false, districtLabels: false, landmarks: true, bartStations: true },
 };
-export const Districts2002 = { args: { year: 2002 } };
-export const Districts2012 = { args: { year: 2012 } };
-export const CustomMarkers = {
+export const Districts2002: Story = { args: { year: 2002 } };
+export const Districts2012: Story = { args: { year: 2012 } };
+export const CustomMarkers: Story = {
   args: {
     landmarks: true,
     markers: [
@@ -63,7 +76,7 @@ export const CustomMarkers = {
     ],
   },
 };
-export const CustomPalette = {
+export const CustomPalette: Story = {
   args: {
     districtFills: false,
     districtLabels: false,
@@ -80,11 +93,14 @@ export const CustomPalette = {
   },
 };
 
-export const LandmarksOnly = { args: { landmarks: true } };
-export const BARTOnly = { args: { bartStations: true } };
-export const Mobile = { args: { width: 390, height: 390, landmarks: true, bartStations: true } };
+export const LandmarksOnly: Story = { args: { landmarks: true } };
+export const BARTOnly: Story = { args: { bartStations: true } };
+export const Mobile: Story = {
+  args: { width: 390, height: 390, landmarks: true, bartStations: true },
+  globals: { viewport: { value: 'mobile390', isRotated: false } },
+};
 
-export const Transit = {
+export const Transit: Story = {
   args: {
     theme: 'transit',
     districtLabels: false,
@@ -95,7 +111,7 @@ export const Transit = {
   },
 };
 
-export const KeyRoads = {
+export const KeyRoads: Story = {
   args: {
     theme: 'transit',
     keyRoads: true,
@@ -107,6 +123,6 @@ export const KeyRoads = {
   },
 };
 
-export const LabelsOff = {
+export const LabelsOff: Story = {
   args: { labels: false, landmarks: true, bartStations: true, keyRoads: true },
 };
