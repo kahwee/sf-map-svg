@@ -3,6 +3,7 @@ import coast from '../data/coast.json';
 import districts from '../data/districts-2022.json';
 import results from '../data/propositions/2024-11-05.json';
 import { shareColor, yesShare } from './measures-model.js';
+import { growMap } from './motion-kit.js';
 
 const $ = (id) => document.getElementById(id);
 const numbers = new Intl.NumberFormat('en-US');
@@ -27,11 +28,13 @@ $('prop-map').innerHTML = svgMarkup;
 const map = $('prop-map').querySelector('svg');
 map.style.height = '100%';
 map.style.width = '100%';
+growMap($('prop-map'));
 map.setAttribute('role', 'group');
 map.setAttribute(
   'aria-label',
   'San Francisco supervisorial districts. Select a district to inspect its proposition votes.',
 );
+const shownBars = new Map();
 const paths = [...map.querySelectorAll('[data-layer="district-fills"] path')];
 let selected = Number(new URLSearchParams(location.hash.slice(1)).get('district')) || 0;
 const params = new URLSearchParams(location.hash.slice(1));
@@ -88,7 +91,7 @@ function render() {
   $('district-list').replaceChildren(
     ...[...proposition.districts]
       .sort((a, b) => yesShare(b) - yesShare(a))
-      .map((district) => {
+      .map((district, index) => {
         const button = document.createElement('button');
         button.type = 'button';
         button.setAttribute('aria-pressed', String(district.district === selected));
@@ -102,7 +105,11 @@ function render() {
         bar.className = 'bar';
         bar.setAttribute('aria-hidden', 'true');
         const fill = document.createElement('i');
-        fill.style.width = percent(yesShare(district));
+        fill.className = 'grow-bar';
+        fill.style.setProperty('--v', String(yesShare(district)));
+        fill.style.setProperty('--from', String(shownBars.get(district.district) ?? 0));
+        fill.style.setProperty('--i', String(index));
+        shownBars.set(district.district, yesShare(district));
         bar.append(fill);
         const value = document.createElement('span');
         value.textContent = percent(yesShare(district));

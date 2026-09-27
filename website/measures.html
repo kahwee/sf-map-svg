@@ -15,13 +15,13 @@
   <a class="skip" href="#map-workspace">Skip to district maps</a>
   <header class="atlas-header">
     <a class="brand" href="./">SF / SVG</a>
-    <div class="atlas-title"><h1>How San Francisco voted</h1><p id="election-subtitle">Local measures across three district map years</p></div>
+    <div class="atlas-title"><h1 data-vt-title>How San Francisco voted</h1><p id="election-subtitle">Local measures across three district map years</p></div>
     <nav aria-label="Atlas navigation"><a href="#district-table">District table</a><a href="#sources">Sources & method</a><a href="./candidates.html">Candidate votes</a><a href="./propositions.html">California propositions</a><a href="./examples.html">Examples ↗</a></nav>
   </header>
   <main class="atlas-shell">
-    <div class="election-controls"><label for="election">Election<select id="election"></select></label><label for="measure-search">Find a measure<input id="measure-search" type="search" placeholder="Search title or letter" autocomplete="off"></label><span id="measure-count" role="status"></span></div>
-    <section aria-label="Choose a ballot measure" class="measure-strip" id="measure-cards"></section>
-    <div class="workspace" id="map-workspace">
+    <div class="election-controls" data-enter style="--i:0"><label for="election">Election<select id="election"></select></label><label for="measure-search">Find a measure<input id="measure-search" type="search" placeholder="Search title or letter" autocomplete="off"></label><span id="measure-count" role="status"></span></div>
+    <section aria-label="Choose a ballot measure" class="measure-strip" id="measure-cards" data-enter style="--i:1"></section>
+    <div class="workspace" id="map-workspace" data-enter style="--i:2">
       <section class="map-panel" aria-label="Interactive district maps">
         <details class="map-settings" id="map-settings"><summary>Map options <span>⌄</span></summary><div class="map-toolbar">
           <label>Map colors<select id="mode"><option value="yes">Yes vote share</option><option value="no">No vote share</option><option value="districts">District colors</option></select></label>
@@ -51,14 +51,14 @@
       </div></details></aside>
     </div>
     <dialog id="results-dialog" aria-labelledby="table-title"><form method="dialog" class="dialog-close"><button type="submit" aria-label="Close district table">Close ×</button></form>
-    <section class="table-panel" id="district-table" aria-labelledby="table-title">
+    <section class="table-panel" data-reveal id="district-table" aria-labelledby="table-title">
       <div class="table-heading"><div><p class="eyebrow">Every district, in detail</p><h2 id="table-title">Compare the numbers</h2></div><div class="table-tools"><label for="sort">Sort<select id="sort"><option value="district">District number</option><option value="yes">Highest Yes share</option><option value="no">Highest No share</option><option value="votes">Most valid votes</option></select></label><button id="export-csv" type="button">Download CSV ↓</button></div></div>
       <!-- biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users need to scroll the wide comparison table. -->
       <section class="table-scroll" tabindex="0" aria-label="Scrollable district results table"><table><caption id="table-caption"></caption><thead><tr><th scope="col">District</th><th scope="col">Yes votes</th><th scope="col">No votes</th><th scope="col">Yes share</th><th scope="col">vs. city</th><th scope="col">Valid votes</th><th scope="col" id="compare-column" hidden>Comparison Yes</th></tr></thead><tbody id="district-rows"></tbody></table></section>
     </section>
     </dialog>
     <dialog id="sources-dialog" aria-labelledby="sources-title"><form method="dialog" class="dialog-close"><button type="submit" aria-label="Close sources">Close ×</button></form>
-    <section class="source-panel" id="sources" aria-labelledby="sources-title">
+    <section class="source-panel" data-reveal id="sources" aria-labelledby="sources-title">
       <div><p class="eyebrow">Public data, clearly sourced</p><h2 id="sources-title">About this election snapshot</h2><p id="source-intro"></p></div>
       <div><p id="source-method"></p><p>Yes share is Yes ÷ (Yes + No). Undervotes and overvotes are excluded. “vs. city” is the difference in Yes share, in percentage points. Passage is determined citywide using each measure’s listed threshold. Rounded percentages do not determine passage.</p><p id="source-geography"></p><div class="source-links"><a id="workbook" href="https://sfelections.org/">Official results ↗</a><a id="certification" href="https://sfelections.org/">Certification ↗</a><a id="results-json" href="./data/elections/catalog.json" download>Election results JSON ↓</a><a href="./data/elections/catalog.json" download>Dataset catalog ↓</a></div><p class="fine">Map renderer %RELEASE_LABEL%. Election data is bundled separately. No live election-service requests.</p></div>
     </section>

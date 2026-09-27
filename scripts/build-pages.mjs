@@ -5,6 +5,43 @@ import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { build } from 'vite';
 
+const themeToggle =
+  '<button class="theme-toggle" type="button" aria-pressed="false" aria-label="Dark theme">' +
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><mask id="theme-toggle-mask">' +
+  '<rect width="24" height="24" fill="#fff"/><circle class="tt-cut" cx="25" cy="3" r="7" fill="#000"/></mask>' +
+  '<circle class="tt-core" cx="12" cy="12" r="5" fill="currentColor" mask="url(#theme-toggle-mask)"/>' +
+  '<path class="tt-rays" d="M12 1.5v2.2M12 20.3v2.2M1.5 12h2.2M20.3 12h2.2M4.6 4.6l1.5 1.5M17.9 17.9l1.5 1.5M4.6 19.4l1.5-1.5M17.9 6.1l1.5-1.5" ' +
+  'stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg></button>';
+const arrowDirections = { '→': 'e', '▶': 'e', '↗': 'ne', '↓': 's' };
+
+/** Shared page chrome for motion: boot script, stylesheet, theme toggle, arrows, split titles. */
+function addSiteMotion(html, boot) {
+  let page = html.replace(
+    '</head>',
+    `<script>${boot}</script><link rel="expect" href="#page-end" blocking="render"><link rel="stylesheet" href="./motion.css"></head>`,
+  );
+  page = page.replace(
+    '</body>',
+    '<span id="page-end" hidden></span><script type="module" async src="./motion.js"></script></body>',
+  );
+  const githubEnd = /(<a [^>]*>GitHub ↗<\/a>)\s*<\/nav>/;
+  page = githubEnd.test(page)
+    ? page.replace(githubEnd, `<span class="nav-end">$1${themeToggle}</span></nav>`)
+    : page.replace('</nav>', `</nav>${themeToggle}`);
+  page = page.replace(
+    / ([→▶↗↓])(?=<\/)/g,
+    (_, arrow) =>
+      `<span class="arrow" data-dir="${arrowDirections[arrow]}" aria-hidden="true">${arrow}</span>`,
+  );
+  return page.replace(/<h1([^>]*?) data-split([^>]*)>([^<]+)<\/h1>/g, (_, before, after, text) => {
+    const words = text
+      .trim()
+      .split(/\s+/)
+      .map((word, index) => `<span class="w"><span style="--i:${index}">${word}</span></span>`);
+    return `<h1${before}${after} class="split"><span class="sr-only">${text}</span><span aria-hidden="true">${words.join(' ')}</span></h1>`;
+  });
+}
+
 const released = process.argv.includes('--released');
 let temporary;
 try {
@@ -38,6 +75,7 @@ try {
   );
   if (!/^\d+\.\d+\.\d+$/.test(version)) throw new Error('Expected a stable package version');
   const releaseLabel = released ? `v${version} · Available on npm` : `v${version} · Local preview`;
+  const boot = await readFile('website/boot.js', 'utf8');
   await build({
     configFile: false,
     root: 'website',
@@ -52,6 +90,10 @@ try {
       },
     },
     plugins: [
+      {
+        name: 'site-motion',
+        transformIndexHtml: { order: 'pre', handler: (html) => addSiteMotion(html, boot) },
+      },
       {
         name: 'release-metadata',
         transformIndexHtml: (html) =>

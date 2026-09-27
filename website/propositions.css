@@ -22,8 +22,8 @@
 }
 .prop-intro .scope {
   font-size: 14px;
-  background: #eaf1ed;
-  border-left: 4px solid #457c72;
+  background: light-dark(#eaf1ed, var(--d-surface-2));
+  border-left: 4px solid light-dark(#457c72, var(--d-line-strong));
   padding: 10px 14px;
 }
 .prop-picker {
@@ -31,8 +31,8 @@
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
-  background: #fff;
-  border: 1px solid #dce4dc;
+  background: light-dark(#fff, var(--d-surface));
+  border: 1px solid light-dark(#dce4dc, var(--d-line));
   border-radius: 16px;
   padding: 16px 20px;
   margin: 14px 0 24px;
@@ -45,10 +45,10 @@
   min-height: 44px;
   min-width: min(100%, 360px);
   max-width: 100%;
-  border: 1px solid #aebeb8;
+  border: 1px solid light-dark(#aebeb8, var(--d-line-strong));
   border-radius: 8px;
-  background: white;
-  color: #244747;
+  background: light-dark(white, var(--d-surface));
+  color: light-dark(#244747, var(--d-ink));
   padding: 6px 10px;
 }
 .prop-picker span {
@@ -63,8 +63,8 @@
 .prop-map-panel,
 .prop-results,
 .prop-method {
-  background: #fff;
-  border: 1px solid #dce4dc;
+  background: light-dark(#fff, var(--d-surface));
+  border: 1px solid light-dark(#dce4dc, var(--d-line));
   border-radius: 20px;
   padding: 22px;
 }
@@ -82,7 +82,7 @@
 }
 .panel-heading button {
   background: transparent;
-  border: 1px solid #aebeb8;
+  border: 1px solid light-dark(#aebeb8, var(--d-line-strong));
   border-radius: 20px;
   padding: 9px 12px;
   color: inherit;
@@ -106,7 +106,7 @@
     stroke-width 0.2s ease;
 }
 .prop-map [data-layer="district-fills"] path:focus-visible {
-  outline: 3px solid #ae5b3e;
+  outline: 3px solid light-dark(#ae5b3e, var(--d-accent));
 }
 .map-key {
   display: flex;
@@ -122,11 +122,11 @@
 }
 .map-note {
   font-size: 12px;
-  color: #61736e;
+  color: light-dark(#61736e, var(--d-muted));
   margin-bottom: 0;
 }
 .prop-results #selection {
-  background: #eaf1ed;
+  background: light-dark(#eaf1ed, var(--d-surface-2));
   border-radius: 10px;
   padding: 14px;
   margin: 18px 0;
@@ -154,8 +154,8 @@
 }
 .district-list button:hover,
 .district-list button[aria-pressed="true"] {
-  background: #eff4f0;
-  border-color: #94b5aa;
+  background: light-dark(#eff4f0, var(--d-surface-2));
+  border-color: light-dark(#94b5aa, var(--d-line-strong));
 }
 .district-list button span:first-child {
   font-weight: 650;
@@ -167,13 +167,13 @@
 .district-list .bar {
   height: 9px;
   border-radius: 9px;
-  background: #e3eae4;
+  background: light-dark(#e3eae4, var(--d-surface-2));
   overflow: hidden;
 }
 .district-list .bar i {
   display: block;
   height: 100%;
-  background: #327b75;
+  background: light-dark(#327b75, var(--d-teal));
 }
 .prop-method {
   display: grid;
@@ -193,7 +193,7 @@
   font-weight: 650;
 }
 .source-actions p {
-  color: #687a75;
+  color: light-dark(#687a75, var(--d-muted));
 }
 .skip {
   position: absolute;
@@ -203,12 +203,12 @@
   left: 16px;
   top: 16px;
   z-index: 10;
-  background: white;
+  background: light-dark(white, var(--d-surface));
   padding: 10px;
 }
 button:focus-visible,
 select:focus-visible {
-  outline: 3px solid #ae5b3e;
+  outline: 3px solid light-dark(#ae5b3e, var(--d-accent));
   outline-offset: 3px;
 }
 @media (max-width: 800px) {
@@ -256,7 +256,7 @@ select:focus-visible {
 }
 .prop-intro .scope {
   font-size: 13px;
-  color: #536d66;
+  color: light-dark(#536d66, var(--d-muted));
   background: transparent;
   border: 0;
   padding: 0;

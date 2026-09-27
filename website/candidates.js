@@ -3,12 +3,14 @@ import catalog from '../data/candidates/catalog.json';
 import coast from '../data/coast.json';
 import districts from '../data/districts-2022.json';
 import { shareColor } from './measures-model.js';
+import { growMap } from './motion-kit.js';
 
 const $ = (id) => document.getElementById(id);
 const numbers = new Intl.NumberFormat('en-US');
 const percent = (share) => (share === null ? 'No eligible votes' : `${(100 * share).toFixed(1)}%`);
 const params = new URLSearchParams(location.hash.slice(1));
 let paths = [];
+const shownBars = new Map();
 let mapYear;
 let election;
 let contest;
@@ -41,6 +43,7 @@ async function makeMap(year) {
   );
   $('candidate-map').innerHTML = result.svg;
   const map = $('candidate-map').querySelector('svg');
+  growMap($('candidate-map'));
   map.setAttribute('role', 'group');
   map.setAttribute(
     'aria-label',
@@ -92,7 +95,7 @@ function render() {
   $('candidate-list').replaceChildren(
     ...[...contest.districts]
       .sort((a, b) => (share(b) ?? -1) - (share(a) ?? -1))
-      .map((row) => {
+      .map((row, index) => {
         const button = document.createElement('button');
         button.type = 'button';
         button.setAttribute('aria-pressed', String(district === row.district));
@@ -102,7 +105,11 @@ function render() {
         bar.className = 'bar';
         bar.setAttribute('aria-hidden', 'true');
         const fill = document.createElement('i');
-        fill.style.width = percent(share(row) ?? 0);
+        fill.className = 'grow-bar';
+        fill.style.setProperty('--v', String(share(row) ?? 0));
+        fill.style.setProperty('--from', String(shownBars.get(row.district) ?? 0));
+        fill.style.setProperty('--i', String(index));
+        shownBars.set(row.district, share(row) ?? 0);
         bar.append(fill);
         const value = document.createElement('span');
         value.textContent = percent(share(row));

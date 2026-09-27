@@ -1,6 +1,8 @@
 import election from '../data/elections/2026-06-02.json';
 import { createDistrictMorph } from './district-morph.ts';
+import { createHeroField } from './hero-field.js';
 import { noShareColor, passed, shareColor, yesShare } from './measures-model.js';
+import { countTo, growMap, replay, staggerChildren } from './motion-kit.js';
 
 const $ = (id) => document.getElementById(id);
 const years = [2002, 2012, 2022];
@@ -26,6 +28,7 @@ let transitionToken = 0;
 let playing = false;
 let activeTransit;
 let activeGuide;
+let shownShare = 0;
 
 function element(tag, text, className) {
   const item = document.createElement(tag);
@@ -113,11 +116,20 @@ function updateResults() {
   const viewedShare = mode === 'yes' ? share : share === null ? null : 1 - share;
   const title = element('h3', district ? `District ${district}` : 'All San Francisco');
   const label = element('p', `Measure ${measure.id} · ${shortTitles[measure.id]}`, 'result-label');
-  const percentage = element(
-    'p',
-    `${pct(viewedShare)} ${mode === 'yes' ? 'Yes' : 'No'}`,
-    'result-big',
-  );
+  const previousShare = shownShare;
+  const side = mode === 'yes' ? 'Yes' : 'No';
+  const percentage = element('p', undefined, 'result-big');
+  const counter = element('span');
+  counter.setAttribute('aria-hidden', 'true');
+  percentage.append(element('span', `${pct(viewedShare)} ${side}`, 'sr-only'), counter);
+  if (viewedShare === null) counter.textContent = `${pct(null)} ${side}`;
+  else
+    countTo(counter, viewedShare * 100, {
+      from: previousShare * 100,
+      duration: 650,
+      format: (value) => `${value.toFixed(2)}% ${side}`,
+    });
+  shownShare = viewedShare ?? 0;
   const outcome = element(
     'p',
     passed(measure) ? 'Passed citywide' : 'Did not pass citywide',
@@ -125,8 +137,9 @@ function updateResults() {
   );
   const bar = element('div', undefined, 'result-bar');
   bar.setAttribute('aria-hidden', 'true');
-  const fill = element('span');
-  fill.style.width = `${(viewedShare ?? 0) * 100}%`;
+  const fill = element('span', undefined, 'grow-bar');
+  fill.style.setProperty('--v', String(viewedShare ?? 0));
+  fill.style.setProperty('--from', String(previousShare));
   bar.append(fill);
   const counts = element(
     'p',
@@ -141,6 +154,7 @@ function updateResults() {
     'result-note',
   );
   $('home-result-detail').replaceChildren(label, title, percentage, outcome, bar, counts, note);
+  staggerChildren($('home-result-detail'));
 }
 
 async function initResults() {
@@ -170,6 +184,7 @@ async function initResults() {
     }
     resultSvg = svg;
     $('home-results-map').replaceChildren(svg);
+    growMap($('home-results-map'));
     updateResults();
   } catch (error) {
     $('home-results-map').textContent =
@@ -187,6 +202,7 @@ function historyLayer(source) {
 }
 
 function updateHistoryLabel() {
+  if ($('history-year').textContent !== String(currentYear)) replay($('history-year'));
   $('history-year').textContent = String(currentYear);
   $('history-status').textContent = `Showing ${currentYear} boundaries`;
   $('history-map').setAttribute(
@@ -327,6 +343,13 @@ async function initHistory() {
   }
 }
 
+const heroArt = document.querySelector('.hero-art');
+loadYear(2022)
+  .then((svg) => createHeroField(heroArt, svg))
+  .catch((error) => {
+    heroArt.classList.add('is-fallback');
+    console.error(error);
+  });
 renderMeasureCards();
 for (let number = 1; number <= 11; number++)
   $('home-district-select').add(new Option(`District ${number}`, String(number)));

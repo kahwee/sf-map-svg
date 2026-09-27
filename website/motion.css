@@ -1,0 +1,778 @@
+/* biome-ignore-all lint/complexity/noImportantStyles: reduced-motion, print, and transition overrides must beat animations and inline styles. */
+/* biome-ignore-all lint/style/noDescendingSpecificity: rules are grouped by motion feature; their selectors target unrelated elements. */
+/*
+ * Site motion. Loaded last on every page.
+ * Tool choice: CSS keyframes, CSS linear() springs, scroll-driven animations,
+ * and native cross-document View Transitions. motion.js adds only what CSS
+ * cannot know: theme wipes, below-the-fold reveals, and shared-title naming.
+ * Animated properties are limited to transform, opacity, filter, and clip-path.
+ */
+
+/* ---------- Tokens ---------- */
+:root {
+  /* Easing: expo-out for entrances; springs for playful moments. */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  /* Damped springs sampled from x(t) = 1 - e^(-ζωt)(cos ωd·t + ζω/ωd·sin ωd·t). */
+  --spring: linear(
+    0,
+    0.0595,
+    0.2052,
+    0.3933,
+    0.5893,
+    0.7687,
+    0.9169,
+    1.0271,
+    1.0991,
+    1.1371,
+    1.1477,
+    1.1384,
+    1.1166,
+    1.0887,
+    1.0597,
+    1.0334,
+    1.0117,
+    0.9956,
+    0.9851,
+    0.9796,
+    0.9782,
+    0.9796,
+    0.9829,
+    0.987,
+    0.9913,
+    0.9952,
+    0.9984,
+    1.0007,
+    1.0022,
+    1.003,
+    1.0032,
+    1.003,
+    1.0025,
+    1.0019,
+    1.0013,
+    1.0007,
+    1
+  );
+  --spring-soft: linear(
+    0,
+    0.0312,
+    0.1093,
+    0.2147,
+    0.3325,
+    0.452,
+    0.5655,
+    0.6683,
+    0.7578,
+    0.833,
+    0.894,
+    0.9417,
+    0.9777,
+    1.0035,
+    1.0209,
+    1.0315,
+    1.0369,
+    1.0384,
+    1.0372,
+    1.0342,
+    1.0301,
+    1.0256,
+    1.021,
+    1.0166,
+    1.0127,
+    1.0093,
+    1.0064,
+    1.004,
+    1.0022,
+    1.0008,
+    0.9999,
+    0.9992,
+    0.9988,
+    0.9986,
+    0.9985,
+    0.9986,
+    1
+  );
+  /* Durations. */
+  --dur-fast: 200ms;
+  --dur-base: 520ms;
+  --dur-slow: 800ms;
+  --dur-hero: 1200ms;
+  --dur-spring: 700ms;
+  --stagger: 65ms;
+  --enter-delay: 60ms;
+  /* Colors for motion chrome. */
+  --c-ink: light-dark(#1b4142, var(--d-ink));
+  --c-muted: light-dark(#5f7370, var(--d-muted));
+  --c-line: light-dark(#d8dfd7, var(--d-line));
+  --c-surface: light-dark(#fff, var(--d-surface));
+  --c-accent: light-dark(#a85036, var(--d-accent));
+  --c-teal: light-dark(#256967, var(--d-teal));
+  --c-shadow: light-dark(#173f3e24, #00000066);
+}
+:root[data-theme="dark"] {
+  --c-shadow: #00000066;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Shared header geometry, so the header is identical across pages ---------- */
+.shell {
+  max-width: 1440px;
+  padding-inline: clamp(18px, 4vw, 58px);
+}
+/* Page stylesheets load after this shared one, so overrides carry extra specificity. */
+main.prop-main {
+  max-width: 1440px;
+}
+body > header > nav {
+  gap: 28px;
+  padding-block: 24px;
+  border-bottom-color: var(--c-line);
+}
+body > header > nav div {
+  gap: 28px;
+}
+body > header > nav a {
+  font-size: 13px;
+  text-decoration: none;
+}
+body > header > nav .brand {
+  font-size: 18px;
+}
+body > header > nav a:hover {
+  text-decoration: none;
+}
+.nav-end {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-left: auto;
+}
+
+/* ---------- Page transitions (cross-document View Transitions) ---------- */
+@view-transition {
+  navigation: auto;
+}
+body > header > nav,
+.atlas-header {
+  view-transition-name: site-nav;
+}
+::view-transition-group(root) {
+  animation: none;
+}
+::view-transition-old(root) {
+  animation: vt-leave 240ms var(--ease-in) both;
+}
+::view-transition-new(root) {
+  animation: vt-enter var(--dur-base) var(--ease-out) 80ms both;
+}
+/* The header holds still: no morph, no fade, new pixels shown at once. */
+::view-transition-group(site-nav),
+::view-transition-new(site-nav) {
+  animation: none;
+}
+::view-transition-old(site-nav) {
+  animation: none;
+  opacity: 0;
+}
+/* A card title morphs into the page title, and back. */
+::view-transition-group(page-title) {
+  animation-duration: 640ms;
+  animation-timing-function: var(--ease-out);
+}
+::view-transition-old(page-title) {
+  animation: vt-title-out 320ms var(--ease-out) both;
+}
+::view-transition-new(page-title) {
+  animation: vt-title-in 520ms var(--ease-out) 60ms both;
+}
+@keyframes vt-leave {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes vt-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+@keyframes vt-title-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes vt-title-in {
+  from {
+    opacity: 0;
+  }
+}
+.vt-shared.split .w > span {
+  animation: none !important;
+}
+
+/* Theme wipe: a circle grows from the toggle (clip-path set by motion.js). */
+html.theme-wiping::view-transition-old(root),
+html.theme-wiping::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+html.theme-wiping * {
+  view-transition-name: none !important;
+}
+
+/* ---------- Theme toggle ---------- */
+/* Doubled class: page stylesheets that style every button load after this one. */
+:root .theme-toggle.theme-toggle {
+  display: none;
+  flex: none;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  min-height: 0;
+  padding: 0;
+  border: 1px solid var(--c-line);
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: transform var(--dur-spring) var(--spring);
+}
+:root.js .theme-toggle.theme-toggle {
+  display: inline-grid;
+}
+.theme-toggle svg {
+  width: 20px;
+  height: 20px;
+  overflow: visible;
+}
+.theme-toggle .tt-core,
+.theme-toggle .tt-cut,
+.theme-toggle .tt-rays {
+  transform-origin: 12px 12px;
+  transition:
+    transform var(--dur-spring) var(--spring),
+    opacity var(--dur-fast) var(--ease-out);
+}
+/* The icon follows the applied theme, so it is right before scripts run. */
+:root[data-theme="dark"] .theme-toggle .tt-core {
+  transform: scale(1.4);
+}
+:root[data-theme="dark"] .theme-toggle .tt-cut {
+  transform: translate(-7px, 4px);
+}
+:root[data-theme="dark"] .theme-toggle .tt-rays {
+  transform: rotate(-60deg) scale(0.4);
+  opacity: 0;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-toggle .tt-core {
+    transform: scale(1.4);
+  }
+  :root:not([data-theme="light"]) .theme-toggle .tt-cut {
+    transform: translate(-7px, 4px);
+  }
+  :root:not([data-theme="light"]) .theme-toggle .tt-rays {
+    transform: rotate(-60deg) scale(0.4);
+    opacity: 0;
+  }
+}
+:root:not([data-theme="dark"]) .theme-toggle:is(:hover, :focus-visible) .tt-rays {
+  transform: rotate(30deg);
+}
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  transform: rotate(-8deg) scale(1.06);
+}
+.theme-toggle:active {
+  transform: scale(0.9);
+  transition-duration: 90ms;
+}
+.theme-toggle:focus-visible {
+  outline: 3px solid var(--c-accent);
+  outline-offset: 3px;
+}
+
+/* ---------- Entrance choreography: above the fold, CSS only ---------- */
+.split .w {
+  display: inline-block;
+  /* Extend the clip box so descenders, commas, and tight tracking are never cut. */
+  padding: 0.1em 0.14em 0.18em;
+  margin: -0.1em -0.14em -0.18em;
+  overflow: clip;
+  vertical-align: top;
+}
+.split .w > span {
+  display: inline-block;
+}
+.count {
+  font-variant-numeric: tabular-nums;
+  counter-reset: n var(--n);
+  --n: var(--to);
+}
+.count::after {
+  content: counter(n);
+}
+@property --n {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-enter] {
+    animation: rise var(--dur-base) var(--ease-out) both;
+    animation-delay: calc(var(--enter-delay) + var(--i, 0) * var(--stagger));
+  }
+  [data-enter="fade"] {
+    animation-name: fade-in;
+    animation-duration: var(--dur-slow);
+  }
+  .split .w > span {
+    animation: word-rise var(--dur-slow) var(--ease-out) both;
+    animation-delay: calc(var(--enter-delay) + var(--i, 0) * 55ms);
+  }
+  .count {
+    animation: count-up 1400ms var(--ease-out-quart) both;
+    animation-delay: calc(300ms + var(--i, 0) * 90ms);
+  }
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes word-rise {
+  from {
+    transform: translateY(140%) rotate(3deg);
+    transform-origin: 0 100%;
+  }
+}
+@keyframes count-up {
+  from {
+    --n: 0;
+  }
+}
+
+/* ---------- Reveals below the fold (motion.js adds is-pending / is-in) ---------- */
+[data-reveal].is-pending:not([data-reveal="stagger"]) {
+  opacity: 0;
+  transform: translateY(28px);
+}
+[data-reveal="stagger"].is-pending > * {
+  opacity: 0;
+  transform: translateY(22px);
+}
+[data-reveal].is-in:not([data-reveal="stagger"]) {
+  animation: rise var(--dur-slow) var(--ease-out) both;
+}
+[data-reveal="stagger"].is-in > * {
+  animation: rise var(--dur-base) var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * var(--stagger));
+}
+/* Rules draw from the left. Without JavaScript the plain border remains. */
+.js [data-rule] {
+  position: relative;
+  border-top-color: transparent !important;
+}
+.js [data-rule]::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--c-line);
+  transform-origin: 0 50%;
+}
+.js [data-rule].is-pending::before {
+  transform: scaleX(0);
+}
+.js [data-rule].is-in::before {
+  animation: draw var(--dur-hero) var(--ease-out) both;
+}
+@keyframes draw {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* Maps: districts grow in, in district order. */
+.map-wait [data-layer="district-fills"] path,
+.map-wait [data-layer="district-lines"],
+.map-wait [data-layer="district-labels"] {
+  opacity: 0;
+}
+.map-grow [data-layer="district-fills"] path {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: district-in var(--dur-slow) var(--spring-soft) both;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+.map-grow [data-layer="district-lines"],
+.map-grow [data-layer="district-labels"] {
+  animation: fade-in var(--dur-base) var(--ease-out) 520ms both;
+}
+@keyframes district-in {
+  from {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+}
+
+/* Bars grow with clip-path so rounded ends keep their shape. */
+.grow-bar {
+  clip-path: inset(0 calc((1 - var(--v, 0)) * 100%) 0 0 round 20px);
+  transition: clip-path var(--dur-slow) var(--ease-out);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bars-enter .grow-bar {
+    animation: bar-grow var(--dur-slow) var(--ease-out) both;
+    animation-delay: calc(120ms + var(--i, 0) * 40ms);
+  }
+  .swap-in > * {
+    animation: rise var(--dur-base) var(--ease-out) both;
+    animation-delay: calc(var(--i, 0) * 40ms);
+  }
+  .tick {
+    animation: tick var(--dur-base) var(--spring-soft);
+  }
+}
+@keyframes bar-grow {
+  from {
+    clip-path: inset(0 calc((1 - var(--from, 0)) * 100%) 0 0 round 20px);
+  }
+}
+@keyframes tick {
+  from {
+    opacity: 0;
+    transform: translateY(40%);
+  }
+}
+
+/* ---------- Micro-interactions: hover and focus share the same motion ---------- */
+.arrow {
+  display: inline-block;
+  margin-left: 0.3em;
+  transition: transform var(--dur-spring) var(--spring);
+}
+:is(a, button):is(:hover, :focus-visible) .arrow,
+:is(article, .example-grid a):is(:hover, :focus-within) .arrow {
+  transform: translateX(4px);
+}
+:is(a, button):is(:hover, :focus-visible) .arrow[data-dir="ne"],
+:is(article, .example-grid a):is(:hover, :focus-within) .arrow[data-dir="ne"] {
+  transform: translate(3px, -3px);
+}
+:is(a, button):is(:hover, :focus-visible) .arrow[data-dir="s"] {
+  transform: translateY(4px);
+}
+
+/* Navigation links draw an underline from the left. */
+body > header > nav div a,
+.atlas-header nav a,
+footer a {
+  position: relative;
+  text-decoration: none;
+}
+body > header > nav div a::after,
+.atlas-header nav a::after,
+footer a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -5px;
+  height: 1.5px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: 100% 50%;
+  transition: transform 380ms var(--ease-out);
+}
+body > header > nav div a:is(:hover, :focus-visible)::after,
+.atlas-header nav a:is(:hover, :focus-visible)::after,
+footer a:is(:hover, :focus-visible)::after {
+  transform: scaleX(1);
+  transform-origin: 0 50%;
+}
+
+/* Buttons press with a spring. */
+.primary,
+.secondary-action,
+.build-install button,
+.atlas-map-top button,
+.panel-heading button,
+.install button {
+  transition:
+    transform var(--dur-spring) var(--spring),
+    background-color var(--dur-fast) var(--ease-out);
+}
+:is(
+  .primary,
+  .secondary-action,
+  .build-install button,
+  .atlas-map-top button,
+  .panel-heading button,
+  .install button
+):is(:hover, :focus-visible) {
+  transform: translateY(-2px);
+}
+:is(
+  .primary,
+  .secondary-action,
+  .build-install button,
+  .atlas-map-top button,
+  .panel-heading button,
+  .install button
+):active {
+  transform: scale(0.96);
+  transition-duration: 90ms;
+}
+
+/* Cards lift; a mark draws along the top; the shadow fades in on its own layer. */
+.example-grid a,
+.feature-cards article,
+.history-timeline button {
+  position: relative;
+  isolation: isolate;
+  transition: transform var(--dur-spring) var(--spring-soft);
+}
+.example-grid a::before,
+.feature-cards article::before {
+  content: "";
+  position: absolute;
+  inset: -1px 18px auto;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: var(--c-accent);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.example-grid a::after,
+.feature-cards article::after,
+.history-timeline button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  box-shadow: 0 18px 40px -18px var(--c-shadow);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+:is(.example-grid a, .feature-cards article):is(:hover, :focus-visible, :focus-within),
+.history-timeline button:is(:hover, :focus-visible) {
+  transform: translateY(-4px);
+}
+:is(.example-grid a, .feature-cards article):is(:hover, :focus-visible, :focus-within)::before {
+  transform: scaleX(1);
+}
+:is(.example-grid a, .feature-cards article, .history-timeline button):is(
+  :hover,
+  :focus-visible,
+  :focus-within
+)::after {
+  opacity: 1;
+}
+.history-timeline img {
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+.history-timeline button:is(:hover, :focus-visible) img {
+  transform: scale(1.04);
+}
+.feature-icon {
+  transition: transform var(--dur-spring) var(--spring);
+}
+.feature-cards article:is(:hover, :focus-within) .feature-icon {
+  transform: rotate(-12deg) scale(1.08);
+}
+
+/* Rows gain a mark. */
+.home-measure,
+.district-list button,
+.measure-card {
+  position: relative;
+}
+.home-measure::before,
+.district-list button::before,
+.measure-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--c-accent);
+  transform: scaleY(0);
+  transition: transform var(--dur-spring) var(--spring);
+}
+:is(.home-measure, .district-list button, .measure-card):is(:hover, :focus-visible)::before,
+:is(.home-measure, .district-list button, .measure-card)[aria-pressed="true"]::before {
+  transform: scaleY(1);
+}
+.home-measure-letter {
+  transition: transform var(--dur-spring) var(--spring);
+}
+.home-measure:is(:hover, :focus-visible) .home-measure-letter {
+  transform: scale(1.12);
+}
+
+/* The Yes/No toggle slides a pill between states. */
+@supports selector(:has(*)) {
+  .segmented {
+    position: relative;
+  }
+  .segmented::before {
+    content: "";
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    left: 4px;
+    width: calc(50% - 6px);
+    border-radius: 7px;
+    background: var(--ink);
+    transition: transform var(--dur-spring) var(--spring);
+  }
+  .segmented:has([data-mode="no"][aria-pressed="true"])::before {
+    transform: translateX(calc(100% + 4px));
+  }
+  .segmented button {
+    position: relative;
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+  :root .segmented button[aria-pressed="true"] {
+    background: transparent;
+  }
+}
+
+/* ---------- Scroll-linked (linear by design: progress follows the scroll) ---------- */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0 0 auto;
+      height: 2px;
+      z-index: 30;
+      background: var(--c-accent);
+      transform-origin: 0 50%;
+      pointer-events: none;
+      animation: progress linear both;
+      animation-timeline: scroll(root);
+    }
+    .transit-showcase > img {
+      animation: drift linear both;
+      animation-timeline: view();
+    }
+    .history-stage {
+      animation: stage-settle linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 40%;
+    }
+  }
+}
+@keyframes progress {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes drift {
+  from {
+    transform: translateY(-5%) scale(1.1);
+  }
+  to {
+    transform: translateY(5%) scale(1.1);
+  }
+}
+@keyframes stage-settle {
+  from {
+    transform: scale(0.95);
+  }
+}
+
+/* ---------- Dark theme: map water follows the page ---------- */
+:root[data-theme="dark"] svg[data-sf-map] > rect:first-of-type {
+  fill: var(--d-water);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) svg[data-sf-map] > rect:first-of-type {
+    fill: var(--d-water);
+  }
+  :root:not([data-theme="light"]) {
+    --c-shadow: #00000066;
+  }
+}
+
+/* ---------- Mobile header ---------- */
+@media (max-width: 700px) {
+  body > header > nav {
+    padding-block: 17px;
+    gap: 18px;
+  }
+}
+@media (max-width: 600px) {
+  body > header.shell > nav .nav-end > a {
+    display: none;
+  }
+}
+
+/* ---------- Reduced motion: everything still ---------- */
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 1ms !important;
+    transition-delay: 0ms !important;
+  }
+}
+
+/* ---------- Print shows everything, in light colors ---------- */
+@media print {
+  :root {
+    color-scheme: light !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  [data-reveal].is-pending,
+  [data-reveal].is-pending > *,
+  .map-wait [data-layer] path,
+  .map-wait [data-layer] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .theme-toggle,
+  body::after,
+  .hero-art canvas {
+    display: none !important;
+  }
+  .hero-art img {
+    visibility: visible !important;
+  }
+}
