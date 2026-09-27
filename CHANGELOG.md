@@ -4,6 +4,10 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 2.2.0 — 2026-09-27
+
+- Add “One spot, three San Franciscos” to Pages and Storybook, comparing the same location across district, neighborhood, and transit views.
+- Modernize the Storybook examples in TypeScript and gate map changes with reviewed desktop and 390 px visual snapshots on macOS and Linux.
 - Add first-class election choropleths: static and interactive `districtStyle`, live district year/style setters, district selection and activation events, keyboard interaction, and a reduced-motion-aware year crossfade.
 - Export `getLayerPaths` for canonical fitted layer geometry and `DistrictYear`, `DistrictRowData`, and `DistrictStyle` from the modern entrypoints.
 - Add an official-election Storybook example covering three boundary years, vote-share coloring, mobile layout, keyboard selection, year changes, and accessibility checks.
