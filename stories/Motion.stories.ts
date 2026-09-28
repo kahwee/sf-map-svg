@@ -47,6 +47,28 @@ type Story = StoryObj<typeof meta>;
 
 export const Interactive: Story = {};
 
+export const InvalidUpdatesPreserveAnimations: Story = {
+  play: async ({ canvasElement }) => {
+    const map = canvasElement.querySelector(
+      '.sf-explorer',
+    ) as import('../src/types.js').NeighborhoodExplorerElement;
+    map.setDistrictYear(2012, { animate: true, duration: 60000 });
+    map.setViewport([100, 100, 400], { animate: true, duration: 100 });
+    const fades = [...map.querySelectorAll('[data-district-transition]')];
+    const markers = [...map.querySelectorAll('[data-layer="markers"] [data-marker-id]')];
+    expect(() => map.setDistrictYear(2020 as never)).toThrow();
+    expect(() => map.setDistrictYear(2022, { duration: NaN })).toThrow();
+    expect(() => map.setDistrictStyle(() => ({ opacity: Infinity }))).toThrow();
+    expect(() => map.setMarkers([{ id: 'invalid', lng: NaN, lat: 37.7 }])).toThrow();
+    expect([...map.querySelectorAll('[data-district-transition]')]).toEqual(fades);
+    expect([...map.querySelectorAll('[data-layer="markers"] [data-marker-id]')]).toEqual(markers);
+    expect(map.dataset.year).toBe('2012');
+    await waitFor(() => expect(map.getViewport()).toEqual([100, 100, 400]));
+    map.destroy();
+    expect(map.querySelectorAll('[data-district-transition]')).toHaveLength(0);
+  },
+};
+
 export const CameraAndEntranceOwnership: Story = {
   play: async ({ canvasElement }) => {
     const map = canvasElement.querySelector(

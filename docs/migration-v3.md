@@ -28,3 +28,9 @@ map.destroy();
 The controller owns subscriptions and cleanup. Replace old element calls with controller methods (`camera.get/set/pan/zoom/reset/fit/stop`, `selectNeighborhood`, `setSource`, `setMode`, `setLabels`, `setMarkers`, and `setOverlays`). Group feature flags under `features` and styling under `appearance`; `configure` updates runtime features, layers, and controls. For code that needs the guide shell, `/guide`, `/guide/data`, `/guide/static`, and `/guide/map` remain supported. `/transit` also remains supported.
 
 Review tree-shaking after migrating: `/data/full` intentionally includes every packaged layer, while the root and `/static` stay data free. Test server rendering, browser mounting, and map disposal in your application before upgrading production.
+
+## Updating from 3.0 to 3.1
+
+Existing guide factories remain compatible. New integrations can use `createGuideController(options)` and `mountGuideController(shell, options)` from `/guide` or `/guide/map`. Move flat styling options into `appearance`, animation options into `features`, append `.element`, and use `.camera` and `.on()` as with `createMap`.
+
+District styles are now prepared once per district on construction and style/year updates. Hover and selection reuse that snapshot. If a callback reads mutable external data, call `map.setDistrictStyle(callback)` after changing the data; do not rely on hovering to refresh colors. Callback errors leave the previous style intact, and callback-triggered updates or destruction take precedence over the pending update.

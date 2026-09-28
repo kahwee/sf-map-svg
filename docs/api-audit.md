@@ -20,7 +20,11 @@ unbounded geographic data can never fail.
 | Marker entrance and reduced motion | Entrances are optional, independent of camera motion, and cancel on preference changes or disposal. Stable IDs avoid repeated entrances on filtering. |
 | Hiding touch control while gestures are enabled | Returns touch scrolling to the page. Other toolbar controls remain independent. |
 | Runtime patch omitted/false/undefined | Omitted retains; false disables; undefined resets to the default. Nested feature objects replace, rather than deep-merge. |
-| Compact shell and full attribution | Rejected before replacement. Use `createGuideMap` for full explorer chrome. Control overrides are honored and may deliberately alter layout. |
+| Compact shell and full attribution | Rejected before replacement. Use `createGuideController` for full attribution. Control overrides are honored and may deliberately alter layout. |
+| District style callbacks | Prepare and copy every style before committing. Hover/selection reuse the results; call `setDistrictStyle()` to refresh changed external data. Reentrant updates or destruction supersede pending work. |
+| Rapid district year changes | Both outgoing layers are tracked, inert, and removed on interruption, completion, reduced-motion changes, or destruction. Zero duration creates no transition copies. |
+| Label metrics and camera movement | Reuse screen-space text measurements and nodes across frames. Font loading invalidates measurements; hidden or removed candidates do not remain in the visible layer. |
+| Guide controllers and compatibility factories | `createGuideController`/`mountGuideController` share grouped options and lifecycle with `createMap`. Existing element factories retain flat options and their return types. |
 | Layer hidden and bundle cost | Visibility never unloads imported geography. Use narrow entrypoints or data injection to save bytes. |
 
 ## Failure boundaries and regression evidence
@@ -40,9 +44,10 @@ unbounded geographic data can never fail.
 
 Regression sources: `test/api-contract.test.js`, `test/camera.test.js`,
 `test/viewport.test.js`, `stories/Robustness.stories.ts`,
-`stories/Enhancements.stories.ts`, and `scripts/smoke-package.mjs`.
+`stories/Enhancements.stories.ts`, `stories/Motion.stories.ts`,
+`stories/Controller.stories.ts`, and `scripts/smoke-package.mjs`.
 
-Callbacks run after their corresponding state is committed. Consumer callback
+Event listeners and activation callbacks run after their corresponding state is committed. District-style callbacks instead run during preparation, before commit. Consumer event callback
 exceptions are not transactional validation errors and do not roll back an already
 committed change. Direct mutation of the returned DOM can invalidate invariants;
 use the public methods and `overlayElement` extension point.

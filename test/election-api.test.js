@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import data from '../dist/src/data.js';
+import { prepareDistrictStyles } from '../dist/src/district-style.js';
 import { getLayerPaths, renderMap } from '../dist/src/static.js';
 
 test('structured paths use the exact renderMap projection and all three canonical district years', () => {
@@ -41,4 +42,20 @@ test('district style callback runs once per row and escapes SVG attributes', () 
   assert.match(svg, /stroke-opacity="0.6"/);
   assert.throws(() => renderMap(data, { districtStyle: () => ({ opacity: NaN }) }), RangeError);
   assert.throws(() => renderMap(data, { districtStyle: () => ({ invalid: true }) }), TypeError);
+});
+
+test('prepared district styles own snapshots even when the callback reuses its object', () => {
+  const shared = { fill: '', opacity: 0.5 };
+  const styles = prepareDistrictStyles(data.districts[2022], ({ id }) => {
+    shared.fill = `color-${id}`;
+    return shared;
+  });
+  shared.fill = 'changed after preparation';
+  for (const [id, style] of styles) assert.equal(style.fill, `color-${id}`);
+  for (const opacity of [-1, 2, Infinity, NaN, '0.5']) {
+    assert.throws(
+      () => prepareDistrictStyles(data.districts[2022], () => ({ opacity })),
+      RangeError,
+    );
+  }
 });
