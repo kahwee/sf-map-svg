@@ -10,7 +10,7 @@ Offline, self-contained San Francisco SVG maps. The package has no runtime depen
 pnpm add @kahwee/sf-map-svg
 ```
 
-Node 22.12+ is required for server rendering. Browser maps need a DOM and a bundler that supports JSON imports.
+Node 24+ is required for server rendering. Browser maps need a DOM and a bundler that supports JSON imports.
 
 ## Static SVG
 

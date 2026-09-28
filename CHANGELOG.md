@@ -4,6 +4,8 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Breaking: require Node 24 or newer for server rendering and development. Validate the minimum supported major alongside Node 26 in CI; browser runtime requirements are unchanged.
+
 ## 3.1.0 — 2026-09-28
 
 - Add `createGuideController` and `mountGuideController` with the grouped options, camera, subscriptions, and lifecycle of `createMap`; preserve existing element-based guide factories.
@@ -236,7 +238,7 @@ consistent home, and makes animation and subscription ownership predictable.
 - Add overlay color options, TypeScript declarations, source records, and SVG checks.
 - Add Storybook 10.6 with eight interactive examples and API controls.
 - Add usage examples, contributor instructions, and AGENTS.md.
-- Update GitHub Actions and validate Storybook and package builds on Node 22 and 26.
+- Update GitHub Actions and validate Storybook and package builds across supported Node versions.
 - Configure weekly Dependabot updates for development dependencies and Actions.
 - Keep existing layer defaults unchanged, runtime dependencies at zero, and distribution private.
 

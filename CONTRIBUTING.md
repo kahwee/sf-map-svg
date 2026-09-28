@@ -1,6 +1,6 @@
 # Working on SF Map SVG
 
-Use pnpm 12 (declared in `package.json`) and Node 22.12 or newer.
+Use pnpm 12 (declared in `package.json`) and Node 24 or newer.
 
 ```sh
 pnpm install --frozen-lockfile
@@ -38,7 +38,7 @@ For camera or animation changes, exercise **Checks / Motion lifecycle** in Story
 
 ## Public npm releases
 
-GitHub Actions checks Node 26 on pushes and pull requests. The package job checks formatting, data, types, and tests, builds the examples, Storybook, and the offline Pages preview, then installs a packed archive in a temporary consumer to verify the published entrypoints. A separate Chromium job runs Storybook interactions and coverage on Node 26. Run the same package check locally with `pnpm test:package`.
+GitHub Actions checks Node 24 and 26 on pushes and pull requests. The package jobs check formatting, data, types, and tests, build the examples, Storybook, and the offline Pages preview, then install a packed archive in a temporary consumer to verify the published entrypoints. A separate Chromium job runs Storybook interactions and coverage on Node 26. Run the same package check locally with `pnpm test:package`.
 
 The `publish.yml` workflow publishes stable releases when a GitHub release is published, or when manually dispatched with an existing `vMAJOR.MINOR.PATCH` tag. It checks out that tag, requires its package version to match, reruns all checks including Chromium Storybook interactions, and publishes the exact archive that passed the consumer test. Prerelease tags are rejected. No package is published on normal pushes or pull requests.
 

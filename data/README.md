@@ -37,7 +37,7 @@ const mission = neighborhoods.features.find((f) => f.id === 'inner-mission');
 console.log(mission.properties.canonicalName, mission.geometry);
 ```
 
-Node 22.12+ supports this syntax. Bundlers may also support JSON imports without the import attribute. Files are included in the package archive; non-JavaScript consumers can parse the same JSON files directly. These are package entry points, not a hosted API. The public repository and GitHub Pages explorer also provide access to the source data. Consumers who need only one dataset can import its JSON subpath or a typed, frozen leaf module.
+Node 24+ supports this syntax. Bundlers may also support JSON imports without the import attribute. Files are included in the package archive; non-JavaScript consumers can parse the same JSON files directly. These are package entry points, not a hosted API. The public repository and GitHub Pages explorer also provide access to the source data. Consumers who need only one dataset can import its JSON subpath or a typed, frozen leaf module.
 
 ## Import only the data you need
 
