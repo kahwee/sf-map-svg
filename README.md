@@ -12,6 +12,8 @@ pnpm add @kahwee/sf-map-svg
 
 Node 24+ is required for server rendering. Browser maps need a DOM and a bundler that supports JSON imports.
 
+Upgrading from v3 to v4: update your Node runtime to 24 or newer. The map API, browser requirements, rendering, and animations are unchanged.
+
 ## Static SVG
 
 ```ts

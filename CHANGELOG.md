@@ -4,7 +4,10 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 4.0.0 — 2026-09-28
+
 - Breaking: require Node 24 or newer for server rendering and development. Validate the minimum supported major alongside Node 26 in CI; browser runtime requirements are unchanged.
+- No map API, geographic data, rendering, or animation changes. Existing v3 integrations only need a supported Node runtime to upgrade.
 
 ## 3.1.0 — 2026-09-28
 
