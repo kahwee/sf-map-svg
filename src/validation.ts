@@ -162,6 +162,15 @@ export function validateMarkers(markers: readonly MapMarker[]) {
     if (typeof marker.id !== 'string' || !marker.id || ids.has(marker.id))
       throw new RangeError('Markers require unique nonempty IDs.');
     ids.add(marker.id);
+    if (
+      !Number.isFinite(marker.lng) ||
+      Math.abs(marker.lng) > 180 ||
+      !Number.isFinite(marker.lat) ||
+      Math.abs(marker.lat) >= 90
+    )
+      throw new RangeError(
+        'Marker coordinates require finite longitude from -180 to 180 and latitude strictly between -90 and 90.',
+      );
     if (marker.radius !== undefined && (!Number.isFinite(marker.radius) || marker.radius <= 0))
       throw new RangeError('Marker radius must be positive and finite.');
     if (marker.selected !== undefined && typeof marker.selected !== 'boolean')

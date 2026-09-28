@@ -164,6 +164,26 @@ test('rejects overflowing and out-of-range longitude before writing SVG coordina
   }
 });
 
+test('rejects invalid marker coordinates before running renderer callbacks', () => {
+  let styleCalls = 0;
+  assert.throws(
+    () =>
+      render({
+        markers: [{ id: 'bad', lng: -122.4, lat: 90 }],
+        districtStyle: () => {
+          styleCalls++;
+          return {};
+        },
+      }),
+    /Marker coordinates/,
+  );
+  assert.equal(styleCalls, 0);
+  assert.throws(
+    () => render({ markers: [{ id: 'bad', lng: '-122.4', lat: 37.77 }] }),
+    /Marker coordinates/,
+  );
+});
+
 test('optional layers work independently and preserve unique district IDs', () => {
   const options = {
     neighborhoodLines: 'neighborhood-lines',
