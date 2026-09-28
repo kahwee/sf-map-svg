@@ -3,6 +3,8 @@ import { expect, waitFor } from 'storybook/test';
 import { districtMaps } from '../data/districts.js';
 import mapData from '../src/data.js';
 import { guideMapData } from '../src/guide-data.js';
+import { createGuideController, mountGuideController } from '../src/guide-map.js';
+import { createGuideShell } from '../src/guide-static.js';
 import { createMap, type MapController } from '../src/map.js';
 
 let map: MapController;
@@ -21,6 +23,54 @@ const meta = {
 } satisfies Meta;
 export default meta;
 type Story = StoryObj<typeof meta>;
+export const GuideController: Story = {
+  render: () => {
+    map = createGuideController({
+      features: { motion: { duration: 200 }, markerEntrance: true },
+      markers: [{ id: 'one', label: 'A place', lng: -122.42, lat: 37.76 }],
+    });
+    return map.element;
+  },
+  play: async () => {
+    expect(map.element.dataset.mode).toBe('neighborhoods');
+    let events = 0;
+    map.on('markerchange', () => events++);
+    map.selectMarker('one');
+    await waitFor(() => expect(map.camera.get()[2]).toBeLessThan(800));
+    map.camera.stop();
+    map.configure({ controls: { pan: false }, features: { motion: false } });
+    expect(map.getConfiguration().features.motion).toBe(false);
+    expect(events).toBe(1);
+  },
+};
+
+export const GuideShellController: Story = {
+  render: () => {
+    const host = document.createElement('div');
+    host.innerHTML = createGuideShell();
+    return host;
+  },
+  play: async ({ canvasElement }) => {
+    const shell = canvasElement.querySelector<HTMLElement>('.sf-guide-shell');
+    if (!shell) throw new Error('Missing shell');
+    const original = shell.firstElementChild?.nextElementSibling;
+    for (const options of [
+      { layers: null },
+      { controls: [] },
+      { features: { motion: -1 } },
+      { attribution: 'full' },
+    ]) {
+      expect(() => mountGuideController(shell, options as never)).toThrow();
+      expect(shell.firstElementChild?.nextElementSibling).toBe(original);
+    }
+    map = mountGuideController(shell, { features: { motion: true } });
+    expect(shell.querySelector('.sf-guide-frame')).toBe(map.element);
+    expect(map.getConfiguration().controls.neighborhoodPicker).toBe(false);
+    expect(() => mountGuideController(shell)).toThrow('already mounted');
+    map.destroy();
+    expect(() => map.camera.reset()).toThrow('destroyed');
+  },
+};
 export const ConfigurationAndCamera: Story = {
   play: async () => {
     const before = map.getConfiguration();

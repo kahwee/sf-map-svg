@@ -4,15 +4,13 @@ type GuideArgs = {
   narrow: boolean;
   zoomed: boolean;
   layers: Record<string, boolean>;
-  interface?: 'map';
   controls?: Record<string, boolean>;
   strings?: Record<string, string>;
 };
 
 import type { Meta, StoryObj } from '@storybook/html-vite';
 import { expect } from 'storybook/test';
-import { createGuideMap } from '../src/guide.ts';
-import type { NeighborhoodExplorerElement } from '../src/types.ts';
+import { createGuideController, type MapController } from '../src/guide.ts';
 
 const markerSet = [
   { id: 'de-young', label: 'de Young Museum', lng: -122.4687, lat: 37.7704 },
@@ -34,6 +32,7 @@ const route = {
 };
 
 const lifecycle = createStoryLifecycle();
+const controllers = new WeakMap<HTMLElement, MapController>();
 const meta = {
   title: 'Maps/Lightweight guide',
   tags: ['autodocs'],
@@ -43,7 +42,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Focused convenience preset from `@kahwee/sf-map-svg/guide`. For a new controller with explicit geography, see **Start here / Interactive map**. The guide keeps a compact overview and loads details only when requested.',
+          'The lightweight guide controller uses the same grouped options, events, camera, and lifecycle as createMap. Existing element-based guide factories remain compatible. Detailed geography loads only when requested.',
       },
     },
   },
@@ -54,11 +53,12 @@ const meta = {
     layers: { control: 'object' },
   },
   render: ({ narrow, zoomed, ...options }, { id }) => {
-    const map = createGuideMap({ ...options, markers: markerSet, overlays: [route] });
-    if (zoomed) map.zoomBy(2.2);
-    if (narrow) map.style.maxWidth = '390px';
+    const map = createGuideController({ ...options, markers: markerSet, overlays: [route] });
+    if (zoomed) map.camera.zoom(2.2);
+    if (narrow) map.element.style.maxWidth = '390px';
+    controllers.set(map.element, map);
     lifecycle.track(id, () => map.destroy());
-    return map;
+    return map.element;
   },
   beforeEach: lifecycle.beforeEach,
 } satisfies Meta<GuideArgs>;
@@ -68,15 +68,17 @@ type Story = StoryObj<GuideArgs>;
 
 export const CityScale: Story = {
   play: async ({ canvasElement, userEvent }) => {
-    const map = canvasElement.querySelector<NeighborhoodExplorerElement>('.sf-explorer');
+    const map = canvasElement.querySelector<HTMLElement>('.sf-explorer');
     expect(map).toBeTruthy();
     const zoom = map?.querySelector('button[aria-label="Zoom in"]');
     expect(zoom).toBeTruthy();
     if (!zoom) return;
     if (!map) return;
-    const before = map.getViewport()[2];
+    const controller = controllers.get(map);
+    if (!controller) throw new Error('Missing guide controller');
+    const before = controller.camera.get()[2];
     await userEvent.click(zoom);
-    expect(map.getViewport()[2]).toBeLessThan(before);
+    expect(controller.camera.get()[2]).toBeLessThan(before);
   },
 };
 export const NeighborhoodScale: Story = { args: { zoomed: true } };
@@ -89,7 +91,6 @@ export const IndependentRoadLabels: Story = {
 };
 export const CompactEmbed: Story = {
   args: {
-    interface: 'map',
     controls: {
       labels: false,
       neighborhoodPicker: false,

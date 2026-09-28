@@ -43,7 +43,7 @@ export interface SFMapOptions {
   districtLines?: boolean;
   neighborhoodLines?: boolean;
   districtFills?: boolean;
-  /** Style each supervisorial district without taking over SVG rendering. */
+  /** Evaluated once per district at construction/style/year updates; call setDistrictStyle again when external data changes. */
   districtStyle?: (district: import('./map-core.js').DistrictRowData) => DistrictStyle;
   districtLabels?: boolean;
   /** Hide all visible text labels while retaining geographic symbols and accessible titles. */

@@ -1,12 +1,12 @@
 # Guide bundle size report
 
-Generated 2026-09-27 by `pnpm report:guide` with Vite production minification and gzip compression. Each emitted JS chunk is compressed independently. The report measures the explicit-data v3 root and the optional `@kahwee/sf-map-svg/guide` preset.
+Generated 2026-09-28 by `pnpm report:guide` with Vite production minification and gzip compression. Each emitted JS chunk is compressed independently. The report measures the explicit-data v3 root and the optional `@kahwee/sf-map-svg/guide` preset.
 
 | Entry | Initial JS, raw | Initial JS, gzip | Explicit detail JS, gzip |
 | --- | ---: | ---: | ---: |
-| v3 root (explicit data) | 84.5 KB | 24.6 KB | — |
-| v3 static renderer | 14.8 KB | 4.9 KB | — |
-| Guide preset | 469.8 KB | 112.0 KB | 473.7 KB |
+| v3 root (explicit data) | 86.8 KB | 25.4 KB | — |
+| v3 static renderer | 15.3 KB | 5.0 KB | — |
+| Guide preset | 476.6 KB | 113.9 KB | 473.7 KB |
 
 **500 KB target:** met.
 

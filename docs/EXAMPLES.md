@@ -39,10 +39,11 @@ See the [Storybook election choropleth](../stories/ElectionMap.stories.ts) for a
 ## Lightweight interactive guide
 
 ```ts
-import { createGuideMap } from '@kahwee/sf-map-svg/guide';
+import { createGuideController } from '@kahwee/sf-map-svg/guide';
 
-const map = createGuideMap({ layers: { roadLabels: false } });
-document.querySelector('#map')?.append(map);
+const map = createGuideController({ layers: { roadLabels: false } });
+document.querySelector('#map')?.append(map.element);
+// On unmount: map.destroy();
 ```
 
 The guide includes selected coast, SFAR neighborhoods, parks, roads, and stations. Detailed geography loads only when explicitly requested; see the [consumer guide recipe](consumer-integration.md).
@@ -70,10 +71,10 @@ This imports one neighborhood definition source. To omit its geometry too, impor
 ## Route overlay
 
 ```ts
-import { createGuideMap } from '@kahwee/sf-map-svg/guide';
+import { createGuideController } from '@kahwee/sf-map-svg/guide';
 
-const map = createGuideMap();
-document.querySelector('#map')?.append(map);
+const map = createGuideController();
+document.querySelector('#map')?.append(map.element);
 map.setOverlays([{
   id: 'trip',
   label: 'Example route',
