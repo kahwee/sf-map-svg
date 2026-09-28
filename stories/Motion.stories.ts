@@ -47,6 +47,67 @@ type Story = StoryObj<typeof meta>;
 
 export const Interactive: Story = {};
 
+export const CameraAndEntranceOwnership: Story = {
+  play: async ({ canvasElement }) => {
+    const map = canvasElement.querySelector(
+      '.sf-explorer',
+    ) as import('../src/types.js').NeighborhoodExplorerElement;
+    map.setViewport([0, 0, 800], { animate: false });
+    const positions: number[] = [];
+    map.addEventListener('viewportchange', () => positions.push(map.getViewport()[2]));
+    map.setViewport([100, 100, 400], { animate: true, duration: 120 });
+    await waitFor(() => expect(map.getViewport()).toEqual([100, 100, 400]));
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduced) expect(positions.some((size) => size > 400 && size < 800)).toBe(true);
+    expect(positions.every((size, i) => i === 0 || size <= positions[i - 1])).toBe(true);
+    map.setViewport([150, 150, 300], { animate: true, duration: 1000 });
+    map.setViewport([200, 200, 350], { animate: true, duration: 60 });
+    await waitFor(() => expect(map.getViewport()).toEqual([200, 200, 350]));
+    map.setFeatures({ markerEntrance: { duration: 1000, stagger: 20 } });
+    map.setMarkers([{ id: 'new', lng: -122.4, lat: 37.77 }]);
+    const animations = map.getAnimations({ subtree: true });
+    expect(animations).toHaveLength(reduced ? 0 : 1);
+    map.setMarkers([{ id: 'new', lng: -122.41, lat: 37.77 }]);
+    expect(animations.every((animation) => animation.playState === 'idle')).toBe(true);
+    expect(map.getAnimations({ subtree: true })).toHaveLength(0);
+    map.setMarkers([{ id: 'another', lng: -122.4, lat: 37.77 }]);
+    map.setViewport([0, 0, 800], { animate: true, duration: 1000 });
+    map.destroy();
+    const frozen = map.getViewport();
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    expect(map.getAnimations({ subtree: true })).toHaveLength(0);
+    expect(map.getViewport()).toEqual(frozen);
+  },
+};
+
+export const ReentrantDistrictStyles: Story = {
+  play: async ({ canvasElement }) => {
+    const map = canvasElement.querySelector(
+      '.sf-explorer',
+    ) as import('../src/types.js').NeighborhoodExplorerElement;
+    let nested = false;
+    map.setDistrictStyle(() => {
+      if (!nested) {
+        nested = true;
+        map.setDistrictStyle(() => ({ fill: '#abcdef' }));
+      }
+      return { fill: '#ff0000' };
+    });
+    expect(map.querySelector('[data-layer="district-fills"] path')?.getAttribute('fill')).toBe(
+      '#abcdef',
+    );
+    let destroy = false;
+    map.setDistrictStyle(() => {
+      if (destroy) map.destroy();
+      return { fill: '#abcdef' };
+    });
+    destroy = true;
+    map.setDistrictYear(2012, { animate: true });
+    expect(map.dataset.year).toBe('2022');
+    expect(map.querySelectorAll('[data-district-transition]')).toHaveLength(0);
+  },
+};
+
 export const LabelReuseDuringMotion: Story = {
   play: async ({ canvasElement }) => {
     const map = canvasElement.querySelector(

@@ -1,0 +1,99 @@
+import { svgElement } from './dom.js';
+import type { normalizeFeatures } from './features.js';
+import type { MapMarker } from './types.js';
+
+export interface MarkerItem {
+  marker: MapMarker;
+  point: [number, number];
+  node: SVGGElement;
+  dot: SVGCircleElement;
+  hit: SVGCircleElement;
+  ring: SVGCircleElement;
+}
+
+/** Own marker visuals and entrances; selection/events remain with the controller. */
+export function createMarkerLayer(layer: SVGGElement) {
+  const animations = new Set<Animation>();
+  function cancelEntrances() {
+    for (const animation of animations) animation.cancel();
+    animations.clear();
+  }
+  return {
+    cancelEntrances,
+    clear() {
+      cancelEntrances();
+      layer.replaceChildren();
+    },
+    add(
+      marker: MapMarker,
+      point: [number, number],
+      index: number,
+      {
+        features,
+        markerColor,
+        selectedMarkerColor,
+        reducedMotion,
+        enter,
+      }: {
+        features: ReturnType<typeof normalizeFeatures>;
+        markerColor: string;
+        selectedMarkerColor: string;
+        reducedMotion: boolean;
+        enter: boolean;
+      },
+    ): MarkerItem {
+      const node = svgElement('g', {
+        transform: `translate(${point[0]},${point[1]})`,
+        'data-marker-id': marker.id,
+        role: 'button',
+        tabindex: 0,
+        'aria-label': marker.label ?? marker.id,
+        'aria-pressed': 'false',
+      });
+      const hit = svgElement('circle', { fill: 'transparent', 'pointer-events': 'all' });
+      const dot = svgElement('circle', {
+        fill: marker.color ?? markerColor,
+        stroke: '#fff9e9',
+        'stroke-width': 2,
+        'vector-effect': 'non-scaling-stroke',
+        'pointer-events': 'none',
+      });
+      const title = svgElement('title');
+      title.textContent = marker.label ?? marker.id;
+      const ring = svgElement('circle', {
+        fill: 'none',
+        stroke: features.selectedMarkerRing
+          ? (features.selectedMarkerRing.color ?? selectedMarkerColor)
+          : selectedMarkerColor,
+        'stroke-width': features.selectedMarkerRing ? features.selectedMarkerRing.width : 2,
+        'vector-effect': 'non-scaling-stroke',
+        'pointer-events': 'none',
+        display: 'none',
+      });
+      node.style.setProperty('--sf-marker-index', String(index));
+      node.append(title, hit, ring, dot);
+      if (features.markerEntrance && enter && !reducedMotion && typeof dot.animate === 'function') {
+        const animation = dot.animate(
+          [
+            { opacity: 0, transform: 'translateY(-12px)' },
+            { opacity: 1, transform: 'translateY(0)' },
+          ],
+          {
+            duration: features.markerEntrance.duration,
+            delay: Math.min(index * features.markerEntrance.stagger, 1000),
+            easing: 'cubic-bezier(.2,.8,.2,1)',
+            fill: 'backwards',
+          },
+        );
+        animations.add(animation);
+        animation.finished.then(
+          () => animations.delete(animation),
+          () => animations.delete(animation),
+        );
+      }
+
+      layer.append(node);
+      return { marker, point, node, dot, hit, ring };
+    },
+  };
+}

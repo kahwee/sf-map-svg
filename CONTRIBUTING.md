@@ -21,6 +21,8 @@ pnpm test:stories:coverage
 | `src/full-data.ts` | Explicit complete geographic preset (`/data/full`) |
 | `src/static-data.ts` | Explicit static geographic preset (`/data/static`) |
 | `src/geometry.ts` | Mercator projection and GeoJSON path conversion         |
+| `src/district-style.ts`, `src/district-layer.ts`, `src/district-transition.ts` | Prepared district styles, interaction appearance, and cancellable year fades |
+| `src/label-renderer.ts`, `src/marker-layer.ts` | Reusable label nodes/metrics and marker visual/entrance ownership |
 | `src/data.ts`     | Internal adapter over canonical JSON geometry           |
 | `src/types.ts`  | Public TypeScript declarations                          |
 | `test/`           | Rendering, XML, projection and input validation         |
@@ -31,6 +33,8 @@ Keep runtime dependencies at zero. Library source is strict TypeScript 7. `pnpm 
 Use `pnpm format` for Biome formatting, import organization, and safe lint fixes; `pnpm check` checks dependency peers, formatting, data, types, and tests. Canonical geographic JSON and generated output are excluded. Biome does not format Markdown or GitHub workflow YAML. Changes to the API need matching declarations and documentation. Geometry changes need dated source records in `SOURCES.md`.
 
 For rendering changes, inspect the example page on desktop and at 390 px. Run `pnpm check` and inspect `pnpm pack` contents before releasing. Never include credentials, node_modules, or source extraction credentials in the repository or archive.
+
+For camera or animation changes, exercise **Checks / Motion lifecycle** in Storybook with normal and reduced motion. Verify interruption, rapid year switches, marker replacement, destruction during callbacks, and font-load invalidation. Label metrics are cached in screen pixels; preserve collision rules and invalidate them when fonts change. District style preparation must finish before mutating state, and reentrant callbacks must not overwrite a newer update.
 
 ## Public npm releases
 

@@ -4,6 +4,7 @@ import { clusterPoints } from './clusters.js';
 import { renderDistrictAppearance } from './district-layer.js';
 import { prepareDistrictStyles } from './district-style.js';
 import { createDistrictTransition } from './district-transition.js';
+import { element, svgElement } from './dom.js';
 import type { InteractiveSFMapData } from './explorer-data.js';
 import type { View } from './explorer-layout.js';
 import { fitBounds, interiorAnchor, projectedBounds } from './explorer-layout.js';
@@ -11,6 +12,7 @@ import { controlKeys, layerKeys, normalizeFeatures, validateSwitchPatch } from '
 import { geometryPath } from './geometry.js';
 import { createLabelRenderer } from './label-renderer.js';
 import { createSFMapWithData, districtColors, getLayerPathsWithData } from './map-core.js';
+import { createMarkerLayer, type MarkerItem } from './marker-layer.js';
 import { attachNavigation } from './navigation.js';
 import type {
   CameraOptions,
@@ -49,7 +51,6 @@ interface LabelItem {
   level?: 'primary' | 'secondary';
 }
 
-const svgNS = 'http://www.w3.org/2000/svg';
 const sourceNames: Record<NeighborhoodSource, string> = {
   realtor: 'SFAR realtor · 92 areas',
   'sf-find': 'SF Find · 117 areas',
@@ -64,24 +65,6 @@ const normalizeName = (value: string) =>
     .trim();
 const formatSourceLabel = (source: NeighborhoodSource) =>
   sourceNames[source] ?? `${source} neighborhoods`;
-function element<K extends keyof HTMLElementTagNameMap>(
-  tag: K,
-  text?: string,
-  className?: string,
-): HTMLElementTagNameMap[K] {
-  const node = document.createElement(tag);
-  if (text) node.textContent = text;
-  if (className) node.className = className;
-  return node;
-}
-function svgElement<K extends keyof SVGElementTagNameMap>(
-  tag: K,
-  attributes: Record<string, string | number> = {},
-): SVGElementTagNameMap[K] {
-  const node = document.createElementNS(svgNS, tag);
-  for (const [key, value] of Object.entries(attributes)) node.setAttribute(key, String(value));
-  return node;
-}
 
 let explorerCount = 0;
 
@@ -515,6 +498,7 @@ export function createNeighborhoodExplorerCore(
   let districtStyle = initialDistrictStyle;
   let districtStyles = prepareDistrictStyles(data.map.districts?.[year] ?? [], districtStyle);
   const districtTransition = createDistrictTransition();
+  let districtRevision = 0;
   root.dataset.year = String(year);
   function districtRow(id: number) {
     return data.map.districts?.[year]?.find((district) => district.id === id);
@@ -551,12 +535,14 @@ export function createNeighborhoodExplorerCore(
     validateCameraOptions(options);
     if (id !== null && (!Number.isInteger(id) || !districtRow(id))) return false;
     const changed = selectedDistrict !== id;
+    const revision = ++districtRevision;
     selectedDistrict = id;
     if (id === null) delete root.dataset.selectedDistrict;
     else root.dataset.selectedDistrict = String(id);
     updateDistrictAppearance();
     const selectedRow = id === null ? undefined : districtRow(id);
     if (selectedRow && options.fit) fitGeometry(selectedRow.geometry, undefined, options);
+    if (destroyed || revision !== districtRevision) return true;
     status.textContent =
       id === null ? 'District selection cleared.' : `District ${id} selected, ${year} boundaries.`;
     if (changed)
@@ -567,7 +553,10 @@ export function createNeighborhoodExplorerCore(
   }
   function setDistrictStyle(style: typeof districtStyle) {
     if (destroyed) return;
+    const revision = districtRevision;
     const prepared = prepareDistrictStyles(data.map.districts?.[year] ?? [], style);
+    if (destroyed || revision !== districtRevision) return;
+    districtRevision++;
     districtStyle = style;
     districtStyles = prepared;
     updateDistrictAppearance();
@@ -580,7 +569,10 @@ export function createNeighborhoodExplorerCore(
     if (!data.map.districts?.[next] || !data.districts?.[next])
       throw new RangeError(`No ${next} district dataset was supplied.`);
     if (next === year) return;
+    const revision = districtRevision;
     const prepared = prepareDistrictStyles(data.map.districts[next], districtStyle);
+    if (destroyed || revision !== districtRevision) return;
+    const committedRevision = ++districtRevision;
     const geometry = getLayerPathsWithData({ year: next }, data.map, false);
     const previousYear = year;
     districtTransition.cancel();
@@ -620,7 +612,7 @@ export function createNeighborhoodExplorerCore(
     root.dispatchEvent(
       new CustomEvent('districtyearchange', { bubbles: true, detail: { year, previousYear } }),
     );
-    if (selectedDistrict !== null)
+    if (!destroyed && committedRevision === districtRevision && selectedDistrict !== null)
       root.dispatchEvent(
         new CustomEvent('districtchange', {
           bubbles: true,
@@ -633,11 +625,8 @@ export function createNeighborhoodExplorerCore(
   let destroyed = false;
   let initialized = false;
   let frame = 0;
-  const entranceAnimations = new Set<Animation>();
-  function cancelEntrances() {
-    for (const animation of entranceAnimations) animation.cancel();
-    entranceAnimations.clear();
-  }
+  const markerRenderer = createMarkerLayer(markerLayer);
+  const cancelEntrances = markerRenderer.cancelEntrances;
   const camera = createCamera({
     read: getViewport,
     write: setView,
@@ -710,14 +699,7 @@ export function createNeighborhoodExplorerCore(
     name: feature.name,
     kind: 'park',
   }));
-  let markerItems: {
-    marker: MapMarker;
-    point: [number, number];
-    node: SVGGElement;
-    dot: SVGCircleElement;
-    hit: SVGCircleElement;
-    ring: SVGCircleElement;
-  }[] = [];
+  let markerItems: MarkerItem[] = [];
   let selectedMarker: string | null = null;
   let markerRevision = 0;
   let neighborhoodRevision = 0;
@@ -1541,69 +1523,22 @@ export function createNeighborhoodExplorerCore(
       .id;
     invalidateClusters();
     const previousIds = new Set(markerItems.map((item) => item.marker.id));
-    for (const animation of entranceAnimations) animation.cancel();
-    entranceAnimations.clear();
+    markerRenderer.clear();
     const previous = selectedMarker;
-    markerLayer.replaceChildren();
     markerSelect.replaceChildren(element('option', 'No marker selected'));
     markerSelect.options[0].value = '';
     markerItems = next.map(({ marker, point }, index) => {
-      const node = svgElement('g', {
-        transform: `translate(${point[0]},${point[1]})`,
-        'data-marker-id': marker.id,
-        role: 'button',
-        tabindex: 0,
-        'aria-label': marker.label ?? marker.id,
-        'aria-pressed': 'false',
+      const item = markerRenderer.add(marker, point, index, {
+        features,
+        markerColor,
+        selectedMarkerColor,
+        reducedMotion: reducedMotion.matches,
+        enter: !previousIds.has(marker.id),
       });
-      const hit = svgElement('circle', { fill: 'transparent', 'pointer-events': 'all' });
-      const dot = svgElement('circle', {
-        fill: marker.color ?? markerColor,
-        stroke: '#fff9e9',
-        'stroke-width': 2,
-        'vector-effect': 'non-scaling-stroke',
-        'pointer-events': 'none',
-      });
-      const title = svgElement('title');
-      title.textContent = marker.label ?? marker.id;
-      const ring = svgElement('circle', {
-        fill: 'none',
-        stroke: features.selectedMarkerRing
-          ? (features.selectedMarkerRing.color ?? selectedMarkerColor)
-          : selectedMarkerColor,
-        'stroke-width': features.selectedMarkerRing ? features.selectedMarkerRing.width : 2,
-        'vector-effect': 'non-scaling-stroke',
-        'pointer-events': 'none',
-        display: 'none',
-      });
-      node.style.setProperty('--sf-marker-index', String(index));
-      node.append(title, hit, ring, dot);
-      if (
-        features.markerEntrance &&
-        !previousIds.has(marker.id) &&
-        !reducedMotion.matches &&
-        typeof dot.animate === 'function'
-      ) {
-        const animation = dot.animate(
-          [
-            { opacity: 0, transform: 'translateY(-12px)' },
-            { opacity: 1, transform: 'translateY(0)' },
-          ],
-          {
-            duration: features.markerEntrance.duration,
-            delay: Math.min(index * features.markerEntrance.stagger, 1000),
-            easing: 'cubic-bezier(.2,.8,.2,1)',
-            fill: 'backwards',
-          },
-        );
-        entranceAnimations.add(animation);
-        animation.onfinish = () => entranceAnimations.delete(animation);
-      }
-      markerLayer.append(node);
       const option = element('option', marker.label ?? marker.id);
       option.value = marker.id;
       markerSelect.append(option);
-      return { marker, point, node, dot, hit, ring };
+      return item;
     });
     markerLabel.hidden = !markerItems.length || controls.markerPicker === false;
     if (markerLabel.firstChild)
