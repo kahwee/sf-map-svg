@@ -58,6 +58,8 @@ Construction options include `mode` (`basemap`, `neighborhoods`, or `districts`)
 
 The controller also supports marker, neighborhood, and district selection; district year and style changes; source and mode changes; labels and touch navigation; screen projection; and typed `markerchange`, `neighborhoodchange`, `districtchange`, `districthover`, `districtactivate`, `districtyearchange`, `overlayactivate`, `clusteractivate`, `viewportchange`, and `mapresize` events. `destroy()` releases browser resources; operations after destruction throw.
 
+`setMarkers()` reconciles by stable marker `id`: retained markers keep their DOM nodes, focus, and in-progress entrance animations; only new IDs animate in. Identical ordered marker updates are a visual no-op. Camera state and `viewportchange` events remain synchronous, while animated camera steps and their dependent label/marker layout commit in the same browser frame.
+
 For a small guide, import `guideMapData` from `/guide/data` and pass it to `createMap`. The optional `/guide` entry also provides `createGuideMap`, `mountGuideMap`, and detailed-data loading for existing guide layouts. `/transit` provides the standalone schematic transit animation. See [examples](docs/EXAMPLES.md) and [consumer integration](docs/consumer-integration.md).
 
 For the guide preset with the same controller API, use `createGuideController(options)` from `/guide` (or `/guide/map`). It accepts grouped `MapOptions` and returns `MapController`; `mountGuideController(shell, options)` enhances a `createGuideShell()` container. Both use the lightweight guide geography. Existing `createGuideMap` and `mountGuideMap` calls retain their element-based API.

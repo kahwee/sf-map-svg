@@ -24,6 +24,8 @@ unbounded geographic data can never fail.
 | District style callbacks | Prepare and copy every style before committing. Hover/selection reuse the results; call `setDistrictStyle()` to refresh changed external data. Reentrant updates or destruction supersede pending work. |
 | Rapid district year changes | Both outgoing layers are tracked, inert, and removed on interruption, completion, reduced-motion changes, or destruction. Zero duration creates no transition copies. |
 | Label metrics and camera movement | Reuse screen-space text measurements and nodes across frames. Font loading invalidates measurements; hidden or removed candidates do not remain in the visible layer. |
+| Marker replacement | Reconcile stable IDs, preserve retained nodes/picker options and entrance animations, cancel removed entrances, and restore focus after reordering. Identical ordered values do not mutate the DOM or restart work. |
+| Camera and label scheduling | A shared frame advances the camera before rendering dependent labels, marker sizes, and clusters. State/events remain synchronous; cancellation preserves pending layout, and destruction cancels both kinds of work. |
 | Guide controllers and compatibility factories | `createGuideController`/`mountGuideController` share grouped options and lifecycle with `createMap`. Existing element factories retain flat options and their return types. |
 | Layer hidden and bundle cost | Visibility never unloads imported geography. Use narrow entrypoints or data injection to save bytes. |
 

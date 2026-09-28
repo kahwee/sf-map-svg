@@ -23,6 +23,7 @@ pnpm test:stories:coverage
 | `src/geometry.ts` | Mercator projection and GeoJSON path conversion         |
 | `src/district-style.ts`, `src/district-layer.ts`, `src/district-transition.ts` | Prepared district styles, interaction appearance, and cancellable year fades |
 | `src/label-renderer.ts`, `src/marker-layer.ts` | Reusable label nodes/metrics and marker visual/entrance ownership |
+| `src/frame-scheduler.ts` | Shared camera and dependent screen-space render frame |
 | `src/data.ts`     | Internal adapter over canonical JSON geometry           |
 | `src/types.ts`  | Public TypeScript declarations                          |
 | `test/`           | Rendering, XML, projection and input validation         |

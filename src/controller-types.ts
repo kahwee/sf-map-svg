@@ -81,6 +81,7 @@ export interface MapController {
   configure(patch: MapConfiguration): void;
   getConfiguration(): MapConfigurationSnapshot;
   on<K extends keyof MapEvents>(type: K, listener: (detail: MapEvents[K]) => void): () => void;
+  /** Reconcile stable IDs; retained markers preserve nodes, focus, and entrance animations. */
   setMarkers(markers: readonly MapMarker[]): void;
   setOverlays(overlays: readonly MapOverlay[]): void;
   selectMarker(id: string | null, options?: CameraOptions & { fit?: boolean }): boolean;

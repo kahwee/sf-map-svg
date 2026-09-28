@@ -231,6 +231,7 @@ export interface NeighborhoodExplorerElement extends HTMLElement {
   fitGeometry(geometry: Geometry, padding?: number | MapPadding, options?: CameraOptions): void;
   /** Explicitly engage map touch gestures; false restores page gestures. */
   setTouchNavigation(enabled: boolean): void;
+  /** Reconcile stable IDs; retained markers preserve nodes, focus, and entrance animations. */
   setMarkers(markers: readonly MapMarker[]): void;
   setOverlays(overlays: readonly MapOverlay[]): void;
   selectMarker(id: string | null, options?: { fit?: boolean } & CameraOptions): boolean;

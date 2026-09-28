@@ -9,13 +9,14 @@ export interface MarkerItem {
   dot: SVGCircleElement;
   hit: SVGCircleElement;
   ring: SVGCircleElement;
+  title: SVGTitleElement;
 }
 
 /** Own marker visuals and entrances; selection/events remain with the controller. */
 export function createMarkerLayer(layer: SVGGElement) {
-  const animations = new Set<Animation>();
+  const animations = new Map<SVGGElement, Animation>();
   function cancelEntrances() {
-    for (const animation of animations) animation.cancel();
+    for (const animation of animations.values()) animation.cancel();
     animations.clear();
   }
   return {
@@ -23,6 +24,24 @@ export function createMarkerLayer(layer: SVGGElement) {
     clear() {
       cancelEntrances();
       layer.replaceChildren();
+    },
+    remove(item: MarkerItem) {
+      animations.get(item.node)?.cancel();
+      animations.delete(item.node);
+      item.node.remove();
+    },
+    update(item: MarkerItem, marker: MapMarker, point: [number, number], index: number) {
+      if (item.point[0] !== point[0] || item.point[1] !== point[1])
+        item.node.setAttribute('transform', `translate(${point[0]},${point[1]})`);
+      const label = marker.label ?? marker.id;
+      if (item.title.textContent !== label) {
+        item.title.textContent = label;
+        item.node.setAttribute('aria-label', label);
+      }
+      if (item.node.style.getPropertyValue('--sf-marker-index') !== String(index))
+        item.node.style.setProperty('--sf-marker-index', String(index));
+      item.marker = marker;
+      item.point = point;
     },
     add(
       marker: MapMarker,
@@ -85,15 +104,15 @@ export function createMarkerLayer(layer: SVGGElement) {
             fill: 'backwards',
           },
         );
-        animations.add(animation);
-        animation.finished.then(
-          () => animations.delete(animation),
-          () => animations.delete(animation),
-        );
+        animations.set(node, animation);
+        const release = () => {
+          if (animations.get(node) === animation) animations.delete(node);
+        };
+        animation.finished.then(release, release);
       }
 
       layer.append(node);
-      return { marker, point, node, dot, hit, ring };
+      return { marker, point, node, dot, hit, ring, title };
     },
   };
 }

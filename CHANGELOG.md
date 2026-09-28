@@ -4,6 +4,11 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 4.0.1 — 2026-09-28
+
+- Reconcile marker updates by ID, preserving retained SVG nodes, picker options, keyboard focus, and entrance animations. Identical ordered updates no longer mutate the DOM; only new IDs animate in and removed markers cancel their entrances.
+- Advance animated cameras and dependent label, marker, and cluster layout in one shared browser frame, with regression coverage for coalescing, cancellation, reentrant updates, and destruction.
+
 ## 4.0.0 — 2026-09-28
 
 - Breaking: require Node 24 or newer for server rendering and development. Validate the minimum supported major alongside Node 26 in CI; browser runtime requirements are unchanged.

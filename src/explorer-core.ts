@@ -9,6 +9,7 @@ import type { InteractiveSFMapData } from './explorer-data.js';
 import type { View } from './explorer-layout.js';
 import { fitBounds, interiorAnchor, projectedBounds } from './explorer-layout.js';
 import { controlKeys, layerKeys, normalizeFeatures, validateSwitchPatch } from './features.js';
+import { createFrameScheduler } from './frame-scheduler.js';
 import { geometryPath } from './geometry.js';
 import { createLabelRenderer } from './label-renderer.js';
 import { createSFMapWithData, districtColors, getLayerPathsWithData } from './map-core.js';
@@ -624,7 +625,11 @@ export function createNeighborhoodExplorerCore(
   let items: NeighborhoodItem[] = [];
   let destroyed = false;
   let initialized = false;
-  let frame = 0;
+  const frames = createFrameScheduler({
+    request: (callback) => requestAnimationFrame(callback),
+    cancel: (id) => cancelAnimationFrame(id),
+    render: drawLabels,
+  });
   const markerRenderer = createMarkerLayer(markerLayer);
   const cancelEntrances = markerRenderer.cancelEntrances;
   const camera = createCamera({
@@ -632,8 +637,8 @@ export function createNeighborhoodExplorerCore(
     write: setView,
     duration: () => (initialized && features.motion ? features.motion.duration : 0),
     reduced: () => reducedMotion.matches,
-    request: (callback) => requestAnimationFrame(callback),
-    cancel: (id) => cancelAnimationFrame(id),
+    request: frames.request,
+    cancel: frames.cancel,
     now: () => performance.now(),
   });
   const stopAnimation = camera.stop;
@@ -936,8 +941,7 @@ export function createNeighborhoodExplorerCore(
   }
   function scheduleLabels() {
     if (destroyed) return;
-    cancelAnimationFrame(frame);
-    frame = requestAnimationFrame(drawLabels);
+    frames.invalidate();
   }
   function drawLabels() {
     if (destroyed) return;
@@ -1492,13 +1496,14 @@ export function createNeighborhoodExplorerCore(
     markerSelect.value = id ?? '';
     for (const entry of markerItems) {
       const active = entry.marker.id === id;
-      entry.node.setAttribute('aria-pressed', String(active));
-      entry.ring.setAttribute('display', active && features.selectedMarkerRing ? 'inline' : 'none');
-      entry.dot.setAttribute(
-        'fill',
-        active ? selectedMarkerColor : (entry.marker.color ?? markerColor),
-      );
-      if (active) markerLayer.append(entry.node);
+      const pressed = String(active);
+      const ring = active && features.selectedMarkerRing ? 'inline' : 'none';
+      const fill = active ? selectedMarkerColor : (entry.marker.color ?? markerColor);
+      if (entry.node.getAttribute('aria-pressed') !== pressed)
+        entry.node.setAttribute('aria-pressed', pressed);
+      if (entry.ring.getAttribute('display') !== ring) entry.ring.setAttribute('display', ring);
+      if (entry.dot.getAttribute('fill') !== fill) entry.dot.setAttribute('fill', fill);
+      if (active && markerLayer.lastChild !== entry.node) markerLayer.append(entry.node);
     }
     scheduleLabels();
     const marker = getSelectedMarker();
@@ -1514,42 +1519,81 @@ export function createNeighborhoodExplorerCore(
   function setMarkers(markers: readonly MapMarker[]) {
     if (destroyed) return;
     validateMarkers(markers);
+    const existing = new Map(markerItems.map((item) => [item.marker.id, item]));
     const ids = new Set<string>();
     const next = markers.map((marker) => {
       ids.add(marker.id);
-      return { marker: { ...marker }, point: map.project([marker.lng, marker.lat]) };
+      const previous = existing.get(marker.id);
+      const point =
+        previous?.marker.lng === marker.lng && previous.marker.lat === marker.lat
+          ? previous.point
+          : map.project([marker.lng, marker.lat]);
+      return { marker: { ...marker }, point };
     });
+    const nextSelection =
+      selectedMarker && ids.has(selectedMarker)
+        ? selectedMarker
+        : (markers.find((marker) => marker.selected)?.id ?? null);
+    const keys = ['id', 'lng', 'lat', 'label', 'selected', 'color', 'radius'] as const;
+    if (
+      markerSelect.options.length > 0 &&
+      nextSelection === selectedMarker &&
+      next.length === markerItems.length &&
+      next.every(({ marker }, index) =>
+        keys.every((key) => marker[key] === markerItems[index].marker[key]),
+      )
+    )
+      return;
     const focusedMarker = markerItems.find((item) => item.node === document.activeElement)?.marker
       .id;
     invalidateClusters();
-    const previousIds = new Set(markerItems.map((item) => item.marker.id));
-    markerRenderer.clear();
-    const previous = selectedMarker;
-    markerSelect.replaceChildren(element('option', 'No marker selected'));
-    markerSelect.options[0].value = '';
+    const options = new Map([...markerSelect.options].map((option) => [option.value, option]));
+    for (const item of markerItems) {
+      if (!ids.has(item.marker.id)) {
+        markerRenderer.remove(item);
+        options.get(item.marker.id)?.remove();
+      }
+    }
+    if (!options.has('')) {
+      const empty = element('option', 'No marker selected');
+      empty.value = '';
+      markerSelect.prepend(empty);
+    }
     markerItems = next.map(({ marker, point }, index) => {
-      const item = markerRenderer.add(marker, point, index, {
-        features,
-        markerColor,
-        selectedMarkerColor,
-        reducedMotion: reducedMotion.matches,
-        enter: !previousIds.has(marker.id),
-      });
-      const option = element('option', marker.label ?? marker.id);
-      option.value = marker.id;
-      markerSelect.append(option);
+      const previous = existing.get(marker.id);
+      const item =
+        previous ??
+        markerRenderer.add(marker, point, index, {
+          features,
+          markerColor,
+          selectedMarkerColor,
+          reducedMotion: reducedMotion.matches,
+          enter: true,
+        });
+      if (previous) markerRenderer.update(item, marker, point, index);
+      const option = options.get(marker.id) ?? element('option');
+      const label = marker.label ?? marker.id;
+      if (option.textContent !== label) option.textContent = label;
+      if (option.value !== marker.id) option.value = marker.id;
+      if (markerSelect.children[index + 1] !== option)
+        markerSelect.insertBefore(option, markerSelect.children[index + 1] ?? null);
       return item;
+    });
+    // Match input order without detaching unchanged nodes; selected markers remain on top.
+    const ordered = markerItems.filter((item) => item.marker.id !== nextSelection);
+    const selectedItem = markerItems.find((item) => item.marker.id === nextSelection);
+    if (selectedItem) ordered.push(selectedItem);
+    ordered.forEach((item, index) => {
+      if (markerLayer.children[index] !== item.node)
+        markerLayer.insertBefore(item.node, markerLayer.children[index] ?? null);
     });
     markerLabel.hidden = !markerItems.length || controls.markerPicker === false;
     if (markerLabel.firstChild)
       markerLabel.firstChild.textContent = `${strings.chooseMarker ?? 'Choose marker'} (${markerItems.length})`;
     syncFeatureControls();
-    const nextSelection =
-      previous && ids.has(previous)
-        ? previous
-        : (markers.find((marker) => marker.selected)?.id ?? null);
+    const revision = markerRevision + 1;
     selectMarker(nextSelection, { fit: false });
-    if (focusedMarker)
+    if (!destroyed && markerRevision === revision && focusedMarker)
       (markerItems.find((item) => item.marker.id === focusedMarker)?.node ?? svg).focus({
         preventScroll: true,
       });
@@ -1839,7 +1883,7 @@ export function createNeighborhoodExplorerCore(
       clusterEvents.abort();
       canvas.style.touchAction = 'pan-y pinch-zoom';
       observer?.disconnect();
-      cancelAnimationFrame(frame);
+      frames.destroy();
       labelRenderer.clear();
       releaseDownloads();
     },
