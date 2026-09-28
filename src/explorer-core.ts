@@ -1,13 +1,15 @@
 import type { Bounds, NeighborhoodFeature, NeighborhoodSource } from '../data/types.js';
 import { createCamera, validateCameraOptions } from './camera.js';
 import { clusterPoints } from './clusters.js';
+import { renderDistrictAppearance } from './district-layer.js';
 import { prepareDistrictStyles } from './district-style.js';
 import { createDistrictTransition } from './district-transition.js';
 import type { InteractiveSFMapData } from './explorer-data.js';
 import type { View } from './explorer-layout.js';
-import { fitBounds, interiorAnchor, layoutLabels, projectedBounds } from './explorer-layout.js';
+import { fitBounds, interiorAnchor, projectedBounds } from './explorer-layout.js';
 import { controlKeys, layerKeys, normalizeFeatures, validateSwitchPatch } from './features.js';
 import { geometryPath } from './geometry.js';
+import { createLabelRenderer } from './label-renderer.js';
 import { createSFMapWithData, districtColors, getLayerPathsWithData } from './map-core.js';
 import { attachNavigation } from './navigation.js';
 import type {
@@ -504,6 +506,7 @@ export function createNeighborhoodExplorerCore(
     'aria-hidden': 'true',
     'font-family': labelStyle.fontFamily ?? styleOptions.font ?? 'system-ui,sans-serif',
   });
+  const labelRenderer = createLabelRenderer(labelLayer);
   geography.append(areas, stations, labelLayer, overlayLayer, markerLayer);
   let view: View = [0, 0, 800];
   let selected: NeighborhoodFeature | undefined;
@@ -530,59 +533,18 @@ export function createNeighborhoodExplorerCore(
       : (districtSelection(selectedDistrict) as DistrictSelection);
   }
   function updateDistrictAppearance() {
-    const rows = data.map.districts?.[year] ?? [];
-    for (const row of rows) {
-      const styled = districtStyles.get(row.id);
-      const active = selectedDistrict === row.id;
-      const hovered = hoveredDistrict === row.id;
-      const fill = svg.querySelector<SVGPathElement>(
-        `[data-layer="district-fills"] [data-district="${row.id}"]`,
-      );
-      const line = svg.querySelector<SVGPathElement>(
-        `[data-layer="district-lines"] [data-district="${row.id}"]`,
-      );
-      if (fill) {
-        fill.setAttribute(
-          'fill',
-          styled?.fill ??
-            (theme === 'transit' ? (colors.land ?? '#fcfcf8') : districtColors[row.id - 1]),
-        );
-        if (styled?.opacity === undefined) fill.removeAttribute('fill-opacity');
-        else fill.setAttribute('fill-opacity', String(styled.opacity));
-        fill.setAttribute('role', 'button');
-        fill.setAttribute('aria-label', `District ${row.id}, ${year}`);
-        fill.setAttribute('aria-pressed', String(active));
-        fill.setAttribute('tabindex', row.id === 1 ? '0' : '-1');
-        fill.style.cursor = 'pointer';
-      }
-      if (line) {
-        line.setAttribute(
-          'stroke',
-          active
-            ? (colors.selected ?? '#f04f32')
-            : hovered
-              ? '#163e56'
-              : (styled?.stroke ?? colors.district ?? '#a7b8c0'),
-        );
-        line.setAttribute('stroke-width', active ? '3' : hovered ? '2.2' : '1.1');
-        const lineInteractive = !enabled('districtFills') && enabled('districtLines');
-        line.style.pointerEvents = lineInteractive ? 'stroke' : 'none';
-        if (lineInteractive) {
-          line.setAttribute('role', 'button');
-          line.setAttribute('aria-label', `District ${row.id}, ${year}`);
-          line.setAttribute('aria-pressed', String(active));
-          line.setAttribute('tabindex', row.id === 1 ? '0' : '-1');
-          line.style.cursor = 'pointer';
-        } else {
-          line.removeAttribute('role');
-          line.removeAttribute('aria-label');
-          line.removeAttribute('aria-pressed');
-          line.removeAttribute('tabindex');
-        }
-        if (styled?.opacity === undefined) line.removeAttribute('stroke-opacity');
-        else line.setAttribute('stroke-opacity', String(styled.opacity));
-      }
-    }
+    renderDistrictAppearance({
+      svg,
+      rows: data.map.districts?.[year] ?? [],
+      styles: districtStyles,
+      selectedDistrict,
+      hoveredDistrict,
+      year,
+      theme,
+      colors,
+      fills: enabled('districtFills'),
+      lines: enabled('districtLines'),
+    });
   }
   function selectDistrict(id: number | null, options: { fit?: boolean } & CameraOptions = {}) {
     if (destroyed) return false;
@@ -999,7 +961,6 @@ export function createNeighborhoodExplorerCore(
     if (destroyed) return;
     const width = canvas.getBoundingClientRect().width;
     if (!width) return;
-    labelLayer.replaceChildren();
     const unit = view[2] / width,
       zoom = 800 / view[2];
     for (const road of svg.querySelectorAll<SVGPathElement>('[data-key-road-level="secondary"]'))
@@ -1040,6 +1001,7 @@ export function createNeighborhoodExplorerCore(
       scale.textContent = meters >= 1000 ? `${meters / 1000} km` : `${meters} m`;
     }
     if (!labels) {
+      labelRenderer.clear();
       root.dataset.visibleLabels = '0';
       return;
     }
@@ -1087,14 +1049,15 @@ export function createNeighborhoodExplorerCore(
             kind: 'neighborhood',
           })),
       );
-    const measured = candidates.map((item) => {
+    const labelCandidates = candidates.map((item) => {
       const fontSize =
         item.kind === 'road'
           ? Math.max(minLabelSize, Math.min(11, maxLabelSize))
           : Math.max(minLabelSize, Math.min(maxLabelSize, 12));
-      const node = svgElement('text', {
-        'font-size': fontSize * unit,
-        'font-weight':
+      return {
+        ...item,
+        fontSize,
+        fontWeight:
           labelStyle.fontWeight ??
           (item.kind.startsWith('selected') || item.kind === 'district' ? 700 : 550),
         fill:
@@ -1104,22 +1067,7 @@ export function createNeighborhoodExplorerCore(
             : item.kind === 'road'
               ? '#77736b'
               : '#163d61'),
-        stroke: labelStyle.haloColor ?? '#ffffff',
-        'stroke-width': 3 * unit,
-        'stroke-linejoin': 'round',
-        'paint-order': 'stroke',
-        'data-label-kind': item.kind,
-      });
-      node.textContent = item.name;
-      labelLayer.append(node);
-      return {
-        ...item,
-        node,
-        x: (item.point[0] - view[0]) / unit,
-        y: (item.point[1] - view[1]) / unit,
-        textWidth: node.getComputedTextLength() / unit,
-        fontSize,
-        textHeight: fontSize * 1.25,
+        halo: labelStyle.haloColor ?? '#ffffff',
         offset:
           item.kind === 'selected-marker'
             ? (marker?.marker.radius ?? markerRadius) + 9
@@ -1155,18 +1103,13 @@ export function createNeighborhoodExplorerCore(
           box.bottom - canvasBox.top + 3,
         ];
       });
-    const placed = layoutLabels(measured, width, width, [
-      ...stationBounds,
-      ...markerBounds,
-      ...furnitureBounds,
-    ]);
-    for (const item of measured) item.node.remove();
-    for (const item of placed) {
-      item.node.setAttribute('x', String(view[0] + item.left * unit));
-      item.node.setAttribute('y', String(view[1] + (item.top + item.fontSize) * unit));
-      labelLayer.append(item.node);
-    }
-    root.dataset.visibleLabels = String(placed.length);
+    root.dataset.visibleLabels = String(
+      labelRenderer.draw(labelCandidates, view, width, [
+        ...stationBounds,
+        ...markerBounds,
+        ...furnitureBounds,
+      ]),
+    );
   }
   function releaseDownloads() {
     for (const url of downloads) URL.revokeObjectURL(url);
@@ -1962,13 +1905,21 @@ export function createNeighborhoodExplorerCore(
       canvas.style.touchAction = 'pan-y pinch-zoom';
       observer?.disconnect();
       cancelAnimationFrame(frame);
+      labelRenderer.clear();
       releaseDownloads();
     },
   });
   try {
     observer = new ResizeObserver(onResize);
     observer.observe(canvas);
-    document.fonts?.addEventListener('loadingdone', scheduleLabels, { signal: controller.signal });
+    document.fonts?.addEventListener(
+      'loadingdone',
+      () => {
+        labelRenderer.invalidateMetrics();
+        scheduleLabels();
+      },
+      { signal: controller.signal },
+    );
     reducedMotion.addEventListener(
       'change',
       () => {

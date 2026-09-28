@@ -47,6 +47,48 @@ type Story = StoryObj<typeof meta>;
 
 export const Interactive: Story = {};
 
+export const LabelReuseDuringMotion: Story = {
+  play: async ({ canvasElement }) => {
+    const map = canvasElement.querySelector(
+      '.sf-explorer',
+    ) as import('../src/types.js').NeighborhoodExplorerElement;
+    const settled = () =>
+      new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      );
+    map.setMode('neighborhoods');
+    map.setViewport([100, 100, 500], { animate: false });
+    await settled();
+    const layer = map.querySelector('[data-layer="explorer-labels"]');
+    const before = new Set(layer?.children);
+    const original = SVGTextContentElement.prototype.getComputedTextLength;
+    let measurements = 0;
+    SVGTextContentElement.prototype.getComputedTextLength = function () {
+      measurements++;
+      return original.call(this);
+    };
+    try {
+      for (let i = 1; i <= 8; i++) {
+        map.setViewport([100 + i, 100, 500], { animate: false });
+        await settled();
+      }
+      expect(measurements).toBe(0);
+      expect([...(layer?.children ?? [])].some((node) => before.has(node))).toBe(true);
+      document.fonts.dispatchEvent(new Event('loadingdone'));
+      await settled();
+      expect(measurements).toBeGreaterThan(0);
+      map.setLabels(false);
+      await settled();
+      expect(layer?.children).toHaveLength(0);
+      map.setLabels(true);
+      await settled();
+      expect(layer?.children.length).toBeGreaterThan(0);
+    } finally {
+      SVGTextContentElement.prototype.getComputedTextLength = original;
+    }
+  },
+};
+
 export const AtomicStylesAndInterruptedFades: Story = {
   play: async ({ canvasElement }) => {
     const map = canvasElement.querySelector(

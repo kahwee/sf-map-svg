@@ -6,6 +6,7 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 - Prepare district styles once per update before changing the map, and reuse projected district paths.
 - Track both district crossfades so interrupted transitions, reduced motion, and teardown remove all outgoing layers.
+- Reuse label nodes and screen-space text measurements during camera movement, refreshing metrics when fonts load; separate label rendering and district appearance from the interactive engine.
 
 ## 3.0.1 — 2026-09-27
 
