@@ -4,6 +4,9 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Prepare district styles once per update before changing the map, and reuse projected district paths.
+- Track both district crossfades so interrupted transitions, reduced motion, and teardown remove all outgoing layers.
+
 ## 3.0.1 — 2026-09-27
 
 - Narrow the complete-data presets to their direct geographic modules without changing rendered SVGs or public API behavior.

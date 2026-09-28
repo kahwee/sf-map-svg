@@ -4,6 +4,7 @@ import { validateMarkers, validateOverlays } from './validation.js';
 
 export type { DistrictYear, MapMarker, MapOverlay, SFMapOptions } from './types.js';
 
+import { prepareDistrictStyles } from './district-style.js';
 import { geometryPath, positions, rawProject } from './geometry.js';
 import * as layers from './layers.js';
 import { escapeXml, stroke } from './svg.js';
@@ -102,12 +103,11 @@ export function getLayerPathsWithData(options: SFMapOptions, data: SFMapData, co
     districts: (complete || options.districtFills !== false || options.districtLines !== false
       ? (data.districts?.[year] ?? [])
       : []
-    ).map((district) => ({
-      id: district.id,
-      geometry: path(district.geometry),
-      extras: path(district.extras),
-      path: path(district.geometry) + path(district.extras),
-    })),
+    ).map((district) => {
+      const geometry = path(district.geometry);
+      const extras = path(district.extras);
+      return { id: district.id, geometry, extras, path: geometry + extras };
+    }),
     neighborhoods: (complete ? (data.neighborhoods ?? []) : []).map((item) => ({
       name: item.name,
       path: path(item.geometry),
@@ -198,10 +198,14 @@ export function createSFMapWithData(options: SFMapOptions, data: SFMapData) {
   const roadData = data.keyRoads ?? [];
   const stationData = data.bartStations ?? [];
   const context = { project, path, colors, idPrefix, theme, labels };
+  const styles = prepareDistrictStyles(
+    districtFills || districtLines ? districts : [],
+    options.districtStyle,
+  );
   const districtPaths =
     districtFills || districtLines
       ? districts.map((d, index) => {
-          const style = validateDistrictStyle(options.districtStyle?.(d));
+          const style = styles.get(d.id) ?? {};
           return {
             id: d.id,
             path: geometry.districts[index]?.path ?? '',
@@ -237,24 +241,4 @@ export function createSFMapWithData(options: SFMapOptions, data: SFMapData) {
     project,
     viewBox: [0, 0, width, height] as [number, number, number, number],
   };
-}
-
-function validateDistrictStyle(
-  style: ReturnType<NonNullable<SFMapOptions['districtStyle']>> | undefined,
-) {
-  if (style === undefined) return {};
-  if (!style || typeof style !== 'object' || Array.isArray(style))
-    throw new TypeError('districtStyle must return a style object.');
-  for (const key of Object.keys(style))
-    if (!['fill', 'stroke', 'opacity'].includes(key))
-      throw new TypeError(`Unknown district style: ${key}`);
-  for (const key of ['fill', 'stroke'] as const)
-    if (style[key] !== undefined && typeof style[key] !== 'string')
-      throw new TypeError(`${key} must be a string.`);
-  if (
-    style.opacity !== undefined &&
-    (!Number.isFinite(style.opacity) || style.opacity < 0 || style.opacity > 1)
-  )
-    throw new RangeError('District opacity must be between 0 and 1.');
-  return style;
 }

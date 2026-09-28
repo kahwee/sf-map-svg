@@ -1,6 +1,8 @@
 import type { Bounds, NeighborhoodFeature, NeighborhoodSource } from '../data/types.js';
 import { createCamera, validateCameraOptions } from './camera.js';
 import { clusterPoints } from './clusters.js';
+import { prepareDistrictStyles } from './district-style.js';
+import { createDistrictTransition } from './district-transition.js';
 import type { InteractiveSFMapData } from './explorer-data.js';
 import type { View } from './explorer-layout.js';
 import { fitBounds, interiorAnchor, layoutLabels, projectedBounds } from './explorer-layout.js';
@@ -427,7 +429,6 @@ export function createNeighborhoodExplorerCore(
       districtLabels: false,
       districtLines: true,
       districtFills: true,
-      districtStyle: initialDistrictStyle,
       highways: true,
       keyRoads: true,
       roadLabels: false,
@@ -509,7 +510,8 @@ export function createNeighborhoodExplorerCore(
   let selectedDistrict: number | null = null;
   let hoveredDistrict: number | null = null;
   let districtStyle = initialDistrictStyle;
-  let districtTransition: Animation | undefined;
+  let districtStyles = prepareDistrictStyles(data.map.districts?.[year] ?? [], districtStyle);
+  const districtTransition = createDistrictTransition();
   root.dataset.year = String(year);
   function districtRow(id: number) {
     return data.map.districts?.[year]?.find((district) => district.id === id);
@@ -530,7 +532,7 @@ export function createNeighborhoodExplorerCore(
   function updateDistrictAppearance() {
     const rows = data.map.districts?.[year] ?? [];
     for (const row of rows) {
-      const styled = districtStyle?.(row);
+      const styled = districtStyles.get(row.id);
       const active = selectedDistrict === row.id;
       const hovered = hoveredDistrict === row.id;
       const fill = svg.querySelector<SVGPathElement>(
@@ -603,10 +605,9 @@ export function createNeighborhoodExplorerCore(
   }
   function setDistrictStyle(style: typeof districtStyle) {
     if (destroyed) return;
-    if (style !== undefined && typeof style !== 'function')
-      throw new TypeError('districtStyle must be a function.');
-    createSFMapWithData({ year, districtStyle: style, districtLabels: false }, data.map);
+    const prepared = prepareDistrictStyles(data.map.districts?.[year] ?? [], style);
     districtStyle = style;
+    districtStyles = prepared;
     updateDistrictAppearance();
   }
   function setDistrictYear(next: DistrictYear, options: CameraOptions = {}) {
@@ -617,29 +618,13 @@ export function createNeighborhoodExplorerCore(
     if (!data.map.districts?.[next] || !data.districts?.[next])
       throw new RangeError(`No ${next} district dataset was supplied.`);
     if (next === year) return;
-    const geometry = getLayerPathsWithData({ year: next }, data.map);
-    createSFMapWithData({ year: next, districtStyle, districtLabels: false }, data.map);
+    const prepared = prepareDistrictStyles(data.map.districts[next], districtStyle);
+    const geometry = getLayerPathsWithData({ year: next }, data.map, false);
     const previousYear = year;
-    districtTransition?.cancel();
+    districtTransition.cancel();
     for (const layer of districtLayers) {
-      const old =
-        options.animate && !reducedMotion.matches ? (layer.cloneNode(true) as SVGGElement) : null;
-      if (old) {
-        old.setAttribute('aria-hidden', 'true');
-        old.style.pointerEvents = 'none';
-        for (const path of old.querySelectorAll('[data-district]')) {
-          path.removeAttribute('tabindex');
-          path.removeAttribute('role');
-          path.removeAttribute('aria-label');
-          path.removeAttribute('aria-pressed');
-        }
-        layer.after(old);
-        districtTransition = old.animate([{ opacity: 1 }, { opacity: 0 }], {
-          duration: options.duration ?? 280,
-          easing: 'ease-out',
-        });
-        districtTransition.finished.then(() => old.remove()).catch(() => old.remove());
-      }
+      if (options.animate && !reducedMotion.matches)
+        districtTransition.fade(layer, options.duration ?? 280);
       layer.replaceChildren(
         ...geometry.districts.map((district) =>
           svgElement('path', {
@@ -653,6 +638,7 @@ export function createNeighborhoodExplorerCore(
       );
     }
     year = next;
+    districtStyles = prepared;
     hoveredDistrict = null;
     root.dataset.year = String(year);
     svg.dataset.year = String(year);
@@ -1968,6 +1954,7 @@ export function createNeighborhoodExplorerCore(
     destroy() {
       destroyed = true;
       camera.destroy();
+      districtTransition.cancel();
       cancelEntrances();
       controller.abort();
       overlayEvents.abort();
@@ -1987,6 +1974,7 @@ export function createNeighborhoodExplorerCore(
       () => {
         if (reducedMotion.matches) {
           stopAnimation();
+          districtTransition.cancel();
           cancelEntrances();
         }
       },
