@@ -10,7 +10,8 @@ const staticStory =
 async function ready(page) {
   await page.locator('.spot-explorer').waitFor();
   await page.evaluate(() => document.fonts.ready);
-  await expect(page.locator('.spot-explorer')).toHaveCSS('border-top-style', 'solid');
+  // The explorer's toolbar rule comes from spot.css, so styles have applied.
+  await expect(page.locator('.spot-toolbar')).toHaveCSS('border-bottom-style', 'solid');
 }
 
 async function comparePoint(page) {
