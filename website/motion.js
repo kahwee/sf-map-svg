@@ -17,7 +17,7 @@ function applyTheme(theme) {
     // Storage can be unavailable; the choice then lasts for this page only.
   }
   for (const meta of document.querySelectorAll('meta[name="theme-color"]'))
-    meta.content = theme === 'dark' ? '#0e1a1a' : '#f8f8f2';
+    meta.content = theme === 'dark' ? '#121816' : '#f7f3e9';
   const pending = syncToggle();
   root.dispatchEvent(new CustomEvent('themechange', { detail: theme }));
   return pending;

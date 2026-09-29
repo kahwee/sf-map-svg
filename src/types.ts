@@ -57,6 +57,13 @@ export interface SFMapOptions {
   overlays?: readonly MapOverlay[];
   title?: string;
   idPrefix?: string;
+  /**
+   * Opt-in, self-contained CSS choreography for static SVGs: land fades in, the coast and
+   * lines draw, districts grow, then labels and points appear. It plays when the SVG is
+   * inserted into a page or loaded as an image, and stays still under reduced motion.
+   * `duration` (default 2400 ms) scales the whole sequence; `delay` offsets it.
+   */
+  animation?: boolean | { duration?: number; delay?: number };
   colors?: Partial<
     Record<
       | 'water'
@@ -112,6 +119,17 @@ export interface MapFeatures {
   clustering?: boolean | { radius?: number };
   northArrow?: boolean;
   scaleBar?: boolean;
+  /**
+   * Fade layers as `setLayers` and `setMode` switch them, crossfade neighborhood boundaries
+   * when `setSource` changes the definition, and crossfade district fills on
+   * `setDistrictStyle`. Reduced motion takes precedence.
+   */
+  layerTransitions?: boolean | { duration?: number };
+  /**
+   * Morph district outlines from one map year to the next on `setDistrictYear`; pass
+   * `{ animate: false }` for an instant change. Reduced motion takes precedence.
+   */
+  districtMorph?: boolean | { duration?: number };
 }
 export interface NeighborhoodExplorerOptions extends MapFeatures {
   mode?: ExplorerMode;

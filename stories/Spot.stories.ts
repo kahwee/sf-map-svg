@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/html-vite';
 import { expect } from 'storybook/test';
+import { fullMapData } from '../src/full-data.js';
 import { mountSpotExplorer } from '../website/spot-explorer.js';
 import { createStoryLifecycle } from './lifecycle.ts';
+import '../website/site.css';
 import '../website/spot.css';
 
 const lifecycle = createStoryLifecycle();
@@ -22,7 +24,7 @@ const meta = {
     const frame = document.createElement('div');
     frame.className = 'spot-page';
     frame.style.cssText = 'max-width:1240px;margin:auto;padding:20px';
-    const atlas = mountSpotExplorer(frame);
+    const atlas = mountSpotExplorer(frame, { data: fullMapData });
     lifecycle.track(id, () => atlas.destroy());
     return frame;
   },
@@ -64,7 +66,7 @@ export const Phone390: Story = {
     const frame = document.createElement('div');
     frame.className = 'spot-page';
     frame.style.cssText = 'width:390px;max-width:100%;margin:auto';
-    const atlas = mountSpotExplorer(frame);
+    const atlas = mountSpotExplorer(frame, { data: fullMapData });
     lifecycle.track(id, () => atlas.destroy());
     return frame;
   },

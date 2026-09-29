@@ -7,7 +7,7 @@ function objectOption(value: unknown, name: string): Record<string, unknown> | f
   assertOptions(
     value,
     name,
-    name === 'motion'
+    name === 'motion' || name === 'layerTransitions' || name === 'districtMorph'
       ? ['duration']
       : name === 'markerEntrance'
         ? ['duration', 'stagger']
@@ -43,6 +43,8 @@ export function normalizeFeatures(input: MapFeatures = {}) {
     'selectedMarkerRing',
     'northArrow',
     'scaleBar',
+    'layerTransitions',
+    'districtMorph',
   ];
   for (const key of Object.keys(input))
     if (!keys.includes(key)) throw new TypeError(`Unknown feature: ${key}`);
@@ -50,6 +52,8 @@ export function normalizeFeatures(input: MapFeatures = {}) {
   const entrance = objectOption(input.markerEntrance, 'markerEntrance');
   const clustering = objectOption(input.clustering, 'clustering');
   const ring = objectOption(input.selectedMarkerRing, 'selectedMarkerRing');
+  const layerTransitions = objectOption(input.layerTransitions, 'layerTransitions');
+  const districtMorph = objectOption(input.districtMorph, 'districtMorph');
   if (ring && ring.color !== undefined && typeof ring.color !== 'string')
     throw new TypeError('Ring color must be a string.');
   return {
@@ -68,6 +72,12 @@ export function normalizeFeatures(input: MapFeatures = {}) {
     },
     northArrow: flag(input.northArrow, 'northArrow'),
     scaleBar: flag(input.scaleBar, 'scaleBar'),
+    layerTransitions: layerTransitions && {
+      duration: numberOption(layerTransitions.duration, 360, 'Layer transition duration'),
+    },
+    districtMorph: districtMorph && {
+      duration: numberOption(districtMorph.duration, 1100, 'District morph duration', true),
+    },
   };
 }
 

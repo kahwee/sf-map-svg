@@ -1,24 +1,21 @@
-const mount = document.querySelector('#spot-mount');
-const load = async () => {
-  try {
-    const { mountSpotExplorer } = await import('./spot-explorer.js');
-    mountSpotExplorer(mount);
-  } catch {
-    mount.querySelector('.spot-loading').textContent =
-      'The map could not load. Please refresh to try again.';
-  }
-};
+import { whenVisible } from './motion-kit.js';
+import { loadSiteMapData } from './site-map-data.js';
 
-if ('IntersectionObserver' in window) {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      if (!entries[0].isIntersecting) return;
-      observer.disconnect();
-      load();
-    },
-    { rootMargin: '400px' },
-  );
-  observer.observe(mount);
-} else {
-  load();
-}
+const mount = document.querySelector('#spot-mount');
+whenVisible(
+  mount,
+  async () => {
+    try {
+      const [{ mountSpotExplorer }, data] = await Promise.all([
+        import('./spot-explorer.js'),
+        loadSiteMapData(),
+      ]);
+      mountSpotExplorer(mount, { data });
+    } catch (error) {
+      mount.querySelector('.stage-loading').textContent =
+        'The map could not load. Please refresh to try again.';
+      console.error(error);
+    }
+  },
+  '400px',
+);

@@ -2,6 +2,7 @@ import type { Bounds, NeighborhoodFeature, NeighborhoodSource } from '../data/ty
 import { createCamera, validateCameraOptions } from './camera.js';
 import { clusterPoints } from './clusters.js';
 import { renderDistrictAppearance } from './district-layer.js';
+import { createDistrictMorph } from './district-morph.js';
 import { prepareDistrictStyles } from './district-style.js';
 import { createDistrictTransition } from './district-transition.js';
 import { element, svgElement } from './dom.js';
@@ -12,6 +13,7 @@ import { controlKeys, layerKeys, normalizeFeatures, validateSwitchPatch } from '
 import { createFrameScheduler } from './frame-scheduler.js';
 import { geometryPath } from './geometry.js';
 import { createLabelRenderer } from './label-renderer.js';
+import { createLayerTransitions } from './layer-transition.js';
 import { createSFMapWithData, districtColors, getLayerPathsWithData } from './map-core.js';
 import { createMarkerLayer, type MarkerItem } from './marker-layer.js';
 import { attachNavigation } from './navigation.js';
@@ -94,6 +96,8 @@ export function createNeighborhoodExplorerCore(
     attribution: attributionMode = 'full',
     northArrow = false,
     scaleBar = false,
+    layerTransitions = false,
+    districtMorph: districtMorphOption = false,
     interface: chrome = 'explorer',
     layers = {},
     selectableNeighborhoods = true,
@@ -134,6 +138,8 @@ export function createNeighborhoodExplorerCore(
     selectedMarkerRing,
     northArrow,
     scaleBar,
+    layerTransitions,
+    districtMorph: districtMorphOption,
   });
   if (
     labelStyle.fontWeight !== undefined &&
@@ -560,6 +566,11 @@ export function createNeighborhoodExplorerCore(
     districtRevision++;
     districtStyle = style;
     districtStyles = prepared;
+    const fills = districtLayers.find((layer) => layer.dataset.layer === 'district-fills');
+    const fade = layerFades.duration();
+    // A new style settles any fill crossfade still running from an earlier change.
+    districtTransition.cancel();
+    if (fills && fade && enabled('districtFills')) districtTransition.fade(fills, fade);
     updateDistrictAppearance();
   }
   function setDistrictYear(next: DistrictYear, options: CameraOptions = {}) {
@@ -577,8 +588,30 @@ export function createNeighborhoodExplorerCore(
     const geometry = getLayerPathsWithData({ year: next }, data.map, false);
     const previousYear = year;
     districtTransition.cancel();
+    districtMorph.stop();
+    const lineLayer = districtLayers.find((layer) => layer.dataset.layer === 'district-lines');
+    const morph =
+      features.districtMorph &&
+      options.animate !== false &&
+      initialized &&
+      !reducedMotion.matches &&
+      (enabled('districtLines') || enabled('districtFills'))
+        ? features.districtMorph
+        : false;
+    const previousOutlines =
+      morph && lineLayer
+        ? new Map(
+            [...lineLayer.querySelectorAll<SVGPathElement>('path[data-district]')].map((path) => [
+              path.dataset.district ?? '',
+              path.getAttribute('d') ?? '',
+            ]),
+          )
+        : undefined;
     for (const layer of districtLayers) {
-      if (options.animate && !reducedMotion.matches)
+      if (morph) {
+        // The morph replaces the line crossfade; fills fade across the whole morph.
+        if (layer !== lineLayer) districtTransition.fade(layer, morph.duration);
+      } else if (options.animate && !reducedMotion.matches)
         districtTransition.fade(layer, options.duration ?? 280);
       layer.replaceChildren(
         ...geometry.districts.map((district) =>
@@ -608,6 +641,11 @@ export function createNeighborhoodExplorerCore(
     if (selectedDistrict === null) delete root.dataset.selectedDistrict;
     updateDistrictAppearance();
     updateComposition();
+    if (morph && lineLayer && previousOutlines)
+      districtMorph.start(lineLayer, previousOutlines, {
+        duration: morph.duration,
+        stroke: colors.district ?? '#71838a',
+      });
     scheduleLabels();
     status.textContent = `${year} supervisorial districts.`;
     root.dispatchEvent(
@@ -625,6 +663,12 @@ export function createNeighborhoodExplorerCore(
   let items: NeighborhoodItem[] = [];
   let destroyed = false;
   let initialized = false;
+  const layerFades = createLayerTransitions(() =>
+    initialized && features.layerTransitions && !reducedMotion.matches
+      ? features.layerTransitions.duration
+      : 0,
+  );
+  const districtMorph = createDistrictMorph();
   const frames = createFrameScheduler({
     request: (callback) => requestAnimationFrame(callback),
     cancel: (id) => cancelAnimationFrame(id),
@@ -654,6 +698,11 @@ export function createNeighborhoodExplorerCore(
     features = next;
     if (Object.hasOwn(patch, 'motion')) stopAnimation();
     if (Object.hasOwn(patch, 'markerEntrance')) cancelEntrances();
+    if (Object.hasOwn(patch, 'layerTransitions')) {
+      layerFades.cancel();
+      districtTransition.cancel();
+    }
+    if (Object.hasOwn(patch, 'districtMorph')) districtMorph.stop();
     if (Object.hasOwn(patch, 'clustering')) invalidateClusters();
     syncFurniture();
     for (const item of markerItems) {
@@ -1367,7 +1416,7 @@ export function createNeighborhoodExplorerCore(
     const revision = ++neighborhoodRevision;
     delete root.dataset.selectedNeighborhood;
     root.dataset.source = source;
-    areas.replaceChildren(...nextItems.map((item) => item.node));
+    layerFades.crossfade(areas, () => areas.replaceChildren(...nextItems.map((item) => item.node)));
     neighborhoodSelect.replaceChildren(element('option', 'No neighborhood selected'));
     neighborhoodSelect.options[0].value = '';
     neighborhoodSelect.append(...nextOptions);
@@ -1408,9 +1457,9 @@ export function createNeighborhoodExplorerCore(
       ['key-roads', 'keyRoads'],
     ] as const) {
       const layer = svg.querySelector<SVGElement>(`[data-layer="${name}"]`);
-      if (layer) layer.style.display = enabled(key) ? '' : 'none';
+      if (layer) layerFades.set(layer, enabled(key));
     }
-    stations.style.display = enabled('bartStations') ? '' : 'none';
+    layerFades.set(stations, enabled('bartStations'));
     for (const [kind, key] of [
       ['bart', 'bartStations'],
       ['park', 'landmarks'],
@@ -1426,7 +1475,7 @@ export function createNeighborhoodExplorerCore(
 
     const neighborhoodsVisible =
       enabled('neighborhoodLines') || (labels && enabled('neighborhoodLabels'));
-    areas.style.display = neighborhoodsVisible ? '' : 'none';
+    layerFades.set(areas, neighborhoodsVisible);
     areas.style.pointerEvents = selectableNeighborhoods ? '' : 'none';
     neighborhoodLabel.hidden =
       !neighborhoodsVisible ||
@@ -1445,7 +1494,7 @@ export function createNeighborhoodExplorerCore(
     }
     for (const layer of districtLayers) {
       const key = layer.dataset.layer === 'district-fills' ? 'districtFills' : 'districtLines';
-      layer.style.display = enabled(key) ? '' : 'none';
+      layerFades.set(layer, enabled(key));
     }
     updateDistrictAppearance();
     const districtsVisible =
@@ -1877,6 +1926,8 @@ export function createNeighborhoodExplorerCore(
       destroyed = true;
       camera.destroy();
       districtTransition.cancel();
+      layerFades.cancel();
+      districtMorph.stop();
       cancelEntrances();
       controller.abort();
       overlayEvents.abort();
@@ -1905,6 +1956,8 @@ export function createNeighborhoodExplorerCore(
         if (reducedMotion.matches) {
           stopAnimation();
           districtTransition.cancel();
+          layerFades.cancel();
+          districtMorph.stop();
           cancelEntrances();
         }
       },

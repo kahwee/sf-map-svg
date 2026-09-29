@@ -1,17 +1,27 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Follow a moving marker along a schematic route between eight official BART station locations in San Francisco. Built with SF / SVG.">
   <link rel="canonical" href="https://kahwee.github.io/sf-map-svg/transit.html">
-  <title>A schematic BART journey · SF / SVG</title><link rel="icon" href="data:,">
-  <link rel="stylesheet" href="./style.css">
-  <style>.transit-page{max-width:720px;padding-block:24px 56px}.transit-page h1{font-size:clamp(34px,5vw,52px);letter-spacing:-0.05em;margin:0 0 20px}</style>
+  <title>A schematic BART journey · SF / SVG</title>
+  <link rel="icon" href="data:,">
+  <style>.shell.transit-stage{max-width:820px;padding-block:clamp(28px,4vw,48px)}.transit-stage{container-type:inline-size}.transit-stage .plate-frame{background:var(--card);padding:8px;min-height:calc(100cqw + 200px)}</style>
 </head>
 <body>
-  <a class="skip" href="#transit">Skip to the journey</a>
-  <header class="shell"><nav aria-label="Main navigation"><a class="brand" href="./">SF / SVG</a><div><a href="./">Atlas home</a><a href="./examples.html">All examples</a></div><a href="https://github.com/kahwee/sf-map-svg">GitHub ↗</a></nav></header>
-  <main class="shell transit-page"><p class="eyebrow" data-enter style="--i:0">Route overlay · Schematic</p><h1 data-split data-vt-title>A schematic BART journey</h1><div id="transit" data-enter style="--i:5"></div></main>
+  <!--site-header-->
+  <main id="content">
+    <header class="page-head shell">
+      <p class="eyebrow" data-enter style="--i:0">Plate VII · <b>Route overlay</b></p>
+      <h1 data-split data-vt-title>A schematic BART journey.</h1>
+      <p class="lede" data-enter style="--i:5">A marker rides between eight official BART station locations. The straight connections are illustrative, not track geometry or a live train. Press play to begin.</p>
+    </header>
+    <section class="shell transit-stage" aria-label="Schematic BART journey">
+      <figure class="plate"><div class="plate-frame" id="transit"></div><figcaption><b>createTransitAnimation()</b> from <code>@kahwee/sf-map-svg/transit</code>: paused by default, keyboard operable, and still under reduced motion.</figcaption></figure>
+    </section>
+  </main>
+  <!--site-footer-->
   <script type="module" src="./transit.js"></script>
 </body>
 </html>

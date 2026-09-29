@@ -3,64 +3,176 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Explore certified San Francisco ballot measure results, compare supervisorial districts from 2002 to 2022, and follow a schematic BART journey. Built with SF / SVG.">
+  <meta name="description" content="SF / SVG draws San Francisco as plain, animated SVG: the coast, supervisorial districts across three map years, three neighborhood definitions, parks, highways and BART. Offline, dependency-free, accessible.">
   <link rel="canonical" href="https://kahwee.github.io/sf-map-svg/">
-  <meta property="og:title" content="SF / SVG — a civic atlas of San Francisco">
-  <meta property="og:description" content="Ballot measures, changing district boundaries, neighborhoods, and a city in motion.">
+  <meta property="og:title" content="SF / SVG — San Francisco, line by line">
+  <meta property="og:description" content="An atlas of San Francisco in SVG: districts, neighborhoods, parks, roads and BART, with animation built in.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://kahwee.github.io/sf-map-svg/">
   <meta property="og:image" content="https://kahwee.github.io/sf-map-svg/social-preview.png">
   <meta name="twitter:card" content="summary_large_image">
-  <title>San Francisco civic atlas · SF / SVG</title>
+  <title>SF / SVG — San Francisco, line by line</title>
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="./style.css">
   <link rel="stylesheet" href="./home.css">
 </head>
 <body>
-  <a class="skip" href="#ballot-atlas">Skip to ballot measures</a>
-  <header class="shell site-header">
-    <nav aria-label="Main navigation">
-      <a class="brand" href="./">SF / SVG</a>
-      <div><a href="./examples.html">Examples</a><a href="./candidates.html">Candidate votes</a><a href="./propositions.html">California propositions</a><a href="#history">District history</a><a href="#build">Build with it</a></div>
-      <a class="nav-github" href="https://github.com/kahwee/sf-map-svg">GitHub ↗</a>
-    </nav>
-    <div class="hero-copy">
-      <div class="hero-text"><p class="eyebrow" data-enter style="--i:0">San Francisco civic atlas</p><h1 data-split data-vt-title>The city, by the numbers.</h1><p class="intro" data-enter style="--i:4">Explore how San Francisco voted, watch its district boundaries change, and follow the lines that connect the city.</p><div class="hero-actions" data-enter style="--i:5"><a class="primary" href="#ballot-atlas">Explore the atlas ↓</a><a href="#history">Watch districts change →</a></div><ul class="hero-stats" data-enter style="--i:6"><li><strong><span class="sr-only">11</span><span class="count" aria-hidden="true" style="--to:11;--d:2;--i:0"></span></strong>supervisorial districts</li><li><strong><span class="sr-only">3</span><span class="count" aria-hidden="true" style="--to:3;--d:1;--i:1"></span></strong>district map years</li><li><strong><span class="sr-only">44</span><span class="count" aria-hidden="true" style="--to:44;--d:2;--i:2"></span></strong>local measures</li><li><strong><span class="sr-only">56</span><span class="count" aria-hidden="true" style="--to:56;--d:2;--i:3"></span></strong>candidate contests</li></ul></div>
-      <figure class="hero-art" aria-hidden="true" data-enter="fade" style="--i:2"><img src="./maps/display/districts-2022.svg" alt="" width="800" height="800"></figure>
-    </div>
-  </header>
-  <main class="shell home-main">
-    <section id="ballot-atlas" class="atlas-section" aria-labelledby="ballot-title">
-      <div class="section-intro" data-reveal="stagger"><div><p class="eyebrow">June 2, 2026 · Certified results</p><h2 id="ballot-title">How San Francisco voted.</h2><p>Choose a measure, then select a district to see its Yes and No votes. Explore 44 local measures across the 2002, 2012, and 2022 district maps in the full atlas.</p></div><a href="./measures.html">Explore every map year ↗</a></div>
-      <div class="atlas-card" data-reveal>
-        <div class="atlas-sidebar"><h3>Ballot measure</h3><fieldset id="home-measures" class="home-measures"><legend class="sr-only">Choose a ballot measure</legend></fieldset><div class="atlas-mode"><span>Map view</span><fieldset class="segmented"><legend class="sr-only">Choose map colors</legend><button type="button" data-mode="yes" aria-pressed="true">Yes vote %</button><button type="button" data-mode="no" aria-pressed="false">No vote %</button></fieldset></div><div class="atlas-source"><a href="./measures.html#sources">Sources and method ↗</a><p>Vote shares exclude undervotes and overvotes. Passage is determined citywide.</p></div></div>
-        <div class="atlas-map-wrap"><div class="atlas-map-top"><span id="home-map-caption">Measure A · Yes vote share</span><button id="home-clear-district" type="button" hidden>Show all districts ×</button></div><div id="home-results-map" class="home-map"><p class="map-loading" role="status">Loading district map…</p></div><div class="atlas-map-foot"><span>2022 districts · Select a numbered area</span><div class="map-scale"><span>0%</span><span class="scale-bar"></span><span>100%</span></div></div></div>
-        <aside class="home-result-panel"><div id="home-result-detail" class="home-result-detail bars-enter" aria-live="polite"></div><label class="home-district-picker" for="home-district-select">Inspect district<select id="home-district-select"><option value="0">All San Francisco</option></select></label></aside>
+  <!--site-header-->
+  <main id="content">
+    <section class="hero shell">
+      <div class="hero-copy">
+        <p class="eyebrow" data-enter style="--i:0">Plate I · <b>An atlas of San Francisco</b></p>
+        <h1 data-split data-vt-title>San Francisco, line by line.</h1>
+        <p class="lede" data-enter style="--i:5">A small library that draws the city as plain SVG — its coast, eleven supervisorial districts across three map years, three ways of naming its neighborhoods, parks, highways and BART — with motion built in and nothing to download at runtime.</p>
+        <div class="button-row" data-enter style="--i:6"><a class="button" href="#making">See how the map is made ↓</a><a class="button secondary" href="./docs.html">Read the docs →</a></div>
+        <div class="hero-install" data-enter style="--i:7"><span class="install"><span>pnpm add @kahwee/sf-map-svg</span><button class="copy" type="button" data-copy="pnpm add @kahwee/sf-map-svg">Copy</button></span></div>
+        <dl class="hero-facts" data-enter style="--i:8">
+          <div><dt><span class="sr-only">11</span><span class="count" aria-hidden="true" style="--to:11;--d:2;--i:0"></span></dt><dd>supervisorial districts</dd></div>
+          <div><dt><span class="sr-only">3</span><span class="count" aria-hidden="true" style="--to:3;--d:1;--i:1"></span></dt><dd>district map years</dd></div>
+          <div><dt><span class="sr-only">250</span><span class="count" aria-hidden="true" style="--to:250;--d:3;--i:2"></span></dt><dd>neighborhood areas, three definitions</dd></div>
+          <div><dt><span class="sr-only">0</span><span class="count" aria-hidden="true" style="--to:0;--d:1;--i:3"></span></dt><dd>runtime dependencies</dd></div>
+        </dl>
+      </div>
+      <figure class="plate hero-plate" data-enter="fade" style="--i:2">
+        <div class="plate-frame" data-plate="./maps/plates/hero.svg">
+          <noscript><img src="./maps/plates/hero.svg" alt="San Francisco drawn as SVG: coast, supervisorial districts, SFAR neighborhoods, parks, highways and BART stations" width="800" height="800"></noscript>
+          <button class="plate-replay" type="button">Replay <span aria-hidden="true">↺</span></button>
+        </div>
+        <figcaption><b>Plate I.</b> San Francisco in 2022: coast, districts, SFAR neighborhoods, parks, highways and BART, drawn by <code>renderMap(data, { animation: true })</code>. Every line is SVG; nothing loads from a tile server.</figcaption>
+      </figure>
+    </section>
+
+    <section id="making" class="section making" aria-labelledby="making-title">
+      <div class="shell section-head" data-reveal="stagger">
+        <div><p class="eyebrow">Chapter II · <b>How the map is made</b></p><h2 id="making-title">Six layers, one controller.</h2></div>
+        <p>Scroll through the same interactive map the library gives you. Each step is a single call on the controller from <code>createMap</code>; the code beside it is exactly what runs.</p>
+      </div>
+      <div class="shell making-grid">
+        <div class="making-stage">
+          <figure class="plate stage">
+            <div class="plate-frame stage-frame"><div id="making-map" class="stage-map"><p class="stage-loading" role="status">Loading the map…</p><noscript><img src="./maps/districts-2022.svg" alt="San Francisco supervisorial districts, 2022" width="800" height="800"></noscript></div><p class="stage-badge" id="stage-badge" aria-live="polite"></p></div>
+          </figure>
+        </div>
+        <ol class="making-steps">
+          <li class="step" data-step="coast">
+            <p class="step-num">I</p>
+            <h3>Begin with the coast.</h3>
+            <p>Every map starts as land and water: a precise coastline with the Bay, the Presidio and Treasure Island. Geography is passed in explicitly, so small pages stay small.</p>
+            <div class="code"><pre><code>import { createMap } from '@kahwee/sf-map-svg';
+import { fullMapData } from '@kahwee/sf-map-svg/data/full';
+
+const map = createMap(fullMapData, { mode: 'basemap' });
+document.querySelector('#map').append(map.element);</code></pre></div>
+          </li>
+          <li class="step" data-step="districts">
+            <p class="step-num">II</p>
+            <h3>Draw eleven districts.</h3>
+            <p>Supervisorial districts carry the soft palette the library is known for. They are selectable, keyboard-reachable, and announce themselves to screen readers.</p>
+            <div class="code"><pre><code>map.setMode('districts');</code></pre></div>
+          </li>
+          <li class="step" data-step="years">
+            <p class="step-num">III</p>
+            <h3>Watch the lines move.</h3>
+            <p>San Francisco redrew its districts in 2002, 2012 and 2022. With <code>districtMorph</code> the outlines travel from one map to the next, then settle into the exact published geometry.</p>
+            <div class="step-actions" data-years></div>
+            <div class="code"><pre><code>createMap(fullMapData, { features: { districtMorph: true } });
+map.setDistrictYear(2012);</code></pre></div>
+          </li>
+          <li class="step" data-step="neighborhoods">
+            <p class="step-num">IV</p>
+            <h3>Three ways to draw a neighborhood.</h3>
+            <p>There is no single neighborhood map. SFAR realtor areas are the default; SF Find and the city’s analysis areas are kept as their own definitions. <code>layerTransitions</code> crossfades between them.</p>
+            <div class="step-actions" data-sources></div>
+            <div class="code"><pre><code>map.setMode('neighborhoods');
+map.setSource('sf-find'); // 'realtor' | 'sf-find' | 'analysis'</code></pre></div>
+          </li>
+          <li class="step" data-step="lines">
+            <p class="step-num">V</p>
+            <h3>Add parks, roads and rails.</h3>
+            <p>Parks, highways, key roads and BART stations are independent, optional layers. Switch any of them at runtime without losing the camera or selection.</p>
+            <div class="code"><pre><code>map.configure({
+  layers: { landmarks: true, highways: true, keyRoads: true, bartStations: true },
+});</code></pre></div>
+          </li>
+          <li class="step" data-step="markers">
+            <p class="step-num">VI</p>
+            <h3>Put your data on top.</h3>
+            <p>Markers keep their identity across updates, enter with a gentle stagger, and the camera eases to a selection. Motion always yields to the reader’s reduced-motion setting.</p>
+            <div class="code"><pre><code>map.setMarkers([
+  { id: 'ferry', label: 'Ferry Building', lng: -122.3937, lat: 37.7955 },
+  { id: 'dolores', label: 'Dolores Park', lng: -122.4269, lat: 37.7596 },
+]);
+map.selectMarker('ferry');</code></pre></div>
+          </li>
+        </ol>
       </div>
     </section>
-    <section id="history" class="history-section" aria-labelledby="history-title" data-reveal>
-      <div class="section-intro"><div class="history-copy"><p class="eyebrow">Districts over time</p><h2 id="history-title">A changing city.</h2><p>Watch district lines morph between the official 2002, 2012, and 2022 maps. The motion illustrates change; each dated map is the published geometry.</p></div><div class="history-controls"><button id="history-play" class="primary" type="button" aria-label="Play district boundary history">Play the change ▶</button><span id="history-status" role="status">Showing 2022 boundaries</span></div></div>
-      <div class="history-stage"><div id="history-map" class="history-map" role="img" aria-label="2022 San Francisco supervisorial districts"><p class="map-loading" role="status">Loading district history…</p></div><div class="history-stage-caption"><strong id="history-year">2022</strong><span>supervisorial districts</span></div></div>
-      <fieldset class="history-timeline"><legend class="sr-only">Choose district map year</legend><button type="button" data-year="2002" aria-pressed="false"><img src="./maps/thumb/districts-2002.svg" data-dark-src="./maps/thumb/districts-2002-dark.svg" alt="" width="800" height="800" loading="lazy"><strong>2002</strong><span>First snapshot</span></button><button type="button" data-year="2012" aria-pressed="false"><img src="./maps/thumb/districts-2012.svg" data-dark-src="./maps/thumb/districts-2012-dark.svg" alt="" width="800" height="800" loading="lazy"><strong>2012</strong><span>Next boundaries</span></button><button type="button" data-year="2022" aria-pressed="true"><img src="./maps/thumb/districts-2022.svg" data-dark-src="./maps/thumb/districts-2022-dark.svg" alt="" width="800" height="800" loading="lazy"><strong>2022</strong><span>Current boundaries</span></button></fieldset>
-      <p class="history-note">The coastline is a common display mask, while each year keeps its own district geometry. <a href="https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md">See geographic sources ↗</a></p>
-    </section>
-    <section id="motion" class="motion-section" aria-labelledby="motion-title" data-reveal><div class="motion-copy"><p class="eyebrow">A city in motion</p><h2 id="motion-title">Follow a line through San Francisco.</h2><p>Ride a schematic path between eight official BART station locations. A moving marker makes the route easy to follow; the straight connections are not track geometry or a live train.</p><button id="load-transit" class="primary" type="button">Play the BART journey ▶</button><a href="./transit.html">Open standalone journey ↗</a></div><div id="transit-preview" class="transit-showcase"><img src="./maps/thumb/transit.svg" data-dark-src="./maps/thumb/transit-dark.svg" width="800" height="800" loading="lazy" alt="Schematic route over a San Francisco map with parks and BART stations"><div class="transit-preview-caption">Embarcadero → Balboa Park <span>Eight stations · 28-second loop</span></div></div></section>
-    <section class="explore-more" aria-labelledby="explore-more-title"><div class="section-intro" data-reveal="stagger"><div><p class="eyebrow">Go further</p><h2 id="explore-more-title">More ways to see the city.</h2></div><a href="./examples.html">Browse all examples ↗</a></div><div class="feature-cards" data-reveal="stagger"><article data-vt-card><span class="feature-icon" aria-hidden="true">01</span><h3>Explore candidate votes</h3><p>Map certified Senate, House, and statewide contests across six elections from 2016 to 2026.</p><a href="./candidates.html">Open the candidate explorer →</a></article><article data-vt-card><span class="feature-icon" aria-hidden="true">02</span><h3>Explore California propositions</h3><p>Compare certified 2024 votes across San Francisco’s eleven supervisorial districts.</p><a href="./propositions.html">Open the proposition explorer →</a></article><article data-vt-card><span class="feature-icon" aria-hidden="true">03</span><h3>One spot, three San Franciscos</h3><p>Pick a point and see how neighborhood names and district boundaries change around it.</p><a href="./spot.html">Explore a place →</a></article><article data-vt-card><span class="feature-icon" aria-hidden="true">04</span><h3>Explore neighborhoods</h3><p>Find an SFAR realtor area, inspect its boundary, and download its GeoJSON.</p><button id="load-guide" type="button">Open the guide map →</button></article></div><div id="guide-mount" class="guide-mount" hidden><p id="guide-loading" role="status">Loading the guide map…</p></div></section>
-    <section id="build" class="build" aria-labelledby="build-title" data-rule data-reveal="stagger"><div><p class="eyebrow">For your next project</p><h2 id="build-title">Small maps.<br>Room for your ideas.</h2><p>Start with the lightweight guide data. It loads only selected geography, and you can request detailed data separately.</p><a href="https://github.com/kahwee/sf-map-svg#readme">Read the API documentation ↗</a><p><a href="https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v3.md">Migrating to v3: removed compatibility APIs and examples →</a></p></div><div class="build-code"><pre><code>import { createMap }
-  from '@kahwee/sf-map-svg';
-import { guideMapData }
-  from '@kahwee/sf-map-svg/guide/data';
 
-const map = createMap(guideMapData, {
-  mode: 'neighborhoods',
-  layers: { roadLabels: false },
+    <section class="section" aria-labelledby="examples-title">
+      <div class="shell section-head" data-reveal="stagger">
+        <div><p class="eyebrow">Chapter III · <b>Examples</b></p><h2 id="examples-title">The city votes, district by district.</h2></div>
+        <p>Three worked examples built on certified results. Each is a complete page you can read, share, and download from — and a pattern you can copy.</p>
+      </div>
+      <div class="shell feature-grid" data-reveal="stagger">
+        <a class="card feature" data-vt-card href="./measures.html">
+          <div class="plate-frame feature-plate" data-plate="./maps/plates/measures.svg"><noscript><img src="./maps/plates/measures.svg" alt="" width="800" height="800"></noscript></div>
+          <p class="eyebrow">Example 1 · Local measures</p>
+          <h3>San Francisco’s local measures</h3>
+          <p>Forty-four ballot measures across four elections and three district maps, with comparisons, a district table, and downloads.</p>
+          <span class="card-link">Open the measures →</span>
+        </a>
+        <a class="card feature" data-vt-card href="./propositions.html">
+          <div class="plate-frame feature-plate" data-plate="./maps/plates/propositions.svg"><noscript><img src="./maps/plates/propositions.svg" alt="" width="800" height="800"></noscript></div>
+          <p class="eyebrow">Example 2 · State ballot</p>
+          <h3>California propositions in San Francisco</h3>
+          <p>All ten 2024 propositions as small multiples, then one at a time: where the city said yes, and where it said no.</p>
+          <span class="card-link">Open the propositions →</span>
+        </a>
+        <a class="card feature" data-vt-card href="./candidates.html">
+          <div class="plate-frame feature-plate" data-plate="./maps/plates/candidates.svg"><noscript><img src="./maps/plates/candidates.svg" alt="" width="800" height="800"></noscript></div>
+          <p class="eyebrow">Example 3 · Candidates</p>
+          <h3>Supervisorial votes</h3>
+          <p>Who each supervisorial district chose, from 2016 to 2026: winners, margins, and every candidate’s share.</p>
+          <span class="card-link">Open the votes →</span>
+        </a>
+      </div>
+      <p class="shell more-examples"><span class="eyebrow">Also in the atlas</span><a class="link-draw" href="./spot.html">One spot, three San Franciscos</a><a class="link-draw" href="./layers.html">The layers studio</a><a class="link-draw" href="./transit.html">A schematic BART journey</a><a class="link-draw" href="./examples.html">Every example →</a></p>
+    </section>
+
+    <section class="section" aria-labelledby="build-title">
+      <div class="shell section-head" data-reveal="stagger">
+        <div><p class="eyebrow">Chapter IV · <b>Build with it</b></p><h2 id="build-title">Static when you can, interactive when you need.</h2></div>
+        <p>Render SVG on a server or at build time with no DOM at all, or mount a keyboard-accessible controller in the browser. Both take the same explicit geography.</p>
+      </div>
+      <div class="shell build-grid" data-reveal="stagger">
+        <div class="code"><div class="code-label">Static · Node, edge or build step <button class="copy" type="button">Copy</button></div><pre><code>import { renderMap } from '@kahwee/sf-map-svg/static';
+import { staticMapData } from '@kahwee/sf-map-svg/data/static';
+
+const { svg, project } = renderMap(staticMapData, {
+  year: 2022,
+  neighborhoodLines: true,
+  bartStations: true,
+  animation: true, // draws itself, even inside &lt;img&gt;
+});</code></pre></div>
+        <div class="code"><div class="code-label">Interactive · browser <button class="copy" type="button">Copy</button></div><pre><code>import { createMap } from '@kahwee/sf-map-svg';
+import { fullMapData } from '@kahwee/sf-map-svg/data/full';
+
+const map = createMap(fullMapData, {
+  mode: 'districts',
+  features: { layerTransitions: true, districtMorph: true },
 });
-document.querySelector('#map')
-  .append(map.element);
-// On unmount: map.destroy();</code></pre><div class="build-install"><code id="install-command">pnpm add @kahwee/sf-map-svg@%MAP_VERSION%</code><button id="copy-install" type="button">Copy</button></div><p id="copy-status" role="status"></p></div></section>
-    <section class="release-strip" aria-label="Current release" data-rule data-reveal><span class="release-badge">%RELEASE_LABEL%</span><p>Maps and interactive examples use the current package release. <a href="https://github.com/kahwee/sf-map-svg/releases/tag/v%MAP_VERSION%">See what changed ↗</a></p></section>
+document.querySelector('#map').append(map.element);
+map.on('districtchange', ({ id }) =&gt; console.log(id));</code></pre></div>
+      </div>
+      <ul class="shell principles" data-reveal="stagger">
+        <li><h3>Offline</h3><p>Self-contained SVG with no tiles, fonts or network requests.</p></li>
+        <li><h3>Explicit data</h3><p>Import only the geography a page needs, from a 1 KB station list to every layer.</p></li>
+        <li><h3>Accessible</h3><p>Titles, roles, keyboard selection and live status messages are built in.</p></li>
+        <li><h3>Considerate motion</h3><p>Every animation is opt-in and yields to reduced motion.</p></li>
+      </ul>
+      <div class="shell button-row build-links"><a class="button" href="./docs.html">Read the documentation →</a><a class="button secondary" href="./api.html">Browse the API reference →</a></div>
+    </section>
   </main>
-  <footer class="shell" data-rule><span>Made by <a href="https://github.com/kahwee">KahWee</a> · MIT-licensed software</span><a href="https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md">Data sources & attribution</a><a href="https://github.com/kahwee/sf-map-svg/issues">Report an issue</a><a href="https://github.com/kahwee/sf-map-svg">GitHub ↗</a></footer>
+  <!--site-footer-->
   <script type="module" src="./home.js"></script>
 </body>
 </html>

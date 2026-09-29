@@ -1,605 +1,401 @@
-import { renderMap } from '@kahwee/sf-map-svg/static';
-import coast from '../data/coast.json';
 import catalog from '../data/elections/catalog.json';
-import {
-  noShareColor,
-  passed,
-  readView,
-  resultsCsv,
-  shareColor,
-  yesShare,
-} from './measures-model.js';
+import { createDistrictMap } from './district-map.js';
+import { passed, readView, resultsCsv, yesShare } from './measures-model.js';
+import { countTo, reorderList, staggerChildren, whenVisible } from './motion-kit.js';
+import { diverging, mix, sequential } from './palette.js';
+import { copyText, element, enhanceCode, segmented } from './ui.js';
 
 const $ = (id) => document.getElementById(id);
 const format = new Intl.NumberFormat('en-US');
-const formatCount = (count) => (count === null ? 'Unavailable' : format.format(count));
-const percent = (share) => (share === null ? 'No votes' : `${(share * 100).toFixed(2)}%`);
-const difference = (share) => `${share > 0 ? '+' : ''}${(share * 100).toFixed(2)} pp`;
-const datasets = import.meta.glob('../data/elections/*.json');
-const districtDatasets = import.meta.glob('../data/districts-*.json');
-const electionChoices = catalog.elections;
-const shortTitles = {
-  A: 'Earthquake safety',
-  B: 'Lifetime term limits',
-  C: 'Business tax decreases',
-  D: 'Executive pay tax',
-};
-let election;
-let ids = [];
-let state;
-let electionDate;
-let mapData;
-let viewport = [0, 0, 800];
-let sort = 'district';
-const node = (tag, text, className) => {
-  const el = document.createElement(tag);
-  if (text !== undefined) el.textContent = text;
-  if (className) el.className = className;
-  return el;
-};
-const measureById = (id) => election.measures.find((m) => m.id === id);
-const measureTitle = (measure) =>
-  electionDate === '2026-06-02' ? shortTitles[measure.id] : measure.title;
-const areaVotes = (m) =>
-  state.district ? m.districts.find((d) => d.district === state.district) : m.citywide;
-const areaName = () => (state.district ? `District ${state.district}` : 'All San Francisco');
-$('inspector').open = matchMedia('(min-width: 900px)').matches;
-const cards = new Map();
-for (const choice of electionChoices)
-  $('election').add(new Option(`${choice.label} · ${choice.measureCount} measures`, choice.date));
-for (let d = 1; d <= 11; d++) $('district').add(new Option(`District ${d}`, String(d)));
+const count = (value) => (value === null || value === undefined ? '—' : format.format(value));
+const percent = (share) => (share === null ? 'No votes' : `${(share * 100).toFixed(1)}%`);
+const points = (value) => `${value > 0 ? '+' : ''}${(value * 100).toFixed(1)} pts`;
+enhanceCode();
 
-function filterCards() {
+const cache = new Map();
+const load = (file) => {
+  if (!cache.has(file))
+    cache.set(
+      file,
+      fetch(`./data/elections/${file}`).then((response) => {
+        if (!response.ok) throw new Error(`Could not load ${file}`);
+        return response.json();
+      }),
+    );
+  return cache.get(file);
+};
+
+const initial = new URLSearchParams(location.hash.slice(1));
+let choice;
+let election;
+let view;
+let map;
+let shownShare = 0;
+const shownBars = new Map();
+let staggered;
+
+const measureById = (id) => election.measures.find((item) => item.id === id);
+const measure = () => measureById(view.measure);
+const compared = () => (view.compare ? measureById(view.compare) : undefined);
+const row = (item, id) => (id ? item.districts.find((d) => d.district === id) : item.citywide);
+const shareFor = (item, id) => {
+  const share = yesShare(row(item, id));
+  return view.mode === 'no' && share !== null ? 1 - share : share;
+};
+
+// ---------- Color ----------
+function scale() {
+  const other = compared();
+  if (other) {
+    const diffs = measure().districts.map((d) => yesShare(d) - yesShare(row(other, d.district)));
+    const reach = Math.max(0.05, Math.ceil(Math.max(...diffs.map(Math.abs)) * 20) / 20);
+    return {
+      fill: (id) =>
+        diverging(0.5 + ((yesShare(row(measure(), id)) - yesShare(row(other, id))) / reach) * 0.42),
+      low: `${other.id} higher`,
+      high: `${measure().id} higher`,
+      ramp: 'linear-gradient(90deg, #7e2c1a, #d18a6d, #f3efe2, #86b8ad, #1c4847)',
+    };
+  }
+  const shares = measure().districts.map((d) => shareFor(measure(), d.district));
+  const low = Math.floor(Math.min(...shares) * 20) / 20;
+  const high = Math.max(low + 0.05, Math.ceil(Math.max(...shares) * 20) / 20);
+  const ink = view.mode === 'no' ? '#8f3420' : undefined;
+  return {
+    fill: (id) => {
+      const t = (shareFor(measure(), id) - low) / (high - low);
+      return ink ? mix('#f3efe2', ink, 0.08 + 0.92 * t) : sequential(t);
+    },
+    low: `${Math.round(low * 100)}% ${view.mode === 'no' ? 'No' : 'Yes'}`,
+    high: `${Math.round(high * 100)}% ${view.mode === 'no' ? 'No' : 'Yes'}`,
+    ramp:
+      view.mode === 'no'
+        ? 'linear-gradient(90deg, #efe6d8, #8f3420)'
+        : 'linear-gradient(90deg, #f3efe2, #8fbcb2, #2d6a68, #1c4847)',
+  };
+}
+
+// ---------- Rendering ----------
+function renderList() {
   const query = $('measure-search').value.trim().toLocaleLowerCase();
   let shown = 0;
-  for (const [id, card] of cards) {
-    const measure = measureById(id);
-    card.hidden = !`${id} ${measure.title}`.toLocaleLowerCase().includes(query);
-    if (!card.hidden) shown++;
-  }
-  $('measure-count').textContent = `${shown} of ${ids.length} local measures`;
+  const items = election.measures.map((item) => {
+    const share = yesShare(item.citywide);
+    const won = passed(item);
+    const li = element('li');
+    li.dataset.measure = item.id;
+    li.hidden = !`${item.id} ${item.title}`.toLocaleLowerCase().includes(query);
+    if (!li.hidden) shown++;
+    const button = element('button', undefined, 'measure-card');
+    button.type = 'button';
+    button.setAttribute('aria-pressed', String(item.id === view.measure));
+    button.setAttribute(
+      'aria-label',
+      `Measure ${item.id}, ${item.title}: ${percent(share)} Yes, ${won ? 'passed' : 'did not pass'}`,
+    );
+    const bar = element('span', undefined, 'measure-bar');
+    const fill = element('i', undefined, 'grow-bar');
+    fill.style.setProperty('--v', String(share ?? 0));
+    fill.style.setProperty('--i', String(shown));
+    bar.append(fill);
+    if (item.threshold === 'two-thirds') {
+      const mark = element('b', undefined, 'threshold-mark');
+      mark.style.setProperty('--x', String(2 / 3));
+      bar.append(mark);
+    } else {
+      const mark = element('b', undefined, 'threshold-mark');
+      mark.style.setProperty('--x', '0.5');
+      bar.append(mark);
+    }
+    button.append(
+      element('span', item.id, 'measure-letter'),
+      element('span', item.title, 'measure-name'),
+      element('span', `${percent(share)} Yes`, 'measure-share num'),
+      element('span', won ? 'Passed' : 'Failed', `measure-verdict ${won ? 'yes' : 'no'}`),
+      bar,
+    );
+    button.addEventListener('click', () => {
+      view.measure = item.id;
+      if (view.compare === item.id) view.compare = '';
+      render();
+      $('detail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    li.append(button);
+    return li;
+  });
+  $('measure-list').replaceChildren(...items);
+  $('measure-count').textContent = `${shown} of ${election.measures.length} measures`;
 }
 
-function renderCards() {
-  cards.clear();
-  $('measure-cards').replaceChildren();
-  $('compare').replaceChildren(new Option('No comparison', ''));
-  for (const m of election.measures) {
-    const card = node('button', undefined, 'measure-card');
-    card.type = 'button';
-    card.setAttribute('aria-label', `Measure ${m.id}: ${m.title}`);
-    card.dataset.measure = m.id;
-    const letter = node('span', m.id, 'measure-letter');
-    const words = node('span');
-    words.append(
-      node('span', measureTitle(m), 'card-title'),
-      node('span', passed(m) ? 'Passed citywide' : 'Did not pass', 'card-meta'),
-    );
-    const share = node('span', percent(yesShare(m.citywide)), 'card-share');
-    share.append(node('small', 'Yes citywide'));
-    card.append(letter, words, share);
-    card.addEventListener('click', () => {
-      if (state.compare === m.id) state.compare = state.measure;
-      state.measure = m.id;
-      update();
+function headline() {
+  const item = measure();
+  const area = view.district ? `District ${view.district}` : 'All San Francisco';
+  const share = shareFor(item, view.district);
+  const figure = element('p', undefined, 'headline-figure');
+  const counter = element('span');
+  counter.setAttribute('aria-hidden', 'true');
+  const side = view.mode === 'no' ? 'No' : 'Yes';
+  figure.append(element('span', `${percent(share)} ${side}`, 'sr-only'), counter);
+  if (share === null) counter.textContent = 'No votes';
+  else
+    countTo(counter, share * 100, {
+      from: shownShare * 100,
+      duration: 700,
+      format: (value) => `${value.toFixed(1)}% ${side}`,
     });
-    cards.set(m.id, card);
-    $('measure-cards').append(card);
-    $('compare').add(new Option(`${m.id} · ${m.title}`, m.id));
-  }
-  filterCards();
-}
-
-function enableGestures(svg) {
-  const pointers = new Map();
-  let previous = null;
-  let moved = false;
-  let origin = null;
-  const gesture = () => {
-    const points = [...pointers.values()];
-    return {
-      x: points.reduce((sum, p) => sum + p.x, 0) / points.length,
-      y: points.reduce((sum, p) => sum + p.y, 0) / points.length,
-      distance:
-        points.length > 1 ? Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y) : 0,
-    };
-  };
-  svg.addEventListener('pointerdown', (event) => {
-    if (event.button !== 0) return;
-    pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
-    if (pointers.size === 1) {
-      moved = false;
-      origin = { x: event.clientX, y: event.clientY };
-    }
-    previous = gesture();
-  });
-  svg.addEventListener('pointermove', (event) => {
-    if (!pointers.has(event.pointerId)) return;
-    pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
-    const next = gesture();
-    if (
-      !moved &&
-      (pointers.size > 1 || Math.hypot(event.clientX - origin.x, event.clientY - origin.y) > 5)
-    ) {
-      moved = true;
-      svg.setPointerCapture(event.pointerId);
-    }
-    if (moved) {
-      const scale = svg.getScreenCTM().a;
-      if (next.distance && previous.distance) zoom(next.distance / previous.distance);
-      setViewport([
-        viewport[0] - (next.x - previous.x) / scale,
-        viewport[1] - (next.y - previous.y) / scale,
-        viewport[2],
-      ]);
-    }
-    previous = next;
-  });
-  const end = (event) => {
-    pointers.delete(event.pointerId);
-    if (svg.hasPointerCapture(event.pointerId)) svg.releasePointerCapture(event.pointerId);
-    previous = pointers.size ? gesture() : null;
-  };
-  svg.addEventListener('pointerup', end);
-  svg.addEventListener('pointercancel', end);
-  svg.addEventListener('lostpointercapture', (event) => pointers.delete(event.pointerId));
-  svg.addEventListener(
-    'click',
-    (event) => {
-      if (moved) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-    },
-    true,
-  );
-}
-function makeMap(hostId, prefix) {
-  const host = $(hostId);
-  host.innerHTML = renderMap(mapData, {
-    year: election.districtYear,
-    title: 'San Francisco ballot measure district map',
-    idPrefix: prefix,
-    colors: { water: '#edf4f4' },
-  }).svg;
-  const svg = host.querySelector('svg');
-  svg.style.height = '100%';
-  svg.setAttribute('role', 'group');
-  svg.setAttribute(
-    'aria-label',
-    'District map. Select a district; focus the map and use arrow keys to pan, plus or minus to zoom, Home to reset.',
-  );
-  svg.setAttribute('tabindex', '0');
-  enableGestures(svg);
-  const paths = [...svg.querySelectorAll('[data-layer="district-fills"] path')];
-  const originalColors = new Map(
-    paths.map((path) => [path.dataset.district, path.getAttribute('fill')]),
-  );
-  for (const path of paths) {
-    path.setAttribute('role', 'button');
-    path.setAttribute('tabindex', '0');
-    const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-    path.append(title);
-    const choose = () => {
-      state.district = Number(path.dataset.district);
-      update();
-    };
-    path.addEventListener('click', choose);
-    path.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        event.stopPropagation();
-        choose();
-      }
-    });
-  }
-  svg.addEventListener('keydown', (event) => {
-    const step = viewport[2] * 0.1;
-    const moves = {
-      ArrowLeft: [-step, 0],
-      ArrowRight: [step, 0],
-      ArrowUp: [0, -step],
-      ArrowDown: [0, step],
-    };
-    if (moves[event.key]) {
-      event.preventDefault();
-      const [dx, dy] = moves[event.key];
-      setViewport([viewport[0] + dx, viewport[1] + dy, viewport[2]]);
-    } else if (['+', '=', '-', 'Home'].includes(event.key)) {
-      event.preventDefault();
-      if (event.key === 'Home') setViewport([0, 0, 800]);
-      else zoom(event.key === '-' ? 1 / 1.4 : 1.4);
-    }
-  });
-  return { svg, paths, originalColors };
-}
-let primary;
-let secondary;
-let maps = [];
-function labelSizes() {
-  for (const { svg } of maps) {
-    const scale = svg.getScreenCTM()?.a;
-    if (!scale) continue;
-    svg
-      .querySelector('[data-layer="district-labels"]')
-      .setAttribute('font-size', String(11 / scale));
-    for (const circle of svg.querySelectorAll('[data-layer="district-labels"] circle'))
-      circle.setAttribute('r', String(9 / scale));
-  }
-}
-const observer = new ResizeObserver(labelSizes);
-window.addEventListener('pagehide', (event) => {
-  if (!event.persisted) observer.disconnect();
-});
-function setViewport(next) {
-  const size = Math.max(800 / 6, Math.min(800, next[2]));
-  viewport = [
-    Math.max(0, Math.min(800 - size, next[0])),
-    Math.max(0, Math.min(800 - size, next[1])),
-    size,
-  ];
-  for (const { svg } of maps)
-    svg.setAttribute('viewBox', `${viewport[0]} ${viewport[1]} ${size} ${size}`);
-  $('zoom-level').textContent = `${Math.round((800 / size) * 100)}%`;
-  $('zoom-out').disabled = size >= 800;
-  $('zoom-in').disabled = size <= 800 / 6;
-  labelSizes();
-}
-function zoom(factor) {
-  const size = Math.max(800 / 6, Math.min(800, viewport[2] / factor));
-  setViewport([
-    viewport[0] + (viewport[2] - size) / 2,
-    viewport[1] + (viewport[2] - size) / 2,
-    size,
-  ]);
-}
-function paint(map, m) {
-  const { svg, paths, originalColors } = map;
-  svg.querySelector('[data-layer="district-labels"]').style.display = state.labels ? '' : 'none';
-  for (const path of paths) {
-    const row = m.districts.find((d) => d.district === Number(path.dataset.district));
-    const yes = yesShare(row);
-    path.setAttribute(
-      'fill',
-      state.mode === 'districts'
-        ? originalColors.get(path.dataset.district)
-        : state.mode === 'no'
-          ? noShareColor(yes === null ? null : 1 - yes)
-          : shareColor(yes),
-    );
-    const description = `District ${row.district}: ${percent(yes)} Yes, ${percent(yes === null ? null : 1 - yes)} No. Measure ${m.id}.`;
-    path.setAttribute('aria-label', description);
-    path.querySelector('title').textContent = description;
-    path.setAttribute('aria-pressed', String(row.district === state.district));
-  }
-  svg.querySelector('title').textContent =
-    `Measure ${m.id}: ${m.title}. ${state.mode === 'districts' ? 'District colors' : state.mode === 'yes' ? 'Yes vote share' : 'No vote share'}. ${election.electionName}.`;
-}
-function renderInspector(m, comparison) {
-  const votes = areaVotes(m),
-    yes = yesShare(votes),
-    city = yesShare(m.citywide);
-  const heading = node('h2', areaName());
-  heading.id = 'area-title';
-  const big = node('p', `${percent(yes)} Yes`, 'share-number');
-  const context = node(
+  shownShare = share ?? 0;
+  const won = passed(item);
+  const verdict = element(
     'p',
-    state.district
-      ? `${difference(yes - city)} vs. citywide Yes share`
-      : `${format.format(votes.yes + votes.no)} valid votes`,
-    'area-context',
+    `${won ? 'Passed' : 'Did not pass'} citywide · ${item.threshold === 'two-thirds' ? 'two-thirds' : 'majority'} required`,
+    `verdict ${won ? 'yes' : 'no'}`,
   );
-  const bar = node('div', undefined, 'vote-bar');
-  bar.setAttribute('aria-hidden', 'true');
-  const yesBar = node('span');
-  yesBar.style.width = `${(yes ?? 0) * 100}%`;
-  bar.append(yesBar);
-  const labels = node('div', undefined, 'vote-labels');
-  labels.append(
-    node('span', `Yes ${percent(yes)}`),
-    node('span', `No ${percent(yes === null ? null : 1 - yes)}`),
+  const votes = row(item, view.district);
+  const detail = element(
+    'p',
+    `${count(votes.yes)} Yes · ${count(votes.no)} No`,
+    'headline-counts num',
   );
-  const details = node('dl');
-  for (const [label, value] of [
-    ['Yes votes', votes.yes],
-    ['No votes', votes.no],
-    ['Undervotes', votes.undervotes],
-    ['Overvotes', votes.overvotes],
-  ])
-    details.append(node('dt', label), node('dd', formatCount(value)));
-  $('selection-label').textContent = areaName();
-  $('selection-share').textContent = `${percent(yes)} Yes`;
-  $('area-summary').replaceChildren(heading, big, context, bar, labels, details);
-  $('fit-district').disabled = !state.district;
-  $('measure-title').textContent = `${m.id} · ${m.title}`;
-  $('outcome').textContent = passed(m) ? 'Passed citywide' : 'Did not pass citywide';
-  $('threshold').textContent =
-    `Required ${m.threshold === 'two-thirds' ? 'two-thirds (66⅔%)' : 'more than 50%'} Yes. Citywide: ${percent(city)} Yes.`;
-  $('official-measure').href = m.sourceUrl;
-  $('comparison-summary').hidden = !comparison;
-  if (comparison) {
-    const other = yesShare(areaVotes(comparison));
-    $('comparison-summary').replaceChildren(
-      node('h3', `Compare: Measure ${comparison.id}`),
-      node('p', `${percent(other)} Yes in ${areaName().toLowerCase()}`),
-      node('p', `${difference(yes - other)} · ${m.id} minus ${comparison.id}`),
+  const children = [element('p', area, 'eyebrow'), figure, verdict, detail];
+  const other = compared();
+  if (other) {
+    const difference = yesShare(votes) - yesShare(row(other, view.district));
+    children.push(
+      element(
+        'p',
+        `${points(difference)} Yes compared with Measure ${other.id}.`,
+        'headline-range',
+      ),
     );
-  }
+  } else if (view.district)
+    children.push(
+      element(
+        'p',
+        'District shares describe local patterns; passage is citywide.',
+        'headline-range',
+      ),
+    );
+  $('measure-headline').replaceChildren(...children);
 }
-function renderTable(m, comparison) {
-  const rows = [...m.districts];
-  if (sort === 'yes') rows.sort((a, b) => yesShare(b) - yesShare(a));
-  if (sort === 'no') rows.sort((a, b) => yesShare(a) - yesShare(b));
-  if (sort === 'votes') rows.sort((a, b) => b.yes + b.no - (a.yes + a.no));
-  $('compare-column').hidden = !comparison;
-  $('compare-column').textContent = comparison ? `${comparison.id} Yes share` : '';
-  $('table-caption').textContent =
-    `Measure ${m.id} · ${m.title}${comparison ? ` · Comparing with ${comparison.id}` : ''}. Select any district to inspect its map.`;
-  $('district-rows').replaceChildren(
-    ...rows.map((row) => {
-      const tr = node('tr');
-      tr.dataset.selected = String(row.district === state.district);
-      const th = node('th');
-      th.scope = 'row';
-      const button = node('button', `District ${row.district}`);
+
+function ranking() {
+  const sorted = [...measure().districts].sort((a, b) => yesShare(b) - yesShare(a));
+  const style = scale();
+  reorderList(
+    $('measure-ranking'),
+    'district',
+    sorted.map((d, index) => {
+      const share = yesShare(d);
+      const button = element('button', undefined, 'rank-row');
       button.type = 'button';
-      button.setAttribute('aria-pressed', String(row.district === state.district));
-      button.addEventListener('click', () => {
-        state.district = row.district;
-        update();
-        $('results-dialog').close();
-        $('inspector').open = true;
-        $('district').focus({ preventScroll: true });
-      });
-      th.append(button);
-      tr.append(th);
-      tr.append(node('td', format.format(row.yes)), node('td', format.format(row.no)));
-      const share = node('td');
-      const wrap = node('span', undefined, 'share-cell');
-      const bar = node('span', undefined, 'mini-bar');
+      button.dataset.district = String(d.district);
+      button.setAttribute('aria-pressed', String(d.district === view.district));
+      button.setAttribute('aria-label', `District ${d.district}: ${percent(share)} Yes`);
+      const bar = element('span', undefined, 'rank-bar');
       bar.setAttribute('aria-hidden', 'true');
-      const fill = node('i');
-      fill.style.width = `${yesShare(row) * 100}%`;
+      const fill = element('i', undefined, 'grow-bar');
+      fill.style.setProperty('--v', String(share ?? 0));
+      fill.style.setProperty('--from', String(shownBars.get(d.district) ?? 0));
+      fill.style.setProperty('--i', String(index));
+      fill.style.background = style.fill(d.district);
+      shownBars.set(d.district, share ?? 0);
       bar.append(fill);
-      wrap.append(bar, node('span', percent(yesShare(row))));
-      share.append(wrap);
-      tr.append(share);
-      tr.append(
-        node('td', difference(yesShare(row) - yesShare(m.citywide))),
-        node('td', format.format(row.yes + row.no)),
+      button.append(
+        element('span', `District ${d.district}`, 'rank-name'),
+        bar,
+        element('span', percent(share), 'rank-value num'),
       );
-      if (comparison)
-        tr.append(
-          node(
-            'td',
-            percent(yesShare(comparison.districts.find((d) => d.district === row.district))),
-          ),
-        );
-      return tr;
+      button.addEventListener('click', () =>
+        selectDistrict(d.district === view.district ? 0 : d.district),
+      );
+      return button;
     }),
   );
 }
-function update(writeUrl = true) {
-  const m = measureById(state.measure),
-    comparison = measureById(state.compare);
-  for (const [id, card] of cards) card.setAttribute('aria-pressed', String(id === state.measure));
-  cards.get(state.measure)?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-  $('district').value = String(state.district);
-  $('mode').value = state.mode;
-  $('compare').value = state.compare;
-  for (const option of $('compare').options) option.disabled = option.value === state.measure;
-  $('labels').setAttribute('aria-pressed', String(state.labels));
-  $('comparison-figure').hidden = !comparison;
-  $('maps').classList.toggle('is-comparing', !!comparison);
-  $('primary-caption').textContent = `${m.id} · ${measureTitle(m)}`;
-  if (comparison)
-    $('comparison-caption').textContent = `${comparison.id} · ${measureTitle(comparison)}`;
-  paint(primary, m);
-  if (comparison) paint(secondary, comparison);
-  $('legend-gradient').hidden = state.mode === 'districts';
-  $('legend-low').textContent =
-    state.mode === 'districts'
-      ? 'Eleven districts · original map palette'
-      : `0% ${state.mode === 'yes' ? 'Yes' : 'No'}`;
-  $('legend-high').textContent =
-    state.mode === 'districts' ? '' : `100% ${state.mode === 'yes' ? 'Yes' : 'No'}`;
-  $('legend-gradient').style.background =
-    state.mode === 'no'
-      ? 'linear-gradient(to right,#f7f0e2,#a04e2c)'
-      : 'linear-gradient(to right,#f0f4e8,#256967)';
-  $('map-hint').textContent = state.district
-    ? `District ${state.district} selected. Focus the map and use arrow keys to pan.`
-    : 'Tap a district · Drag to pan · Pinch or + to zoom';
-  renderInspector(m, comparison);
-  renderTable(m, comparison);
-  labelSizes();
-  $('action-status').textContent = '';
-  if (writeUrl) {
-    const params = new URLSearchParams({
-      election: electionDate,
-      measure: state.measure,
-      district: String(state.district),
-      mode: state.mode,
+
+function table() {
+  const item = measure();
+  const other = compared();
+  $('compare-head').hidden = !other;
+  $('compare-head').textContent = other ? `vs ${other.id}` : '';
+  $('table-caption').textContent = `Measure ${item.id} results by supervisorial district`;
+  const rows = [0, ...item.districts.map((d) => d.district)].map((id) => {
+    const votes = row(item, id);
+    const tr = element('tr');
+    if (id === view.district) tr.className = 'is-selected';
+    const head = element('th', id ? `District ${id}` : 'All San Francisco');
+    head.scope = 'row';
+    const cells = [
+      count(votes.yes),
+      count(votes.no),
+      percent(yesShare(votes)),
+      other ? points(yesShare(votes) - yesShare(row(other, id))) : '',
+      count(votes.undervotes),
+      count(votes.overvotes),
+    ].map((text, index) => {
+      const td = element('td', text, 'num');
+      if (index === 3) td.hidden = !other;
+      return td;
     });
-    if (state.compare) params.set('compare', state.compare);
-    if (!state.labels) params.set('labels', '0');
-    history.replaceState(null, '', `#${params}`);
-  }
-}
-let loadSequence = 0;
-async function selectElection(date, fromHash = false) {
-  const choice = electionChoices.find((item) => item.date === date) ?? electionChoices[0];
-  const sequence = ++loadSequence;
-  const loader = datasets[`../data/elections/${choice.data}`];
-  const districtLoader = districtDatasets[`../data/districts-${choice.districtYear}.json`];
-  if (!loader) throw new Error(`Missing election dataset: ${choice.data}`);
-  if (!districtLoader) throw new Error(`Missing district map: ${choice.districtYear}`);
-  const [electionModule, districtModule] = await Promise.all([loader(), districtLoader()]);
-  if (sequence !== loadSequence) return;
-  election = electionModule.default;
-  mapData = {
-    coast: coast.features[0].geometry,
-    districts: {
-      [choice.districtYear]: districtModule.default.features.map(({ geometry, properties }) => ({
-        id: properties.district,
-        label: properties.label,
-        labelPoints: properties.labelPoints,
-        geometry,
-        extras: properties.displayExtras,
-      })),
-    },
-  };
-  electionDate = election.electionDate;
-  ids = election.measures.map((measure) => measure.id);
-  state = readView(fromHash ? location.hash : '', ids);
-  $('election').value = electionDate;
-  $('measure-search').value = '';
-  $('election-subtitle').textContent =
-    `${choice.label} · ${ids.length} local measures · ${election.districtYear} district map`;
-  $('district-year-note').textContent =
-    `${election.districtYear} district boundaries · Same scale on both maps`;
-  $('source-intro').textContent =
-    `${election.electionName}. ${ids.length} local measures. ${election.certifiedDate ? `Certified ${election.certifiedDate}.` : 'Official final results.'} Downloaded ${election.downloadedDate}.`;
-  $('source-method').textContent = election.method;
-  $('source-geography').textContent =
-    `${election.geography} The map illustrates district results, not precinct or neighborhood results. Colors express vote share, not endorsements.`;
-  $('workbook').href = election.source;
-  $('certification').hidden = !election.certificationSource;
-  if (election.certificationSource) $('certification').href = election.certificationSource;
-  $('results-json').href = `./data/elections/${electionDate}.json`;
-  renderCards();
-  observer.disconnect();
-  primary = makeMap('results-map', 'measure-primary');
-  secondary = makeMap('comparison-map', 'measure-secondary');
-  maps = [primary, secondary];
-  for (const map of maps) observer.observe(map.svg);
-  setViewport([0, 0, 800]);
-  update(!fromHash);
-}
-$('election').addEventListener('change', () => {
-  selectElection($('election').value).catch((error) => {
-    $('action-status').textContent = `Could not load election: ${error.message}`;
+    tr.append(head, ...cells);
+    return tr;
   });
-});
-$('measure-search').addEventListener('input', filterCards);
-$('focus-map').addEventListener('click', () => {
-  const focused = document.body.classList.toggle('map-focused');
-  $('focus-map').setAttribute('aria-pressed', String(focused));
-  $('focus-map').setAttribute('aria-label', focused ? 'Show panels' : 'Focus map');
-  $('focus-map').textContent = focused ? 'Show panels ↗' : 'Focus map ⛶';
-});
-$('district').addEventListener('change', () => {
-  state.district = Number($('district').value);
-  update();
-});
-$('mode').addEventListener('change', () => {
-  state.mode = $('mode').value;
-  update();
-});
-$('compare').addEventListener('change', () => {
-  state.compare = $('compare').value;
-  update();
-});
-$('labels').addEventListener('click', () => {
-  state.labels = !state.labels;
-  update();
-});
-$('sort').addEventListener('change', () => {
-  sort = $('sort').value;
-  renderTable(measureById(state.measure), measureById(state.compare));
-});
-$('zoom-in').addEventListener('click', () => zoom(1.4));
-$('zoom-out').addEventListener('click', () => zoom(1 / 1.4));
-$('reset-view').addEventListener('click', () => setViewport([0, 0, 800]));
-$('fit-district').addEventListener('click', () => {
-  if (!state.district) return;
-  const box = primary.paths.find((p) => Number(p.dataset.district) === state.district).getBBox();
-  const size = Math.max(800 / 6, Math.min(800, Math.max(box.width, box.height) * 1.3));
-  setViewport([box.x + box.width / 2 - size / 2, box.y + box.height / 2 - size / 2, size]);
-});
-$('share').addEventListener('click', async () => {
-  update();
-  try {
-    await navigator.clipboard.writeText(location.href);
-    $('action-status').textContent = 'View link copied.';
-  } catch {
-    $('action-status').textContent = 'Copy your browser address to share this view.';
+  $('table-body').replaceChildren(...rows);
+}
+
+function paint() {
+  if (!map) return;
+  const style = scale();
+  map.paint((id) => ({ fill: style.fill(id) }));
+  map.select(view.district);
+}
+
+function render() {
+  const item = measure();
+  $('measure-eyebrow').textContent =
+    `Measure ${item.id} · ${choice.label} · ${election.districtYear} district map`;
+  const title = $('measure-title');
+  if (title.textContent !== item.title) {
+    title.textContent = item.title;
+    if (staggered) staggerChildren(title.parentElement);
+    staggered = true;
   }
+  const style = scale();
+  $('legend-low').textContent = style.low;
+  $('legend-high').textContent = style.high;
+  $('legend-ramp').style.background = style.ramp;
+  $('measure-caption').replaceChildren(
+    element(
+      'b',
+      compared()
+        ? `Measure ${item.id} compared with ${compared().id}.`
+        : `${view.mode === 'no' ? 'No' : 'Yes'} share by district.`,
+    ),
+    compared()
+      ? ' Teal districts gave this measure more Yes support than the comparison.'
+      : ' Colors stretch across this measure’s range to show variation. Select a district to inspect it.',
+  );
+  $('district').value = String(view.district);
+  const compare = $('compare');
+  compare.replaceChildren(
+    new Option('No comparison', ''),
+    ...election.measures
+      .filter((other) => other.id !== item.id)
+      .map((other) => new Option(`Measure ${other.id} · ${other.title}`, other.id)),
+  );
+  compare.value = view.compare;
+  for (const card of document.querySelectorAll('.measure-card'))
+    card.setAttribute('aria-pressed', String(card.closest('li').dataset.measure === item.id));
+  headline();
+  ranking();
+  table();
+  paint();
+  const hash = new URLSearchParams({ election: choice.date, measure: item.id });
+  if (view.district) hash.set('district', String(view.district));
+  if (view.compare) hash.set('compare', view.compare);
+  if (view.mode !== 'yes') hash.set('mode', view.mode);
+  history.replaceState(null, '', `#${hash}`);
+}
+
+function selectDistrict(id) {
+  view.district = id;
+  render();
+}
+
+async function chooseElection(date, hash = '') {
+  choice = catalog.elections.find((item) => item.date === date) ?? catalog.elections[0];
+  election = await load(choice.data);
+  const ids = election.measures.map((item) => item.id);
+  view = readView(hash, ids);
+  if (view.mode === 'districts') view.mode = 'yes';
+  electionControl.set(choice.date);
+  modeControl.set(view.mode);
+  $('source-links').replaceChildren(
+    ...[
+      [election.source, 'Certified results ↗'],
+      [election.summarySource ?? election.titleSource, 'Measure titles and summaries ↗'],
+      [election.certificationSource, 'Certification ↗'],
+    ]
+      .filter(([href]) => href)
+      .map(([href, text]) => {
+        const link = element('a', text, 'link-draw');
+        link.href = href;
+        return link;
+      }),
+  );
+  $('election-method').textContent = [election.geography, election.method]
+    .filter(Boolean)
+    .join(' ');
+  renderList();
+  if (map && map.year !== election.districtYear) map.setYear(election.districtYear);
+  render();
+}
+
+const electionControl = segmented($('election-control'), {
+  label: 'Election',
+  options: [...catalog.elections]
+    .reverse()
+    .map((item) => ({ value: item.date, label: item.date.slice(0, 4) })),
+  value: initial.get('election') ?? catalog.elections[0].date,
+  onChange: (date) => chooseElection(date),
 });
+const modeControl = segmented($('mode-control'), {
+  label: 'Map shows',
+  options: [
+    { value: 'yes', label: 'Yes share' },
+    { value: 'no', label: 'No share' },
+  ],
+  value: 'yes',
+  onChange: (mode) => {
+    view.mode = mode;
+    render();
+  },
+});
+for (let id = 1; id <= 11; id++) $('district').add(new Option(`District ${id}`, String(id)));
+$('district').addEventListener('change', (event) => selectDistrict(Number(event.target.value)));
+$('compare').addEventListener('change', (event) => {
+  view.compare = event.target.value;
+  render();
+});
+$('measure-search').addEventListener('input', renderList);
+
 function download(contents, type, filename) {
-  const url = URL.createObjectURL(new Blob([contents], { type }));
-  const a = node('a');
-  a.href = url;
-  a.download = filename;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  const link = element('a');
+  link.href = URL.createObjectURL(new Blob([contents], { type }));
+  link.download = filename;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
 }
-$('export-csv').addEventListener('click', () => {
-  const selected = [measureById(state.measure)];
-  if (state.compare) selected.push(measureById(state.compare));
+$('export-csv').addEventListener('click', () =>
   download(
-    resultsCsv(election, selected),
-    'text/csv;charset=utf-8',
-    `sf-measures-${selected.map((m) => m.id).join('-')}-${electionDate}.csv`,
-  );
-});
-$('export-svg').addEventListener('click', () => {
-  const clone = primary.svg.cloneNode(true);
-  clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-  clone.setAttribute('role', 'img');
-  clone.removeAttribute('tabindex');
-  clone.removeAttribute('aria-label');
-  const desc = clone.querySelector('desc');
-  desc.textContent = `${election.electionName}. Measure ${state.measure}. Colors: ${state.mode}. Yes/No shares exclude under/overvotes. Source: ${election.source}. District ${election.districtYear} display geometry: https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md`;
-  for (const path of clone.querySelectorAll('[role="button"]')) {
-    if (path.getAttribute('aria-pressed') === 'true') {
-      path.setAttribute('stroke', '#a54830');
-      path.setAttribute('stroke-width', '3');
-      path.setAttribute('vector-effect', 'non-scaling-stroke');
+    resultsCsv(election, [measure(), compared()].filter(Boolean)),
+    'text/csv',
+    `sf-${choice.date}-measure-${view.measure}.csv`,
+  ),
+);
+$('export-svg').addEventListener('click', () =>
+  download(map?.snapshot() ?? '', 'image/svg+xml', `sf-${choice.date}-measure-${view.measure}.svg`),
+);
+$('share-link').addEventListener('click', (event) => copyText(event.currentTarget, location.href));
+
+await chooseElection(initial.get('election') ?? catalog.elections[0].date, location.hash);
+whenVisible(
+  $('measure-map'),
+  async () => {
+    try {
+      map = await createDistrictMap($('measure-map'), {
+        year: election.districtYear,
+        idPrefix: 'measures',
+        title: 'Local ballot measure results in San Francisco',
+        label: (id) =>
+          `District ${id}: ${percent(yesShare(row(measure(), id)))} Yes on Measure ${view.measure}`,
+        onSelect: (id) => selectDistrict(id === view.district ? 0 : id),
+      });
+      paint();
+    } catch (error) {
+      $('measure-map').textContent = 'The map could not load.';
+      console.error(error);
     }
-    path.removeAttribute('role');
-    path.removeAttribute('tabindex');
-    path.removeAttribute('aria-pressed');
-  }
-  download(
-    new XMLSerializer().serializeToString(clone),
-    'image/svg+xml',
-    `sf-measure-${state.measure}-${state.mode}-${electionDate}.svg`,
-  );
-  $('action-status').textContent = 'Primary map exported with source attribution.';
-});
-for (const link of document.querySelectorAll('a[href^="#"]')) {
-  link.addEventListener('click', (event) => {
-    const href = link.getAttribute('href');
-    const dialog =
-      href === '#district-table'
-        ? $('results-dialog')
-        : href === '#sources'
-          ? $('sources-dialog')
-          : null;
-    if (dialog) {
-      event.preventDefault();
-      dialog.showModal();
-      return;
-    }
-    const target = document.querySelector(href);
-    if (!target) return;
-    event.preventDefault();
-    target.setAttribute('tabindex', '-1');
-    target.scrollIntoView();
-    target.focus({ preventScroll: true });
-  });
-}
-window.addEventListener('hashchange', () => {
-  const requested = new URLSearchParams(location.hash.replace(/^#/, '')).get('election');
-  if (requested && requested !== electionDate) {
-    selectElection(requested, true).catch((error) => {
-      $('action-status').textContent = `Could not load election: ${error.message}`;
-    });
-  } else {
-    state = readView(location.hash, ids);
-    update(false);
-  }
-});
-const requested = new URLSearchParams(location.hash.replace(/^#/, '')).get('election');
-await selectElection(requested, true);
+  },
+  '300px',
+);

@@ -88,6 +88,12 @@ Read `data/README.md` before changing schemas or names. Keep canonical names sco
 
 `pnpm build:pages` builds an offline local preview from the current compiled package and labels it as a local preview. `pnpm build:pages --released` installs npm’s current stable version into a temporary directory, bundles its browser components, and generates its SVG downloads. It requires registry access; the deployed site needs no runtime CDN or registry requests. `pages-dist/release.json` records the version and source.
 
-The Pages build also writes display copies of the district maps (`maps/display/`) and thumbnails with dark twins (`maps/thumb/`), simplified for their on-screen size by `scripts/simplify-svg.mjs`. The full-precision SVGs in `maps/` stay unchanged for download. After `pnpm build:pages`, run `pnpm test:pages` to check every page in Chromium for script errors, failed requests, sideways scrolling, layout shift, and compressed size budgets; CI runs it before each deploy. For visual changes, still inspect pages at desktop and 390 px in both themes.
+The site in `website/` shares one design system (`site.css`, with motion tokens, view transitions, and reduced-motion and print rules). The build injects the masthead and colophon at `<!--site-header-->` and `<!--site-footer-->`, marking the current section. It also writes, with the library itself:
+
+- `data/site-map.json`: `fullMapData` with every geometry simplified for display by `scripts/site-data.mjs`, loaded by the atlas, layers studio and spot pages;
+- `maps/display/` and `maps/thumb/`: district maps and thumbnails (with dark twins) simplified by `scripts/simplify-svg.mjs`, used by the example pages;
+- `maps/plates/` and `maps/figures/`: animated plates from `renderMap({ animation })` and docs figures, each with a dark twin.
+
+Canonical data in `data/` and the full-precision SVGs in `maps/` stay unchanged. Pages built with `--released` use the published package, so a site feature that needs an unreleased library feature must degrade gracefully until the next release. After `pnpm build:pages`, run `pnpm test:pages` to check every page in Chromium for script errors, failed requests, sideways scrolling, layout shift, and compressed size budgets; CI runs it before each deploy. For visual changes, still inspect pages at desktop and 390 px in both themes.
 
 Pages deploys on `main` updates and after a successful npm publishing workflow. Release-triggered builds wait up to five minutes for npm to expose the exact published version. If processing takes longer, rerun the failed Pages workflow.

@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Documentation for SF / SVG: static and interactive San Francisco maps, layers, district years, neighborhood definitions, choropleths, animation, accessibility and performance.">
+  <link rel="canonical" href="https://kahwee.github.io/sf-map-svg/docs.html">
+  <title>Documentation · SF / SVG</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./docs.css">
+</head>
+<body>
+  <!--site-header-->
+  <main id="content">
+    <header class="page-head shell">
+      <p class="eyebrow" data-enter style="--i:0">Documentation · <b>The guide</b></p>
+      <h1 data-split data-vt-title>How to draw San Francisco.</h1>
+      <p class="lede" data-enter style="--i:4">Everything you need to render the city as SVG, from a single server-side string to an animated, keyboard-accessible explorer. For every option and method, see the <a href="./api.html">API reference</a>.</p>
+    </header>
+
+    <div class="docs shell">
+      <nav class="toc" aria-label="On this page">
+        <p class="eyebrow">Contents</p>
+        <ol>
+          <li><a href="#introduction">Introduction</a></li>
+          <li><a href="#install">Install</a></li>
+          <li><a href="#static">A first static map</a></li>
+          <li><a href="#data">Choosing geography</a></li>
+          <li><a href="#layers">Layers</a></li>
+          <li><a href="#divisions">Divisions</a></li>
+          <li><a href="#interactive">Interactive maps</a></li>
+          <li><a href="#choropleths">Choropleths</a></li>
+          <li><a href="#animation">Animation</a></li>
+          <li><a href="#markers">Markers and overlays</a></li>
+          <li><a href="#accessibility">Accessibility</a></li>
+          <li><a href="#performance">Performance</a></li>
+          <li><a href="#more">Guides, transit and sources</a></li>
+        </ol>
+      </nav>
+
+      <article class="prose docs-body">
+        <section id="introduction">
+          <h2>Introduction</h2>
+          <p class="dropcap">This small TypeScript library, SF / SVG, draws San Francisco as plain SVG. It knows the city’s precise coastline, the supervisorial districts of 2002, 2012 and 2022, three independent neighborhood definitions, park boundaries, highways, key roads and BART stations. It has no runtime dependencies, requests nothing from the network, and never loads map tiles.</p>
+          <p>It offers two ways to work, built on the same geography:</p>
+          <ul>
+            <li><strong><code>renderMap</code></strong> returns an SVG string and a projection. It needs no DOM, so it runs in Node, at the edge, or in a build step.</li>
+            <li><strong><code>createMap</code></strong> returns a controller for an interactive map in the browser, with selection, a camera, typed events and optional motion.</li>
+          </ul>
+          <p>Geography is always passed in explicitly. The root entry point bundles no data, so a page that needs only a few layers ships only those layers.</p>
+        </section>
+
+        <section id="install">
+          <h2>Install</h2>
+          <div class="code"><div class="code-label">Shell <button class="copy" type="button">Copy</button></div><pre><code>pnpm add @kahwee/sf-map-svg</code></pre></div>
+          <p>Server rendering needs Node 24 or newer. Browser maps need a DOM and a bundler that can import JSON, such as Vite, Rollup, esbuild or webpack.</p>
+        </section>
+
+        <section id="static">
+          <h2>A first static map</h2>
+          <p>Import <code>renderMap</code> and a geography preset, then choose the layers you want. Every layer is independent and optional.</p>
+          <div class="code"><div class="code-label">Static SVG <button class="copy" type="button">Copy</button></div><pre><code>import { renderMap } from '@kahwee/sf-map-svg/static';
+import { staticMapData } from '@kahwee/sf-map-svg/data/static';
+
+const { svg, project, viewBox } = renderMap(staticMapData, {
+  year: 2022,
+  neighborhoodLines: true,
+  landmarks: true,
+  bartStations: true,
+  title: 'San Francisco',
+});
+
+// Place your own points with the same projection.
+const [x, y] = project([-122.3937, 37.7955]); // Ferry Building</code></pre></div>
+          <figure class="docs-figure"><div class="plate-frame"><img src="./maps/figures/districts-2022.svg" data-dark-src="./maps/figures/districts-2022-dark.svg" alt="The 2022 supervisorial districts rendered as SVG" width="800" height="800" loading="lazy"></div><figcaption><b>Fig. 1.</b> The default map: coast, 2022 districts and district numbers.</figcaption></figure>
+          <p>The result is a single self-contained <code>&lt;svg&gt;</code> with a title and description. Insert it into HTML, save it as a file, or embed it in an <code>&lt;img&gt;</code>. User-supplied text and attributes are escaped. Each map gets unique ids; pass <code>idPrefix</code> for stable ids across builds.</p>
+        </section>
+
+        <section id="data">
+          <h2>Choosing geography</h2>
+          <p>Pick the smallest dataset that has what you need. Each is a frozen, typed import.</p>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Import</th><th>Contains</th><th>Use with</th></tr></thead>
+            <tbody>
+              <tr><td><code>/data/static</code></td><td>Coast, all district years, SFAR neighborhoods, parks, highways, key roads, BART</td><td><code>renderMap</code></td></tr>
+              <tr><td><code>/data/full</code></td><td>Everything above, plus all three neighborhood collections and district feature maps</td><td><code>createMap</code></td></tr>
+              <tr><td><code>/guide/data</code></td><td>A lightweight, simplified guide dataset</td><td>Both</td></tr>
+              <tr><td><code>/data/coast</code>, <code>/data/districts</code>, …</td><td>One dataset each, to compose your own</td><td>Both</td></tr>
+            </tbody>
+          </table></div>
+          <p>Canonical geometry keeps its full source precision. If you render at build time, only the SVG ships to the browser, whatever the dataset’s size. See <a href="#performance">Performance</a>.</p>
+        </section>
+
+        <section id="layers">
+          <h2>Layers</h2>
+          <p>Layers draw in a fixed, predictable order. Static maps turn them on with options; interactive maps switch them at runtime with <code>map.configure({ layers })</code>.</p>
+          <div class="layer-grid">
+            <figure><div class="plate-frame"><img src="./maps/figures/coast.svg" data-dark-src="./maps/figures/coast-dark.svg" alt="" width="800" height="800" loading="lazy"></div><figcaption><b>Coast.</b> Always drawn. Land, water and the coastline.</figcaption></figure>
+            <figure><div class="plate-frame"><img src="./maps/figures/districts-2022.svg" data-dark-src="./maps/figures/districts-2022-dark.svg" alt="" width="800" height="800" loading="lazy"></div><figcaption><b>Districts.</b> <code>districtFills</code>, <code>districtLines</code>, <code>districtLabels</code>.</figcaption></figure>
+            <figure><div class="plate-frame"><img src="./maps/figures/realtor.svg" data-dark-src="./maps/figures/realtor-dark.svg" alt="" width="800" height="800" loading="lazy"></div><figcaption><b>Neighborhoods.</b> <code>neighborhoodLines</code>; interactively also <code>neighborhoodLabels</code>.</figcaption></figure>
+            <figure><div class="plate-frame"><img src="./maps/figures/parks.svg" data-dark-src="./maps/figures/parks-dark.svg" alt="" width="800" height="800" loading="lazy"></div><figcaption><b>Parks.</b> <code>landmarks</code>: park property boundaries.</figcaption></figure>
+            <figure><div class="plate-frame"><img src="./maps/figures/roads.svg" data-dark-src="./maps/figures/roads-dark.svg" alt="" width="800" height="800" loading="lazy"></div><figcaption><b>Roads.</b> <code>highways</code>, <code>keyRoads</code>, <code>roadLabels</code>.</figcaption></figure>
+            <figure><div class="plate-frame"><img src="./maps/figures/bart.svg" data-dark-src="./maps/figures/bart-dark.svg" alt="" width="800" height="800" loading="lazy"></div><figcaption><b>BART.</b> <code>bartStations</code>: the eight stations in the city.</figcaption></figure>
+          </div>
+          <p>Set <code>labels: false</code> to hide every visible label while keeping accessible titles. In interactive maps, district layers default on in <code>'districts'</code> mode and neighborhood layers in <code>'neighborhoods'</code> mode; explicit <code>layers</code> values always win.</p>
+        </section>
+
+        <section id="divisions">
+          <h2>Divisions</h2>
+          <h3>Supervisorial districts</h3>
+          <p>Three dated snapshots are included: <code>2002</code>, <code>2012</code> and <code>2022</code>. Each keeps its own published geometry under a shared coastline mask. Choose one with <code>year</code>, or change it on an interactive map with <code>map.setDistrictYear(year)</code>.</p>
+          <h3>Neighborhoods</h3>
+          <p>There is no single neighborhood map of San Francisco. The library ships three definitions and keeps them separate, each with its own names, aliases and sources:</p>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Source key</th><th>Areas</th><th>Definition</th></tr></thead>
+            <tbody>
+              <tr><td><code>'realtor'</code></td><td class="num">92</td><td>San Francisco Association of Realtors market areas, August 2010. The default.</td></tr>
+              <tr><td><code>'sf-find'</code></td><td class="num">117</td><td>General locations from the Mayor’s Office of Neighborhood Services, 2006. Approximate by design.</td></tr>
+              <tr><td><code>'analysis'</code></td><td class="num">41</td><td>Reporting areas grouped from census tracts; they can combine several named places.</td></tr>
+            </tbody>
+          </table></div>
+          <div class="code"><div class="code-label">Switching definitions <button class="copy" type="button">Copy</button></div><pre><code>const map = createMap(fullMapData, { mode: 'neighborhoods', source: 'realtor' });
+map.setSource('sf-find');
+
+// Look a place up in one definition, without a map.
+import { getNeighborhood } from '@kahwee/sf-map-svg/data';
+getNeighborhood('Inner Mission', { source: 'realtor' });</code></pre></div>
+          <p>Compare them side by side in the <a href="./layers.html">layers studio</a>, or pick one point and see how each names it in <a href="./spot.html">One spot, three San Franciscos</a>.</p>
+        </section>
+
+        <section id="interactive">
+          <h2>Interactive maps</h2>
+          <p><code>createMap</code> returns a controller. Mount <code>map.element</code>, then drive the map through the controller.</p>
+          <div class="code"><div class="code-label">Interactive <button class="copy" type="button">Copy</button></div><pre><code>import { createMap } from '@kahwee/sf-map-svg';
+import { fullMapData } from '@kahwee/sf-map-svg/data/full';
+
+const map = createMap(fullMapData, {
+  mode: 'districts',            // 'basemap' | 'neighborhoods' | 'districts'
+  year: 2022,
+  layers: { bartStations: true },
+  appearance: { theme: 'districts' },
+});
+document.querySelector('#map').append(map.element);
+
+const stop = map.on('districtchange', ({ id, year }) =&gt; console.log(id, year));
+map.selectDistrict(5, { fit: true });
+map.camera.zoom(1.5, { animate: true });
+
+// When the view goes away:
+stop();
+map.destroy();</code></pre></div>
+          <p>Options are grouped: <code>layers</code>, <code>controls</code> and <code>features</code> can change at runtime with <code>map.configure()</code>; <code>appearance</code> is set once. The camera works in a fixed 800 × 800 projected space, so viewports serialize cleanly into URLs.</p>
+        </section>
+
+        <section id="choropleths">
+          <h2>Choropleths</h2>
+          <p>Color districts by any value with <code>districtStyle</code>, a function from a district row to <code>{ fill, stroke, opacity }</code>. It runs once per district when the map is built or restyled, not on every hover.</p>
+          <div class="code"><div class="code-label">Coloring by data <button class="copy" type="button">Copy</button></div><pre><code>const yesShare = (row) =&gt; row.yes / (row.yes + row.no);
+const style = (district) =&gt; ({
+  fill: color(yesShare(measure.districts[district.id - 1])),
+});
+
+// Static
+renderMap(staticMapData, { year: 2022, districtStyle: style });
+
+// Interactive: restyle when the data changes.
+// With features.layerTransitions, the fills crossfade.
+map.setDistrictStyle(style);</code></pre></div>
+          <p>The <a href="./measures.html">measures</a>, <a href="./propositions.html">propositions</a> and <a href="./candidates.html">supervisorial votes</a> examples are complete choropleth pages.</p>
+        </section>
+
+        <section id="animation">
+          <h2>Animation</h2>
+          <p>Every animation is opt-in, and every one yields to the reader’s reduced-motion setting.</p>
+          <h3>Static maps that draw themselves</h3>
+          <p>Pass <code>animation: true</code> to <code>renderMap</code>. The SVG carries its own scoped CSS: land fades in, the coast and lines draw, districts grow in order, then labels and points appear. It plays when the SVG is inserted into a page or loaded as an image, with no JavaScript. Re-insert the markup to replay it.</p>
+          <div class="code"><div class="code-label">Draw-in <button class="copy" type="button">Copy</button></div><pre><code>const { svg } = renderMap(staticMapData, {
+  neighborhoodLines: true,
+  highways: true,
+  bartStations: true,
+  animation: { duration: 3000, delay: 200 },
+});</code></pre></div>
+          <h3>Interactive motion</h3>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Feature</th><th>What moves</th></tr></thead>
+            <tbody>
+              <tr><td><code>motion</code></td><td>The camera eases between views, selections and fits.</td></tr>
+              <tr><td><code>markerEntrance</code></td><td>New markers enter with a stagger; retained markers keep their state.</td></tr>
+              <tr><td><code>selectedMarkerRing</code></td><td>A ring marks the selected marker.</td></tr>
+              <tr><td><code>layerTransitions</code></td><td>Layers fade as they switch; neighborhood definitions crossfade on <code>setSource</code>, and district fills on <code>setDistrictStyle</code>.</td></tr>
+              <tr><td><code>districtMorph</code></td><td>District outlines travel between map years on <code>setDistrictYear</code>, then settle on the exact geometry.</td></tr>
+            </tbody>
+          </table></div>
+          <div class="code"><div class="code-label">Motion features <button class="copy" type="button">Copy</button></div><pre><code>const map = createMap(fullMapData, {
+  features: {
+    motion: { duration: 600 },
+    layerTransitions: true,
+    districtMorph: { duration: 1400 },
+  },
+});
+map.setDistrictYear(2012);                    // morphs
+map.setDistrictYear(2022, { animate: false }); // instant</code></pre></div>
+        </section>
+
+        <section id="markers">
+          <h2>Markers and overlays</h2>
+          <p>Markers are points with stable ids; overlays are lines or polygons you supply as GeoJSON geometry. Both work in static and interactive maps.</p>
+          <div class="code"><div class="code-label">Markers <button class="copy" type="button">Copy</button></div><pre><code>map.setMarkers([
+  { id: 'ferry', label: 'Ferry Building', lng: -122.3937, lat: 37.7955 },
+  { id: 'dolores', label: 'Dolores Park', lng: -122.4269, lat: 37.7596, color: '#b4432a' },
+]);
+map.selectMarker('ferry', { fit: true });
+map.on('markerchange', ({ id }) =&gt; console.log(id));</code></pre></div>
+          <p><code>setMarkers</code> reconciles by id: markers that stay keep their DOM nodes, focus and animations. Turn on <code>clustering</code> for dense data; a full, accessible chooser remains available.</p>
+        </section>
+
+        <section id="accessibility">
+          <h2>Accessibility</h2>
+          <ul>
+            <li>Static maps have a <code>&lt;title&gt;</code> and a description of the layers they show.</li>
+            <li>Interactive districts, neighborhoods and markers are reachable by keyboard and announce their state.</li>
+            <li>A visually hidden status region reports selections and mode changes.</li>
+            <li>Touch gestures are opt-in, so a map never traps page scrolling on phones.</li>
+            <li>All motion stops under <code>prefers-reduced-motion</code>.</li>
+          </ul>
+        </section>
+
+        <section id="performance">
+          <h2>Performance</h2>
+          <p>The fastest map is one rendered before the page loads. Call <code>renderMap</code> in a build step or on the server and ship only the SVG. This site does exactly that: its example maps and plates are rendered at build time, and its interactive maps load a copy of <code>fullMapData</code> simplified for display.</p>
+          <ul>
+            <li>Import individual datasets rather than presets when a page needs only a few layers.</li>
+            <li>Use <code>/guide/data</code> for a lightweight interactive guide.</li>
+            <li>Load interactive maps when they scroll into view with a dynamic <code>import()</code>.</li>
+          </ul>
+        </section>
+
+        <section id="more">
+          <h2>Guides, transit and sources</h2>
+          <p><code>/guide</code> provides ready-made neighborhood guide layouts, including a server-rendered shell you can enhance later. <code>/transit</code> provides the schematic <a href="./transit.html">BART journey</a> animation. Every geographic source, license and download date is recorded in <a href="https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md">SOURCES.md</a>.</p>
+          <p class="next-link"><a class="button" href="./api.html">Continue to the API reference →</a></p>
+        </section>
+      </article>
+    </div>
+  </main>
+  <!--site-footer-->
+  <script type="module" src="./docs.js"></script>
+</body>
+</html>

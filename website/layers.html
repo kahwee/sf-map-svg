@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Switch every layer of the SF / SVG map: SFAR, SF Find and analysis neighborhoods, supervisorial districts from 2002, 2012 and 2022, parks, roads and BART. Copy the code for what you see.">
+  <link rel="canonical" href="https://kahwee.github.io/sf-map-svg/layers.html">
+  <title>Layers &amp; divisions · SF / SVG</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./layers.css">
+</head>
+<body>
+  <!--site-header-->
+  <main id="content">
+    <header class="page-head shell">
+      <p class="eyebrow" data-enter style="--i:0">Plate II · <b>The layers studio</b></p>
+      <h1 data-split data-vt-title>Every layer, every division.</h1>
+      <p class="lede" data-enter style="--i:5">San Francisco can be divided many ways. Switch between three neighborhood definitions and three generations of supervisorial districts, add parks, roads and rails, and copy the code for exactly what you see.</p>
+    </header>
+
+    <section class="studio shell" aria-label="Map studio">
+      <form class="studio-controls" id="studio-controls" data-enter style="--i:6" onsubmit="return false">
+        <fieldset>
+          <legend>View</legend>
+          <div id="mode-control"></div>
+        </fieldset>
+        <fieldset>
+          <legend>Neighborhood definition</legend>
+          <div class="sources" id="source-control" role="radiogroup" aria-label="Neighborhood definition"></div>
+        </fieldset>
+        <fieldset>
+          <legend>District map</legend>
+          <div id="year-control"></div>
+        </fieldset>
+        <fieldset>
+          <legend>Layers</legend>
+          <div class="checks" id="layer-control"></div>
+        </fieldset>
+        <fieldset>
+          <legend>Text and motion</legend>
+          <div class="checks" id="feature-control"></div>
+        </fieldset>
+      </form>
+
+      <div class="studio-canvas" data-enter="fade" style="--i:4">
+        <div class="canvas-bar">
+          <div id="render-control"></div>
+          <div class="canvas-actions"><button class="button secondary small" type="button" id="replay" hidden>Replay drawing ↺</button><button class="button secondary small" type="button" id="download">Download SVG ↓</button></div>
+        </div>
+        <figure class="plate">
+          <div class="plate-frame studio-frame"><div id="studio-map" class="studio-map"><p class="stage-loading" role="status">Loading the map…</p></div></div>
+          <figcaption id="studio-caption" aria-live="polite">Select a neighborhood or district on the map to identify it.</figcaption>
+        </figure>
+        <div class="studio-code">
+          <div class="code" id="studio-code"><div class="code-label"><span id="code-title">createMap · browser</span><button class="copy" type="button">Copy</button></div><pre><code></code></pre></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section shell divisions" aria-labelledby="divisions-title">
+      <div class="section-head" data-reveal="stagger">
+        <div><p class="eyebrow">The divisions</p><h2 id="divisions-title">No single neighborhood map.</h2></div>
+        <p>Each definition was drawn for a different purpose. The library keeps them separate, cites their sources, and never merges them, so a place can honestly belong to different areas in each.</p>
+      </div>
+      <div class="division-grid" data-reveal="stagger">
+        <figure class="division"><div class="plate-frame"><img src="./maps/figures/realtor.svg" data-dark-src="./maps/figures/realtor-dark.svg" alt="SFAR realtor neighborhood boundaries" width="800" height="800" loading="lazy"></div><figcaption><b>SFAR realtor · 92 areas.</b> Market areas from the San Francisco Association of Realtors, August 2010. The default.</figcaption></figure>
+        <figure class="division"><div class="plate-frame"><img src="./maps/figures/sf-find.svg" data-dark-src="./maps/figures/sf-find-dark.svg" alt="SF Find neighborhood boundaries" width="800" height="800" loading="lazy"></div><figcaption><b>SF Find · 117 names.</b> General neighborhood locations from the Mayor’s Office of Neighborhood Services, 2006.</figcaption></figure>
+        <figure class="division"><div class="plate-frame"><img src="./maps/figures/analysis.svg" data-dark-src="./maps/figures/analysis-dark.svg" alt="Analysis neighborhood boundaries" width="800" height="800" loading="lazy"></div><figcaption><b>Analysis · 41 areas.</b> Reporting areas built from census tracts, which can combine several named places.</figcaption></figure>
+        <figure class="division"><div class="plate-frame"><img src="./maps/figures/districts-2002.svg" data-dark-src="./maps/figures/districts-2002-dark.svg" alt="2002 supervisorial districts" width="800" height="800" loading="lazy"></div><figcaption><b>Districts · 2002.</b> Redrawn after the 2000 census.</figcaption></figure>
+        <figure class="division"><div class="plate-frame"><img src="./maps/figures/districts-2012.svg" data-dark-src="./maps/figures/districts-2012-dark.svg" alt="2012 supervisorial districts" width="800" height="800" loading="lazy"></div><figcaption><b>Districts · 2012.</b> Redrawn after the 2010 census.</figcaption></figure>
+        <figure class="division"><div class="plate-frame"><img src="./maps/figures/districts-2022.svg" data-dark-src="./maps/figures/districts-2022-dark.svg" alt="2022 supervisorial districts" width="800" height="800" loading="lazy"></div><figcaption><b>Districts · 2022.</b> The current map, redrawn after the 2020 census.</figcaption></figure>
+      </div>
+      <p class="division-more" data-reveal><a class="link-draw" href="./spot.html">Pick a point and see how each definition names it →</a></p>
+    </section>
+  </main>
+  <!--site-footer-->
+  <script type="module" src="./layers.js"></script>
+</body>
+</html>

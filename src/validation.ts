@@ -48,6 +48,8 @@ const optionKeys = [
   'attribution',
   'northArrow',
   'scaleBar',
+  'layerTransitions',
+  'districtMorph',
   'interface',
   'layers',
   'selectableNeighborhoods',

@@ -305,3 +305,47 @@ test('master label switch hides text without removing map symbols or accessible 
   for (const text of Array.from(numbered.getElementsByTagName('text')))
     assert.match(text.textContent, /^(?:[1-9]|10|11)$/);
 });
+
+test('static animation is opt-in, scoped, and leaves default output unchanged', () => {
+  const plain = render({ idPrefix: 'plain' });
+  assert.ok(!plain.includes('<style>'));
+  assert.ok(!plain.includes('pathLength'));
+  assert.ok(!plain.includes('data-sf-animate'));
+  assert.equal(render({ idPrefix: 'plain', animation: false }), plain);
+
+  const svg = render({
+    idPrefix: 'intro',
+    animation: true,
+    neighborhoodLines: true,
+    highways: true,
+    keyRoads: true,
+    bartStations: true,
+    markers: [{ id: 'pin', lng: -122.42, lat: 37.76 }],
+  });
+  assert.ok(svg.includes('data-sf-animate="intro"'));
+  assert.equal((svg.match(/<style>/g) ?? []).length, 1);
+  assert.ok(svg.includes('@keyframes intro-draw'));
+  // Every selector is scoped to this map so two animated maps can share a page.
+  const style = svg.slice(svg.indexOf('<style>') + '<style>'.length, svg.indexOf('</style>'));
+  for (const rule of style.replace(/@keyframes[^{]+\{[^}]*\}\}/g, '').match(/[^{}]+(?=\{)/g) ?? [])
+    if (!rule.startsWith('@media') && !rule.startsWith('from'))
+      for (const selector of rule.split(','))
+        assert.ok(selector.startsWith('[data-sf-animate="intro"]'), selector);
+  assert.ok(style.includes('@media (prefers-reduced-motion:reduce)'));
+  // Lines draw with a normalized length; staggered items carry an index.
+  assert.match(svg, /data-layer="coastline"[^>]*pathLength="1"/);
+  assert.equal((svg.match(/<path data-district="\d+"[^>]*pathLength="1"/g) ?? []).length, 11);
+  assert.match(svg, /data-district="7"[^>]*style="--i:7"/);
+  assert.match(svg, /data-marker-id="pin"[^>]*style="--i:0"/);
+  assert.ok(!/NaN|Infinity/.test(svg));
+});
+
+test('static animation timings scale and validate', () => {
+  const quick = render({ idPrefix: 'quick', animation: { duration: 1200, delay: 250 } });
+  assert.ok(quick.includes('quick-draw 750ms'));
+  assert.ok(quick.includes('quick-fade 350ms'));
+  assert.ok(quick.includes(' 250ms both'));
+  assert.throws(() => render({ animation: { duration: 0 } }), RangeError);
+  assert.throws(() => render({ animation: { delay: -1 } }), RangeError);
+  assert.throws(() => render({ animation: { speed: 2 } }), TypeError);
+});

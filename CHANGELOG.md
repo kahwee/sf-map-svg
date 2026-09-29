@@ -4,6 +4,11 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Add opt-in `animation` for `renderMap`: a self-contained, scoped CSS draw-in (coast and lines draw, districts grow, labels and points follow) that plays inline or as an image and respects reduced motion. Default output is unchanged.
+- Add `features.layerTransitions`: layer switches fade, `setSource()` crossfades neighborhood definitions, and `setDistrictStyle()` crossfades district fills.
+- Add `features.districtMorph`: district outlines morph between map years on `setDistrictYear()`, settling on the exact geometry; `{ animate: false }` stays instant.
+- Pages site: a classic, editorial redesign with an animated atlas home, a scroll-driven tour of the controller, a layers studio for every layer and neighborhood definition, rebuilt local measures, California propositions and supervisorial votes examples, and new documentation and API reference pages. Example pages now load prebuilt display maps and a display-simplified dataset instead of raw geometry.
+
 ## 4.0.1 — 2026-09-28
 
 - Reconcile marker updates by ID, preserving retained SVG nodes, picker options, keyboard focus, and entrance animations. Identical ordered updates no longer mutate the DOM; only new IDs animate in and removed markers cancel their entrances.

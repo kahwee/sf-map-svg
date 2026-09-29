@@ -10,7 +10,7 @@
     if (theme === 'dark' || theme === 'light') {
       root.dataset.theme = theme;
       // An explicit choice overrides the system-matched browser bar color.
-      const color = theme === 'dark' ? '#0e1a1a' : '#f8f8f2';
+      const color = theme === 'dark' ? '#121816' : '#f7f3e9';
       for (const meta of document.querySelectorAll('meta[name="theme-color"]'))
         meta.content = color;
     }

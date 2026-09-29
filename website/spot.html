@@ -6,17 +6,28 @@
   <meta name="description" content="Pick a San Francisco place and compare three neighborhood definitions and three supervisorial district maps.">
   <link rel="canonical" href="https://kahwee.github.io/sf-map-svg/spot.html">
   <title>One spot, three San Franciscos · SF / SVG</title>
-  <link rel="icon" href="data:,"><link rel="stylesheet" href="./style.css"><link rel="stylesheet" href="./spot.css">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./spot.css">
 </head>
 <body>
-  <a class="skip" href="#spot-experience">Skip to the map</a>
-  <header class="shell spot-header"><nav aria-label="Main navigation"><a class="brand" href="./">SF / SVG</a><div><a href="./">Atlas home</a><a href="./examples.html">Examples</a><a href="./measures.html">Ballot atlas</a></div><a href="https://github.com/kahwee/sf-map-svg">GitHub ↗</a></nav></header>
-  <main class="shell spot-page">
-    <div class="spot-hero"><div class="spot-hero-copy"><p class="eyebrow">A geographic thought experiment <span>·</span> SF / SVG</p><h1 data-split data-vt-title>Where, exactly,<br>are you?</h1><p class="spot-lede">Place one dot in San Francisco. Watch three neighborhood definitions and three generations of district lines tell different stories about it.</p><a class="spot-hero-link" href="#spot-experience">Try the map <span aria-hidden="true">↘</span></a></div><div class="spot-hero-art" aria-hidden="true"><span class="spot-orbit orbit-one"></span><span class="spot-orbit orbit-two"></span><span class="spot-orbit orbit-three"></span><span class="spot-orbit-center"></span><span class="spot-orbit-label label-one">SFAR</span><span class="spot-orbit-label label-two">SF FIND</span><span class="spot-orbit-label label-three">ANALYSIS</span></div></div>
-    <section id="spot-experience" aria-label="Explore a place in San Francisco"><div id="spot-mount"><p class="spot-loading" role="status">Preparing the map…</p></div></section>
-    <section class="spot-after"><div><p class="spot-kicker">LOOK CLOSER</p><h2>There is no single neighborhood map.</h2></div><p>Neighborhood boundaries serve different purposes. SFAR areas, SF Find names, and city analysis areas can describe the same point differently. Supervisorial districts follow another timeline altogether. This map keeps those sources separate so you can see each definition on its own terms.</p></section>
+  <!--site-header-->
+  <main id="content">
+    <header class="page-head shell">
+      <p class="eyebrow" data-enter style="--i:0">A geographic thought experiment · <b>Divisions</b></p>
+      <h1 data-split data-vt-title>Where, exactly, are you?</h1>
+      <p class="lede" data-enter style="--i:5">Place one dot in San Francisco. Watch three neighborhood definitions and three generations of district lines tell different stories about it.</p>
+    </header>
+    <section class="section shell spot-page" id="spot-experience" aria-label="Explore a place in San Francisco">
+      <div id="spot-mount"><p class="stage-loading" role="status">Preparing the map…</p></div>
+    </section>
+    <section class="section shell spot-after" aria-labelledby="after-title">
+      <div class="section-head" data-reveal="stagger">
+        <div><p class="eyebrow">Look closer</p><h2 id="after-title">There is no single neighborhood map.</h2></div>
+        <p>SFAR areas, SF Find names and the city’s analysis areas were drawn for different purposes, and supervisorial districts follow another timeline altogether. The library keeps each definition separate so you can see it on its own terms. <a href="./layers.html">Compare them in the layers studio →</a></p>
+      </div>
+    </section>
   </main>
-  <footer class="shell"><span>SF / SVG · Maps made to be explored</span><a href="./examples.html">More examples</a><a href="https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md">Sources & attribution</a></footer>
+  <!--site-footer-->
   <script type="module" src="./spot-page.js"></script>
 </body>
 </html>

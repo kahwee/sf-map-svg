@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="API reference for SF / SVG: renderMap, getLayerPaths, createMap, the map controller, camera, events, features, layers, data entry points and types.">
+  <link rel="canonical" href="https://kahwee.github.io/sf-map-svg/api.html">
+  <title>API reference · SF / SVG</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./docs.css">
+</head>
+<body>
+  <!--site-header-->
+  <main id="content">
+    <header class="page-head shell">
+      <p class="eyebrow" data-enter style="--i:0">Documentation · <b>API reference</b></p>
+      <h1 data-split data-vt-title>The API, in full.</h1>
+      <p class="lede" data-enter style="--i:4">Every entry point, option, method and event, with defaults. For explanations and patterns, start with <a href="./docs.html">the guide</a>. Types ship with the package; this page follows them.</p>
+      <p class="page-head-meta" data-enter style="--i:5"><span>Package <code>@kahwee/sf-map-svg</code></span><span>%RELEASE_LABEL%</span></p>
+    </header>
+
+    <div class="docs shell">
+      <nav class="toc" aria-label="Reference contents">
+        <p class="eyebrow">Reference</p>
+        <ol>
+          <li><a href="#entry-points">Entry points</a></li>
+          <li><a href="#render-map">renderMap</a></li>
+          <li><a href="#get-layer-paths">getLayerPaths</a></li>
+          <li><a href="#create-map">createMap</a></li>
+          <li><a href="#features">features</a></li>
+          <li><a href="#layers">layers</a></li>
+          <li><a href="#controls">controls</a></li>
+          <li><a href="#appearance">appearance</a></li>
+          <li><a href="#controller">MapController</a></li>
+          <li><a href="#camera">MapCamera</a></li>
+          <li><a href="#events">Events</a></li>
+          <li><a href="#types">Types</a></li>
+          <li><a href="#guide-transit">Guide and transit</a></li>
+        </ol>
+      </nav>
+
+      <article class="docs-body">
+        <section class="api-entry" id="entry-points">
+          <h2>Entry points</h2>
+          <p>Import from the smallest entry that has what you need. Data entries export frozen objects; clone before editing.</p>
+          <div class="table-wrap"><table class="api-table">
+            <thead><tr><th>Import from</th><th>Exports</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>@kahwee/sf-map-svg</code></td><td>createMap, renderMap, getLayerPaths</td><td>The data-free root.</td></tr>
+              <tr><td><code>/static</code></td><td>renderMap, getLayerPaths</td><td>Server-safe rendering with no DOM.</td></tr>
+              <tr><td><code>/map</code></td><td>createMap</td><td>The interactive controller alone.</td></tr>
+              <tr><td><code>/data/static</code></td><td>staticMapData</td><td>Complete geography for static maps.</td></tr>
+              <tr><td><code>/data/full</code></td><td>fullMapData</td><td>Complete geography for interactive maps.</td></tr>
+              <tr><td><code>/data</code></td><td>coast, districtMaps, neighborhoodCollections, neighborhoodSources, getNeighborhood, searchNeighborhoods, catalog, …</td><td>Datasets and lookup helpers.</td></tr>
+              <tr><td><code>/data/coast</code>, <code>/data/districts</code>, <code>/data/realtor</code>, <code>/data/sf-find</code>, <code>/data/analysis</code>, <code>/data/landmarks</code>, <code>/data/highways</code>, <code>/data/roads</code>, <code>/data/stations</code>, <code>/data/lookup</code>, <code>/data/catalog</code></td><td>one dataset each</td><td>Compose your own geography.</td></tr>
+              <tr><td><code>/geometry</code></td><td>rawProject, geometryPath, positions</td><td>Projection and path helpers.</td></tr>
+              <tr><td><code>/guide</code>, <code>/guide/map</code>, <code>/guide/data</code>, <code>/guide/static</code>, <code>/guide/detailed</code></td><td>createGuideController, mountGuideController, createGuideMap, mountGuideMap, guideMapData, createGuideSVG, createGuideShell, loadGuideDetailedData</td><td>Lightweight guide presets.</td></tr>
+              <tr><td><code>/presets</code></td><td>guideOptions</td><td>Guide configuration without data.</td></tr>
+              <tr><td><code>/transit</code></td><td>createTransitAnimation</td><td>The schematic BART animation.</td></tr>
+            </tbody>
+          </table></div>
+        </section>
+
+        <section class="api-entry" id="render-map">
+          <h2>renderMap</h2>
+          <code class="signature">renderMap(data: StaticMapData, options?: StaticMapOptions)
+  → { svg: string; project: (position) =&gt; [x, y]; viewBox: [0, 0, width, height] }</code>
+          <p>Renders a self-contained SVG string with no DOM. <code>project</code> converts <code>[lng, lat]</code> into the SVG’s coordinates.</p>
+          <div class="table-wrap"><table class="api-table">
+            <thead><tr><th>Option</th><th>Type · default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>year</code></td><td>2002 | 2012 | 2022 · 2022</td><td>District map year.</td></tr>
+              <tr><td><code>theme</code></td><td>'districts' | 'transit' · 'districts'</td><td>Soft district palette or quiet transit palette.</td></tr>
+              <tr><td><code>width</code>, <code>height</code></td><td>number · 800</td><td>SVG size and view box.</td></tr>
+              <tr><td><code>padding</code></td><td>number · 28</td><td>Space around the fitted city.</td></tr>
+              <tr><td><code>districtFills</code></td><td>boolean · true</td><td>Colored district areas.</td></tr>
+              <tr><td><code>districtLines</code></td><td>boolean · true</td><td>District outlines.</td></tr>
+              <tr><td><code>districtLabels</code></td><td>boolean · true</td><td>District number badges.</td></tr>
+              <tr><td><code>districtStyle</code></td><td>(district) =&gt; { fill?, stroke?, opacity? }</td><td>Per-district style, evaluated once per district.</td></tr>
+              <tr><td><code>neighborhoodLines</code></td><td>boolean · false</td><td>Dashed outlines of <code>data.neighborhoods</code> (SFAR in the presets).</td></tr>
+              <tr><td><code>landmarks</code></td><td>boolean · false</td><td>Park boundaries and names.</td></tr>
+              <tr><td><code>highways</code></td><td>boolean · false</td><td>Highway lines.</td></tr>
+              <tr><td><code>keyRoads</code></td><td>boolean · false</td><td>Selected road corridors.</td></tr>
+              <tr><td><code>roadLabels</code></td><td>boolean · same as keyRoads</td><td>Road names.</td></tr>
+              <tr><td><code>bartStations</code></td><td>boolean · false</td><td>The eight BART stations in the city.</td></tr>
+              <tr><td><code>labels</code></td><td>boolean · true</td><td>Hide every visible label while keeping titles.</td></tr>
+              <tr><td><code>markers</code></td><td>MapMarker[] · []</td><td>Points drawn above everything else.</td></tr>
+              <tr><td><code>overlays</code></td><td>MapOverlay[] · []</td><td>Your own lines and polygons.</td></tr>
+              <tr><td><code>colors</code></td><td>Partial&lt;Record&lt;ColorKey, string&gt;&gt;</td><td>water, land, district, neighborhood, highway, road, park, landmark, bart, label, marker, selected.</td></tr>
+              <tr><td><code>animation</code></td><td>boolean | { duration?, delay? } · false</td><td>Self-contained draw-in. <code>duration</code> defaults to 2400 ms and scales the sequence.</td></tr>
+              <tr><td><code>title</code></td><td>string · 'San Francisco map'</td><td>Accessible title.</td></tr>
+              <tr><td><code>idPrefix</code></td><td>string · generated</td><td>Prefix for element ids and animation scope.</td></tr>
+            </tbody>
+          </table></div>
+        </section>
+
+        <section class="api-entry" id="get-layer-paths">
+          <h2>getLayerPaths</h2>
+          <code class="signature">getLayerPaths(data: StaticMapData, options?: StaticMapOptions)
+  → { year, viewBox, project, coast, districts, neighborhoods, highways,
+      landmarks, keyRoads, bartStations }</code>
+          <p>Returns fitted path strings and points for each layer without building SVG markup, for canvas renderers and custom drawings.</p>
+        </section>
+
+        <section class="api-entry" id="create-map">
+          <h2>createMap</h2>
+          <code class="signature">createMap(data: MapData, options?: MapOptions) → MapController</code>
+          <p>Creates an interactive map. Mount <code>controller.element</code>. Unknown options throw, so typos surface immediately.</p>
+          <div class="table-wrap"><table class="api-table">
+            <thead><tr><th>Option</th><th>Type · default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>mode</code></td><td>'basemap' | 'neighborhoods' | 'districts' · 'neighborhoods'</td><td>What the map is about; sets default layers and selection.</td></tr>
+              <tr><td><code>source</code></td><td>'realtor' | 'sf-find' | 'analysis' · 'realtor'</td><td>Neighborhood definition.</td></tr>
+              <tr><td><code>neighborhood</code></td><td>string</td><td>Select a neighborhood by name or alias at start.</td></tr>
+              <tr><td><code>year</code></td><td>2002 | 2012 | 2022 · 2022</td><td>District map year.</td></tr>
+              <tr><td><code>labels</code></td><td>boolean · true</td><td>Visible labels.</td></tr>
+              <tr><td><code>layers</code></td><td>InteractiveLayers</td><td>See <a href="#layers">layers</a>.</td></tr>
+              <tr><td><code>controls</code></td><td>MapControls</td><td>See <a href="#controls">controls</a>.</td></tr>
+              <tr><td><code>features</code></td><td>MapFeatures</td><td>See <a href="#features">features</a>.</td></tr>
+              <tr><td><code>appearance</code></td><td>MapAppearance</td><td>See <a href="#appearance">appearance</a>. Set once.</td></tr>
+              <tr><td><code>markers</code></td><td>MapMarker[]</td><td>Initial markers.</td></tr>
+              <tr><td><code>overlays</code></td><td>MapOverlay[]</td><td>Initial overlays.</td></tr>
+              <tr><td><code>legend</code></td><td>{ builtins?, hidden?, items? }</td><td>Legend entries.</td></tr>
+              <tr><td><code>strings</code></td><td>Partial&lt;Record&lt;StringKey, string&gt;&gt;</td><td>Replace interface text for translation.</td></tr>
+              <tr><td><code>attribution</code></td><td>'full' | 'compact' · 'full'</td><td>Source credit style.</td></tr>
+              <tr><td><code>fitPadding</code></td><td>number | MapPadding · 24</td><td>Screen pixels kept clear when fitting.</td></tr>
+              <tr><td><code>selectableNeighborhoods</code></td><td>boolean · true</td><td>Whether neighborhoods respond to selection.</td></tr>
+            </tbody>
+          </table></div>
+        </section>
+
+        <section class="api-entry" id="features">
+          <h2>features</h2>
+          <p>Opt-in behaviors. Pass <code>true</code> for defaults or an object to tune them. Change them at runtime with <code>map.configure({ features })</code>. Reduced motion always takes precedence.</p>
+          <div class="table-wrap"><table class="api-table">
+            <thead><tr><th>Feature</th><th>Options · defaults</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>motion</code></td><td>{ duration: 320 }</td><td>Ease the camera.</td></tr>
+              <tr><td><code>markerEntrance</code></td><td>{ duration: 420, stagger: 35 }</td><td>Animate new markers in.</td></tr>
+              <tr><td><code>selectedMarkerRing</code></td><td>{ color, width: 2, gap: 3 }</td><td>Ring around the selected marker.</td></tr>
+              <tr><td><code>clustering</code></td><td>{ radius: 32 }</td><td>Screen-space marker clusters with an accessible chooser.</td></tr>
+              <tr><td><code>layerTransitions</code></td><td>{ duration: 360 }</td><td>Fade layer switches; crossfade <code>setSource</code> and <code>setDistrictStyle</code>.</td></tr>
+              <tr><td><code>districtMorph</code></td><td>{ duration: 1100 }</td><td>Morph outlines on <code>setDistrictYear</code>.</td></tr>
+              <tr><td><code>northArrow</code></td><td>boolean</td><td>Show a north arrow.</td></tr>
+              <tr><td><code>scaleBar</code></td><td>boolean</td><td>Show an approximate scale bar.</td></tr>
+            </tbody>
+          </table></div>
+        </section>
+
+        <section class="api-entry" id="layers">
+          <h2>layers</h2>
+          <p>Each key is a boolean override. Omitted keys follow the mode: district layers show in <code>'districts'</code>, neighborhood layers in <code>'neighborhoods'</code>, and the rest show in every mode.</p>
+          <div class="table-wrap"><table class="api-table">
+            <thead><tr><th>Key</th><th>Default</th><th>Draws</th></tr></thead>
+            <tbody>
+              <tr><td><code>districtFills</code>, <code>districtLines</code>, <code>districtLabels</code></td><td>districts mode</td><td>District areas, outlines and numbers.</td></tr>
+              <tr><td><code>neighborhoodLines</code>, <code>neighborhoodLabels</code></td><td>neighborhoods mode</td><td>Neighborhood outlines and names.</td></tr>
+              <tr><td><code>landmarks</code></td><td>on</td><td>Parks.</td></tr>
+              <tr><td><code>highways</code>, <code>keyRoads</code>, <code>roadLabels</code></td><td>on</td><td>Roads and their names.</td></tr>
+              <tr><td><code>bartStations</code></td><td>on</td><td>BART stations.</td></tr>
+            </tbody>
+          </table></div>
+        </section>
+
+        <section class="api-entry" id="controls">
+          <h2>controls</h2>
+          <p>Independent switches for the map’s own interface: <code>zoom</code>, <code>pan</code>, <code>reset</code>, <code>labels</code>, <code>touch</code>, <code>legend</code>, <code>neighborhoodPicker</code>, <code>markerPicker</code>, <code>help</code> and <code>status</code>. Hiding a picker means you should provide your own accessible list. Attribution always remains.</p>
+        </section>
+
+        <section class="api-entry" id="appearance">
+          <h2>appearance</h2>
+          <div class="table-wrap"><table class="api-table">
+            <thead><tr><th>Key</th><th>Type · default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>theme</code></td><td>'districts' | 'transit' · 'transit'</td><td>Base palette.</td></tr>
+              <tr><td><code>colors</code></td><td>Partial&lt;Record&lt;ColorKey, string&gt;&gt;</td><td>As in renderMap.</td></tr>
+              <tr><td><code>districtStyle</code></td><td>(district) =&gt; DistrictStyle</td><td>Initial choropleth; change with <code>setDistrictStyle</code>.</td></tr>
+              <tr><td><code>labelStyle</code></td><td>{ fontFamily?, fontWeight?, haloColor? }</td><td>Label typography.</td></tr>
+              <tr><td><code>labelSize</code></td><td>{ min?: 11, max?: 12 }</td><td>Screen-pixel label sizes, 8 to 32.</td></tr>
+              <tr><td><code>areaStyle</code></td><td>{ selectedFill?, selectedStroke?, hoverFill?, hoverStroke? }</td><td>Neighborhood highlight colors.</td></tr>
+              <tr><td><code>style</code></td><td>{ ink?, surface?, accent?, border?, focus?, controlGap?, font? }</td><td>Tokens for the map’s controls. CSS variables work.</td></tr>
+              <tr><td><code>markerRadius</code>, <code>markerHitSize</code></td><td>number · 6, 44</td><td>Marker size and touch target, in screen pixels.</td></tr>
+              <tr><td><code>markerColor</code>, <code>selectedMarkerColor</code></td><td>string</td><td>Marker colors.</td></tr>
+            </tbody>
+          </table></div>
+        </section>
+
+        <section class="api-entry" id="controller">
+          <h2>MapController</h2>
+          <div class="table-wrap"><table class="api-table">
+            <thead><tr><th>Member</th><th>Signature</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>element</code></td><td>HTMLElement</td><td>Mount this.</td></tr>
+              <tr><td><code>overlayElement</code></td><td>HTMLDivElement</td><td>Positioned layer for your own HTML.</td></tr>
+              <tr><td><code>camera</code></td><td>MapCamera</td><td>See <a href="#camera">MapCamera</a>.</td></tr>
+              <tr><td><code>destroyed</code></td><td>boolean</td><td>True after <code>destroy()</code>.</td></tr>
+              <tr><td><code>configure</code></td><td>(patch: { features?, layers?, controls? })</td><td>Atomic runtime change; invalid patches change nothing.</td></tr>
+              <tr><td><code>getConfiguration</code></td><td>() → snapshot</td><td>Detached copy of features, layers and controls.</td></tr>
+              <tr><td><code>on</code></td><td>(type, listener) → unsubscribe</td><td>Typed events; see <a href="#events">Events</a>.</td></tr>
+              <tr><td><code>setMode</code></td><td>(mode)</td><td>Switch basemap, neighborhoods or districts.</td></tr>
+              <tr><td><code>setSource</code></td><td>(source)</td><td>Switch neighborhood definition.</td></tr>
+              <tr><td><code>setDistrictYear</code></td><td>(year, { animate?, duration? })</td><td>Switch district map; morphs with <code>districtMorph</code>.</td></tr>
+              <tr><td><code>setDistrictStyle</code></td><td>(style | undefined)</td><td>Restyle districts.</td></tr>
+              <tr><td><code>setLabels</code></td><td>(visible: boolean)</td><td>Show or hide labels.</td></tr>
+              <tr><td><code>setMarkers</code>, <code>setOverlays</code></td><td>(items)</td><td>Replace markers or overlays, reconciled by id.</td></tr>
+              <tr><td><code>selectMarker</code>, <code>selectNeighborhood</code>, <code>selectDistrict</code></td><td>(id | name | null, { fit?, animate?, duration? }) → boolean</td><td>Select, optionally fitting the camera.</td></tr>
+              <tr><td><code>getSelectedMarker</code>, <code>getSelectedNeighborhood</code>, <code>getSelectedDistrict</code></td><td>() → selection | null</td><td>Detached copies of the current selection.</td></tr>
+              <tr><td><code>setTouchNavigation</code></td><td>(enabled: boolean)</td><td>Engage map touch gestures.</td></tr>
+              <tr><td><code>projectToScreen</code></td><td>(lng, lat) → { x, y, visible }</td><td>Screen position of a point.</td></tr>
+              <tr><td><code>destroy</code></td><td>()</td><td>Idempotent; releases observers, listeners and animations.</td></tr>
+            </tbody>
+          </table></div>
+        </section>
+
+        <section class="api-entry" id="camera">
+          <h2>MapCamera</h2>
+          <p>Viewports are <code>[x, y, size]</code> in the map’s fixed 800 × 800 projected space. Every method takes <code>{ animate?, duration? }</code>.</p>
+          <div class="table-wrap"><table class="api-table">
+            <thead><tr><th>Method</th><th>Signature</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>get</code></td><td>() → MapViewport</td><td>Current viewport.</td></tr>
+              <tr><td><code>set</code></td><td>(view, options)</td><td>Move to a viewport.</td></tr>
+              <tr><td><code>fit</code></td><td>(geometry, { padding?, … })</td><td>Fit any GeoJSON geometry.</td></tr>
+              <tr><td><code>pan</code></td><td>(x, y, options)</td><td>Pan by projected units.</td></tr>
+              <tr><td><code>zoom</code></td><td>(factor, options)</td><td>Zoom about the center.</td></tr>
+              <tr><td><code>reset</code></td><td>(options)</td><td>Return to the whole city.</td></tr>
+              <tr><td><code>stop</code></td><td>()</td><td>Stop camera motion where it is.</td></tr>
+            </tbody>
+          </table></div>
+        </section>
+
+        <section class="api-entry" id="events">
+          <h2>Events</h2>
+          <div class="code"><div class="code-label">Subscribing <button class="copy" type="button">Copy</button></div><pre><code>const unsubscribe = map.on('neighborhoodchange', ({ name, source }) =&gt; {
+  console.log(name, source);
+});</code></pre></div>
+          <div class="table-wrap"><table class="api-table">
+            <thead><tr><th>Event</th><th>Detail</th><th>When</th></tr></thead>
+            <tbody>
+              <tr><td><code>districtchange</code></td><td>{ id, year, district }</td><td>District selection changes.</td></tr>
+              <tr><td><code>districthover</code></td><td>{ id, year, district }</td><td>The hovered district changes.</td></tr>
+              <tr><td><code>districtactivate</code></td><td>{ id, year, district }</td><td>A district is clicked or activated by keyboard.</td></tr>
+              <tr><td><code>districtyearchange</code></td><td>{ year, previousYear }</td><td>The district map year changes.</td></tr>
+              <tr><td><code>neighborhoodchange</code></td><td>{ id, name, source, feature }</td><td>Neighborhood selection changes.</td></tr>
+              <tr><td><code>markerchange</code></td><td>{ id, marker }</td><td>Marker selection changes.</td></tr>
+              <tr><td><code>overlayactivate</code></td><td>{ overlay }</td><td>An overlay is activated.</td></tr>
+              <tr><td><code>clusteractivate</code></td><td>{ markers }</td><td>A marker cluster is activated.</td></tr>
+              <tr><td><code>viewportchange</code></td><td>{ viewport }</td><td>The camera moves.</td></tr>
+              <tr><td><code>mapresize</code></td><td>undefined</td><td>The map’s size changes.</td></tr>
+            </tbody>
+          </table></div>
+        </section>
+
+        <section class="api-entry" id="types">
+          <h2>Types</h2>
+          <div class="code"><div class="code-label">TypeScript <button class="copy" type="button">Copy</button></div><pre><code>interface MapMarker {
+  id: string;
+  lng: number;
+  lat: number;
+  label?: string;
+  selected?: boolean;
+  color?: string;
+  radius?: number; // screen pixels (interactive), SVG units (static)
+}
+
+interface MapOverlay {
+  id: string;
+  geometry: LineString | MultiLineString | Polygon | MultiPolygon;
+  stroke?: string;
+  strokeWidth?: number;
+  fill?: string;
+  fillOpacity?: number;
+  visible?: boolean;
+  label?: string;
+}
+
+interface DistrictStyle {
+  fill?: string;
+  stroke?: string;
+  opacity?: number;
+}
+
+type MapViewport = readonly [x: number, y: number, size: number];
+type DistrictYear = 2002 | 2012 | 2022;
+type NeighborhoodSource = 'realtor' | 'sf-find' | 'analysis';</code></pre></div>
+        </section>
+
+        <section class="api-entry" id="guide-transit">
+          <h2>Guide and transit</h2>
+          <code class="signature">createGuideController(options?: MapOptions) → MapController
+mountGuideController(shell: HTMLElement, options?: MapOptions) → MapController
+createGuideSVG(options?: StaticMapOptions) → { svg, project, viewBox }
+createGuideShell(options?: StaticMapOptions) → string
+createTransitAnimation() → TransitAnimationElement</code>
+          <p>The guide entries wrap <code>createMap</code> with the lightweight guide geography and layout, and can progressively enhance a server-rendered shell. The transit entry returns a paused, keyboard-operable schematic BART animation; call <code>destroy()</code> when you remove it.</p>
+        </section>
+      </article>
+    </div>
+  </main>
+  <!--site-footer-->
+  <script type="module" src="./docs.js"></script>
+</body>
+</html>

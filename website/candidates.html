@@ -1,25 +1,78 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Explore certified San Francisco candidate votes by supervisorial district across elections from 2016 to 2026.">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Who each San Francisco supervisorial district voted for, 2016 to 2026: leaders, margins and every candidate’s share across federal, statewide and legislative contests.">
   <link rel="canonical" href="https://kahwee.github.io/sf-map-svg/candidates.html">
-  <title>Candidate votes in San Francisco · SF / SVG</title><link rel="icon" href="data:,">
-  <link rel="stylesheet" href="./style.css"><link rel="stylesheet" href="./propositions.css"><link rel="stylesheet" href="./candidates.css">
+  <title>Supervisorial votes · SF / SVG</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./examples.css">
+  <link rel="stylesheet" href="./candidates.css">
 </head>
 <body>
-  <a class="skip" href="#candidate-explorer">Skip to candidate map</a>
-  <header class="shell"><nav aria-label="Main navigation"><a class="brand" href="./">SF / SVG</a><div><a href="./">Atlas home</a><a href="./measures.html">Local measures</a><a href="./propositions.html">California propositions</a></div><a href="https://github.com/kahwee/sf-map-svg">GitHub ↗</a></nav></header>
-  <main class="shell prop-main" id="candidate-explorer">
-    <div class="prop-intro"><p class="eyebrow" data-enter style="--i:0">Certified SF election archive · 2016–2026</p><h1 data-split data-vt-title>Who SF voted for.</h1><p data-enter style="--i:4">Choose an election, office, and candidate. See where votes varied across the city’s eleven supervisorial districts.</p><p class="scope" data-enter style="--i:5"><strong>Votes cast in SF.</strong> These maps do not show statewide outcomes or identify individual voters. House and state legislative contests cover only eligible parts of the city.</p></div>
-    <section aria-label="Choose an election contest and candidate" class="candidate-picker" data-enter style="--i:6">
-      <label for="candidate-election">Election<select id="candidate-election"></select></label>
-      <label for="candidate-contest">Office and district<select id="candidate-contest"></select></label>
-      <label for="candidate-person">Candidate<select id="candidate-person"></select></label>
+  <!--site-header-->
+  <main id="content">
+    <header class="page-head shell">
+      <p class="eyebrow" data-enter style="--i:0">Example 3 · <b>Candidate votes · 2016–2026</b></p>
+      <h1 data-split data-vt-title>Who each supervisorial district voted for.</h1>
+      <p class="lede" data-enter style="--i:6">Six elections, eleven districts. See who led where and by how much, then follow any candidate across the city.</p>
+      <p class="page-head-meta" data-enter style="--i:7"><span>Certified San Francisco results</span><span>Votes cast in SF only</span><a class="link-draw" href="#method">Source and method ↓</a></p>
+    </header>
+
+    <section class="section shell votes" aria-label="Candidate votes by supervisorial district">
+      <div class="vote-controls" data-enter style="--i:7">
+        <div class="field"><span>Election</span><div id="election-control"></div></div>
+        <label class="field" for="contest">Office<select id="contest"></select></label>
+        <div class="field"><span>Map shows</span><div id="view-control"></div></div>
+      </div>
+      <p class="vote-status" id="vote-status" role="status" aria-live="polite"></p>
+      <div class="detail-grid">
+        <figure class="plate">
+          <div class="plate-frame example-map" id="vote-map"><p class="stage-loading" role="status">Loading the map…</p></div>
+          <figcaption id="vote-caption"><b>Leading candidate by district.</b> Lighter fills mark closer races.</figcaption>
+        </figure>
+        <div class="detail-side">
+          <div class="headline-stat" id="vote-headline" aria-live="polite"></div>
+          <p class="eyebrow">Citywide, all candidates</p>
+          <ol class="leaderboard bars-enter" id="leaderboard"></ol>
+        </div>
+      </div>
     </section>
-    <p id="candidate-status" role="status" aria-live="polite"></p>
-    <div class="prop-grid" data-enter style="--i:7"><section class="prop-map-panel" aria-label="Candidate vote map"><div class="panel-heading"><div><p class="eyebrow">Supervisorial boundaries</p><h2 id="candidate-map-title">Candidate vote share</h2></div><button type="button" id="candidate-clear" hidden>Show all districts</button></div><div id="candidate-map" class="prop-map"><p role="status">Loading map…</p></div><div class="map-key"><span id="candidate-low">0%</span><span class="map-ramp" aria-hidden="true"></span><span id="candidate-high">100%</span></div><p class="map-note">Colors use a fixed 0–100% scale. Gray means no eligible ballots. A dashed outline means only part of that supervisorial district was eligible. Select a district with a pointer or Tab and Enter.</p></section><section class="prop-results" aria-labelledby="candidate-results-title"><div class="panel-heading"><div><p class="eyebrow">Compare places</p><h2 id="candidate-results-title">District results</h2></div></div><p id="candidate-selection" aria-live="polite"></p><div id="candidate-list" class="district-list bars-enter"></div></section></div>
-    <section class="prop-method" data-reveal aria-labelledby="candidate-method-title"><div><p class="eyebrow">Source and method</p><h2 id="candidate-method-title">Read the vote</h2><p id="candidate-method">Candidate share is the selected candidate’s votes divided by all valid votes in that contest. It includes votes for other candidates in the denominator. District results are votes cast within SF, not a demographic profile.</p><p id="candidate-geography"></p></div><div class="source-actions"><a id="candidate-workbook" href="https://sfelections.org/">Official certified workbook ↗</a><a id="candidate-json" href="./data/candidates/catalog.json" download>Download this election JSON ↓</a><a href="./data/candidates/catalog.json" download>Download archive catalog ↓</a><p>Map renderer %RELEASE_LABEL%. Each election is a separate download and loads only when selected.</p></div></section>
-  </main><footer class="shell" data-rule><span>SF / SVG · %RELEASE_LABEL%</span><a href="./examples.html">More examples</a><a href="https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md">Data sources</a></footer>
+
+    <section class="section shell" aria-labelledby="table-title">
+      <div class="section-head" data-reveal="stagger">
+        <div><p class="eyebrow">District by district</p><h2 id="table-title">The whole ballot, eleven times.</h2></div>
+        <p>Each bar splits a district’s valid votes among the leading candidates. Select a row to highlight that district on the map.</p>
+      </div>
+      <div class="district-bars bars-enter" id="district-bars"></div>
+    </section>
+
+    <section class="section shell method" id="method" aria-labelledby="method-title">
+      <div class="method-grid">
+        <div class="prose">
+          <p class="eyebrow">Source and method</p>
+          <h2 id="method-title">Reading the vote</h2>
+          <p id="method-text">A candidate’s share is their votes divided by all valid votes in that contest and area, so every other candidate counts in the denominator. District results are votes cast within San Francisco, not a profile of residents.</p>
+          <p id="geography-text"></p>
+          <p class="source-links"><a class="link-draw" id="workbook" href="https://sfelections.org/">Official certified workbook ↗</a></p>
+          <div class="button-row"><a class="button secondary small" id="election-json" href="./data/candidates/catalog.json" download>Download this election ↓</a><button class="button secondary small" type="button" id="download-svg">Download this map as SVG ↓</button></div>
+        </div>
+        <div class="code"><div class="code-label">Coloring districts by leader <button class="copy" type="button">Copy</button></div><pre><code>import { createMap } from '@kahwee/sf-map-svg';
+
+const map = createMap(data, {
+  mode: 'districts',
+  year: election.districtYear, // 2012 or 2022 boundaries
+  appearance: {
+    districtStyle: (district) =&gt; ({ fill: leaderInk(district.id) }),
+  },
+});
+// Repaint when the contest changes; with layerTransitions the fills crossfade.
+map.setDistrictStyle((district) =&gt; ({ fill: leaderInk(district.id) }));</code></pre></div>
+      </div>
+    </section>
+  </main>
+  <!--site-footer-->
   <script type="module" src="./candidates.js"></script>
-</body></html>
+</body>
+</html>

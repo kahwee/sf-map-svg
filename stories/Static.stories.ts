@@ -110,3 +110,51 @@ export const Phone390: Story = {
     );
   },
 };
+
+export const AnimatedDrawIn: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Pass `animation: true` for a self-contained CSS choreography: land fades in, the coast and lines draw, districts grow, then labels and points appear. It plays when the SVG is inserted or loaded as an image and stays still under reduced motion. `duration` scales the sequence and `delay` offsets it.',
+      },
+      source: {
+        code: `const { svg } = renderMap(guideMapData.map, {
+  animation: { duration: 2400 },
+  neighborhoodLines: true,
+  highways: true,
+  bartStations: true,
+});`,
+      },
+    },
+  },
+  render: () => {
+    const frame = document.createElement('div');
+    frame.style.cssText = 'width:100%;max-width:800px;margin:auto';
+    const replay = document.createElement('button');
+    replay.type = 'button';
+    replay.textContent = 'Replay';
+    const stage = document.createElement('div');
+    const draw = () => {
+      stage.innerHTML = renderMap(guideMapData.map, {
+        animation: true,
+        neighborhoodLines: true,
+        highways: true,
+        keyRoads: true,
+        landmarks: true,
+        bartStations: true,
+        idPrefix: `storybook-animated-${++renderCount}`,
+      }).svg;
+    };
+    replay.addEventListener('click', draw);
+    draw();
+    frame.append(replay, stage);
+    return frame;
+  },
+  play: async ({ canvasElement }) => {
+    const image = canvasElement.querySelector('svg');
+    expect(image?.dataset.sfAnimate).toMatch(/^storybook-animated-/);
+    expect(image?.querySelector('style')?.textContent).toContain('prefers-reduced-motion');
+    expect(image?.querySelector('[data-layer="coastline"]')?.getAttribute('pathLength')).toBe('1');
+  },
+};

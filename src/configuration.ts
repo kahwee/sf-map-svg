@@ -23,6 +23,8 @@ const featureKeys = [
   'clustering',
   'northArrow',
   'scaleBar',
+  'layerTransitions',
+  'districtMorph',
 ];
 
 export function expandMapOptions(options: MapOptions): NeighborhoodExplorerOptions {

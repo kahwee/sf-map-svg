@@ -2,12 +2,13 @@
 // them with display-only simplification, so pages avoid bundling raw GeoJSON.
 const cache = new Map();
 
-/** Load the display SVG for a district map year as a detached <svg> element. */
-export function loadDisplayMap(year) {
-  if (!cache.has(year)) {
+/** Load a pre-rendered district map (`display` or small `thumb`) as a detached <svg>. */
+export function loadDisplayMap(year, size = 'display') {
+  const key = `${size}-${year}`;
+  if (!cache.has(key)) {
     cache.set(
-      year,
-      fetch(`./maps/display/districts-${year}.svg`).then(async (response) => {
+      key,
+      fetch(`./maps/${size}/districts-${year}.svg`).then(async (response) => {
         if (!response.ok) throw new Error(`Could not load ${year} district map`);
         const parsed = new DOMParser().parseFromString(await response.text(), 'image/svg+xml');
         if (parsed.querySelector('parsererror')) throw new Error(`Invalid ${year} district map`);
@@ -15,12 +16,12 @@ export function loadDisplayMap(year) {
       }),
     );
   }
-  return cache.get(year);
+  return cache.get(key);
 }
 
 /** A fresh, sizable copy of a display map for insertion into the page. */
-export async function displayMapCopy(year, { idPrefix, title } = {}) {
-  const svg = document.importNode(await loadDisplayMap(year), true);
+export async function displayMapCopy(year, { idPrefix, title, size = 'display' } = {}) {
+  const svg = document.importNode(await loadDisplayMap(year, size), true);
   svg.removeAttribute('width');
   svg.removeAttribute('height');
   if (idPrefix) {

@@ -101,3 +101,10 @@ enhanced.setOverlays([
   // @ts-expect-error Overlay points belong in the marker API.
   { id: 'point', geometry: { type: 'MultiPoint', coordinates: [[-122.4, 37.7]] } },
 ]);
+
+const transitions = createMap(fullMapData, {
+  features: { layerTransitions: { duration: 400 }, districtMorph: true },
+});
+transitions.configure({ features: { districtMorph: { duration: 900 }, layerTransitions: false } });
+transitions.setDistrictYear(2012, { animate: false });
+transitions.destroy();

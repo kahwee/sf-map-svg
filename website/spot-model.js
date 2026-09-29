@@ -1,21 +1,12 @@
-import districts2002 from '../data/districts-2002.json';
-import districts2012 from '../data/districts-2012.json';
-import districts2022 from '../data/districts-2022.json';
-import sfFind from '../data/neighborhoods.json';
-import analysis from '../data/neighborhoods-analysis.json';
-import realtor from '../data/neighborhoods-realtor.json';
+// Point lookup across the three neighborhood definitions and three district maps.
+// `data` has the library's MapData shape: `neighborhoods` collections and `districts` maps.
 
 export const neighborhoodSources = [
-  { id: 'realtor', label: 'SFAR', detail: 'Realtor areas · 2010', collection: realtor },
-  { id: 'sf-find', label: 'SF Find', detail: 'City neighborhood names · 2006', collection: sfFind },
-  { id: 'analysis', label: 'Analysis', detail: 'City analysis areas', collection: analysis },
+  { id: 'realtor', label: 'SFAR', detail: 'Realtor areas · 2010' },
+  { id: 'sf-find', label: 'SF Find', detail: 'City neighborhood names · 2006' },
+  { id: 'analysis', label: 'Analysis', detail: 'City analysis areas' },
 ];
-
-export const districtYears = [
-  { year: 2002, collection: districts2002 },
-  { year: 2012, collection: districts2012 },
-  { year: 2022, collection: districts2022 },
-];
+export const districtYears = [2002, 2012, 2022];
 
 function inRing([x, y], ring) {
   let inside = false;
@@ -42,15 +33,17 @@ export function containsPoint(feature, point) {
   return false;
 }
 
-export function identifySpot(point) {
+export function identifySpot(point, data) {
   return {
     neighborhoods: neighborhoodSources.map((source) => ({
       ...source,
-      matches: source.collection.features.filter((feature) => containsPoint(feature, point)),
+      matches: (data.neighborhoods[source.id]?.features ?? []).filter((feature) =>
+        containsPoint(feature, point),
+      ),
     })),
-    districts: districtYears.map(({ year, collection }) => ({
+    districts: districtYears.map((year) => ({
       year,
-      feature: collection.features.find((feature) => containsPoint(feature, point)),
+      feature: data.districts[year]?.features.find((feature) => containsPoint(feature, point)),
     })),
   };
 }

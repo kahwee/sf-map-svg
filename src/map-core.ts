@@ -7,6 +7,7 @@ export type { DistrictYear, MapMarker, MapOverlay, SFMapOptions } from './types.
 import { prepareDistrictStyles } from './district-style.js';
 import { geometryPath, positions, rawProject } from './geometry.js';
 import * as layers from './layers.js';
+import { normalizeStaticAnimation, staticAnimationStyle } from './static-animation.js';
 import { escapeXml, stroke } from './svg.js';
 
 export interface SFMapData {
@@ -189,6 +190,8 @@ export function createSFMapWithData(options: SFMapOptions, data: SFMapData) {
   if (theme !== 'districts' && theme !== 'transit')
     throw new TypeError('Theme must be districts or transit.');
   const colors = { ...defaults, ...(theme === 'transit' ? transitColors : {}), ...options.colors };
+  const animation = normalizeStaticAnimation(options.animation);
+  const animated = animation !== null;
   const geometry = getLayerPathsWithData(options, data, false);
   const { project } = geometry;
   const path = (geometry: Geometry | null | undefined) => geometryPath(geometry, project);
@@ -197,7 +200,7 @@ export function createSFMapWithData(options: SFMapOptions, data: SFMapData) {
   const landmarkData = data.landmarks ?? [];
   const roadData = data.keyRoads ?? [];
   const stationData = data.bartStations ?? [];
-  const context = { project, path, colors, idPrefix, theme, labels };
+  const context = { project, path, colors, idPrefix, theme, labels, animated };
   const styles = prepareDistrictStyles(
     districtFills || districtLines ? districts : [],
     options.districtStyle,
@@ -216,7 +219,7 @@ export function createSFMapWithData(options: SFMapOptions, data: SFMapData) {
         })
       : [];
   const parts = [
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" role="img" aria-labelledby="${idPrefix}-title" data-sf-map="" data-year="${year}" style="max-width:100%;height:auto"><title id="${idPrefix}-title">${escapeXml(title)}</title><desc>San Francisco supervisorial district boundaries (${year}).${neighborhoodLines ? ' Dashed lines show SFAR realtor neighborhood areas, defined in August 2010.' : ''}${landmarks ? ' Highlighted areas show six parks and landmarks.' : ''}${keyRoads ? ' Thin gray lines show selected road corridors.' : ''}${bartStations ? ' Rings mark the eight San Francisco BART stations.' : ''} Geometry from DataSF${bartStations ? ' and BART' : ''}. See package SOURCES.md.</desc><defs><clipPath id="${idPrefix}-coast"><path d="${coastPath}" fill-rule="evenodd" clip-rule="evenodd"/></clipPath></defs><rect width="${width}" height="${height}" fill="${escapeXml(colors.water)}"/><g data-layer="geography"><path data-layer="coast" d="${coastPath}" fill="${escapeXml(colors.land)}" fill-rule="evenodd"/>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" role="img" aria-labelledby="${idPrefix}-title" data-sf-map="" data-year="${year}"${animated ? ` data-sf-animate="${idPrefix}"` : ''} style="max-width:100%;height:auto"><title id="${idPrefix}-title">${escapeXml(title)}</title><desc>San Francisco supervisorial district boundaries (${year}).${neighborhoodLines ? ' Dashed lines show SFAR realtor neighborhood areas, defined in August 2010.' : ''}${landmarks ? ' Highlighted areas show six parks and landmarks.' : ''}${keyRoads ? ' Thin gray lines show selected road corridors.' : ''}${bartStations ? ' Rings mark the eight San Francisco BART stations.' : ''} Geometry from DataSF${bartStations ? ' and BART' : ''}. See package SOURCES.md.</desc>${animation ? staticAnimationStyle(idPrefix, animation) : ''}<defs><clipPath id="${idPrefix}-coast"><path d="${coastPath}" fill-rule="evenodd" clip-rule="evenodd"/></clipPath></defs><rect width="${width}" height="${height}" fill="${escapeXml(colors.water)}"/><g data-layer="geography"><path data-layer="coast" d="${coastPath}" fill="${escapeXml(colors.land)}" fill-rule="evenodd"/>`,
   ];
   // Explicit drawing order keeps optional overlays and user markers predictable.
   if (districtFills) parts.push(layers.districtFills(districtPaths, context));
@@ -225,14 +228,16 @@ export function createSFMapWithData(options: SFMapOptions, data: SFMapData) {
   if (highways) parts.push(layers.highways(data.highways ?? [], context));
   if (neighborhoodLines) parts.push(layers.neighborhoods(data.neighborhoods ?? [], context));
   if (districtLines) parts.push(layers.districtLines(districtPaths, context));
-  parts.push(`<path data-layer="coastline" d="${coastPath}" ${stroke(colors.district, 0.65)}/>`);
+  parts.push(
+    `<path data-layer="coastline" d="${coastPath}" ${stroke(colors.district, 0.65)}${animated ? ' pathLength="1"' : ''}/>`,
+  );
   if (labels && districtLabels) parts.push(layers.districtLabels(districts, context));
   if (labels && landmarks) parts.push(layers.landmarkLabels(landmarkData, context));
   if (labels && roadLabels) parts.push(layers.keyRoadLabels(roadData, context));
   if (bartStations) parts.push(layers.bartStations(stationData, context));
   for (const overlay of options.overlays ?? []) {
     parts.push(
-      `<path data-overlay-id="${escapeXml(overlay.id)}"${overlay.label ? ` aria-label="${escapeXml(overlay.label)}"` : ''} d="${path(overlay.geometry)}" fill="${escapeXml(overlay.fill ?? 'none')}" fill-opacity="${overlay.fillOpacity ?? 1}" stroke="${escapeXml(overlay.stroke ?? colors.road)}" stroke-width="${overlay.strokeWidth ?? 2}" vector-effect="non-scaling-stroke"${overlay.visible === false ? ' display="none"' : ''}/>`,
+      `<path data-overlay-id="${escapeXml(overlay.id)}"${overlay.label ? ` aria-label="${escapeXml(overlay.label)}"` : ''} d="${path(overlay.geometry)}" fill="${escapeXml(overlay.fill ?? 'none')}" fill-opacity="${overlay.fillOpacity ?? 1}" stroke="${escapeXml(overlay.stroke ?? colors.road)}" stroke-width="${overlay.strokeWidth ?? 2}" vector-effect="non-scaling-stroke"${animated ? ' pathLength="1"' : ''}${overlay.visible === false ? ' display="none"' : ''}/>`,
     );
   }
   parts.push(layers.markers(markers, context), '</g></svg>');

@@ -1,7 +1,6 @@
-import { staticMapData } from '@kahwee/sf-map-svg/data/static';
 import { geometryPath, rawProject } from '@kahwee/sf-map-svg/geometry';
 import { renderMap } from '@kahwee/sf-map-svg/static';
-import { identifySpot } from './spot-model.js';
+import { districtYears, identifySpot } from './spot-model.js';
 
 const svgNS = 'http://www.w3.org/2000/svg';
 const samples = [
@@ -12,10 +11,16 @@ const samples = [
 ];
 
 const markup = `<div class="spot-explorer">
-  <div class="spot-toolbar"><div><span class="spot-kicker">01 / PICK A PLACE</span><h2>Start somewhere.</h2><p>Tap the map or choose a place. The point stays put while its names and district lines change.</p></div><div class="spot-samples" aria-label="Try a place"></div></div>
-  <div class="spot-layout"><div class="spot-map-panel"><div class="spot-map-head"><span class="spot-map-label">SAN FRANCISCO <span aria-hidden="true">/</span> SELECT A POINT</span><span class="spot-coordinate"></span></div><div class="spot-map" aria-label="San Francisco map; click to inspect a point"></div><div class="spot-map-foot"><span><i class="spot-map-dot"></i> Selected point</span><span>Click anywhere on land</span></div></div>
-  <div class="spot-sidebar"><div class="spot-step"><span class="spot-kicker">02 / COMPARE THE SOURCES</span><h2>One spot.<br><em>Three stories.</em></h2><p>These boundaries describe different ideas of a neighborhood. Select a source to trace its area on the map.</p></div><div class="spot-sources" role="group" aria-label="Neighborhood boundary sources"></div><div class="spot-step spot-step-district"><span class="spot-kicker">03 / TURN BACK TIME</span><h2>Which district?</h2><p>The point stays in place as the supervisorial map changes.</p><div class="spot-years" role="group" aria-label="District map year"></div><p class="spot-district-status" role="status"></p></div></div></div>
-  <div class="spot-note"><span>THE FINE PRINT</span><p>Neighborhood areas are source-specific definitions, not official answers to where a place belongs. District maps show three dated boundary snapshots. A point on a shared boundary can be ambiguous at this scale.</p><a href="https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md">See geographic sources ↗</a></div>
+  <div class="spot-toolbar"><p class="eyebrow">I · Pick a place</p><div class="spot-samples" role="group" aria-label="Try a place"></div></div>
+  <div class="spot-layout">
+    <figure class="plate spot-map-panel"><div class="plate-frame spot-map" aria-label="San Francisco map; select a point on land to inspect it"></div><figcaption><b>Selected point</b> <span class="spot-coordinate num"></span> · Select anywhere on land.</figcaption></figure>
+    <div class="spot-sidebar">
+      <div class="spot-step"><p class="eyebrow">II · Compare the definitions</p><h2>One spot. <em>Three stories.</em></h2><p>These boundaries describe different ideas of a neighborhood. Choose a definition to trace its area on the map.</p></div>
+      <div class="spot-sources" role="group" aria-label="Neighborhood definitions"></div>
+      <div class="spot-step spot-step-district"><p class="eyebrow">III · Turn back time</p><h2>Which district?</h2><p>The point stays put while the supervisorial map changes.</p><div class="spot-years" role="group" aria-label="District map year"></div><p class="spot-district-status" role="status"></p></div>
+    </div>
+  </div>
+  <p class="spot-note"><b>The fine print.</b> Neighborhood areas are source-specific definitions, not official answers to where a place belongs. A point on a shared boundary can be ambiguous at this scale. <a href="https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md">Geographic sources ↗</a></p>
 </div>`;
 
 function svgElement(name, attributes = {}) {
@@ -37,7 +42,11 @@ function toGeographic(point, project) {
   return [(rawX * 180) / Math.PI, ((2 * Math.atan(Math.exp(-rawY)) - Math.PI / 2) * 180) / Math.PI];
 }
 
-export function mountSpotExplorer(host, options = {}) {
+/**
+ * Mount the explorer. `data` has the library's MapData shape (for example `fullMapData`, or
+ * the site's display copy): `map` for rendering, `neighborhoods` and `districts` for lookup.
+ */
+export function mountSpotExplorer(host, { data, point: initialPoint } = {}) {
   host.innerHTML = markup;
   const mapHost = host.querySelector('.spot-map');
   const sourcesHost = host.querySelector('.spot-sources');
@@ -45,26 +54,38 @@ export function mountSpotExplorer(host, options = {}) {
   const samplesHost = host.querySelector('.spot-samples');
   const coordinate = host.querySelector('.spot-coordinate');
   const districtStatus = host.querySelector('.spot-district-status');
-  let point = options.point || samples[0].point;
+  let point = initialPoint || samples[0].point;
   let sourceId = 'realtor';
   let year = 2022;
   let map;
   let project;
+  const bases = new Map();
+
+  /** The base map changes only with the year, so each year renders once. */
+  function base(forYear) {
+    if (!bases.has(forYear))
+      bases.set(
+        forYear,
+        renderMap(data.map, {
+          year: forYear,
+          districtFills: false,
+          districtLines: true,
+          districtLabels: false,
+          landmarks: true,
+          keyRoads: true,
+          roadLabels: false,
+          idPrefix: `spot-${forYear}`,
+          title: `San Francisco map, ${forYear} district boundaries`,
+        }),
+      );
+    return bases.get(forYear);
+  }
 
   function draw() {
-    const result = identifySpot(point);
-    const base = renderMap(staticMapData, {
-      year,
-      districtFills: false,
-      districtLines: true,
-      districtLabels: false,
-      landmarks: true,
-      keyRoads: true,
-      roadLabels: false,
-      title: `San Francisco map, ${year} district boundaries`,
-    });
-    project = base.project;
-    mapHost.innerHTML = base.svg;
+    const result = identifySpot(point, data);
+    const rendered = base(year);
+    project = rendered.project;
+    mapHost.innerHTML = rendered.svg;
     map = mapHost.querySelector('svg');
     map.removeAttribute('width');
     map.removeAttribute('height');
@@ -78,6 +99,7 @@ export function mountSpotExplorer(host, options = {}) {
         svgElement('path', {
           class: 'spot-district-outline',
           d: geometryPath(district.geometry, project),
+          pathLength: 1,
         }),
       );
     const active = result.neighborhoods.find((item) => item.id === sourceId);
@@ -86,12 +108,17 @@ export function mountSpotExplorer(host, options = {}) {
         svgElement('path', {
           class: `spot-source-outline spot-source-${sourceId}`,
           d: geometryPath(feature.geometry, project),
+          pathLength: 1,
         }),
       );
     const [cx, cy] = project(point);
-    layer.append(svgElement('circle', { class: 'spot-pin-halo', cx, cy, r: 23 }));
-    layer.append(svgElement('circle', { class: 'spot-pin', cx, cy, r: 8 }));
-    layer.append(svgElement('circle', { class: 'spot-pin-core', cx, cy, r: 2.3 }));
+    const pin = svgElement('g', { class: 'spot-pin-group', transform: `translate(${cx},${cy})` });
+    pin.append(
+      svgElement('circle', { class: 'spot-pin-halo', r: 23 }),
+      svgElement('circle', { class: 'spot-pin', r: 8 }),
+      svgElement('circle', { class: 'spot-pin-core', r: 2.3 }),
+    );
+    layer.append(pin);
     map.append(layer);
     coordinate.textContent = `${Math.abs(point[1]).toFixed(4)}° N · ${Math.abs(point[0]).toFixed(4)}° W`;
     sourcesHost.replaceChildren();
@@ -117,9 +144,8 @@ export function mountSpotExplorer(host, options = {}) {
       });
       sourcesHost.append(button);
     }
-    for (const button of yearsHost.querySelectorAll('button')) {
+    for (const button of yearsHost.querySelectorAll('button'))
       button.setAttribute('aria-pressed', String(Number(button.dataset.year) === year));
-    }
     districtStatus.textContent = district
       ? `In ${year}, this point is in District ${district.properties.district}.`
       : `This point is outside the ${year} district map.`;
@@ -135,7 +161,7 @@ export function mountSpotExplorer(host, options = {}) {
     });
     samplesHost.append(button);
   }
-  for (const value of [2002, 2012, 2022]) {
+  for (const value of districtYears) {
     const button = document.createElement('button');
     button.type = 'button';
     button.dataset.year = String(value);
@@ -153,7 +179,7 @@ export function mountSpotExplorer(host, options = {}) {
     local.y = event.clientY;
     const transformed = local.matrixTransform(map.getScreenCTM().inverse());
     const candidate = toGeographic(transformed, project);
-    const found = identifySpot(candidate);
+    const found = identifySpot(candidate, data);
     if (
       found.neighborhoods.some((source) => source.matches.length) ||
       found.districts.some((item) => item.feature)

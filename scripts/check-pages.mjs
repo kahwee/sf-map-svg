@@ -3,7 +3,7 @@
 // script errors, failed requests, horizontal overflow, and layout shift, plus
 // compressed size budgets. Fails with a list of problems.
 import { createReadStream } from 'node:fs';
-import { readFile, stat } from 'node:fs/promises';
+import { readdir, readFile, stat } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { extname, join, normalize } from 'node:path';
 import { gzipSync } from 'node:zlib';
@@ -13,25 +13,33 @@ const root = 'pages-dist';
 const base = '/sf-map-svg/';
 const pages = [
   '',
+  'layers.html',
   'examples.html',
+  'measures.html',
+  'propositions.html',
   'candidates.html',
   'spot.html',
-  'propositions.html',
-  'measures.html',
   'transit.html',
+  'docs.html',
+  'api.html',
 ];
-// Initial JavaScript and CSS, gzip KB. Measures and transit embed library widgets with geometry.
+// Initial JavaScript and CSS, gzip KB. Transit embeds the library's animation with its geometry.
 const budgets = {
-  index: 40,
-  examples: 20,
-  candidates: 40,
-  spot: 30,
-  propositions: 40,
-  measures: 200,
+  index: 45,
+  layers: 45,
+  examples: 12,
+  measures: 25,
+  propositions: 25,
+  candidates: 25,
+  spot: 15,
   transit: 480,
-  404: 20,
+  docs: 12,
+  api: 12,
+  404: 12,
 };
-const mapBudgets = { 'maps/display': 20, 'maps/thumb': 30 };
+// Pre-rendered maps and the display dataset, gzip KB.
+const mapBudgets = { 'maps/display': 20, 'maps/thumb': 30, 'maps/figures': 30, 'maps/plates': 60 };
+const dataBudgets = { 'data/site-map.json': 320 };
 const types = {
   '.html': 'text/html',
   '.js': 'text/javascript',
@@ -56,11 +64,16 @@ for (const [name, limit] of Object.entries(budgets)) {
     fail(`${name}.html loads ${total.toFixed(1)} KB gzip JS/CSS (budget ${limit} KB)`);
 }
 for (const [folder, limit] of Object.entries(mapBudgets)) {
-  for (const name of ['districts-2002', 'districts-2012', 'districts-2022']) {
-    const size = await gzipKb(`${folder}/${name}.svg`);
-    if (size > limit)
-      fail(`${folder}/${name}.svg is ${size.toFixed(1)} KB gzip (budget ${limit} KB)`);
+  const files = (await readdir(join(root, folder))).filter((name) => name.endsWith('.svg'));
+  if (!files.length) fail(`${folder} has no maps`);
+  for (const name of files) {
+    const size = await gzipKb(`${folder}/${name}`);
+    if (size > limit) fail(`${folder}/${name} is ${size.toFixed(1)} KB gzip (budget ${limit} KB)`);
   }
+}
+for (const [path, limit] of Object.entries(dataBudgets)) {
+  const size = await gzipKb(path);
+  if (size > limit) fail(`${path} is ${size.toFixed(1)} KB gzip (budget ${limit} KB)`);
 }
 
 // ---------- Static server under the production base path ----------

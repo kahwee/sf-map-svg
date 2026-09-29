@@ -1,3 +1,51 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Explore live SF / SVG maps and choose a focused example for your project."><link rel="canonical" href="https://kahwee.github.io/sf-map-svg/examples.html"><title>Examples · SF / SVG</title><link rel="icon" href="data:,"><link rel="stylesheet" href="./style.css"><link rel="stylesheet" href="./examples.css"></head>
-<body><a class="skip" href="#examples">Skip to examples</a><header class="shell"><nav aria-label="Main navigation"><a class="brand" href="./">SF / SVG</a><div><a href="./">Atlas home</a><a href="./candidates.html">Candidate votes</a><a href="./propositions.html">California propositions</a><a href="https://github.com/kahwee/sf-map-svg#readme">API docs</a></div><a href="https://github.com/kahwee/sf-map-svg">GitHub ↗</a></nav></header><main class="shell examples" id="examples"><p class="eyebrow" data-enter style="--i:0">Explore · Learn · Build</p><h1 data-split data-vt-title>Choose a map to explore.</h1><p class="lede" data-enter style="--i:4">Each example has one job. Start with the civic data, then use the code guide to build a map of your own.</p><div class="example-grid"><a data-vt-card data-enter style="--i:5" href="./candidates.html"><span>01 · Election data</span><h2>Candidate votes in SF</h2><p>Compare 56 certified federal, statewide, and legislative contests across six elections from 2016 to 2026.</p><strong>Explore candidate votes →</strong></a><a data-vt-card data-enter style="--i:6" href="./propositions.html"><span>02 · Election data</span><h2>California propositions in SF</h2><p>Compare certified 2024 statewide proposition votes across the city’s eleven supervisorial districts. Download the results JSON.</p><strong>Explore propositions →</strong></a><a data-vt-card data-enter style="--i:7" href="./measures.html"><span>03 · Election data</span><h2>San Francisco local measures</h2><p>Search 44 local measures across four elections and the 2002, 2012, and 2022 district maps.</p><strong>Explore local measures →</strong></a><a data-vt-card data-enter style="--i:8" href="./spot.html"><span>04 · Geographic story</span><h2>One spot, three San Franciscos</h2><p>Pick a point and compare its neighborhood names and supervisorial districts across sources and years.</p><strong>Explore a place →</strong></a><a data-vt-card data-enter style="--i:9" href="./#history"><span>04 · Map motion</span><h2>District lines through time</h2><p>Watch boundaries move between three official map years, then inspect each dated map.</p><strong>See district history →</strong></a><a data-vt-card data-enter style="--i:9" href="./transit.html"><span>05 · Route overlay</span><h2>Schematic BART journey</h2><p>Follow a moving marker through eight station points. The connecting lines are illustrative.</p><strong>See the journey →</strong></a><a data-vt-card data-enter style="--i:10" href="./#explore-more-title"><span>06 · Geographic data</span><h2>SFAR neighborhood guide</h2><p>Explore the lightweight map’s neighborhoods, major parks, roads, and BART points.</p><strong>Open the guide →</strong></a><a data-vt-card data-enter style="--i:11" href="https://github.com/kahwee/sf-map-svg/blob/main/docs/EXAMPLES.md"><span>07 · Developer recipes</span><h2>Build with the library</h2><p>Copy focused examples for a static SVG, interactive map, route overlay, or selected geographic dataset.</p><strong>Read code examples →</strong></a></div><p class="example-foot" data-reveal>These examples run in the browser from bundled files. The library renders offline and has no runtime dependencies. %RELEASE_LABEL%</p></main><footer class="shell" data-rule><span>SF / SVG</span><a href="https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md">Data sources</a><a href="https://github.com/kahwee/sf-map-svg">GitHub ↗</a></footer></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Every SF / SVG example: local measures, California propositions, supervisorial votes, the layers studio, one spot in three neighborhood maps, and a schematic BART journey.">
+  <link rel="canonical" href="https://kahwee.github.io/sf-map-svg/examples.html">
+  <title>Examples · SF / SVG</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./gallery.css">
+</head>
+<body>
+  <!--site-header-->
+  <main id="content">
+    <header class="page-head shell">
+      <p class="eyebrow" data-enter style="--i:0">Catalogue · <b>Examples</b></p>
+      <h1 data-split data-vt-title>A catalogue of plates.</h1>
+      <p class="lede" data-enter style="--i:5">Each example is a complete page built on the library, with its method, sources and downloads. Read one, then copy its pattern.</p>
+    </header>
+
+    <section class="section shell" aria-labelledby="votes-title">
+      <div class="section-head" data-reveal="stagger"><div><p class="eyebrow">Part one</p><h2 id="votes-title">The city votes</h2></div><p>Certified results painted onto the district maps each election used.</p></div>
+      <div class="gallery" data-reveal="stagger">
+        <a class="card plate-card" data-vt-card href="./measures.html"><div class="plate-frame"><img src="./maps/plates/measures.svg" data-dark-src="./maps/plates/measures-dark.svg" alt="" width="800" height="800" loading="lazy"></div><p class="eyebrow">Plate III · Local measures</p><h3>San Francisco’s local measures</h3><p>Forty-four measures, four elections, three district maps. Compare two measures and download the count.</p><span class="card-link">Open →</span></a>
+        <a class="card plate-card" data-vt-card href="./propositions.html"><div class="plate-frame"><img src="./maps/plates/propositions.svg" data-dark-src="./maps/plates/propositions-dark.svg" alt="" width="800" height="800" loading="lazy"></div><p class="eyebrow">Plate IV · State ballot</p><h3>California propositions in San Francisco</h3><p>Ten statewide measures as small multiples, then one at a time on a single line.</p><span class="card-link">Open →</span></a>
+        <a class="card plate-card" data-vt-card href="./candidates.html"><div class="plate-frame"><img src="./maps/plates/candidates.svg" data-dark-src="./maps/plates/candidates-dark.svg" alt="" width="800" height="800" loading="lazy"></div><p class="eyebrow">Plate V · Candidates</p><h3>Supervisorial votes</h3><p>Who each district chose from 2016 to 2026, and how every candidate fared.</p><span class="card-link">Open →</span></a>
+      </div>
+    </section>
+
+    <section class="section shell" aria-labelledby="lines-title">
+      <div class="section-head" data-reveal="stagger"><div><p class="eyebrow">Part two</p><h2 id="lines-title">Lines and divisions</h2></div><p>The geography itself: its layers, its competing neighborhood maps, and its moving district lines.</p></div>
+      <div class="gallery" data-reveal="stagger">
+        <a class="card plate-card" data-vt-card href="./layers.html"><div class="plate-frame"><img src="./maps/figures/realtor.svg" data-dark-src="./maps/figures/realtor-dark.svg" alt="" width="800" height="800" loading="lazy"></div><p class="eyebrow">Plate II · Studio</p><h3>Every layer, every division</h3><p>Switch definitions, years and layers, and copy the code for what you see.</p><span class="card-link">Open →</span></a>
+        <a class="card plate-card" data-vt-card href="./spot.html"><div class="plate-frame"><img src="./maps/figures/sf-find.svg" data-dark-src="./maps/figures/sf-find-dark.svg" alt="" width="800" height="800" loading="lazy"></div><p class="eyebrow">Plate VI · Divisions</p><h3>Where, exactly, are you?</h3><p>One point, three neighborhood definitions, three generations of districts.</p><span class="card-link">Open →</span></a>
+        <a class="card plate-card" data-vt-card href="./transit.html"><div class="plate-frame"><img src="./maps/thumb/transit.svg" data-dark-src="./maps/thumb/transit-dark.svg" alt="" width="800" height="800" loading="lazy"></div><p class="eyebrow">Plate VII · Motion</p><h3>A schematic BART journey</h3><p>A marker rides between eight station locations. The connecting lines are illustrative.</p><span class="card-link">Open →</span></a>
+      </div>
+    </section>
+
+    <section class="section shell" aria-labelledby="build-title">
+      <div class="section-head" data-reveal="stagger"><div><p class="eyebrow">Part three</p><h2 id="build-title">For builders</h2></div><p>Patterns, references and live component checks.</p></div>
+      <ul class="builder-list" data-reveal="stagger">
+        <li><a class="link-draw" href="./docs.html">The guide</a><span>From a first static map to motion and performance.</span></li>
+        <li><a class="link-draw" href="./api.html">API reference</a><span>Every option, method, event and entry point.</span></li>
+        <li><a class="link-draw" href="https://github.com/kahwee/sf-map-svg/blob/main/docs/EXAMPLES.md">Code recipes ↗</a><span>Focused snippets for common maps.</span></li>
+        <li><a class="link-draw" href="https://github.com/kahwee/sf-map-svg/tree/main/stories">Storybook stories ↗</a><span>Interactive checks for every feature.</span></li>
+      </ul>
+    </section>
+  </main>
+  <!--site-footer-->
+</body>
+</html>
