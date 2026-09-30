@@ -1,5 +1,6 @@
 import { createMap } from '@kahwee/sf-map-svg';
 import { renderMap } from '@kahwee/sf-map-svg/static';
+import { interactiveCode, interactiveOptions, staticCode, staticOptions } from './layers-code.js';
 import { loadSiteMapData, neighborhoodSources } from './site-map-data.js';
 import { element, segmented, setCode } from './ui.js';
 
@@ -54,95 +55,10 @@ let map;
 const checkboxes = new Map();
 
 // ---------- Code ----------
-const literal = (value) => (typeof value === 'string' ? `'${value}'` : String(value));
-const objectCode = (entries) =>
-  `{ ${entries.map(([key, value]) => `${key}: ${literal(value)}`).join(', ')} }`;
-
-function interactiveCode() {
-  const defaults = {
-    ...modeLayers(state.mode),
-    landmarks: true,
-    highways: true,
-    keyRoads: true,
-    roadLabels: true,
-    bartStations: true,
-  };
-  const layers = Object.entries(state.layers).filter(([key, value]) => defaults[key] !== value);
-  const features = Object.entries(state.features).filter(([, on]) => on);
-  const lines = [];
-  if (state.mode !== 'neighborhoods') lines.push(`  mode: '${state.mode}',`);
-  if (state.source !== 'realtor') lines.push(`  source: '${state.source}',`);
-  if (state.year !== 2022) lines.push(`  year: ${state.year},`);
-  if (!state.labels) lines.push('  labels: false,');
-  if (layers.length) lines.push(`  layers: ${objectCode(layers)},`);
-  if (features.length) lines.push(`  features: ${objectCode(features)},`);
-  return `import { createMap } from '@kahwee/sf-map-svg';
-import { fullMapData } from '@kahwee/sf-map-svg/data/full';
-
-const map = createMap(fullMapData${lines.length ? `, {\n${lines.join('\n')}\n}` : ''});
-document.querySelector('#map').append(map.element);`;
-}
-
-function staticOptions() {
-  return {
-    year: state.year,
-    districtFills: state.layers.districtFills,
-    districtLines: state.layers.districtLines,
-    districtLabels: state.layers.districtLabels,
-    neighborhoodLines: state.layers.neighborhoodLines,
-    landmarks: state.layers.landmarks,
-    highways: state.layers.highways,
-    keyRoads: state.layers.keyRoads,
-    roadLabels: state.layers.roadLabels,
-    bartStations: state.layers.bartStations,
-    labels: state.labels,
-  };
-}
-
-function staticCode() {
-  const options = Object.entries(staticOptions()).filter(([key, value]) => {
-    const defaults = {
-      year: 2022,
-      districtFills: true,
-      districtLines: true,
-      districtLabels: true,
-      neighborhoodLines: false,
-      landmarks: false,
-      highways: false,
-      keyRoads: false,
-      roadLabels: state.layers.keyRoads,
-      bartStations: false,
-      labels: true,
-    };
-    return defaults[key] !== value;
-  });
-  const lines = [
-    ...options.map(([key, value]) => `  ${key}: ${literal(value)},`),
-    '  animation: true,',
-  ];
-  const needsSource = state.layers.neighborhoodLines && state.source !== 'realtor';
-  const sourceLines = needsSource
-    ? `import { neighborhoodCollections } from '@kahwee/sf-map-svg/data';
-
-// Static maps draw one neighborhood list; the default is SFAR realtor.
-const neighborhoods = neighborhoodCollections['${state.source}'].features.map((feature) => ({
-  name: feature.properties.canonicalName,
-  geometry: feature.geometry,
-}));
-`
-    : '';
-  return `import { renderMap } from '@kahwee/sf-map-svg/static';
-import { staticMapData } from '@kahwee/sf-map-svg/data/static';
-${sourceLines}
-const { svg } = renderMap(${needsSource ? '{ ...staticMapData, neighborhoods }' : 'staticMapData'}, {
-${lines.join('\n')}
-});`;
-}
-
 function updateCode() {
   const interactive = state.render === 'interactive';
   $('code-title').textContent = interactive ? 'createMap · browser' : 'renderMap · anywhere';
-  setCode($('studio-code'), interactive ? interactiveCode() : staticCode());
+  setCode($('studio-code'), interactive ? interactiveCode(state) : staticCode(state));
 }
 
 // ---------- Static rendering ----------
@@ -157,7 +73,7 @@ function renderStatic(animation = true) {
   return renderMap(
     { ...data.map, neighborhoods: staticNeighborhoods() },
     {
-      ...staticOptions(),
+      ...staticOptions(state),
       animation,
       idPrefix: `studio-${++sequence}`,
       title: 'San Francisco map from the SF / SVG layers studio',
@@ -180,28 +96,16 @@ const mapStyle = {
   font: 'var(--sans)',
 };
 function createInteractive() {
-  const features = {
-    layerTransitions: state.features.layerTransitions && { duration: 480 },
-    districtMorph: state.features.districtMorph && { duration: 1300 },
-    motion: state.features.motion && { duration: 600 },
-  };
-  const options = {
-    mode: state.mode,
-    source: state.source,
-    year: state.year,
-    labels: state.labels,
-    layers: { ...state.layers },
-    attribution: 'compact',
-    controls: { labels: false, legend: false, neighborhoodPicker: false, markerPicker: false },
-    appearance: { theme: 'districts', style: mapStyle },
-  };
+  const options = interactiveOptions(state);
+  options.appearance.style = mapStyle;
   try {
-    map = createMap(data, { ...options, features });
+    map = createMap(data, options);
   } catch (error) {
     // Released builds without the newest motion features still get the full studio.
     console.warn(error);
-    map = createMap(data, { ...options, features: { motion: features.motion } });
+    map = createMap(data, { ...options, features: { motion: options.features.motion } });
     for (const key of ['layerTransitions', 'districtMorph']) {
+      state.features[key] = false;
       checkboxes.get(key).disabled = true;
       checkboxes.get(key).checked = false;
     }
@@ -217,6 +121,7 @@ function createInteractive() {
       : 'Select a neighborhood or district on the map to identify it.';
   });
   $('studio-map').replaceChildren(map.element);
+  updateCode();
 }
 
 function apply(change) {
@@ -319,7 +224,7 @@ function buildControls() {
           return;
         }
         state.features[key] = box.checked;
-        map?.configure({ features: { [key]: box.checked } });
+        map?.configure({ features: { [key]: interactiveOptions(state).features[key] } });
       }),
     );
     checkboxes.set(key, box);

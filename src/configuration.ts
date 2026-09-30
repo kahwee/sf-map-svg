@@ -36,8 +36,22 @@ export function expandMapOptions(options: MapOptions): NeighborhoodExplorerOptio
     'onMarkerActivate',
     'onOverlayActivate',
   ])
-    if (key in record)
-      throw new TypeError(`Use the v2 grouped options or map.on() instead of ${key}.`);
+    if (key in record) {
+      const replacement = appearanceKeys.includes(key as (typeof appearanceKeys)[number])
+        ? `appearance.${key}`
+        : featureKeys.includes(key)
+          ? `features.${key}`
+          : key === 'onMarkerActivate'
+            ? "map.on('markerchange', listener)"
+            : key === 'onOverlayActivate'
+              ? "map.on('overlayactivate', listener)"
+              : null;
+      throw new TypeError(
+        replacement
+          ? `Use ${replacement} instead of the flat ${key} option.`
+          : 'interface is internal and is not a supported createMap option.',
+      );
+    }
   if (options.appearance !== undefined)
     assertOptions(options.appearance, 'appearance', appearanceKeys);
   if (options.features !== undefined) normalizeFeatures(options.features);

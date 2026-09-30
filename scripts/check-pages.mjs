@@ -48,6 +48,8 @@ const types = {
   '.json': 'application/json',
   '.png': 'image/png',
   '.xml': 'application/xml',
+  '.txt': 'text/plain',
+  '.md': 'text/markdown',
 };
 
 const problems = [];
@@ -74,6 +76,24 @@ for (const [folder, limit] of Object.entries(mapBudgets)) {
 for (const [path, limit] of Object.entries(dataBudgets)) {
   const size = await gzipKb(path);
   if (size > limit) fail(`${path} is ${size.toFixed(1)} KB gzip (budget ${limit} KB)`);
+}
+
+// Assistant-readable docs must match this build and every index link must resolve locally.
+const release = JSON.parse(await readFile(join(root, 'release.json'), 'utf8'));
+const llms = await readFile(join(root, 'llms.txt'), 'utf8');
+const fullDocs = await readFile(join(root, 'llms-full.txt'), 'utf8');
+for (const [name, content] of [
+  ['llms.txt', llms],
+  ['llms-full.txt', fullDocs],
+]) {
+  if (!content.includes(`@kahwee/sf-map-svg ${release.version} ·`))
+    fail(`${name} does not match the site's package version`);
+  if (!content.includes(release.source === 'npm' ? 'npm package' : 'local working tree'))
+    fail(`${name} does not match the site's package source`);
+}
+for (const [, path] of llms.matchAll(/\]\(https:\/\/kahwee\.github\.io\/sf-map-svg\/([^)]+)\)/g)) {
+  if (!(await stat(join(root, path)).catch(() => null))?.isFile())
+    fail(`llms.txt links to missing ${path}`);
 }
 
 // ---------- Static server under the production base path ----------

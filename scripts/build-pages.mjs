@@ -5,6 +5,7 @@ import { basename, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { build } from 'vite';
 import { candidateInks, diverging, sequential } from '../website/palette.js';
+import { buildLlmDocs } from './build-llm-docs.mjs';
 import { simplifySvg } from './simplify-svg.mjs';
 import { simplifyDataset } from './site-data.mjs';
 
@@ -96,7 +97,7 @@ function addSiteChrome(html, boot, file) {
     );
   page = page.replace(
     '</head>',
-    `${socialTags(page)}<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f3e9"><meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121816"><script>${boot}</script><link rel="expect" href="#page-end" blocking="render"><link rel="stylesheet" href="./site.css"></head>`,
+    `${socialTags(page)}<link rel="describedby" href="./llms.txt">${['docs.html', 'api.html', 'examples.html'].includes(file) ? `<link rel="alternate" type="text/markdown" href="./${file.replace('.html', '.md')}">` : ''}<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f3e9"><meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121816"><script>${boot}</script><link rel="expect" href="#page-end" blocking="render"><link rel="stylesheet" href="./site.css"></head>`,
   );
   page = page.replace(
     '</body>',
@@ -372,6 +373,8 @@ try {
       )
       .join('\n')}\n</urlset>\n`,
   );
+  for (const [name, content] of await buildLlmDocs(packageRoot, { released }))
+    await writeFile(join('pages-dist', name), content);
   await writeFile(
     'pages-dist/release.json',
     `${JSON.stringify({ version, source: released ? 'npm' : 'local' })}\n`,

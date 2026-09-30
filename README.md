@@ -58,6 +58,10 @@ See [controller options, events, and lifecycle](docs/API.md#interactive-maps),
 [examples](docs/EXAMPLES.md), and [consumer integration](docs/consumer-integration.md).
 Call `destroy()` when removing an interactive map.
 
+## Documentation for coding assistants
+
+[Developer guide](docs/developer-guide.md) · [llms.txt index](llms.txt) · [Complete text documentation](llms-full.txt). Generated from project docs and TypeScript declarations; run `pnpm docs:llms` after changing those inputs.
+
 ## Data and development
 
 Canonical geography is in [`data/`](data/README.md), with provenance in [`SOURCES.md`](SOURCES.md). The public `/data` entry exposes lookup, catalog, district maps, and source-specific neighborhood collections. These are deeply frozen; clone before editing.

@@ -1,0 +1,25 @@
+# SF Map SVG
+
+> Offline San Francisco SVG maps with explicit geographic imports, no runtime dependencies, static rendering, and a browser controller.
+
+@kahwee/sf-map-svg 4.0.1 · local working tree. Node >=24.0.0 for server rendering; browsers need a DOM and a JSON-capable bundler.
+
+These are working-tree docs. Unreleased changelog entries may describe APIs absent from npm; verify the installed version before copying them.
+
+Use renderMap(data, options) for SVG strings; createMap(data, options) returns a controller. Mount map.element and destroy it on unmount. Choose mode explicitly: createMap defaults to basemap. Geography is separate; staticMapData and fullMapData have different shapes.
+
+## Documentation
+
+- [Overview](https://kahwee.github.io/sf-map-svg/index.md)
+- [Developer guide](https://kahwee.github.io/sf-map-svg/developer-guide.md)
+- [API options and lifecycle](https://kahwee.github.io/sf-map-svg/api-options.md)
+- [Worked examples](https://kahwee.github.io/sf-map-svg/examples.md)
+- [Consumer integration](https://kahwee.github.io/sf-map-svg/consumer-integration.md)
+- [Migration from removed APIs](https://kahwee.github.io/sf-map-svg/migration-v3.md)
+- [Exact TypeScript contracts](https://kahwee.github.io/sf-map-svg/types.md)
+- [Complete documentation](https://kahwee.github.io/sf-map-svg/llms-full.txt): Guides and declarations in one file.
+
+## Optional
+
+- [Geographic sources](https://kahwee.github.io/sf-map-svg/sources.md)
+- [Changelog](https://kahwee.github.io/sf-map-svg/changelog.md)

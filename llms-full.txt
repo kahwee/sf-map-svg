@@ -1,0 +1,1822 @@
+# SF Map SVG
+
+> Offline San Francisco SVG maps with explicit geographic imports, no runtime dependencies, static rendering, and a browser controller.
+
+@kahwee/sf-map-svg 4.0.1 · local working tree. Node >=24.0.0 for server rendering; browsers need a DOM and a JSON-capable bundler.
+
+These are working-tree docs. Unreleased changelog entries may describe APIs absent from npm; verify the installed version before copying them.
+
+Use renderMap(data, options) for SVG strings; createMap(data, options) returns a controller. Mount map.element and destroy it on unmount. Choose mode explicitly: createMap defaults to basemap. Geography is separate; staticMapData and fullMapData have different shapes.
+
+<!-- Generated from README.md; @kahwee/sf-map-svg 4.0.1 · local working tree. -->
+
+# SF Map SVG
+
+Offline, self-contained San Francisco SVG maps. The package has no runtime dependencies. Geography is always an explicit import; the root entry does not bundle data.
+
+[Live examples](https://kahwee.github.io/sf-map-svg/examples.html) · [Storybook source](https://github.com/kahwee/sf-map-svg/blob/main/stories/) · [Geographic sources](https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md) · [v3 migration](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v3.md)
+
+## Install
+
+```sh
+pnpm add @kahwee/sf-map-svg
+```
+
+Node 24+ is required for server rendering. Browser maps need a DOM and a bundler that supports JSON imports.
+
+Upgrading from v3 to v4: update your Node runtime to 24 or newer. The map API, browser requirements, rendering, and animations are unchanged.
+
+## Static SVG
+
+```ts
+import { renderMap } from '@kahwee/sf-map-svg';
+import { staticMapData } from '@kahwee/sf-map-svg/data/static';
+
+const { svg, project, viewBox } = renderMap(staticMapData, {
+  year: 2022,
+  landmarks: true,
+  bartStations: true,
+});
+```
+
+`renderMap(data, options)` returns SVG markup and matching projection helpers. `/data/static` includes the complete static map without interactive lookup collections. Small maps can compose selected JSON exports from `/data/*` and pass them as `StaticMapData`. `getLayerPaths(data, options)` returns fitted geographic paths without SVG markup.
+
+See [map options and animations](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md#static-maps) for optional layers and static animation.
+
+## Interactive map
+
+```ts
+import { createMap } from '@kahwee/sf-map-svg';
+import { fullMapData } from '@kahwee/sf-map-svg/data/full';
+
+const map = createMap(fullMapData, {
+  mode: 'neighborhoods',
+  source: 'realtor',
+  neighborhood: 'Inner Mission',
+  layers: { bartStations: true },
+  features: { motion: true },
+  appearance: { theme: 'districts' },
+});
+document.querySelector('#map')?.append(map.element);
+map.on('neighborhoodchange', ({ name }) => console.log(name));
+map.camera.zoom(1.5);
+// When the view is removed:
+map.destroy();
+```
+
+`createMap(data, options)` returns a controller. Use `map.element` for mounting, `map.configure({ features, layers, controls })` for runtime switches, `map.camera` for pan/zoom/fit/reset, and `map.on()` for typed events. Appearance is set at construction. SFAR realtor neighborhoods are the default when supplied; SF Find and analysis are explicit alternate sources. The `/data/full` preset includes all three collections and historical districts.
+
+See [controller options, events, and lifecycle](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md#interactive-maps),
+[examples](https://github.com/kahwee/sf-map-svg/blob/main/docs/EXAMPLES.md), and [consumer integration](https://github.com/kahwee/sf-map-svg/blob/main/docs/consumer-integration.md).
+Call `destroy()` when removing an interactive map.
+
+## Documentation for coding assistants
+
+[Developer guide](https://github.com/kahwee/sf-map-svg/blob/main/docs/developer-guide.md) · [llms.txt index](https://github.com/kahwee/sf-map-svg/blob/main/llms.txt) · [Complete text documentation](https://github.com/kahwee/sf-map-svg/blob/main/llms-full.txt). Generated from project docs and TypeScript declarations; run `pnpm docs:llms` after changing those inputs.
+
+## Data and development
+
+Canonical geography is in [`data/`](https://github.com/kahwee/sf-map-svg/blob/main/data/README.md), with provenance in [`SOURCES.md`](https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md). The public `/data` entry exposes lookup, catalog, district maps, and source-specific neighborhood collections. These are deeply frozen; clone before editing.
+
+```sh
+pnpm install --frozen-lockfile
+pnpm check
+pnpm demo
+pnpm build-storybook
+pnpm test:stories:coverage
+pnpm test:package
+```
+
+The [contributing guide](https://github.com/kahwee/sf-map-svg/blob/main/CONTRIBUTING.md) explains the geographic and release checks. Version 3 removes the five old compatibility entry points; [migrate before upgrading](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v3.md).
+
+---
+
+<!-- Generated from docs/developer-guide.md; @kahwee/sf-map-svg 4.0.1 · local working tree. -->
+
+# Developer guide
+
+Choose the renderer and geography separately. `renderMap` produces a string without a DOM; `createMap` produces a browser controller whose `.element` you mount. Neither root function imports geography for you.
+
+## Choose an entry point
+
+| Task | Renderer | Data |
+| --- | --- | --- |
+| Generate an SVG file or server-rendered image | `/static`: `renderMap` | `/data/static`: `staticMapData` |
+| Explore districts or several neighborhood definitions | `/map`: `createMap` | `/data/full`: `fullMapData` |
+| Embed a smaller neighborhood guide | `/guide/map`: `createGuideController` | Included lightweight guide geography |
+| Use the guide data with the general controller | `/map`: `createMap` | `/guide/data`: `guideMapData` |
+| Look up names without mounting a map | `/data/lookup` | Source-aware lookup helpers |
+
+Imports starting with `/` in this table are package suffixes, such as `@kahwee/sf-map-svg/static`. Node 24+ is required for server rendering. Browser examples need a DOM and a bundler that supports JSON modules. This is an ESM package.
+
+## Write a static SVG
+
+```ts
+import { writeFile } from 'node:fs/promises';
+import { renderMap } from '@kahwee/sf-map-svg/static';
+import { staticMapData } from '@kahwee/sf-map-svg/data/static';
+
+const { svg } = renderMap(staticMapData, {
+  year: 2022,
+  landmarks: true,
+  bartStations: true,
+  title: 'San Francisco districts, 2022',
+});
+await writeFile('san-francisco.svg', svg);
+```
+
+The SVG is self-contained. `project([lng, lat])` returns SVG coordinates; `viewBox` is `[0, 0, width, height]`. Use a different `idPrefix` for each inline SVG on the same page, or let the renderer generate one.
+
+## Mount and dispose an interactive map
+
+Provide a host such as `<div id="map"></div>` before running this code. Run browser construction after mounting, not during server rendering.
+
+```ts
+import { createMap } from '@kahwee/sf-map-svg/map';
+import { fullMapData } from '@kahwee/sf-map-svg/data/full';
+
+const host = document.querySelector<HTMLElement>('#map');
+if (!host) throw new Error('Missing #map host');
+
+const map = createMap(fullMapData, {
+  mode: 'neighborhoods',
+  source: 'realtor',
+  layers: { bartStations: true },
+  features: { motion: true },
+  appearance: { theme: 'districts' },
+});
+host.append(map.element);
+const unsubscribe = map.on('neighborhoodchange', ({ name }) => {
+  // name is null when the selection is cleared.
+  console.log(name);
+});
+
+// Call from your framework's unmount hook or when removing the view.
+function disposeMap() {
+  unsubscribe();
+  map.destroy();
+  map.element.remove();
+}
+```
+
+`destroy()` is idempotent, cancels owned work and subscriptions, and leaves host-owned DOM in place. Other controller operations after destruction throw. In React, construct inside an effect and return cleanup; in Vue or Svelte, use their mount/unmount hooks. Do not create a new map on every render: update the existing controller instead.
+
+## Know the defaults
+
+| Setting | `renderMap` | `createMap` |
+| --- | --- | --- |
+| Mode | No mode option | `basemap`; set `neighborhoods` or `districts` explicitly |
+| Theme | `districts` | `transit`; use `appearance.theme` |
+| District layers | On | Follow `districts` mode |
+| Neighborhood layers | Lines off | Follow `neighborhoods` mode |
+| Parks, highways, key roads | Off | On when supplied |
+| Road labels | Follow `keyRoads` | On when supplied, subject to zoom/collisions |
+| BART stations | Off | On when supplied |
+| Visible labels | On | On, subject to zoom/collisions |
+| Motion features | Static animation off | Off; opt in via `features` |
+
+A layer switch does not download missing geography. `fullMapData` has `.map` for static rendering and separate lookup collections for interactive use. `staticMapData` is already a static data object. Use `renderMap(guideMapData.map, options)`, not `renderMap(guideMapData, options)`.
+
+SFAR realtor neighborhoods are the default when supplied. If only an alternative collection is supplied, the controller selects that available source. Choose `source` explicitly when comparing definitions. Sources retain separate identities; they are not interchangeable polygons.
+
+## Construction settings versus runtime updates
+
+| Change | Call |
+| --- | --- |
+| Layers, controls, behaviors | `map.configure({ layers, controls, features })` |
+| Map mode or neighborhood source | `map.setMode(mode)`, `map.setSource(source)` |
+| District boundaries or choropleth | `map.setDistrictYear(year)`, `map.setDistrictStyle(callback)` |
+| Master text visibility | `map.setLabels(visible)` |
+| Markers or route overlays | `map.setMarkers(items)`, `map.setOverlays(items)` |
+| Camera | `map.camera.set/pan/zoom/fit/reset(...)` |
+| Palette, typography, control styling | Construction-only `appearance`; recreate the map to change it |
+
+`configure` merges supplied keys; omitted keys keep their existing values. Set a layer or control key to `undefined` to remove its override. Set a whole group to `undefined` to reset that group. Set a feature to `false` to disable it. Explicit layer overrides keep winning after mode changes.
+
+```ts
+map.configure({ layers: { neighborhoodLabels: false } });
+map.configure({ layers: { neighborhoodLabels: undefined } }); // follow mode again
+map.configure({ features: { motion: false } });
+map.configure({ layers: undefined }); // clear all explicit layer overrides
+```
+
+`getConfiguration()` returns a detached snapshot of these groups, including explicit layer overrides. It is not a full serialization of mode, source, year, camera, selection, or construction appearance. Invalid configuration patches leave the current map unchanged.
+
+## Markers, routes and camera coordinates
+
+Marker positions are `{ lng, lat }`. GeoJSON coordinates and the static projection use `[longitude, latitude]`, in WGS84. Camera viewports use `[x, y, size]` in the fixed 800 × 800 projected map space; they are not geographic bounds. `camera.pan` uses projected units. `projectToScreen(lng, lat)` returns pixels relative to the map canvas, plus visibility.
+
+Marker and overlay IDs must be unique. Keep marker IDs stable across updates so retained markers preserve DOM nodes, focus and entrance animations. Use `null` to clear a selection; selection methods return a boolean. Selection events can contain null values. `map.on()` returns an unsubscribe function.
+
+Reduced motion takes precedence over animations. Map touch gestures are opt-in; hiding a chooser requires an accessible alternative in your application.
+
+## Common integration errors
+
+| Symptom | Check |
+| --- | --- |
+| No neighborhoods or district fills | Set `mode` explicitly; the default is `basemap` |
+| An enabled layer does not appear | Supply its dataset; check master labels, zoom and collision filtering |
+| A theme or motion option throws | Put styling in `appearance` and behaviors in `features`; flat interactive options are rejected |
+| Source switch throws | Supply that source collection, or use `/data/full` |
+| A geographic coordinate produces a surprising camera view | Use `camera.fit(geometry)`; `camera.set` takes projected coordinates |
+| An event handler breaks after clearing selection | Handle null `id`, `name`, `marker`, or `district` |
+| Updates throw after navigating away | Dispose once and stop calling the destroyed controller |
+| An import from `/legacy`, `/custom-map`, `/explorer`, `/interactive` or `/interactive-data` fails | Those entries were removed in v3; follow the migration guide |
+
+## Versions and assistant-readable docs
+
+The package declarations are the exact type contract for your installed version. Check the changelog before using features shown on a local preview: its Unreleased section can include functionality absent from npm.
+
+The generated `llms.txt` index links to Markdown documentation; `llms-full.txt` combines the guides and type contracts into one file. Both are built from the same package selected for the site. Local previews are labeled as working-tree docs. Released builds use the installed npm package's docs and declarations.
+
+See [API options](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md), [worked examples](https://github.com/kahwee/sf-map-svg/blob/main/docs/EXAMPLES.md), [consumer integration](https://github.com/kahwee/sf-map-svg/blob/main/docs/consumer-integration.md), and [v3 migration](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v3.md).
+
+---
+
+<!-- Generated from docs/API.md; @kahwee/sf-map-svg 4.0.1 · local working tree. -->
+
+# Map options and lifecycle
+
+Start with the [static and interactive examples](https://github.com/kahwee/sf-map-svg/blob/main/README.md). Exact option
+and event types are exported by [src/api.ts](https://github.com/kahwee/sf-map-svg/blob/main/src/api.ts) and defined in
+[src/types.ts](https://github.com/kahwee/sf-map-svg/blob/main/src/types.ts) and [src/controller-types.ts](https://github.com/kahwee/sf-map-svg/blob/main/src/controller-types.ts).
+
+## Static maps
+
+Static options include `theme`, `width`, `height`, `padding`, `year` (2002, 2012, 2022), `districtLines`, `districtFills`, `districtStyle`, `districtLabels`, `neighborhoodLines`, `labels`, `highways`, `keyRoads`, `roadLabels`, `landmarks`, `bartStations`, `markers`, `overlays`, `title`, `idPrefix`, `colors`, and `animation`. Each optional layer is independent. User-supplied text and attributes are escaped in SVG output.
+
+`animation: true` (or `{ duration, delay }`) makes a static map draw itself with self-contained, scoped CSS: land fades in, the coast and lines draw, districts grow, then labels and points appear. It plays when the SVG is inserted into a page or loaded as an image, needs no JavaScript, and stays still under `prefers-reduced-motion`. Re-insert the markup to replay it. Default output is unchanged.
+
+## Interactive maps
+
+`createMap` defaults to `mode: 'basemap'` and `appearance.theme: 'transit'`. Set the mode explicitly for neighborhood or district exploration. District and neighborhood layer defaults follow the mode; other supplied layers default on. The [developer guide](https://github.com/kahwee/sf-map-svg/blob/main/docs/developer-guide.md) compares static and interactive defaults and explains configuration resets, coordinates, and cleanup.
+
+Construction options include `mode` (`basemap`, `neighborhoods`, or `districts`), `source`, `neighborhood`, `year`, `labels`, `layers`, `controls`, `features`, `appearance`, `markers`, `overlays`, `legend`, `strings`, `attribution`, and `fitPadding`. Enable map touch gestures with the touch control or `map.setTouchNavigation(true)`. `features` holds motion, marker entrances, selected marker rings, clustering, north arrow, scale bar, layer transitions, and district morphs. `appearance` holds theme, color tokens, label and area styles, marker colors and sizes, and district styling. `layers` controls district fill/line/labels, neighborhood lines/labels, landmarks, BART, highways, key roads, and road labels. See the exported `MapOptions` type for exact values and the [Storybook examples](https://github.com/kahwee/sf-map-svg/blob/main/stories/) for live controls.
+
+The controller also supports marker, neighborhood, and district selection; district year and style changes; source and mode changes; labels and touch navigation; screen projection; and typed `markerchange`, `neighborhoodchange`, `districtchange`, `districthover`, `districtactivate`, `districtyearchange`, `overlayactivate`, `clusteractivate`, `viewportchange`, and `mapresize` events. `destroy()` releases browser resources; operations after destruction throw.
+
+`setMarkers()` reconciles by stable marker `id`: retained markers keep their DOM nodes, focus, and in-progress entrance animations; only new IDs animate in. Identical ordered marker updates are a visual no-op. Camera state and `viewportchange` events remain synchronous, while animated camera steps and their dependent label/marker layout commit in the same browser frame.
+
+For a small guide, import `guideMapData` from `/guide/data` and pass it to `createMap`. The optional `/guide` entry also provides `createGuideMap`, `mountGuideMap`, and detailed-data loading for existing guide layouts. `/transit` provides the standalone schematic transit animation. See [examples](https://github.com/kahwee/sf-map-svg/blob/main/docs/EXAMPLES.md) and [consumer integration](https://github.com/kahwee/sf-map-svg/blob/main/docs/consumer-integration.md).
+
+For the guide preset with the same controller API, use `createGuideController(options)` from `/guide` (or `/guide/map`). It accepts grouped `MapOptions` and returns `MapController`; `mountGuideController(shell, options)` enhances a `createGuideShell()` container. Both use the lightweight guide geography. Existing `createGuideMap` and `mountGuideMap` calls retain their element-based API.
+
+Two opt-in features animate the map's lines and layers. `features.layerTransitions` fades layers as `configure({ layers })` and `setMode()` switch them, crossfades neighborhood boundaries when `setSource()` changes the definition, and crossfades district fills on `setDistrictStyle()`. `features.districtMorph` moves district outlines from one map year to the next on `setDistrictYear()`, then settles on the exact published geometry; pass `{ animate: false }` for an instant change. Both default off, own and cancel their animations, and yield to reduced motion.
+
+District style callbacks are evaluated once per district at construction and on style or year updates. Hover, selection, and layer toggles reuse the prepared styles; call `setDistrictStyle()` again when external styling data changes. Invalid styles leave the current map unchanged. District fades respect reduced motion and are removed on interruption or destruction.
+
+---
+
+<!-- Generated from docs/EXAMPLES.md; @kahwee/sf-map-svg 4.0.1 · local working tree. -->
+
+# Examples
+
+[Live example gallery](https://kahwee.github.io/sf-map-svg/examples.html) · [California propositions](https://kahwee.github.io/sf-map-svg/propositions.html) · [Local measures](https://kahwee.github.io/sf-map-svg/measures.html) · [Source data](https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md)
+
+Choose by task. All snippets use the public package API; browser examples need a DOM and a bundler that supports JSON imports.
+
+| I want to… | Start here |
+| --- | --- |
+| Render an SVG on a server | [Static map](#static-svg) |
+| Add a small map to a browser | [Lightweight guide](#lightweight-interactive-guide) |
+| Bundle only selected geography | [Selected data](#selected-geography) |
+| Draw a route over the city | [Route overlay](#route-overlay) |
+| Explore real election votes | [California propositions](#california-propositions-by-sf-district) |
+
+## Static SVG
+
+```ts
+import { writeFile } from 'node:fs/promises';
+import { renderMap } from '@kahwee/sf-map-svg';
+import { staticMapData } from '@kahwee/sf-map-svg/data/static';
+
+const svg = renderMap(staticMapData, {
+  year: 2022,
+  landmarks: true,
+  bartStations: true,
+  idPrefix: 'example',
+}).svg;
+await writeFile('districts.svg', svg);
+```
+
+The static preset includes the packaged map layers without interactive lookup collections. For smaller bundles, pass selected data to the root or `/static` renderer. See the [static recipe](https://github.com/kahwee/sf-map-svg/blob/main/README.md#static-svg).
+
+For an election choropleth, use `renderMap(data, { year, districtStyle })` or
+`createMap({ map: data, districts: districtMaps, neighborhoods: {} }, options)`.
+The controller exposes `setDistrictYear`, `setDistrictStyle`, `selectDistrict`, and typed
+district events; `getLayerPaths(data, { year })` returns fitted paths without SVG markup.
+See the [Storybook election choropleth](https://github.com/kahwee/sf-map-svg/blob/main/stories/ElectionMap.stories.ts) for a working example.
+
+## Lightweight interactive guide
+
+```ts
+import { createGuideController } from '@kahwee/sf-map-svg/guide';
+
+const map = createGuideController({ layers: { roadLabels: false } });
+document.querySelector('#map')?.append(map.element);
+// On unmount: map.destroy();
+```
+
+The guide includes selected coast, SFAR neighborhoods, parks, roads, and stations. Detailed geography loads only when explicitly requested; see the [consumer guide recipe](https://github.com/kahwee/sf-map-svg/blob/main/docs/consumer-integration.md).
+
+## Selected geography
+
+```ts
+import { createMap } from '@kahwee/sf-map-svg';
+import coast from '@kahwee/sf-map-svg/data/coast.json' with { type: 'json' };
+import realtor from '@kahwee/sf-map-svg/data/neighborhoods-realtor.json' with { type: 'json' };
+
+const map = createMap(
+  {
+    map: { coast: coast.features[0].geometry },
+    neighborhoods: { realtor },
+  },
+  { mode: 'neighborhoods', layers: { highways: false, keyRoads: false } },
+);
+document.querySelector('#map')?.append(map.element);
+// On unmount: map.destroy();
+```
+
+This imports one neighborhood definition source. To omit its geometry too, import catalog metadata alone from `/data/catalog`.
+
+## Route overlay
+
+```ts
+import { createGuideController } from '@kahwee/sf-map-svg/guide';
+
+const map = createGuideController();
+document.querySelector('#map')?.append(map.element);
+map.setOverlays([{
+  id: 'trip',
+  label: 'Example route',
+  geometry: {
+    type: 'LineString',
+    coordinates: [[-122.4194, 37.7749], [-122.3981, 37.7936]],
+  },
+  stroke: '#a85036',
+  strokeWidth: 3,
+}]);
+```
+
+Coordinates are WGS84 `[longitude, latitude]`. The overlay follows pan and zoom. The [BART journey](https://kahwee.github.io/sf-map-svg/transit.html) is a separate schematic motion example.
+
+## California propositions by SF district
+
+[Open the interactive explorer](https://kahwee.github.io/sf-map-svg/propositions.html). It uses the public static renderer with only the 2022 district and coast datasets and colors each district from the [certified results JSON](https://github.com/kahwee/sf-map-svg/blob/main/data/propositions/2024-11-05.json). The JSON includes all ten statewide propositions on the November 2024 ballot, with Yes and No counts for each of San Francisco's eleven supervisorial districts. Its scope is SF votes, not statewide totals or voter demographics.
+
+The [import script](https://github.com/kahwee/sf-map-svg/blob/main/scripts/import-2024-propositions.py) checks each district sum against the official citywide count. [Geographic and election sources](https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md) explain the provenance.
+
+## Motion and compact guide embeds
+
+The runnable `examples/generated/interactive.html` now demonstrates camera motion,
+staggered marker entrances, clustering, selected marker rings, a custom legend,
+compact sources, a north arrow, and a metric scale. Storybook's **Checks / Consumer
+API** includes executable motion, reduced-motion, and progressive-shell checks.
+See [consumer integration](https://github.com/kahwee/sf-map-svg/blob/main/docs/consumer-integration.md) for server and browser recipes.
+
+For the controller and explicit data imports, see [the v3 migration guide](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v3.md).
+
+---
+
+<!-- Generated from docs/consumer-integration.md; @kahwee/sf-map-svg 4.0.1 · local working tree. -->
+
+# Consumer integration
+
+Use the version 3 root controller and explicit geographic data. The [migration guide](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v3.md) maps removed imports to supported calls.
+
+For a compact browser guide:
+
+```ts
+import { createGuideController } from '@kahwee/sf-map-svg/guide';
+
+const map = createGuideController({
+  features: { motion: { duration: 400 }, markerEntrance: true },
+  appearance: { theme: 'transit' },
+});
+document.querySelector('#map')?.append(map.element);
+// Dispose when the containing view unmounts.
+map.destroy();
+```
+
+The guide controller uses the same `configure()`, `camera`, `on()`, and `destroy()` contract as `createMap()`. Motion is opt-in and follows the user's reduced-motion preference. For explicit data composition, `createMap(guideMapData, guideOptions)` remains available using `/guide/data` and `/presets`.
+
+To progressively enhance server-rendered `createGuideShell()` markup, use `mountGuideController(shell, options)` from `/guide`. It returns the controller and requires compact attribution. Invalid configuration leaves the static frame intact. Destroy the controller when unmounting. Existing `createGuideMap()` and `mountGuideMap()` return their original augmented elements and accept flat options for compatibility.
+
+For server rendering, import `renderMap` from the root and pass `guideMapData.map`, `staticMapData` from `/data/static`, or another explicit `StaticMapData`. Import `/data/full` when interactive lookup collections are also required. All rendering stays offline and has zero runtime dependencies. The guide's detailed geography loads only when `loadGuideDetailedData()` is called.
+
+---
+
+<!-- Generated from docs/migration-v3.md; @kahwee/sf-map-svg 4.0.1 · local working tree. -->
+
+# Migrate to version 3
+
+Version 3 removes the deprecated compatibility entry points and their bundled-data factories. This is a breaking major release. Version 2 remains available if you need time to migrate; removed imports fail to resolve in version 3. The root API introduced in version 2 remains the supported API.
+
+| Version 2 import or call | Version 3 replacement |
+| --- | --- |
+| `/legacy` `renderSFMap(options)` | `renderMap(staticMapData, options).svg` |
+| `/legacy` `createSFMap(options)` | `renderMap(staticMapData, options)` |
+| `/custom-map` `createSFMapWithData(options, data)` | `renderMap(data, options)` |
+| `/explorer` `createNeighborhoodExplorer(options)` | `createMap(fullMapData, options)`; mount `.element` |
+| `/interactive` `createInteractiveSFMap(options)` | `createMap(fullMapData, { mode: 'basemap', ...options })`; mount `.element` |
+| `/interactive-data` `createInteractiveSFMapWithData(data, options)` | `createMap(data, options)`; mount `.element` |
+
+`staticMapData` comes from `@kahwee/sf-map-svg/data/static` and includes the complete static map. `fullMapData` comes from `/data/full` and adds the interactive lookup collections. For smaller bundles, construct data from individual `/data/*` modules or use `guideMapData` from `/guide/data`. There is no implicit geographic data in the root import.
+
+```ts
+import { createMap, renderMap } from '@kahwee/sf-map-svg';
+import { fullMapData } from '@kahwee/sf-map-svg/data/full';
+
+const svg = renderMap(fullMapData.map, { landmarks: true }).svg;
+const map = createMap(fullMapData, { mode: 'neighborhoods' });
+document.querySelector('#map')?.append(map.element);
+map.camera.zoom(2);
+map.configure({ layers: { landmarks: false } });
+map.destroy();
+```
+
+The controller owns subscriptions and cleanup. Replace old element calls with controller methods (`camera.get/set/pan/zoom/reset/fit/stop`, `selectNeighborhood`, `setSource`, `setMode`, `setLabels`, `setMarkers`, and `setOverlays`). Group feature flags under `features` and styling under `appearance`; `configure` updates runtime features, layers, and controls. For code that needs the guide shell, `/guide`, `/guide/data`, `/guide/static`, and `/guide/map` remain supported. `/transit` also remains supported.
+
+Review tree-shaking after migrating: `/data/full` intentionally includes every packaged layer, while the root and `/static` stay data free. Test server rendering, browser mounting, and map disposal in your application before upgrading production.
+
+## Updating from 3.0 to 3.1
+
+Existing guide factories remain compatible. New integrations can use `createGuideController(options)` and `mountGuideController(shell, options)` from `/guide` or `/guide/map`. Move flat styling options into `appearance`, animation options into `features`, append `.element`, and use `.camera` and `.on()` as with `createMap`.
+
+District styles are now prepared once per district on construction and style/year updates. Hover and selection reuse that snapshot. If a callback reads mutable external data, call `map.setDistrictStyle(callback)` after changing the data; do not rely on hovering to refresh colors. Callback errors leave the previous style intact, and callback-triggered updates or destruction take precedence over the pending update.
+
+---
+
+<!-- Generated from SOURCES.md; @kahwee/sf-map-svg 4.0.1 · local working tree. -->
+
+# Geometry and provenance
+
+## Candidate votes in San Francisco, 2016–2026
+
+Downloaded September 26, 2026 from the San Francisco Department of Elections'
+final district statements of vote. The files under `data/candidates/`
+contain 56 candidate contests across six elections, with candidate vote counts
+for San Francisco citywide and supervisorial districts. Original workbooks are
+ingestion inputs and are not distributed.
+
+| Election | Final official workbook | Supervisorial map vintage |
+| --- | --- | --- |
+| November 8, 2016 | https://www.sfelections.org/results/20161108/data/20161206/20161206_sov.xlsx | 2012 |
+| November 6, 2018 | https://www.sfelections.org/results/20181106/data/20181127/20181127_sov.xlsx | 2012 |
+| November 3, 2020 | https://www.sfelections.org/results/20201103/data/20201201/20201201_dsov.xlsx | 2012 |
+| November 8, 2022 | https://www.sfelections.org/results/20221108/data/20221201/dsov.xlsx | 2022 |
+| November 5, 2024 | https://www.sfelections.org/results/20241105/data/20241203/dsov.xlsx | 2022 |
+| June 2, 2026 | https://sfelections.org/results/20260602/data/20260625/dsov.xlsx | 2022 |
+
+The [Department's election data catalog](https://sfelections.org/tools/election_data/datasets.php)
+indexes related election materials. `scripts/import-candidate-results.py` records
+each input SHA-256 in the corresponding JSON and reconciles candidate totals,
+under/overvotes, and all eleven supervisorial areas against the official SF
+total. The 2016 and 2018 workbooks contain explicit district and neighborhood
+summary sections. Later workbooks supply dedicated district statements. A
+missing supervisorial row in a congressional or legislative contest means that
+district was outside the eligible contest area; it is not a zero vote share.
+The 2024 Treasurer workbook reports one additional cumulative vote and two
+undervotes outside the supervisorial rows, retained in `unassigned` and the
+citywide total.
+All pages use candidate / total valid contest votes, not a two-party share.
+The archive excludes ranked-choice local races, primary contests before 2026,
+and other election dates; it does not claim to represent all SF elections.
+Historical neighborhood labels in election workbooks are not substituted for
+the independent neighborhood boundary datasets in this repository.
+
+## California propositions in San Francisco
+
+Downloaded September 26, 2026 from the San Francisco Department of Elections' [final November 5, 2024 results](https://sfelections.org/results/20241105w/detail.html):
+
+- [Certified district statement of vote workbook](https://www.sfelections.org/results/20241105/data/20241203/dsov.xlsx), SHA-256 `9bf9c7d767273e73b3cdf5b98086412cbe354b0928ee6abb0e379deb0353c403`
+- [Certification letter](https://www.sfelections.org/results/20241105/data/20241203/CertificationLetterNov52024.pdf)
+- [California Secretary of State statewide Statement of Vote](https://www.sos.ca.gov/elections/prior-elections/statewide-election-results/general-election-nov-5-2024/statement-vote) for statewide context
+
+`data/propositions/2024-11-05.json` contains Yes and No counts for all ten state propositions, grouped by San Francisco supervisorial district. The short titles are editorial navigation labels. `scripts/import-2024-propositions.py` reads the final workbook's proposition sheets and checks that all eleven district totals sum exactly to its San Francisco citywide totals. Yes share divides Yes by Yes plus No, excluding undervotes and overvotes. The data describes where ballots were cast within San Francisco, not individual voters or statewide outcomes. Its 2022 district geography matches the election's district vintage.
+
+## Map extraction
+
+District geometry, coast, label anchors, highway geometry, and the pastel district palette were extracted from the San Francisco District Map on September 25, 2026. Only map rendering and public geographic data are distributed. Site account identifiers, original application code, and ballot overlays are excluded.
+
+## Districts and coastline
+
+DataSF datasets used by the original Site:
+
+| Layer                        | Source                                         |
+| ---------------------------- | ---------------------------------------------- |
+| 2002 supervisorial districts | https://data.sf.gov/resource/qdm2-fi8r.geojson |
+| 2012 supervisorial districts | https://data.sf.gov/resource/keex-zmn4.geojson |
+| 2022 supervisorial districts | https://data.sf.gov/resource/f2zs-jevy.geojson |
+| Display land mask            | https://data.sf.gov/resource/hcgx-vtsb.geojson |
+| Highways                     | https://data.sf.gov/resource/3psu-pn9h.geojson |
+
+The Site prepared a common coastline using polygon intersections. It excludes the 2002 district-zero water area and tiny survey/reclamation differences between years; internal district boundaries remain unchanged. It represents about 99.631% of the current trimmed land mask. This package preserves that display geometry and includes Treasure Island; it is not a cadastral or navigational map and does not include the Farallon Islands.
+
+## Optional neighborhoods
+
+117 SF Find Neighborhoods downloaded September 25, 2026:
+
+- GeoJSON: https://data.sf.gov/resource/gfpk-269f.geojson?$limit=500
+- Catalog: https://data.sf.gov/Geographic-Locations-and-Boundaries/SF-Find-Neighborhoods/pty2-tcw4
+
+The Mayor’s Office of Neighborhood Services defined these areas in **2006** for SF Find. They convey approximate neighborhood locations, not hard demarcations. SF Find remains available as an alternative JSON collection. The default renderer now uses the August 2010 SFAR realtor collection, independently of district year, clipped to the Site’s display coastline.
+
+## Rights
+
+Source geometry is provided by the City and County of San Francisco through DataSF, subject to the source datasets’ terms: https://datasf.org/opendata/terms-of-use/
+
+Package licensing does not change rights in the underlying public data. Retain source attribution when redistributing maps or data.
+
+## Parks and landmark areas
+
+Downloaded September 25, 2026:
+
+- Recreation and Parks Properties: https://data.sf.gov/resource/gtr9-ntp6.geojson?$limit=1000
+- Presidio boundary: https://data.sf.gov/resource/jt6f-vx2z.geojson
+
+`data/landmarks.json` retains full source coordinates for six selected landmark areas. Golden Gate Park combines property sections 1–7 into one MultiPolygon; section boundaries are not stroked. Lincoln Park, John McLaren Park, Mission Dolores Park, and Twin Peaks use their named RPD properties. The Presidio uses its separate boundary dataset. Label anchors and offsets are hand-positioned for city-scale legibility. These are property areas, not neighborhood approximations, and do not vary with the district year.
+
+## BART stations
+
+Downloaded September 25, 2026 from BART's [geospatial data page](https://www.bart.gov/schedules/developers/geo):
+
+- Official station-centroid KML archive: https://www.bart.gov/sites/default/files/2025-12/BART-Stations-tracks-entrances-121025.kmz_.zip
+
+The `BART Station` folder supplies names and unrounded longitude/latitude for the eight San Francisco stations: Embarcadero, Montgomery St, Powell St, Civic Center/UN Plaza, 16th St/Mission, 24th St/Mission, Glen Park, and Balboa Park. Entrances, tracks, and stations outside city limits are excluded. Station locations are a current overlay, not historical station inventories matched to each district year. BART data retains its source rights independently of the package license.
+
+## Public JSON collections and neighborhood naming
+
+On September 25, 2026, the previously bundled district, coast, highway, park, and station geometry was moved unchanged to `data/*.json`. District `properties.displayExtras` and label points retain the original map's presentation geometry and island badges. The district JSON files describe processed display maps, not untouched source downloads. Regression digests preserve the original district and SF Find coordinate sequences.
+
+The SF Find source was fetched again and its 117 geometries matched the bundled geometry exactly. Two additional complete collections were downloaded on September 25, 2026:
+
+- Analysis Neighborhoods (41): https://data.sf.gov/resource/j2bu-swwd.geojson?$limit=100
+- Realtor Neighborhoods (92; August 2010 SFAR definitions): https://data.sf.gov/resource/2kjj-ysvr.geojson?$limit=500
+
+The [Analysis Neighborhoods metadata](https://catalog.data.gov/dataset/analysis-neighborhoods) explains the census-tract aggregation and explicitly states that these are not official neighborhood boundaries. The [Realtor Neighborhoods dataset](https://data.sf.gov/d/2kjj-ysvr) identifies SFAR as the source of those alternative definitions. Collection counts mean 250 source-specific definitions, not 250 unique neighborhoods or an exhaustive inventory of every locally used name. Same-name polygons are not merged across sources.
+
+Canonical names default to original source labels. The package normalizes Haight-Ashbury and Fisherman's Wharf punctuation where the SF Find source differs, preserving the exact labels in `sourceName`. Curated lookup aliases use these naming references; the references support names, not agreement with the GeoJSON boundary:
+
+- Mission / Mission District / The Mission: https://www.sftravel.com/neighborhoods/mission-district and https://www.sftravel.com/neighborhoods
+- South of Market / SoMa: https://www.sftravel.com/neighborhoods/soma-yerba-buena
+- North Panhandle / NoPa / North of the Panhandle: https://www.sftravel.com/article/where-to-eat-drink-san-franciscos-nopa
+- Haight-Ashbury and Fisherman's Wharf display spellings: https://www.sftravel.com/neighborhoods
+
+No survey of resident consensus is claimed. Composite areas are not converted to aliases of their component neighborhoods. Mission and Outer Mission remain separate identities. Detailed schema and access examples are in `data/README.md`.
+
+## Non-overlapping realtor topology
+
+On September 25, 2026, pairwise polygon intersection checks found 64 overlapping pairs in the original 92-area realtor dataset. These were boundary slivers totaling approximately 1.05 square meters (local planar estimate). `pnpm data:normalize-realtor` removes shared interior area by assigning it to the lexicographically first stable neighborhood ID and subtracting it from the other feature. This is a deterministic geometric tie-break for source slivers, not a new claim about legal boundaries.
+
+The cleanup retains all 92 identities, names, and source codes. It uses no rounding or buffers, recalculates affected bounding boxes, and verifies that the union of all neighborhood areas is unchanged. Shared edges and vertices remain valid. `data/neighborhoods-realtor.json` records the transformation in `topology`; its polygons are normalized derivatives of the cited source. Regression tests require empty pairwise polygon intersections, non-overlapping component polygons, the original union digest, and an idempotent cleanup. Polygon clipping is a development dependency only; rendering remains dependency-free.
+
+## Key road landmarks
+
+Downloaded September 26, 2026 (UTC; September 25 in San Francisco) from [DataSF Streets – Active and Retired](https://data.sf.gov/resource/3psu-pn9h.geojson), filtering `active = true` and exact source street names. `data/key-roads.json` groups 513 source segments into six explicitly selected streets: Market, Van Ness, Geary, Lombard, 19th Avenue, and the Embarcadero, preserving source coordinates and CNN segment IDs. Geary St and Geary Blvd are grouped under the Geary Blvd display label. These are geographic orientation features, not a complete network or vehicle-access guidance. Label anchors select existing source vertices near editorial targets. Regenerate with `node scripts/import-key-roads.mjs` then `pnpm data:catalog`. The full query and retrieval date are embedded in the JSON. DataSF terms apply.
+
+## Lightweight guide geometry
+
+On September 26, 2026, `pnpm data:guide` generated `data/guide/*.json` from the canonical coastline, SFAR neighborhood, park, highway, selected-street, and BART files above. The overview omits unused properties and simplifies lines at subpixel tolerance for an approximately 800px city map. Realtor boundaries are simplified as shared arcs and reused on adjacent polygons. Coastline and park overview polygons are simplified independently while preserving ring closure. The guide preset keeps US 101, I-280, Highway 1 and the six named orientation streets. Detailed selected geography loads only when requested. Derived files retain source metadata and source dates; no new geographic source is asserted.
+
+## June 2026 ballot measures explorer
+
+Downloaded September 26, 2026 from the San Francisco Department of Elections:
+
+- Final district workbook: https://sfelections.org/results/20260602/data/20260625/dsov.xlsx
+- Citywide summary, official measure titles, ballot questions, and thresholds: https://sfelections.org/results/20260602/index.html
+- Certification dated June 25, 2026: https://sfelections.org/results/20260602/data/20260625/CertificationLetterJun22026.pdf
+- Final report index: https://sfelections.org/results/20260602w/detail.html
+
+`data/elections/2026-06-02.json` contains Measures A–D, their citywide counts, and the 11 `SUP DIST n - Total` rows from workbook sheets 20–23. Each row retains its worksheet row number; metadata retains the workbook SHA-256. `scripts/import-election-results.py` extracts these with openpyxl (ingestion only), checks all district sums including under/overvotes, and cross-checks Yes/No citywide counts against the official HTML summary. Rerun with the downloaded workbook and summary paths. No original Site ballot overlays are reused.
+
+The Pages-only explorer calculates Yes / (Yes + No), excluding under/overvotes. Measure A uses the two-thirds threshold; B–D use a strict majority, as stated in the official summary. These are citywide outcomes, not district-level passage decisions. District counts are reported directly by Elections, not spatially assigned to neighborhoods. The existing 2022 district display map is reused unchanged. Election JSON is a separate website dataset, not a new npm package API; no live service or forthcoming-election coverage is claimed.
+
+## Historical local measures for the Pages explorer
+
+Downloaded September 26, 2026. Each snapshot contains **all local measures in
+the listed election**, not every election in the surrounding decade. All
+eleven district Yes/No totals reconcile to the citywide official totals.
+
+| Election | Final results source | Titles and thresholds | District method |
+| --- | --- | --- | --- |
+| November 5, 2002 | https://sfelections.org/results/20021105/SOV021105.xls | https://webbie1.sfpl.org/multimedia/pdf/elections/November5_2002.pdf | Official workbook `PROPOSITIONS` supervisorial rows; under/overvotes unavailable |
+| November 6, 2012 | https://sfelections.org/results/20121106/data/SOV_Nov2012.xls | https://sfelections.org/results/20121106/index.html and https://webbie1.sfpl.org/multimedia/pdf/elections/November6_2012.pdf | 596 official precincts grouped by DataSF's 2012 `supdist` field |
+| November 8, 2022 | https://www.sfelections.org/results/20221108/data/20221201/dsov.xlsx | https://sfelections.org/results/20221108/index.html | Official final district workbook rows |
+
+The 2012 historical precinct-to-district source is
+https://data.sfgov.org/resource/bsfq-aeyw.json?$limit=1000 . Its 605 records
+include 596 election precinct identifiers and the `supdist` attribute; joined
+mail-ballot and slash-combined precinct rows map to one district each. This
+2012 collection is used only to group the 2012 official vote rows. The
+crosswalk and workbook checksums are retained in the JSON. The 2002 voter
+pamphlet explicitly discusses the bond thresholds; 2012 A and B require
+two-thirds, as established by the parcel tax and bond measures.
+
+For 2022, the independent **final** summary workbook is
+https://www.sfelections.org/results/20221108/data/20221201/summary.xlsx and
+the certification is
+https://www.sfelections.org/results/20221108/data/20221201/N2022_CertificationLetter.pdf .
+The election summary HTML has older counts for some measures, so it is used
+only for titles, ballot questions, and the stated thresholds. The importer
+compares every citywide Yes, No, undervote, and overvote count with the final
+summary workbook. The 2002 official results index is
+https://sfelections.org/results/20021105w/index.html and the 2012 results
+index is https://sfelections.org/results/20121106/detail.php .
+
+`scripts/import-historical-measures.py` records input SHA-256 hashes and
+reconciles all 2002, 2012, and 2022 district totals. The election JSON files
+are Pages datasets; the historical district maps retain their existing
+display geometry, and no precinct polygons or raw workbook data are shipped.
+
+---
+
+<!-- Generated from CHANGELOG.md; @kahwee/sf-map-svg 4.0.1 · local working tree. -->
+
+# Changelog
+
+User-visible changes are recorded here. Unreleased entries describe changes on `main` that are not part of a tagged package release.
+
+## Unreleased
+
+- Make misplaced interactive-option errors name the supported appearance, feature, or event API.
+
+- Clarify developer integration defaults, runtime configuration and lifecycle; generate version-aware llms.txt, complete text docs, Markdown guides and TypeScript contracts for npm and Pages.
+
+- Fix layers studio copied examples to preserve the selected mode, layers, motion durations, and supported release features; execute generated examples in the regression checks.
+
+- Add opt-in `animation` for `renderMap`: a self-contained, scoped CSS draw-in (coast and lines draw, districts grow, labels and points follow) that plays inline or as an image and respects reduced motion. Default output is unchanged.
+- Add `features.layerTransitions`: layer switches fade, `setSource()` crossfades neighborhood definitions, and `setDistrictStyle()` crossfades district fills.
+- Add `features.districtMorph`: district outlines morph between map years on `setDistrictYear()`, settling on the exact geometry; `{ animate: false }` stays instant.
+- Pages site: a classic, editorial redesign with an animated atlas home, a scroll-driven tour of the controller, a layers studio for every layer and neighborhood definition, rebuilt local measures, California propositions and supervisorial votes examples, and new documentation and API reference pages. Example pages now load prebuilt display maps and a display-simplified dataset instead of raw geometry.
+
+## 4.0.1 — 2026-09-28
+
+- Reconcile marker updates by ID, preserving retained SVG nodes, picker options, keyboard focus, and entrance animations. Identical ordered updates no longer mutate the DOM; only new IDs animate in and removed markers cancel their entrances.
+- Advance animated cameras and dependent label, marker, and cluster layout in one shared browser frame, with regression coverage for coalescing, cancellation, reentrant updates, and destruction.
+
+## 4.0.0 — 2026-09-28
+
+- Breaking: require Node 24 or newer for server rendering and development. Validate the minimum supported major alongside Node 26 in CI; browser runtime requirements are unchanged.
+- No map API, geographic data, rendering, or animation changes. Existing v3 integrations only need a supported Node runtime to upgrade.
+
+## 3.1.0 — 2026-09-28
+
+- Add `createGuideController` and `mountGuideController` with the grouped options, camera, subscriptions, and lifecycle of `createMap`; preserve existing element-based guide factories.
+- Reject invalid marker coordinates before static rendering invokes district-style callbacks.
+- Prepare district styles once per update before changing the map, and reuse projected district paths.
+- Track both district crossfades so interrupted transitions, reduced motion, and teardown remove all outgoing layers.
+- Reuse label nodes and screen-space text measurements during camera movement, refreshing metrics when fonts load; separate label rendering and district appearance from the interactive engine.
+- Give marker visuals and entrance animations their own lifecycle, and prevent reentrant district callbacks from overwriting newer state or restarting work after destruction.
+- Document guide-controller integration and district-style refresh semantics; add browser regressions for callback atomicity, interrupted fades, camera motion, marker replacement, label reuse, and progressive shell mounting.
+
+## 3.0.1 — 2026-09-27
+
+- Narrow the complete-data presets to their direct geographic modules without changing rendered SVGs or public API behavior.
+- Correct stale contributing and example documentation links, add a local Markdown link check to `pnpm check`, and show the v3 controller API on the Pages homepage.
+- Skip the early push-triggered Pages build while a new package version is still processing on npm; the successful release workflow deploys that version from the registry.
+- Serve local visual snapshots with the same streaming Node HTTP approach as the Pages browser check, avoiding intermittent resets while loading large optional map data.
+
+## 3.0.0 — 2026-09-27
+
+Version 3 removes the deprecated compatibility APIs. Applications must migrate before upgrading. The data-free root API introduced in version 2 remains the supported API.
+
+### Breaking changes
+
+- Remove the `/legacy`, `/custom-map`, `/explorer`, `/interactive`, and `/interactive-data` package entry points and their bundled-data factories. These imports fail to resolve in v3; they are removed, not merely marked deprecated.
+- Replace `renderSFMap(options)` with `renderMap(fullMapData.map, options).svg`, `createSFMap(options)` with `renderMap(fullMapData.map, options)`, and `createSFMapWithData(options, data)` with `renderMap(data, options)`.
+- Replace `createNeighborhoodExplorer(options)` and `createInteractiveSFMap(options)` with `createMap(fullMapData, options)`; mount the returned controller's `.element` and call `.destroy()` on unmount. Replace `createInteractiveSFMapWithData(data, options)` with `createMap(data, options)`.
+- Import complete packaged geography explicitly from `/data/full`, or compose smaller data from `/data/*`. The root import continues to bundle no geography. Existing `/guide` and `/transit` entries remain available.
+
+### Migration and verification
+
+- Add a [v3 migration guide](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v3.md) with import and method mappings. Update README, runnable examples, Storybook, Pages generation, TypeScript contracts, and packed-consumer checks to use the supported API.
+- Preserve the generated SVG output for the old complete-data preset while making that data an explicit import. Keep the guide's narrow overview and detailed-data loading.
+- Add `/data/static` for the complete static map without interactive lookup collections; use it on the Pages spot explorer so its detailed coast and labels retain their reviewed appearance without pulling in unused collections.
+
+## 2.2.0 — 2026-09-27
+
+- Add “One spot, three San Franciscos” to Pages and Storybook, comparing the same location across district, neighborhood, and transit views.
+- Modernize the Storybook examples in TypeScript and gate map changes with reviewed desktop and 390 px visual snapshots on macOS and Linux.
+- Add first-class election choropleths: static and interactive `districtStyle`, live district year/style setters, district selection and activation events, keyboard interaction, and a reduced-motion-aware year crossfade.
+- Export `getLayerPaths` for canonical fitted layer geometry and `DistrictYear`, `DistrictRowData`, and `DistrictStyle` from the modern entrypoints.
+- Add an official-election Storybook example covering three boundary years, vote-share coloring, mobile layout, keyboard selection, year changes, and accessibility checks.
+
+## 2.1.0 — 2026-09-27
+
+- Pages site: add motion and a dark theme. Cross-document View Transitions keep the header still and morph example titles into page titles; the home hero is an interactive dot map of the 2022 districts; entrances, count-ups, growing charts, and hover/focus micro-interactions respect reduced motion and print. The site adds no library.
+- Pages site: load simplified display maps and thumbnails instead of full-precision SVGs and bundled GeoJSON (candidate and proposition explorers drop from about 391 KB to 12 KB of compressed JavaScript and CSS); add dark map thumbnails, a favicon, a 404 page, a sitemap, per-page social tags, theme-colored browser bars, and a browser smoke test with size budgets that gates deployment.
+- Add six optional San Francisco candidate vote snapshots (2016–2026), a Pages explorer, official source records, and a dataset import script.
+
+## 2.0.0 — 2026-09-27
+
+Version 2 makes geography an explicit dependency and separates the application API
+from its DOM element. This keeps small consumers small, gives configuration one
+consistent home, and makes animation and subscription ownership predictable.
+
+**Migration:** [Complete v1 → v2 guide, with before/after examples](https://github.com/kahwee/sf-map-svg/blob/v2.0.0/docs/migration-v2.md).
+**API:** [README](https://github.com/kahwee/sf-map-svg/blob/v2.0.0/README.md).
+**Consumer performance:** [Integration guide](https://github.com/kahwee/sf-map-svg/blob/v2.0.0/docs/consumer-integration.md).
+
+### Breaking changes
+
+- The root export now provides data-free `createMap(data, options)` and `renderMap(data, options)`. Move old `createSFMap`, `renderSFMap`, `neighborhoodNames`, `districtColors`, `districtYears`, and legacy static type imports to `/legacy` for an incremental migration. Existing named subpaths retain their compatibility APIs.
+- `createMap` returns a controller: mount `map.element`. Features belong in `features`, styling in `appearance`; flat spellings are rejected. Use `configure({ features, layers, controls })`, `camera.*`, and typed `on()` subscriptions. Appearance is construction-only.
+- The controller throws on operations after disposal; `destroy()` and unsubscribe remain idempotent. Configuration rejects unknown/malformed keys and invalid ranges. Marker/overlay IDs must be unique. Shared guide geography is immutable; clone before deriving custom data.
+
+### Added
+
+- Data-free `/map` and `/static` entrypoints, configuration-only `/presets`, detached configuration snapshots, and all-groups validation before configuration updates. Camera pan, zoom, reset, fit and set accept consistent animation options.
+- Palette, label font/weight/halo, selected/hover neighborhood styling, custom legend entries, compact expandable attribution, and independent visible/accessibility touch labels.
+- Opt-in eased camera motion and staggered marker entrances, respecting reduced motion, interruption, preference changes, and disposal.
+- Per-pin radii, selected rings, deterministic screen-space clustering and accessible marker choice, HTML overlay placement, screen projection, north arrow and approximate scale bar.
+- Server-safe overview `createGuideSVG` / `createGuideShell` and compact `mountGuideMap`, using matching simplified geography and reserved layout rows.
+- Coastline-only basemaps without neighborhood datasets. SFAR remains the default when supplied; alternative-only data selects the available source.
+- Full migration documentation, public examples, adversarial API contract matrix, production import-graph/size budgets, and automatic verification that GitHub release notes contain the complete changelog. The npm archive now includes CHANGELOG.md.
+
+### Fixed and hardened
+
+- Reentrant camera and selection callbacks cannot revive obsolete animation or overwrite a newer selection. Failed source, marker, overlay, feature, layer and control updates preserve existing state.
+- Runtime controls remain independent, feature toggles preserve camera/selection, and unrelated configuration updates no longer interrupt motion. Hiding touch controls returns gestures to the page.
+- Revoke obsolete cluster handlers immediately when markers, selection or clustering settings change; v2 overlay activation is wired to typed events for mouse and keyboard users.
+- Keyboard focus remains reachable through filtering and clustering; removed overlays lose listeners. Construction failures and repeated destruction clean up observers, listeners and asynchronous work.
+- Detached selection/event snapshots prevent accidental mutation of renderer state. Malformed/sparse viewports, coordinates, padding, overlay geometry and misspelled options are rejected. Corrected public `LineString` overlay typing.
+- Root static imports tree-shake away browser code and all geographic JSON. Renderer, camera, clustering, configuration and validation have separate internal boundaries; rendering remains offline with zero runtime dependencies.
+
+### Validation and bundle guidance
+
+- Covered by Node regression tests, Chromium Storybook interactions/coverage, declaration tests, clean packed-consumer installation, and desktop/390px browser inspection. Required checks include demo, Storybook and Pages builds.
+- Representative production gzip measurements: v2 root **22.8 KiB without geography**; static-only root import **4.5 KiB**; compatibility guide including overview geography **110.2 KiB**. Consumer output varies. Runtime switches do not remove imported code or data; use narrow entrypoints, explicit datasets and lazy detail loading.
+
+## 1.5.2 — 2026-09-26
+
+- Run every Storybook story as a Chromium/Vitest browser check and publish an LCOV and JSON coverage artifact for the renderer, with baseline regression thresholds.
+- Require the browser and coverage check before npm publishing or Pages deployment.
+
+## 1.5.1 — 2026-09-26
+
+- Run focused Storybook 10 browser interactions and accessibility checks in CI and before npm publishing, covering overlapping markers, route overlays, and keyboard selection.
+- Validate certified proposition district sums against city totals in the data test suite.
+- Keep Biome and the development dependency set current after an audit and outdated-package review.
+
+## 1.5.0 — 2026-09-26
+
+- Add `controls.neighborhoodPicker`, `controls.markerPicker`, `controls.help`, and `controls.status` so compact embeds can drop redundant chrome. Hidden help remains the map's accessible description; a hidden status line remains a polite live region; source attribution stays visible.
+- Keep a configured `strings.chooseMarker` label after `setMarkers()` updates instead of reverting to “Choose marker”.
+
+## 1.4.1 — 2026-09-26
+
+- Add a task-based example gallery and code recipes, with clearer routes among the Pages atlas, local measures, district history, transit, and lightweight map.
+- Add a California proposition explorer using certified November 2024 Yes and No votes for all eleven San Francisco supervisorial districts; publish its sourced JSON and reproducible import script.
+
+## 1.4.0 — 2026-09-26
+
+- Split geographic convenience exports into independent data modules, so metadata search and SFAR-only lookup avoid unrelated JSON.
+- Separate the guide's detailed loader from overview geography; keep the existing `/guide` exports and add explicit `/guide/detailed`, `/guide/data`, and `/guide/map` paths.
+- Make the optional transit animation include only its 2022 map geography, preserving the rendered route while cutting its consumer bundle size.
+- Publish a before-and-after tree-shaking report for representative consumer imports.
+
+## 1.3.8 — 2026-09-26
+
+- Give the district map a clear, dedicated viewing area on mobile by shrinking the election and measure controls and moving the map legend below the map.
+- Replace the oversized mobile focus button with a compact icon while keeping its accessible name and a 44px touch target.
+
+## 1.3.7 — 2026-09-26
+
+- Expand the GitHub Pages measure explorer to 44 local measures across November 2002, November 2012, November 2022, and June 2026, covering all three supported district map years.
+- Keep election results and district maps in separate, on-demand JSON chunks; add a searchable measure list, election picker, shareable year-specific views, and dated exports.
+- Reconcile historical district vote totals to official citywide results and document source checksums and the 2012 precinct-to-district grouping method.
+
+## 1.3.6 — 2026-09-26
+
+- Simplify district history playback to one JavaScript morph implementation, removing the larger CSS animation and fallback branch while preserving the moving boundaries and reduced-motion switch.
+
+## 1.3.5 — 2026-09-26
+
+- Animate district boundary morphs with CSS path transitions and coordinated CSS fades on supported browsers, retaining a JavaScript fallback and reduced-motion instant switch.
+
+## 1.3.4 — 2026-09-26
+
+- Morph matched district outlines between historical maps on GitHub Pages, restoring moving boundaries in place of the 1.3.3 line trace.
+- Keep each dated SVG exact when motion settles and switch instantly for visitors who request reduced motion.
+
+## 1.3.3 — 2026-09-26
+
+- Draw each historical district map’s actual boundary lines during the GitHub Pages playback, with a reduced-motion instant switch.
+
+## 1.3.2 — 2026-09-26
+
+- Rebuild GitHub Pages as a civic atlas led by interactive June 2026 ballot measure results, with district selection and clear citywide outcomes.
+- Showcase 2002, 2012, and 2022 district maps together and add a controllable boundary reveal that respects reduced-motion settings.
+- Bring the schematic BART journey into the homepage with one-click playback and keep the guide map available on demand.
+
+## 1.3.1 — 2026-09-26
+
+- Rework the GitHub Pages homepage around the lightweight guide map and show the released bundle-size comparison.
+- Load the full neighborhood explorer and schematic BART demo only when visitors request them, keeping unused geography out of the initial page load.
+
+## 1.3.0 — 2026-09-26
+
+- Add a lightweight guide map preset with subpixel overview geography, lazy detailed datasets, curated highways and streets, independent road labels, and smaller consumer bundle size.
+- Curate six guide streets and prioritize their visibility by zoom while preserving road geometry across park fills.
+- Simplify shared neighborhood boundaries while preserving the combined city footprint and recognizable park, coast, and road-crossing geometry.
+
+## 1.2.0
+
+### Added
+
+- Add `@kahwee/sf-map-svg/custom-map`, a data-injected renderer entry point that lets consumers bundle only the geographic datasets they provide.
+- Add public styled geographic overlays, explorer theme tokens, configurable labels, and optional controls.
+- Validate SVG overlay numeric attributes and add an interactive data-injected entry point so consumers can provide only the geographic datasets they use.
+- Add a Pages ballot-measures explorer for certified June 2026 local results, district comparisons, shareable selections, and official downloads.
+- Build the Pages demos and SVG downloads from the published npm version, with visible release metadata, installation copying, and release links.
+- Make the measures atlas a full-screen map with side-by-side comparisons, touch navigation, overlay tables and sources, and a focus view.
+- Refresh the Pages layout for mobile and add expandable certified election results with SVG/CSV/JSON exports.
+
+## 1.1.0
+
+### Added
+
+- Public [GitHub Pages explorer](https://kahwee.github.io/sf-map-svg/) with neighborhood search, map modes, usage tips, SVG examples, and GeoJSON downloads.
+- Automatic Pages builds and deployment from `main`, plus `pnpm build:pages` for local previews.
+- Optional `@kahwee/sf-map-svg/transit` browser component and an [embeddable transit demo](https://kahwee.github.io/sf-map-svg/transit.html). The schematic BART journey connects official station locations with straight segments; it does not represent actual tracks or live service.
+- Play/pause controls, a keyboard-accessible journey slider, pause-on-hidden behavior, and a Storybook transit example. Animation starts paused.
+
+### Changed
+
+- Reorganize the README around installation, choosing an API, static and interactive options, geographic data, development, and Pages deployment.
+
+### Fixed
+
+- Release map listeners, observers, animation frames, and download URLs when explorer initialization fails. Add browser regression coverage for failed initialization.
+
+## 1.0.0
+
+- Publish the stable 1.0 API with public npm access and a public source repository.
+- Add the reusable interactive map entrypoint, controlled viewport and selection APIs, keyboard/touch navigation, and marker selection.
+- Add interactive examples, Storybook stories, and viewport/navigation regression checks.
+- Add district/neighborhood explorer modes and a labels toggle, with fixed screen-size labels while zooming.
+- Add a master visible-label switch for standalone SVGs.
+- Add nine optional key-road landmarks from DataSF centerlines, public JSON, and zoom-aware explorer labels.
+- Add a transit-inspired map theme with pale water, quiet land, green parks, and blue station symbols.
+- Refine the neighborhood explorer presentation and map legend.
+- Add a transit example and Storybook preset.
+
+## 0.4.1
+
+- Migrate library source to strict TypeScript 7 with generated JavaScript and declarations.
+- Replace Prettier with Biome formatting, import organization, and recommended lint rules.
+
+## 0.4.0
+
+- Add a browser neighborhood explorer with alias search, selection, boundary zoom, and GeoJSON downloads.
+- Adapt explorer labels to zoom and viewport size while preserving static SVG defaults.
+- License software under MIT and add npm release automation and packaged-consumer checks.
+
+## 0.3.0
+
+- Enable public npm distribution with explicit public registry access.
+- Remove realtor boundary sliver overlaps while preserving all 92 neighborhoods and their combined footprint; enforce disjoint interiors in regression tests.
+- Use the 92 SFAR realtor neighborhoods by default for map outlines, data lookup, and Storybook. Other source collections remain available.
+- Move all geographic data to exported canonical GeoJSON files, preserving district display extras.
+- Expose complete SF Find (117), analysis (41), and realtor (92) neighborhood collections with source-specific canonical names and documented aliases.
+- Add immutable data helpers, exact-name lookup, source-aware search, and a typed geometry export.
+- Split SVG layers from orchestration and reuse projected district paths.
+- Reject longitude values that could overflow SVG coordinates.
+- Add neighborhood explorer stories, JSON downloads, independent overlay stories, and data integrity checks.
+
+## 0.2.0
+
+- Add optional park and landmark highlights using DataSF property boundaries.
+- Add all eight San Francisco BART stations using official station coordinates.
+- Add overlay color options, TypeScript declarations, source records, and SVG checks.
+- Add Storybook 10.6 with eight interactive examples and API controls.
+- Add usage examples, contributor instructions, and AGENTS.md.
+- Update GitHub Actions and validate Storybook and package builds across supported Node versions.
+- Configure weekly Dependabot updates for development dependencies and Actions.
+- Keep existing layer defaults unchanged, runtime dependencies at zero, and distribution private.
+
+## 0.1.1
+
+- Separate geometry and projection helpers from SVG layer rendering.
+- Cache immutable coast bounds across renders.
+- Validate complete SVG documents as XML in regression tests.
+- Remove invalid XML control characters from user-supplied labels.
+- Specify even-odd clipping for coastline holes.
+- Standardize formatting and document contribution and private release workflows.
+- Distribute through private GitHub releases; disable npm publication.
+- Exclude original Site application code and internal source identifiers.
+
+## 0.1.0
+
+- Extract Site version 6 into a standalone SVG renderer.
+- Bundle 2002, 2012 and 2022 districts plus optional SF Find neighborhood boundaries.
+- Preserve source provenance, palette, coast, labels and optional highways.
+
+---
+
+# Published type contracts
+
+@kahwee/sf-map-svg 4.0.1 · local working tree. These declarations are generated by TypeScript. Use package export paths, not the internal filenames below. Imported relative contracts are included for context, not as additional public entry points.
+
+| Public import | Declaration |
+| --- | --- |
+| @kahwee/sf-map-svg | ./dist/src/api.d.ts |
+| @kahwee/sf-map-svg/data | ./dist/data/index.d.ts |
+| @kahwee/sf-map-svg/data/analysis | ./dist/data/analysis.d.ts |
+| @kahwee/sf-map-svg/data/catalog | ./dist/data/catalog.d.ts |
+| @kahwee/sf-map-svg/data/full | ./dist/src/full-data.d.ts |
+| @kahwee/sf-map-svg/data/static | ./dist/src/static-data.d.ts |
+| @kahwee/sf-map-svg/data/coast | ./dist/data/coast.d.ts |
+| @kahwee/sf-map-svg/data/districts | ./dist/data/districts.d.ts |
+| @kahwee/sf-map-svg/data/highways | ./dist/data/highways.d.ts |
+| @kahwee/sf-map-svg/data/landmarks | ./dist/data/landmarks.d.ts |
+| @kahwee/sf-map-svg/data/lookup | ./dist/data/lookup.d.ts |
+| @kahwee/sf-map-svg/data/realtor | ./dist/data/realtor.d.ts |
+| @kahwee/sf-map-svg/data/roads | ./dist/data/roads.d.ts |
+| @kahwee/sf-map-svg/data/sf-find | ./dist/data/sf-find.d.ts |
+| @kahwee/sf-map-svg/data/stations | ./dist/data/stations.d.ts |
+| @kahwee/sf-map-svg/geometry | ./dist/src/geometry.d.ts |
+| @kahwee/sf-map-svg/guide | ./dist/src/guide.d.ts |
+| @kahwee/sf-map-svg/guide/data | ./dist/src/guide-data.d.ts |
+| @kahwee/sf-map-svg/guide/detailed | ./dist/src/guide-detailed.d.ts |
+| @kahwee/sf-map-svg/guide/map | ./dist/src/guide-map.d.ts |
+| @kahwee/sf-map-svg/transit | ./dist/src/transit.d.ts |
+| @kahwee/sf-map-svg/guide/static | ./dist/src/guide-static.d.ts |
+| @kahwee/sf-map-svg/map | ./dist/src/map.d.ts |
+| @kahwee/sf-map-svg/static | ./dist/src/static.d.ts |
+| @kahwee/sf-map-svg/presets | ./dist/src/presets.d.ts |
+
+### ./dist/src/api.d.ts
+
+```ts
+/** v2 root: runtime and types only. Geography is always an explicit import. */
+export * from './map.js';
+export * from './static.js';
+```
+
+### dist/src/map.d.ts
+
+```ts
+import type { MapController, MapOptions } from './controller-types.js';
+import type { InteractiveSFMapData } from './explorer-data.js';
+export type * from './controller-types.js';
+export type { InteractiveSFMapData as MapData } from './explorer-data.js';
+export type { CameraOptions, DistrictSelection, DistrictStyle, DistrictYear, InteractiveLayers, MapFeatures, MapMarker, MapOverlay, MapPadding, MapViewport, NeighborhoodSelection, } from './types.js';
+/** No geography is imported. Supply a preset or your own immutable data. */
+export declare function createMap(data: InteractiveSFMapData, options?: MapOptions): MapController;
+```
+
+### dist/src/controller-types.d.ts
+
+```ts
+import type { Geometry, NeighborhoodSource } from '../data/types.js';
+import type { CameraOptions, DistrictSelection, DistrictStyle, DistrictYear, InteractiveLayers, MapFeatures, MapMarker, MapOverlay, MapPadding, MapViewport, NeighborhoodExplorerOptions, NeighborhoodSelection } from './types.js';
+export type MapAppearance = Pick<NeighborhoodExplorerOptions, 'theme' | 'colors' | 'labelStyle' | 'areaStyle' | 'districtStyle' | 'labelSize' | 'style' | 'markerRadius' | 'markerHitSize' | 'markerColor' | 'selectedMarkerColor'>;
+export type MapControls = NonNullable<NeighborhoodExplorerOptions['controls']>;
+/** Omitted groups/keys retain their values; undefined groups reset all keys in that group. */
+export interface MapConfiguration {
+    features?: MapFeatures;
+    layers?: InteractiveLayers;
+    controls?: MapControls;
+}
+export interface MapOptions extends Omit<NeighborhoodExplorerOptions, keyof MapFeatures | keyof MapAppearance | 'interface' | 'onMarkerActivate' | 'onOverlayActivate'> {
+    features?: MapFeatures;
+    appearance?: MapAppearance;
+}
+export interface MapConfigurationSnapshot {
+    features: MapFeatures;
+    /** Explicit overrides; absent values continue to follow the current mode. */
+    layers: InteractiveLayers;
+    controls: MapControls;
+}
+export interface MapEvents {
+    districtchange: DistrictSelection | {
+        id: null;
+        year: DistrictYear;
+        district: null;
+    };
+    districthover: DistrictSelection | {
+        id: null;
+        year: DistrictYear;
+        district: null;
+    };
+    districtactivate: DistrictSelection;
+    districtyearchange: {
+        year: DistrictYear;
+        previousYear: DistrictYear;
+    };
+    markerchange: {
+        id: string | null;
+        marker: MapMarker | null;
+    };
+    neighborhoodchange: NeighborhoodSelection | {
+        id: null;
+        name: null;
+        source: NeighborhoodSource;
+        feature: null;
+    };
+    overlayactivate: {
+        overlay: MapOverlay;
+    };
+    clusteractivate: {
+        markers: MapMarker[];
+    };
+    viewportchange: {
+        viewport: MapViewport;
+    };
+    mapresize: undefined;
+}
+export interface MapCamera {
+    get(): MapViewport;
+    set(view: MapViewport, options?: CameraOptions): void;
+    fit(geometry: Geometry, options?: CameraOptions & {
+        padding?: number | MapPadding;
+    }): void;
+    pan(x: number, y: number, options?: CameraOptions): void;
+    zoom(factor: number, options?: CameraOptions): void;
+    reset(options?: CameraOptions): void;
+    stop(): void;
+}
+/** Owns the map lifecycle separately from its mountable DOM element. */
+export interface MapController {
+    readonly element: HTMLElement;
+    readonly overlayElement: HTMLDivElement;
+    readonly camera: MapCamera;
+    readonly destroyed: boolean;
+    configure(patch: MapConfiguration): void;
+    getConfiguration(): MapConfigurationSnapshot;
+    on<K extends keyof MapEvents>(type: K, listener: (detail: MapEvents[K]) => void): () => void;
+    /** Reconcile stable IDs; retained markers preserve nodes, focus, and entrance animations. */
+    setMarkers(markers: readonly MapMarker[]): void;
+    setOverlays(overlays: readonly MapOverlay[]): void;
+    selectMarker(id: string | null, options?: CameraOptions & {
+        fit?: boolean;
+    }): boolean;
+    getSelectedMarker(): MapMarker | null;
+    selectNeighborhood(name: string | null, options?: CameraOptions & {
+        fit?: boolean;
+    }): boolean;
+    getSelectedNeighborhood(): NeighborhoodSelection | null;
+    selectDistrict(id: number | null, options?: CameraOptions & {
+        fit?: boolean;
+    }): boolean;
+    getSelectedDistrict(): DistrictSelection | null;
+    setDistrictYear(year: DistrictYear, options?: CameraOptions): void;
+    setDistrictStyle(style: ((district: DistrictSelection['district']) => DistrictStyle) | undefined): void;
+    setSource(source: NeighborhoodSource): void;
+    setMode(mode: NonNullable<MapOptions['mode']>): void;
+    setLabels(visible: boolean): void;
+    setTouchNavigation(enabled: boolean): void;
+    projectToScreen(lng: number, lat: number): {
+        x: number;
+        y: number;
+        visible: boolean;
+    };
+    /** Idempotent; stops work and managed subscriptions. Does not remove host-owned DOM. */
+    destroy(): void;
+}
+```
+
+### dist/data/types.d.ts
+
+```ts
+export type Position = readonly [number, number, ...number[]];
+export type Bounds = readonly [number, number, number, number];
+export type Geometry = {
+    readonly type: 'Point';
+    readonly coordinates: Position;
+} | {
+    readonly type: 'LineString';
+    readonly coordinates: readonly Position[];
+} | {
+    readonly type: 'MultiPoint';
+    readonly coordinates: readonly Position[];
+} | {
+    readonly type: 'Polygon';
+    readonly coordinates: readonly (readonly Position[])[];
+} | {
+    readonly type: 'MultiLineString';
+    readonly coordinates: readonly (readonly Position[])[];
+} | {
+    readonly type: 'MultiPolygon';
+    readonly coordinates: readonly (readonly (readonly Position[])[])[];
+} | {
+    readonly type: 'GeometryCollection';
+    readonly geometries: readonly Geometry[];
+};
+export interface Feature<P = Readonly<Record<string, unknown>>> {
+    readonly type: 'Feature';
+    readonly id: string;
+    readonly bbox: Bounds;
+    readonly properties: P;
+    readonly geometry: Geometry;
+}
+export interface DataSource {
+    readonly id: string;
+    readonly title: string;
+    readonly url: string;
+    readonly retrievedAt: string;
+    readonly definitionYear?: number;
+    readonly licenseUrl: string;
+}
+export interface Definition {
+    readonly kind: string;
+    readonly year?: number;
+    readonly description: string;
+}
+export interface FeatureCollection<P = Readonly<Record<string, unknown>>> {
+    readonly type: 'FeatureCollection';
+    readonly schemaVersion: 1;
+    readonly id: string;
+    readonly title: string;
+    readonly coordinateSystem: string;
+    readonly definition: Definition;
+    readonly sources: readonly DataSource[];
+    readonly topology?: {
+        readonly policy: 'disjoint-interiors';
+        readonly sharedBoundariesAllowed: boolean;
+        readonly method: string;
+        readonly tool: string;
+        readonly processedAt: string;
+        readonly sourceOverlapPairs: number;
+    };
+    readonly features: readonly Feature<P>[];
+}
+export type NeighborhoodSource = 'sf-find' | 'analysis' | 'realtor';
+export interface NeighborhoodProperties {
+    readonly name: string;
+    readonly canonicalName: string;
+    readonly sourceName: string;
+    readonly aliases: readonly string[];
+    readonly definitionSource: NeighborhoodSource;
+    readonly nameSources: readonly string[];
+    readonly note?: string;
+    readonly sourceCode?: string;
+    readonly realtorDistrict?: string;
+}
+export interface NeighborhoodEntry extends NeighborhoodProperties {
+    readonly id: string;
+    readonly source: NeighborhoodSource;
+    readonly file: string;
+    readonly bbox: Bounds;
+}
+export interface DistrictProperties {
+    readonly district: number;
+    readonly name: string;
+    readonly year: 2002 | 2012 | 2022;
+    readonly label: Position;
+    readonly labelPoints: readonly Position[];
+    readonly displayExtras: Geometry | null;
+}
+export interface Catalog {
+    readonly schemaVersion: 1;
+    readonly description: string;
+    readonly datasets: readonly {
+        readonly id: string;
+        readonly file: string;
+        readonly title: string;
+        readonly featureCount: number;
+        readonly definition: Definition;
+        readonly sources: readonly DataSource[];
+    }[];
+    readonly neighborhoods: readonly NeighborhoodEntry[];
+}
+export type NeighborhoodFeature = Feature<NeighborhoodProperties>;
+export type PolygonGeometry = Extract<Geometry, {
+    readonly type: 'Polygon';
+}>;
+export type MultiPolygonGeometry = Extract<Geometry, {
+    readonly type: 'MultiPolygon';
+}>;
+export interface LandmarkProperties {
+    readonly name: string;
+    readonly label: Position;
+    readonly offset: readonly [number, number];
+    readonly anchor: 'middle' | 'start' | 'end';
+}
+export interface KeyRoadProperties {
+    readonly name: string;
+    readonly level?: 'primary' | 'secondary';
+    readonly sourceNames: readonly string[];
+    readonly label: Position;
+    readonly segmentIds: readonly string[];
+}
+```
+
+### dist/src/types.d.ts
+
+```ts
+import type { Geometry, NeighborhoodFeature, NeighborhoodSource } from '../data/types.js';
+export type DistrictYear = 2002 | 2012 | 2022;
+export interface DistrictSelection {
+    id: number;
+    year: DistrictYear;
+    district: import('./map-core.js').DistrictRowData;
+}
+export interface DistrictStyle {
+    fill?: string;
+    stroke?: string;
+    opacity?: number;
+}
+export interface MapMarker {
+    id: string;
+    lng: number;
+    lat: number;
+    label?: string;
+    selected?: boolean;
+    color?: string;
+    /** Visible radius in screen pixels (interactive), SVG units (static). */
+    radius?: number;
+}
+export interface MapOverlay {
+    id: string;
+    geometry: Extract<Geometry, {
+        type: 'LineString' | 'MultiLineString' | 'Polygon' | 'MultiPolygon';
+    }>;
+    stroke?: string;
+    strokeWidth?: number;
+    fill?: string;
+    fillOpacity?: number;
+    visible?: boolean;
+    label?: string;
+}
+export interface SFMapOptions {
+    theme?: 'districts' | 'transit';
+    width?: number;
+    height?: number;
+    padding?: number;
+    year?: DistrictYear;
+    districtLines?: boolean;
+    neighborhoodLines?: boolean;
+    districtFills?: boolean;
+    /** Evaluated once per district at construction/style/year updates; call setDistrictStyle again when external data changes. */
+    districtStyle?: (district: import('./map-core.js').DistrictRowData) => DistrictStyle;
+    districtLabels?: boolean;
+    /** Hide all visible text labels while retaining geographic symbols and accessible titles. */
+    labels?: boolean;
+    highways?: boolean;
+    keyRoads?: boolean;
+    roadLabels?: boolean;
+    landmarks?: boolean;
+    bartStations?: boolean;
+    markers?: MapMarker[];
+    overlays?: readonly MapOverlay[];
+    title?: string;
+    idPrefix?: string;
+    /**
+     * Opt-in, self-contained CSS choreography for static SVGs: land fades in, the coast and
+     * lines draw, districts grow, then labels and points appear. It plays when the SVG is
+     * inserted into a page or loaded as an image, and stays still under reduced motion.
+     * `duration` (default 2400 ms) scales the whole sequence; `delay` offsets it.
+     */
+    animation?: boolean | {
+        duration?: number;
+        delay?: number;
+    };
+    colors?: Partial<Record<'water' | 'land' | 'district' | 'neighborhood' | 'highway' | 'road' | 'park' | 'landmark' | 'bart' | 'label' | 'marker' | 'selected', string>>;
+}
+/** Serializable viewport in the interactive map's fixed 800 × 800 projected space. */
+export type MapViewport = readonly [x: number, y: number, size: number];
+export type ExplorerMode = 'neighborhoods' | 'districts' | 'basemap';
+export interface MapPadding {
+    top?: number;
+    right?: number;
+    bottom?: number;
+    left?: number;
+}
+export interface InteractiveLayers {
+    districtFills?: boolean;
+    districtLines?: boolean;
+    districtLabels?: boolean;
+    neighborhoodLines?: boolean;
+    neighborhoodLabels?: boolean;
+    landmarks?: boolean;
+    bartStations?: boolean;
+    highways?: boolean;
+    keyRoads?: boolean;
+    roadLabels?: boolean;
+}
+export interface NeighborhoodSelection {
+    id: string;
+    name: string;
+    source: NeighborhoodSource;
+    feature: NeighborhoodFeature;
+}
+export interface MapFeatures {
+    /** Opt-in camera motion; reduced-motion always takes precedence. */
+    motion?: boolean | {
+        duration?: number;
+    };
+    markerEntrance?: boolean | {
+        duration?: number;
+        stagger?: number;
+    };
+    selectedMarkerRing?: boolean | {
+        color?: string;
+        width?: number;
+        gap?: number;
+    };
+    /** Screen-space clustering. The selected marker and full chooser remain available. */
+    clustering?: boolean | {
+        radius?: number;
+    };
+    northArrow?: boolean;
+    scaleBar?: boolean;
+    /**
+     * Fade layers as `setLayers` and `setMode` switch them, crossfade neighborhood boundaries
+     * when `setSource` changes the definition, and crossfade district fills on
+     * `setDistrictStyle`. Reduced motion takes precedence.
+     */
+    layerTransitions?: boolean | {
+        duration?: number;
+    };
+    /**
+     * Morph district outlines from one map year to the next on `setDistrictYear`; pass
+     * `{ animate: false }` for an instant change. Reduced motion takes precedence.
+     */
+    districtMorph?: boolean | {
+        duration?: number;
+    };
+}
+export interface NeighborhoodExplorerOptions extends MapFeatures {
+    mode?: ExplorerMode;
+    labels?: boolean;
+    source?: NeighborhoodSource;
+    neighborhood?: string;
+    year?: DistrictYear;
+    theme?: SFMapOptions['theme'];
+    colors?: SFMapOptions['colors'];
+    labelStyle?: {
+        fontFamily?: string;
+        fontWeight?: number;
+        haloColor?: string;
+    };
+    areaStyle?: {
+        selectedFill?: string;
+        selectedStroke?: string;
+        hoverFill?: string;
+        hoverStroke?: string;
+    };
+    districtStyle?: SFMapOptions['districtStyle'];
+    legend?: {
+        builtins?: boolean;
+        hidden?: readonly ('bart' | 'park' | 'highway' | 'road')[];
+        items?: readonly {
+            label: string;
+            color: string;
+        }[];
+    };
+    attribution?: 'full' | 'compact';
+    /** Explorer chrome or the reusable map with only controls and attribution. */
+    interface?: 'explorer' | 'map';
+    /** Independent overrides; omitted layers follow mode defaults. */
+    layers?: InteractiveLayers;
+    selectableNeighborhoods?: boolean;
+    /** Screen pixels; defaults preserve 11px roads / 12px other labels. */
+    labelSize?: {
+        min?: number;
+        max?: number;
+    };
+    /** Screen-pixel space reserved when fitting geometry. */
+    fitPadding?: number | MapPadding;
+    markers?: readonly MapMarker[];
+    /** Screen pixels, independent of zoom. */
+    markerRadius?: number;
+    markerHitSize?: number;
+    markerColor?: string;
+    selectedMarkerColor?: string;
+    onMarkerActivate?: (marker: MapMarker) => void;
+    overlays?: readonly MapOverlay[];
+    onOverlayActivate?: (overlay: MapOverlay) => void;
+    /** Stable theme tokens consumed by the explorer chrome. */
+    style?: Partial<Record<'ink' | 'surface' | 'accent' | 'border' | 'focus' | 'controlGap' | 'font', string>>;
+    strings?: Partial<Record<'title' | 'mode' | 'source' | 'search' | 'chooseNeighborhood' | 'chooseMarker' | 'touchNavigation' | 'touchNavigationLabel' | 'touchNavigationExitLabel' | 'touchNavigationDone' | 'reset' | 'emptyResults' | 'gestureHelp', string>>;
+    /**
+     * Independently hide chrome. `neighborhoodPicker` and `markerPicker` hide the native
+     * choosers (supply your own accessible list); `help` keeps the gesture help as the map's
+     * accessible description; `status` keeps a visually hidden live region. Attribution stays.
+     */
+    controls?: Partial<Record<'zoom' | 'pan' | 'reset' | 'labels' | 'touch' | 'legend' | 'neighborhoodPicker' | 'markerPicker' | 'help' | 'status', boolean>>;
+}
+export interface CameraOptions {
+    animate?: boolean;
+    duration?: number;
+}
+export interface NeighborhoodExplorerElement extends HTMLElement {
+    /** Append positioned HTML children here; coordinates are relative to this layer. */
+    readonly overlayElement: HTMLDivElement;
+    projectToScreen(lng: number, lat: number): {
+        x: number;
+        y: number;
+        visible: boolean;
+    };
+    stopAnimation(): void;
+    /** Atomic patch; false disables, undefined resets a feature to its default. */
+    setFeatures(patch: MapFeatures): void;
+    getFeatures(): MapFeatures;
+    /** Layer overrides; undefined restores mode defaults. Preserves camera and selection. */
+    setLayers(patch: InteractiveLayers): void;
+    /** Chrome switches are independent. */
+    setControls(patch: NonNullable<NeighborhoodExplorerOptions['controls']>): void;
+    selectNeighborhood(name: string | null, options?: {
+        fit?: boolean;
+    } & CameraOptions): boolean;
+    getSelection(): NeighborhoodSelection | null;
+    selectDistrict(id: number | null, options?: {
+        fit?: boolean;
+    } & CameraOptions): boolean;
+    getSelectedDistrict(): DistrictSelection | null;
+    setDistrictYear(year: DistrictYear, options?: CameraOptions): void;
+    setDistrictStyle(style: SFMapOptions['districtStyle']): void;
+    setSource(source: NeighborhoodSource): void;
+    setMode(mode: ExplorerMode): void;
+    setLabels(visible: boolean): void;
+    resetView(options?: CameraOptions): void;
+    zoomBy(factor: number, options?: CameraOptions): void;
+    panBy(x: number, y: number, options?: CameraOptions): void;
+    getViewport(): MapViewport;
+    setViewport(view: MapViewport, options?: CameraOptions): void;
+    /** Fit WGS84 geometry, including Point, MultiPoint, or a GeometryCollection. */
+    fitGeometry(geometry: Geometry, padding?: number | MapPadding, options?: CameraOptions): void;
+    /** Explicitly engage map touch gestures; false restores page gestures. */
+    setTouchNavigation(enabled: boolean): void;
+    /** Reconcile stable IDs; retained markers preserve nodes, focus, and entrance animations. */
+    setMarkers(markers: readonly MapMarker[]): void;
+    setOverlays(overlays: readonly MapOverlay[]): void;
+    selectMarker(id: string | null, options?: {
+        fit?: boolean;
+    } & CameraOptions): boolean;
+    getSelectedMarker(): MapMarker | null;
+    destroy(): void;
+}
+/** Paused-by-default schematic BART animation with keyboard-operable controls. */
+export interface TransitAnimationElement extends HTMLElement {
+    destroy(): void;
+}
+export type { MapAppearance, MapCamera, MapConfiguration, MapController, MapEvents, MapOptions, } from './controller-types.js';
+```
+
+### dist/src/explorer-data.d.ts
+
+```ts
+import type { DistrictProperties, FeatureCollection, NeighborhoodProperties, NeighborhoodSource } from '../data/types.js';
+import type { SFMapData } from './map-core.js';
+import type { DistrictYear } from './types.js';
+/** Geographic inputs for the data-injected interactive map entry point. */
+export interface InteractiveSFMapData {
+    map: SFMapData;
+    districts?: Partial<Readonly<Record<DistrictYear, FeatureCollection<DistrictProperties>>>>;
+    neighborhoods: Partial<Readonly<Record<NeighborhoodSource, FeatureCollection<NeighborhoodProperties>>>>;
+}
+```
+
+### dist/src/map-core.d.ts
+
+```ts
+import type { Geometry, Position } from '../data/types.js';
+import type { DistrictYear, SFMapOptions } from './types.js';
+export type { DistrictYear, MapMarker, MapOverlay, SFMapOptions } from './types.js';
+export interface SFMapData {
+    coast: Geometry;
+    districts?: Readonly<Partial<Record<DistrictYear, readonly DistrictRowData[]>>>;
+    neighborhoods?: readonly {
+        name: string;
+        geometry: Geometry;
+    }[];
+    highways?: readonly {
+        route: string;
+        geometry: Geometry;
+    }[];
+    landmarks?: readonly LandmarkData[];
+    keyRoads?: readonly KeyRoadData[];
+    bartStations?: readonly BartStationData[];
+}
+export interface DistrictRowData {
+    id: number;
+    label: Position;
+    labelPoints: readonly Position[];
+    geometry: Geometry;
+    extras: Geometry | null;
+}
+export interface LandmarkData {
+    id: string;
+    name: string;
+    label: Position;
+    offset: readonly [number, number];
+    anchor: 'middle' | 'start' | 'end';
+    geometry: Geometry;
+}
+export interface KeyRoadData {
+    id: string;
+    name: string;
+    level?: 'primary' | 'secondary';
+    sourceNames: readonly string[];
+    label: Position;
+    segmentIds: readonly string[];
+    geometry: Geometry;
+}
+export interface BartStationData {
+    id: string;
+    name: string;
+    coordinates: Position;
+}
+export declare const districtYears: readonly DistrictYear[];
+export declare const districtColors: readonly string[];
+/** Canonical geometry in the same fitted coordinate space used by renderMap. */
+export declare function getLayerPathsWithData(options: SFMapOptions, data: SFMapData, complete?: boolean): {
+    year: DistrictYear;
+    viewBox: [number, number, number, number];
+    project: (coordinates: Position) => [number, number];
+    coast: string;
+    districts: {
+        id: number;
+        geometry: string;
+        extras: string;
+        path: string;
+    }[];
+    neighborhoods: {
+        name: string;
+        path: string;
+    }[];
+    highways: {
+        route: string;
+        path: string;
+    }[];
+    landmarks: {
+        id: string;
+        path: string;
+    }[];
+    keyRoads: {
+        id: string;
+        path: string;
+    }[];
+    bartStations: {
+        id: string;
+        point: [number, number];
+    }[];
+};
+/** Make an offline SVG and the matching longitude/latitude projection. */
+export declare function createSFMapWithData(options: SFMapOptions, data: SFMapData): {
+    svg: string;
+    project: (coordinates: Position) => [number, number];
+    viewBox: [number, number, number, number];
+};
+```
+
+### dist/src/static.d.ts
+
+```ts
+import { type SFMapData } from './map-core.js';
+import type { SFMapOptions } from './types.js';
+export type { DistrictRowData, SFMapData as StaticMapData } from './map-core.js';
+export type { DistrictStyle, DistrictYear, SFMapOptions as StaticMapOptions } from './types.js';
+/** Server-safe SVG rendering with explicit data; returns SVG plus projection helpers. */
+export declare function renderMap(data: SFMapData, options?: SFMapOptions): {
+    svg: string;
+    project: (coordinates: import("../data/types.js").Position) => [number, number];
+    viewBox: [number, number, number, number];
+};
+/** Project canonical layer geometry without constructing an SVG string. */
+export declare function getLayerPaths(data: SFMapData, options?: SFMapOptions): {
+    year: import("./types.js").DistrictYear;
+    viewBox: [number, number, number, number];
+    project: (coordinates: import("../data/types.js").Position) => [number, number];
+    coast: string;
+    districts: {
+        id: number;
+        geometry: string;
+        extras: string;
+        path: string;
+    }[];
+    neighborhoods: {
+        name: string;
+        path: string;
+    }[];
+    highways: {
+        route: string;
+        path: string;
+    }[];
+    landmarks: {
+        id: string;
+        path: string;
+    }[];
+    keyRoads: {
+        id: string;
+        path: string;
+    }[];
+    bartStations: {
+        id: string;
+        point: [number, number];
+    }[];
+};
+```
+
+### ./dist/data/index.d.ts
+
+```ts
+export { catalog, searchNeighborhoods } from './catalog.js';
+export { coast } from './coast.js';
+export { districtMaps } from './districts.js';
+export { highways } from './highways.js';
+export { landmarks } from './landmarks.js';
+export { getNeighborhood, neighborhoodCollections, neighborhoodSources } from './lookup.js';
+export { getRealtorNeighborhood, neighborhoods } from './realtor.js';
+export { keyRoads } from './roads.js';
+export { bartStations } from './stations.js';
+export type * from './types.js';
+```
+
+### dist/data/catalog.d.ts
+
+```ts
+import type { Catalog, NeighborhoodSource } from './types.js';
+export declare const catalog: Catalog;
+/** Search name metadata across sources without importing polygon geometry. */
+export declare function searchNeighborhoods(query?: string, { source }?: {
+    source?: NeighborhoodSource;
+}): import("./types.js").NeighborhoodEntry[];
+```
+
+### dist/data/coast.d.ts
+
+```ts
+import type { FeatureCollection } from './types.js';
+export declare const coast: FeatureCollection<{
+    readonly name: string;
+}>;
+```
+
+### dist/data/districts.d.ts
+
+```ts
+import type { DistrictProperties, FeatureCollection } from './types.js';
+export declare const districtMaps: Readonly<Record<2002 | 2012 | 2022, FeatureCollection<DistrictProperties>>>;
+```
+
+### dist/data/highways.d.ts
+
+```ts
+import type { FeatureCollection } from './types.js';
+export declare const highways: FeatureCollection<{
+    readonly route: string;
+}>;
+```
+
+### dist/data/landmarks.d.ts
+
+```ts
+import type { FeatureCollection, LandmarkProperties } from './types.js';
+export declare const landmarks: FeatureCollection<LandmarkProperties>;
+```
+
+### dist/data/lookup.d.ts
+
+```ts
+import type { FeatureCollection, NeighborhoodProperties, NeighborhoodSource } from './types.js';
+export declare const neighborhoodCollections: Readonly<Record<NeighborhoodSource, FeatureCollection<NeighborhoodProperties>>>;
+export declare const neighborhoodSources: readonly NeighborhoodSource[];
+/** Exact ID, canonical name, source name, or alias lookup within one definition set. */
+export declare function getNeighborhood(name: string, { source }?: {
+    source?: NeighborhoodSource;
+}): import("./types.js").Feature<NeighborhoodProperties> | undefined;
+```
+
+### dist/data/realtor.d.ts
+
+```ts
+import type { FeatureCollection, NeighborhoodProperties } from './types.js';
+export declare const neighborhoods: FeatureCollection<NeighborhoodProperties>;
+/** Look up one SFAR area without importing the other neighborhood definitions. */
+export declare function getRealtorNeighborhood(name: string): import("./types.js").Feature<NeighborhoodProperties> | undefined;
+```
+
+### dist/data/roads.d.ts
+
+```ts
+import type { FeatureCollection, KeyRoadProperties } from './types.js';
+export declare const keyRoads: FeatureCollection<KeyRoadProperties>;
+```
+
+### dist/data/stations.d.ts
+
+```ts
+import type { FeatureCollection } from './types.js';
+export declare const bartStations: FeatureCollection<{
+    readonly name: string;
+}>;
+```
+
+### ./dist/data/analysis.d.ts
+
+```ts
+import type { FeatureCollection, NeighborhoodProperties } from './types.js';
+export declare const analysisNeighborhoods: FeatureCollection<NeighborhoodProperties>;
+```
+
+### ./dist/src/full-data.d.ts
+
+```ts
+import type { MapData } from './map.js';
+/** Complete, explicit geographic preset. Import this only when all datasets are needed. */
+export declare const fullMapData: MapData;
+```
+
+### ./dist/src/static-data.d.ts
+
+```ts
+import type { StaticMapData } from './static.js';
+/** Complete data for static rendering, without interactive lookup collections. */
+export declare const staticMapData: StaticMapData;
+```
+
+### ./dist/data/sf-find.d.ts
+
+```ts
+import type { FeatureCollection, NeighborhoodProperties } from './types.js';
+export declare const sfFindNeighborhoods: FeatureCollection<NeighborhoodProperties>;
+```
+
+### ./dist/src/geometry.d.ts
+
+```ts
+import type { Geometry, Position } from '../data/types.js';
+export type Project = (position: Position) => [number, number];
+export declare function rawProject([longitude, latitude]: Position): [number, number];
+export declare function positions(geometry: Geometry | null | undefined): Position[];
+export declare function geometryPath(geometry: Geometry | null | undefined, project: Project): string;
+```
+
+### ./dist/src/guide.d.ts
+
+```ts
+export type { MapController, MapOptions } from './controller-types.js';
+export type { InteractiveSFMapData } from './explorer-data.js';
+export { guideMapData } from './guide-data.js';
+export { loadGuideDetailedData } from './guide-detailed.js';
+export { createGuideController, createGuideMap, mountGuideController, mountGuideMap, } from './guide-map.js';
+export type { CameraOptions, MapFeatures, MapMarker, NeighborhoodExplorerElement as InteractiveSFMapElement, NeighborhoodExplorerOptions as InteractiveSFMapOptions, } from './types.js';
+```
+
+### dist/src/guide-data.d.ts
+
+```ts
+import type { InteractiveSFMapData } from './explorer-data.js';
+/** Compact, source-aware geography with no district or alternate-neighborhood files. */
+export declare const guideMapData: InteractiveSFMapData;
+```
+
+### dist/src/guide-detailed.d.ts
+
+```ts
+import type { InteractiveSFMapData } from './explorer-data.js';
+/** Load detailed selected geography only after the caller requests it. */
+export declare function loadGuideDetailedData(): Promise<InteractiveSFMapData>;
+```
+
+### dist/src/guide-map.d.ts
+
+```ts
+import type { MapController, MapOptions } from './controller-types.js';
+import type { NeighborhoodExplorerElement as InteractiveSFMapElement, NeighborhoodExplorerOptions as InteractiveSFMapOptions } from './types.js';
+/** Preferred guide API: the same grouped options, events, camera and lifecycle as createMap. */
+export declare function createGuideController(options?: MapOptions): MapController;
+/** Enhance a static guide shell and return its owning controller. */
+export declare function mountGuideController(shell: HTMLElement, options?: MapOptions): MapController;
+/** Element-based compatibility API. Prefer createGuideController for new integrations. */
+export declare function createGuideMap(options?: InteractiveSFMapOptions): InteractiveSFMapElement;
+/** Enhance createGuideShell() in place with a fixed compact chrome layout.
+ * Keep an accessible external place list when hiding the native pickers.
+ */
+export declare function mountGuideMap(shell: HTMLElement, options?: InteractiveSFMapOptions): InteractiveSFMapElement;
+```
+
+### ./dist/src/transit.d.ts
+
+```ts
+import type { TransitAnimationElement } from './types.js';
+/** A deliberately schematic, offline station-to-station animation. Starts paused. */
+export declare function createTransitAnimation(): TransitAnimationElement;
+```
+
+### ./dist/src/guide-static.d.ts
+
+```ts
+import type { SFMapOptions } from './types.js';
+/** Server-safe overview using exactly the guide browser geography. */
+export declare function createGuideSVG(options?: SFMapOptions): {
+    svg: string;
+    project: (coordinates: import("../data/types.js").Position) => [number, number];
+    viewBox: [number, number, number, number];
+};
+/** Stable compact frame, progressively enhanced with mountGuideMap(). No browser globals. */
+export declare function createGuideShell(options?: SFMapOptions): string;
+```
+
+### ./dist/src/presets.d.ts
+
+```ts
+import type { MapOptions } from './controller-types.js';
+/** Configuration only: pair with guide/data or a compatible caller-supplied dataset. */
+export declare const guideOptions: Readonly<MapOptions>;
+```

@@ -12,6 +12,8 @@ Static options include `theme`, `width`, `height`, `padding`, `year` (2002, 2012
 
 ## Interactive maps
 
+`createMap` defaults to `mode: 'basemap'` and `appearance.theme: 'transit'`. Set the mode explicitly for neighborhood or district exploration. District and neighborhood layer defaults follow the mode; other supplied layers default on. The [developer guide](developer-guide.md) compares static and interactive defaults and explains configuration resets, coordinates, and cleanup.
+
 Construction options include `mode` (`basemap`, `neighborhoods`, or `districts`), `source`, `neighborhood`, `year`, `labels`, `layers`, `controls`, `features`, `appearance`, `markers`, `overlays`, `legend`, `strings`, `attribution`, and `fitPadding`. Enable map touch gestures with the touch control or `map.setTouchNavigation(true)`. `features` holds motion, marker entrances, selected marker rings, clustering, north arrow, scale bar, layer transitions, and district morphs. `appearance` holds theme, color tokens, label and area styles, marker colors and sizes, and district styling. `layers` controls district fill/line/labels, neighborhood lines/labels, landmarks, BART, highways, key roads, and road labels. See the exported `MapOptions` type for exact values and the [Storybook examples](../stories/) for live controls.
 
 The controller also supports marker, neighborhood, and district selection; district year and style changes; source and mode changes; labels and touch navigation; screen projection; and typed `markerchange`, `neighborhoodchange`, `districtchange`, `districthover`, `districtactivate`, `districtyearchange`, `overlayactivate`, `clusteractivate`, `viewportchange`, and `mapresize` events. `destroy()` releases browser resources; operations after destruction throw.

@@ -119,7 +119,11 @@
     "docs/api-audit.md",
     "docs/guide-bundle-report.md",
     "docs/migration-v3.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "docs/API.md",
+    "docs/developer-guide.md",
+    "llms.txt",
+    "llms-full.txt"
   ],
   "sideEffects": false,
   "scripts": {
@@ -131,7 +135,7 @@
     "format": "biome check --write .",
     "format:check": "biome format .",
     "check": "pnpm peers check && pnpm lint && pnpm check:docs && pnpm data:check && pnpm typecheck && pnpm typecheck:stories && pnpm test && pnpm test:bundle",
-    "check:docs": "node scripts/check-docs.mjs",
+    "check:docs": "pnpm build && node scripts/check-docs.mjs && node scripts/build-llm-docs.mjs --check",
     "prepublishOnly": "pnpm check",
     "storybook": "pnpm build && storybook dev -p 6006 --host 127.0.0.1 --no-open",
     "build-storybook": "pnpm build && storybook build",
@@ -150,7 +154,8 @@
     "build:pages": "pnpm build && node scripts/build-pages.mjs",
     "test:bundle": "node scripts/report-guide-bundle.mjs --check",
     "test:pages": "node scripts/check-pages.mjs",
-    "release:notes": "node scripts/release-notes.mjs"
+    "release:notes": "node scripts/release-notes.mjs",
+    "docs:llms": "pnpm build && node scripts/build-llm-docs.mjs"
   },
   "repository": {
     "type": "git",

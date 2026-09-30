@@ -4,6 +4,12 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Make misplaced interactive-option errors name the supported appearance, feature, or event API.
+
+- Clarify developer integration defaults, runtime configuration and lifecycle; generate version-aware llms.txt, complete text docs, Markdown guides and TypeScript contracts for npm and Pages.
+
+- Fix layers studio copied examples to preserve the selected mode, layers, motion durations, and supported release features; execute generated examples in the regression checks.
+
 - Add opt-in `animation` for `renderMap`: a self-contained, scoped CSS draw-in (coast and lines draw, districts grow, labels and points follow) that plays inline or as an image and respects reduced motion. Default output is unchanged.
 - Add `features.layerTransitions`: layer switches fade, `setSource()` crossfades neighborhood definitions, and `setDistrictStyle()` crossfades district fills.
 - Add `features.districtMorph`: district outlines morph between map years on `setDistrictYear()`, settling on the exact geometry; `{ animate: false }` stays instant.

@@ -34,6 +34,7 @@
           <li><a href="#markers">Markers and overlays</a></li>
           <li><a href="#accessibility">Accessibility</a></li>
           <li><a href="#performance">Performance</a></li>
+          <li><a href="#assistant-docs">Coding assistants</a></li>
           <li><a href="#more">Guides, transit and sources</a></li>
         </ol>
       </nav>
@@ -233,6 +234,12 @@ map.on('markerchange', ({ id }) =&gt; console.log(id));</code></pre></div>
             <li>Use <code>/guide/data</code> for a lightweight interactive guide.</li>
             <li>Load interactive maps when they scroll into view with a dynamic <code>import()</code>.</li>
           </ul>
+        </section>
+
+        <section id="assistant-docs">
+          <h2>Documentation for coding assistants</h2>
+          <p>Start with the <a href="./developer-guide.md">developer guide in Markdown</a> for defaults, configuration updates, coordinates and cleanup. The <a href="./llms.txt">llms.txt index</a> points to task-specific docs; <a href="./llms-full.txt" download>download the complete text documentation</a> for guides and exact TypeScript contracts in one file.</p>
+          <p>These files follow the package selected for this site. A local preview can include unreleased APIs; check its changelog before copying them into an npm integration.</p>
         </section>
 
         <section id="more">

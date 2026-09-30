@@ -42,6 +42,27 @@ try {
     }
   }
   assert.match(await readFile(join(installed, 'LICENSE'), 'utf8'), /MIT License/);
+  const assistantDocs = await readFile(join(installed, 'llms-full.txt'), 'utf8');
+  assert.ok(assistantDocs.includes(`@kahwee/sf-map-svg ${manifest.version} ·`));
+  const developerGuide = await readFile(join(installed, 'docs/developer-guide.md'), 'utf8');
+  const browserRecipe = [...developerGuide.matchAll(/```ts\n([\s\S]*?)```/g)]
+    .map(([, code]) => code)
+    .filter((code) => !code.includes('node:fs'))
+    .join('\n');
+  await writeFile(join(temp, 'documented-consumer.mts'), browserRecipe);
+  execFileSync(
+    join(root, 'node_modules/.bin/tsc'),
+    [
+      '--noEmit',
+      '--strict',
+      '--module',
+      'nodenext',
+      '--target',
+      'es2023',
+      join(temp, 'documented-consumer.mts'),
+    ],
+    { cwd: temp, stdio: 'inherit' },
+  );
   for (const removed of [
     './legacy',
     './custom-map',

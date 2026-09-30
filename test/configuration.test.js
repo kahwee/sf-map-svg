@@ -57,3 +57,19 @@ test('multi-group configuration is validated before commit and resets predictabl
   assert.equal(current.features.northArrow, true);
   assert.deepEqual(current, before);
 });
+
+test('misplaced interactive options explain their supported replacement', () => {
+  for (const [input, message] of [
+    [{ theme: 'districts' }, 'Use appearance.theme'],
+    [{ colors: {} }, 'Use appearance.colors'],
+    [{ motion: true }, 'Use features.motion'],
+    [{ onMarkerActivate() {} }, "map.on('markerchange', listener)"],
+    [{ onOverlayActivate() {} }, "map.on('overlayactivate', listener)"],
+    [{ interface: 'map' }, 'interface is internal'],
+  ]) {
+    assert.throws(
+      () => expandMapOptions(input),
+      (error) => error instanceof TypeError && error.message.includes(message),
+    );
+  }
+});
