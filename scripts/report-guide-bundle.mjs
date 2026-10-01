@@ -50,10 +50,10 @@ async function bundle(entry) {
   };
 }
 
-const v2 = await bundle('src/api.ts');
+const renderer = await bundle('src/api.ts');
 const staticOnly = await bundle('scripts/fixtures/static-consumer.ts');
 for (const [name, entry] of [
-  ['v2 root', v2],
+  ['renderer root', renderer],
   ['static renderer', staticOnly],
 ]) {
   if (entry.modules.some((module) => /\/data\/.*\.json$/.test(module)))
@@ -65,8 +65,8 @@ if (
   )
 )
   throw new Error('Static renderer imported interactive runtime');
-if (v2.gzip > 35 * 1024 || staticOnly.gzip > 10 * 1024)
-  throw new Error('v2 renderer exceeds its gzip budget');
+if (renderer.gzip > 35 * 1024 || staticOnly.gzip > 10 * 1024)
+  throw new Error('Renderer exceeds its gzip budget');
 const guide = await bundle('src/guide.ts');
 if (guide.gzip > 125 * 1024) throw new Error('Guide exceeds 125 KiB initial gzip budget');
 const selected = guide.modules.map((module) => module.replaceAll('\\', '/'));
@@ -111,12 +111,12 @@ for (const suffix of expectedDetails)
     throw new Error(`Explicit detail graph is missing ${suffix}`);
 const report = `# Guide bundle size report
 
-Generated ${new Date().toISOString().slice(0, 10)} by \`pnpm report:guide\` with Vite production minification and gzip compression. Each emitted JS chunk is compressed independently. The report measures the explicit-data v3 root and the optional \`@kahwee/sf-map-svg/guide\` preset.
+Generated ${new Date().toISOString().slice(0, 10)} by \`pnpm report:guide\` with Vite production minification and gzip compression. Each emitted JS chunk is compressed independently. The report measures the explicit-data root and the optional \`@kahwee/sf-map-svg/guide\` preset.
 
 | Entry | Initial JS, raw | Initial JS, gzip | Explicit detail JS, gzip |
 | --- | ---: | ---: | ---: |
-| v3 root (explicit data) | ${(v2.raw / 1024).toFixed(1)} KB | ${(v2.gzip / 1024).toFixed(1)} KB | — |
-| v3 static renderer | ${(staticOnly.raw / 1024).toFixed(1)} KB | ${(staticOnly.gzip / 1024).toFixed(1)} KB | — |
+| Renderer root (explicit data) | ${(renderer.raw / 1024).toFixed(1)} KB | ${(renderer.gzip / 1024).toFixed(1)} KB | — |
+| Static renderer | ${(staticOnly.raw / 1024).toFixed(1)} KB | ${(staticOnly.gzip / 1024).toFixed(1)} KB | — |
 | Guide preset | ${(guide.raw / 1024).toFixed(1)} KB | ${(guide.gzip / 1024).toFixed(1)} KB | ${(guide.detailGzip / 1024).toFixed(1)} KB |
 
 **500 KB target:** ${guide.gzip < 500 * 1024 ? 'met' : 'not met'}.
@@ -134,7 +134,7 @@ if (!process.argv.includes('--check'))
     ),
   );
 console.log(
-  `v3 root: ${(v2.gzip / 1024).toFixed(1)} KiB gzip; static only: ${(staticOnly.gzip / 1024).toFixed(1)} KiB gzip`,
+  `Renderer root: ${(renderer.gzip / 1024).toFixed(1)} KiB gzip; static only: ${(staticOnly.gzip / 1024).toFixed(1)} KiB gzip`,
 );
 console.log(
   `Guide initial entry: ${(guide.gzip / 1024).toFixed(1)} KB gzip; detail on request: ${(guide.detailGzip / 1024).toFixed(1)} KB gzip`,

@@ -71,6 +71,8 @@ Run `pnpm storybook` and update `stories/Map.stories.ts` or `stories/Static.stor
 
 Visual regression checks compare five Storybook and Pages map states against committed Chromium screenshots. After `pnpm build-storybook` and `pnpm build:pages`, run `pnpm test:visual`. Baselines are specific to macOS and Linux because font rasterization differs. Review changed screenshots before running `pnpm test:visual --update-snapshots`; CI keeps failed screenshots and traces as a `visual-differences` artifact. The Pages deployment also requires the Linux visual checks to pass.
 
+After `pnpm build:pages`, run `pnpm test:studio` to check delayed and failed data loading in the layers studio, including rendering selection and download controls.
+
 Dependabot proposes weekly npm and GitHub Actions updates, grouping Storybook, Vitest, and GitHub Actions updates by family. Keep Storybook packages on matching versions; `pnpm check` rejects peer conflicts. `pnpm-workspace.yaml` narrowly widens the Storybook 10.6.0 Vitest addon's Vitest and browser peer ranges for the tested Vitest 5 setup. Remove those overrides when Storybook publishes matching ranges. The weekly maintenance workflow also checks peers and runs `pnpm audit --audit-level high`; run `pnpm outdated` to review available updates. React, Vitest, and Playwright are development dependencies for Storybook testing; the published package must retain zero runtime dependencies.
 
 ## Renderer and geographic data structure

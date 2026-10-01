@@ -558,6 +558,14 @@ export function createNeighborhoodExplorerCore(
       );
     return true;
   }
+  function activateDistrict(id: number) {
+    const revision = districtRevision + 1;
+    if (!selectDistrict(id) || destroyed || revision !== districtRevision) return false;
+    root.dispatchEvent(
+      new CustomEvent('districtactivate', { bubbles: true, detail: districtSelection(id) }),
+    );
+    return !destroyed && revision === districtRevision;
+  }
   function setDistrictStyle(style: typeof districtStyle) {
     if (destroyed) return;
     const revision = districtRevision;
@@ -1783,14 +1791,7 @@ export function createNeighborhoodExplorerCore(
     ) {
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
-        selectDistrict(districtId);
-        root.dispatchEvent(
-          new CustomEvent('districtactivate', {
-            bubbles: true,
-            detail: districtSelection(districtId),
-          }),
-        );
-        target.focus();
+        if (activateDistrict(districtId)) target.focus();
       } else if (event.key === '[' || event.key === ']') {
         event.preventDefault();
         const rows = data.map.districts?.[year] ?? [];
@@ -1843,11 +1844,7 @@ export function createNeighborhoodExplorerCore(
           )
         : null;
     if (district?.dataset.district) {
-      const id = Number(district.dataset.district);
-      selectDistrict(id);
-      root.dispatchEvent(
-        new CustomEvent('districtactivate', { bubbles: true, detail: districtSelection(id) }),
-      );
+      activateDistrict(Number(district.dataset.district));
       return;
     }
     const node =

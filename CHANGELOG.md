@@ -4,6 +4,10 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Reject nonnumeric or nonfinite custom district IDs before they enter SVG markup or animation CSS; fall back to the primary district label when `labelPoints` is empty.
+- Stop district activation and keyboard focus after selection callbacks destroy the map or replace the selection; share pointer and keyboard activation guards.
+- Keep layers studio controls safe while data loads, honor the chosen rendering mode, and report failed loading without a second error. Narrow the older-release feature fallback to its supported compatibility cases.
+
 - Make misplaced interactive-option errors name the supported appearance, feature, or event API.
 
 - Clarify developer integration defaults, runtime configuration and lifecycle; generate version-aware llms.txt, complete text docs, Markdown guides and TypeScript contracts for npm and Pages.

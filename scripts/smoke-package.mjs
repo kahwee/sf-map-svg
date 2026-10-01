@@ -102,7 +102,7 @@ assert.equal(typeof createGuideController, 'function');
 assert.equal(typeof mountGuideController, 'function');
 assert.equal(typeof loadGuideDetailedData, 'function');
 assert.equal(guideMapData.neighborhoods.realtor.features.length, 92);
-console.log('Installed v3 package entrypoints, JSON, rendering, aliases, and guide import passed.');
+console.log('Installed package entrypoints, JSON, rendering, aliases, and guide import passed.');
 `,
   );
   execFileSync(process.execPath, ['smoke.mjs'], { cwd: temp, stdio: 'inherit' });

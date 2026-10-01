@@ -245,6 +245,8 @@ and event types are exported by [src/api.ts](https://github.com/kahwee/sf-map-sv
 
 Static options include `theme`, `width`, `height`, `padding`, `year` (2002, 2012, 2022), `districtLines`, `districtFills`, `districtStyle`, `districtLabels`, `neighborhoodLines`, `labels`, `highways`, `keyRoads`, `roadLabels`, `landmarks`, `bartStations`, `markers`, `overlays`, `title`, `idPrefix`, `colors`, and `animation`. Each optional layer is independent. User-supplied text and attributes are escaped in SVG output.
 
+Custom district IDs must be finite numbers. An empty `labelPoints` array uses the district's primary `label` position.
+
 `animation: true` (or `{ duration, delay }`) makes a static map draw itself with self-contained, scoped CSS: land fades in, the coast and lines draw, districts grow, then labels and points appear. It plays when the SVG is inserted into a page or loaded as an image, needs no JavaScript, and stays still under `prefers-reduced-motion`. Re-insert the markup to replay it. Default output is unchanged.
 
 ## Interactive maps
@@ -254,6 +256,8 @@ Static options include `theme`, `width`, `height`, `padding`, `year` (2002, 2012
 Construction options include `mode` (`basemap`, `neighborhoods`, or `districts`), `source`, `neighborhood`, `year`, `labels`, `layers`, `controls`, `features`, `appearance`, `markers`, `overlays`, `legend`, `strings`, `attribution`, and `fitPadding`. Enable map touch gestures with the touch control or `map.setTouchNavigation(true)`. `features` holds motion, marker entrances, selected marker rings, clustering, north arrow, scale bar, layer transitions, and district morphs. `appearance` holds theme, color tokens, label and area styles, marker colors and sizes, and district styling. `layers` controls district fill/line/labels, neighborhood lines/labels, landmarks, BART, highways, key roads, and road labels. See the exported `MapOptions` type for exact values and the [Storybook examples](https://github.com/kahwee/sf-map-svg/blob/main/stories/) for live controls.
 
 The controller also supports marker, neighborhood, and district selection; district year and style changes; source and mode changes; labels and touch navigation; screen projection; and typed `markerchange`, `neighborhoodchange`, `districtchange`, `districthover`, `districtactivate`, `districtyearchange`, `overlayactivate`, `clusteractivate`, `viewportchange`, and `mapresize` events. `destroy()` releases browser resources; operations after destruction throw.
+
+If a district callback destroys the map or selects a newer district, the interrupted activation stops without moving keyboard focus or sending a stale event.
 
 `setMarkers()` reconciles by stable marker `id`: retained markers keep their DOM nodes, focus, and in-progress entrance animations; only new IDs animate in. Identical ordered marker updates are a visual no-op. Camera state and `viewportchange` events remain synchronous, while animated camera steps and their dependent label/marker layout commit in the same browser frame.
 
@@ -639,6 +643,10 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Reject nonnumeric or nonfinite custom district IDs before they enter SVG markup or animation CSS; fall back to the primary district label when `labelPoints` is empty.
+- Stop district activation and keyboard focus after selection callbacks destroy the map or replace the selection; share pointer and keyboard activation guards.
+- Keep layers studio controls safe while data loads, honor the chosen rendering mode, and report failed loading without a second error. Narrow the older-release feature fallback to its supported compatibility cases.
+
 - Make misplaced interactive-option errors name the supported appearance, feature, or event API.
 
 - Clarify developer integration defaults, runtime configuration and lifecycle; generate version-aware llms.txt, complete text docs, Markdown guides and TypeScript contracts for npm and Pages.
@@ -950,7 +958,7 @@ consistent home, and makes animation and subscription ownership predictable.
 ### ./dist/src/api.d.ts
 
 ```ts
-/** v2 root: runtime and types only. Geography is always an explicit import. */
+/** Runtime and types only. Geography is always an explicit import. */
 export * from './map.js';
 export * from './static.js';
 ```

@@ -54,6 +54,15 @@ let data;
 let map;
 const checkboxes = new Map();
 
+function setDataReady(ready) {
+  $('studio-map').setAttribute('aria-busy', String(!ready));
+  for (const control of $('studio-controls').querySelectorAll('button, input')) {
+    if (!control.closest('#render-control')) control.disabled = !ready;
+  }
+  $('download').disabled = !ready;
+  $('replay').disabled = !ready;
+}
+
 // ---------- Code ----------
 function updateCode() {
   const interactive = state.render === 'interactive';
@@ -81,6 +90,7 @@ function renderStatic(animation = true) {
   ).svg;
 }
 function showStatic() {
+  if (!data) return;
   const holder = element('div', undefined, 'studio-static map-surface');
   holder.innerHTML = renderStatic();
   $('studio-map').replaceChildren(holder);
@@ -102,6 +112,11 @@ function createInteractive() {
     map = createMap(data, options);
   } catch (error) {
     // Released builds without the newest motion features still get the full studio.
+    if (
+      !(error instanceof TypeError) ||
+      !/^Unknown feature: (layerTransitions|districtMorph)$/.test(error.message)
+    )
+      throw error;
     console.warn(error);
     map = createMap(data, { ...options, features: { motion: options.features.motion } });
     for (const key of ['layerTransitions', 'districtMorph']) {
@@ -127,7 +142,7 @@ function createInteractive() {
 function apply(change) {
   change();
   updateCode();
-  if (state.render === 'static') showStatic();
+  if (data && state.render === 'static') showStatic();
 }
 
 // ---------- Controls ----------
@@ -244,13 +259,16 @@ function buildControls() {
       $('replay').hidden = render !== 'static';
       map?.destroy();
       map = undefined;
-      if (render === 'static') showStatic();
-      else createInteractive();
+      if (data) {
+        if (render === 'static') showStatic();
+        else createInteractive();
+      }
       updateCode();
     },
   });
   $('replay').addEventListener('click', showStatic);
   $('download').addEventListener('click', () => {
+    if (!data) return;
     const blob = new Blob([renderStatic(false)], { type: 'image/svg+xml' });
     const link = element('a');
     link.href = URL.createObjectURL(blob);
@@ -261,13 +279,23 @@ function buildControls() {
 }
 
 buildControls();
+setDataReady(false);
 updateCode();
 loadSiteMapData()
   .then((loaded) => {
     data = loaded;
-    createInteractive();
+    setDataReady(true);
+    if (state.render === 'static') showStatic();
+    else createInteractive();
   })
   .catch((error) => {
-    $('studio-map').querySelector('.stage-loading').textContent = 'The map could not load.';
+    data = undefined;
+    map?.destroy();
+    map = undefined;
+    setDataReady(false);
+    $('studio-map').setAttribute('aria-busy', 'false');
+    const status = element('p', 'The map could not load.', 'stage-loading');
+    status.setAttribute('role', 'status');
+    $('studio-map').replaceChildren(status);
     console.error(error);
   });

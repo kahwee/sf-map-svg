@@ -50,6 +50,7 @@ jobs:
       - run: pnpm build-storybook
       - run: pnpm build:pages
       - run: pnpm test:visual
+      - run: pnpm test:studio
       - run: pnpm test:pages
       - name: Upload visual differences
         if: failure()

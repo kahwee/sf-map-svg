@@ -154,6 +154,7 @@
     "build:pages": "pnpm build && node scripts/build-pages.mjs",
     "test:bundle": "node scripts/report-guide-bundle.mjs --check",
     "test:pages": "node scripts/check-pages.mjs",
+    "test:studio": "node visual/studio-loading.browser.mjs",
     "release:notes": "node scripts/release-notes.mjs",
     "docs:llms": "pnpm build && node scripts/build-llm-docs.mjs"
   },

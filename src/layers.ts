@@ -24,6 +24,12 @@ interface DistrictPath {
 
 import { escapeXml, number, overlayLabel, stroke } from './svg.js';
 
+/** Custom JavaScript/JSON rows must not introduce markup or CSS through numeric IDs. */
+function districtId(id: number): number {
+  if (!Number.isFinite(id)) throw new TypeError('District IDs must be finite numbers.');
+  return id;
+}
+
 /** Stagger index for animated static maps. */
 const order = (animated: boolean | undefined, index: number) =>
   animated ? ` style="--i:${index}"` : '';
@@ -34,13 +40,13 @@ export function districtFills(
   districts: readonly DistrictPath[],
   { idPrefix, animated }: LayerContext,
 ) {
-  return `<g data-layer="district-fills" clip-path="url(#${idPrefix}-coast)">${districts.map((d) => `<path data-district="${d.id}" d="${d.path}" fill="${escapeXml(d.color)}"${d.opacity === undefined ? '' : ` fill-opacity="${d.opacity}"`} fill-rule="evenodd"${order(animated, d.id)}/>`).join('')}</g>`;
+  return `<g data-layer="district-fills" clip-path="url(#${idPrefix}-coast)">${districts.map((d) => `<path data-district="${districtId(d.id)}" d="${d.path}" fill="${escapeXml(d.color)}"${d.opacity === undefined ? '' : ` fill-opacity="${d.opacity}"`} fill-rule="evenodd"${order(animated, districtId(d.id))}/>`).join('')}</g>`;
 }
 export function districtLines(
   districts: readonly DistrictPath[],
   { idPrefix, colors, animated }: LayerContext,
 ) {
-  return `<g data-layer="district-lines" clip-path="url(#${idPrefix}-coast)">${districts.map((d) => `<path data-district="${d.id}" d="${d.path}" ${stroke(d.stroke ?? colors.district, 1.1)}${d.opacity === undefined ? '' : ` stroke-opacity="${d.opacity}"`}${drawable(animated)}${order(animated, d.id)}/>`).join('')}</g>`;
+  return `<g data-layer="district-lines" clip-path="url(#${idPrefix}-coast)">${districts.map((d) => `<path data-district="${districtId(d.id)}" d="${d.path}" ${stroke(d.stroke ?? colors.district, 1.1)}${d.opacity === undefined ? '' : ` stroke-opacity="${d.opacity}"`}${drawable(animated)}${order(animated, districtId(d.id))}/>`).join('')}</g>`;
 }
 export function landmarks(items: readonly Landmark[], { idPrefix, path, colors }: LayerContext) {
   return `<g data-layer="landmarks" clip-path="url(#${idPrefix}-coast)">${items.map((item) => `<path data-landmark="${escapeXml(item.id)}" d="${path(item.geometry)}" fill="${escapeXml(colors.park)}" fill-rule="evenodd"><title>${escapeXml(item.name)}</title></path>`).join('')}</g>`;
@@ -63,13 +69,13 @@ export function districtLabels(
 ) {
   // Primary badges first, then island badges, matching the original layer order.
   const labels = [
-    ...districts.map((d) => ({ id: d.id, label: d.labelPoints[0] })),
+    ...districts.map((d) => ({ id: d.id, label: d.labelPoints[0] ?? d.label })),
     ...districts.flatMap((d) => d.labelPoints.slice(1).map((label) => ({ id: d.id, label }))),
   ];
   return `<g data-layer="district-labels" font-family="system-ui,sans-serif" font-size="12" font-weight="600" text-anchor="middle" fill="${escapeXml(colors.label)}">${labels
     .map((d) => {
       const [x, y] = project(d.label).map(number);
-      return `<g transform="translate(${x},${y})"><circle r="10" fill="#ffffff" fill-opacity=".9"/><text dy=".35em">${d.id}</text></g>`;
+      return `<g transform="translate(${x},${y})"><circle r="10" fill="#ffffff" fill-opacity=".9"/><text dy=".35em">${districtId(d.id)}</text></g>`;
     })
     .join('')}</g>`;
 }
