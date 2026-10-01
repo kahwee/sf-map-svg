@@ -10,6 +10,7 @@ import type {
   KeyRoadProperties,
   LandmarkProperties,
   NeighborhoodProperties,
+  PointFeatureCollection,
 } from '../data/types.js';
 import type { InteractiveSFMapData } from './explorer-data.js';
 import { deepFreeze } from './immutable.js';
@@ -18,7 +19,7 @@ const neighborhoodData = neighborhoods as unknown as FeatureCollection<Neighborh
 const highwayData = highways as unknown as FeatureCollection<{ route: string }>;
 const parkData = landmarks as unknown as FeatureCollection<LandmarkProperties>;
 const roadData = roads as unknown as FeatureCollection<KeyRoadProperties>;
-const stationData = bart as unknown as FeatureCollection<{ name: string }>;
+const stationData = bart as unknown as PointFeatureCollection<{ name: string }>;
 
 /** Compact, source-aware geography with no district or alternate-neighborhood files. */
 export const guideMapData: InteractiveSFMapData = deepFreeze({

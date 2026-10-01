@@ -7,6 +7,7 @@ import type {
   FeatureCollection,
   Geometry,
   LandmarkProperties,
+  PointFeatureCollection,
 } from '../data/types.js';
 import type { SFMapData } from './map-core.js';
 import { createSFMapWithData } from './map-core.js';
@@ -14,6 +15,7 @@ import type { TransitAnimationElement } from './types.js';
 
 const districtData = districts as unknown as FeatureCollection<DistrictProperties>;
 const parkData = parks as unknown as FeatureCollection<LandmarkProperties>;
+const stationData = stations as unknown as PointFeatureCollection<{ readonly name: string }>;
 const transitMapData: SFMapData = {
   coast: coast.features[0].geometry as unknown as Geometry,
   districts: {
@@ -51,9 +53,7 @@ export function createTransitAnimation(): TransitAnimationElement {
   </style>${map.svg}<div class="controls"><button type="button">Play</button><label>Journey <input aria-label="Journey progress" type="range" min="0" max="1000" value="0"></label></div><output aria-live="off"></output><p>Schematic BART journey. Straight connections between official station locations; not track geometry, a timetable, or live trains. One loop takes 28 seconds.</p>`;
   const svg = root.querySelector('svg') as SVGSVGElement;
   const ns = 'http://www.w3.org/2000/svg';
-  const points = stations.features.map((station) =>
-    map.project(station.geometry.coordinates as [number, number]),
-  );
+  const points = stationData.features.map((station) => map.project(station.geometry.coordinates));
   const line = document.createElementNS(ns, 'polyline');
   line.setAttribute('points', points.map((point) => point.join(',')).join(' '));
   line.setAttribute('fill', 'none');

@@ -82,6 +82,7 @@ Dependabot proposes weekly npm and GitHub Actions updates, grouping Storybook, V
 ## Renderer and geographic data structure
 
 - `data/*.json`: canonical GeoJSON, source definitions, names, aliases, and rendering anchors; no duplicate geometry in JavaScript.
+- `pnpm data:check` validates the GeoJSON collections and generated guide geometry before the typed JSON import adapters are trusted. Keep these validators in `scripts/`; they are build-time checks and must not enter browser bundles.
 - `data/index.ts` and `data/types.ts`: immutable data helpers and typed name lookup, separate from the map renderer.
 - `src/layers.ts`: small layer renderers; drawing order remains explicit in `src/map-core.ts`.
 - `src/svg.ts`: shared XML escaping, numeric formatting, and stroke attributes.

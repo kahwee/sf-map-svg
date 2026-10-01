@@ -4,6 +4,7 @@ import type {
   KeyRoadProperties,
   LandmarkProperties,
   NeighborhoodProperties,
+  PointFeatureCollection,
 } from '../data/types.js';
 import type { InteractiveSFMapData } from './explorer-data.js';
 import { deepFreeze } from './immutable.js';
@@ -24,7 +25,7 @@ export async function loadGuideDetailedData(): Promise<InteractiveSFMapData> {
   const detailedRoads = roadData.default as unknown as FeatureCollection<KeyRoadProperties>;
   const detailedHighways = highwayData.default as unknown as FeatureCollection<{ route: string }>;
   const detailedParks = parkData.default as unknown as FeatureCollection<LandmarkProperties>;
-  const detailedStations = bartData.default as unknown as FeatureCollection<{ name: string }>;
+  const detailedStations = bartData.default as unknown as PointFeatureCollection<{ name: string }>;
   return deepFreeze({
     map: {
       coast: coastData.default.features[0].geometry as unknown as Geometry,
