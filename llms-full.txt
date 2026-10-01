@@ -641,7 +641,9 @@ display geometry, and no precinct polygons or raw workbook data are shipped.
 
 User-visible changes are recorded here. Unreleased entries describe changes on `main` that are not part of a tagged package release.
 
-## 4.1.0 — 2026-09-30
+## 4.1.0 — 2026-10-01
+
+- Validate canonical and generated GeoJSON during data checks, rejecting invalid WGS84 coordinates and malformed polygon rings before release.
 
 - Reject nonnumeric or nonfinite custom district IDs before they enter SVG markup or animation CSS; fall back to the primary district label when `labelPoints` is empty.
 - Stop district activation and keyboard focus after selection callbacks destroy the map or replace the selection; share pointer and keyboard activation guards.
