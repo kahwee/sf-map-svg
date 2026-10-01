@@ -1,6 +1,7 @@
 import { createMap } from '@kahwee/sf-map-svg';
 import { renderMap } from '@kahwee/sf-map-svg/static';
 import { interactiveCode, interactiveOptions, staticCode, staticOptions } from './layers-code.js';
+import { mapCapabilities } from './site-capabilities.js';
 import { loadSiteMapData, neighborhoodSources } from './site-map-data.js';
 import { element, segmented, setCode } from './ui.js';
 
@@ -30,6 +31,8 @@ const state = {
   source: 'realtor',
   year: 2022,
   render: 'interactive',
+  animation: mapCapabilities.animation,
+  supportedFeatures: mapCapabilities,
   labels: true,
   features: { layerTransitions: true, districtMorph: true, motion: true },
   layers: {
@@ -57,7 +60,12 @@ const checkboxes = new Map();
 function setDataReady(ready) {
   $('studio-map').setAttribute('aria-busy', String(!ready));
   for (const control of $('studio-controls').querySelectorAll('button, input')) {
-    if (!control.closest('#render-control')) control.disabled = !ready;
+    control.disabled = !ready;
+  }
+  if (ready) {
+    checkboxes.get('neighborhoodLabels').disabled = state.render === 'static';
+    for (const key of ['layerTransitions', 'districtMorph', 'motion'])
+      checkboxes.get(key).disabled = state.render === 'static' || mapCapabilities[key] === false;
   }
   $('download').disabled = !ready;
   $('replay').disabled = !ready;
@@ -78,7 +86,7 @@ function staticNeighborhoods() {
   }));
 }
 let sequence = 0;
-function renderStatic(animation = true) {
+function renderStatic(animation = state.animation) {
   return renderMap(
     { ...data.map, neighborhoods: staticNeighborhoods() },
     {
@@ -242,6 +250,11 @@ function buildControls() {
         map?.configure({ features: { [key]: interactiveOptions(state).features[key] } });
       }),
     );
+    if (mapCapabilities[key] === false) {
+      state.features[key] = false;
+      box.checked = false;
+      box.disabled = true;
+    }
     checkboxes.set(key, box);
     row.append(box, element('span', label));
     $('feature-control').append(row);
@@ -256,7 +269,10 @@ function buildControls() {
     value: state.render,
     onChange: (render) => {
       state.render = render;
-      $('replay').hidden = render !== 'static';
+      $('replay').hidden = render !== 'static' || !state.animation;
+      checkboxes.get('neighborhoodLabels').disabled = render === 'static';
+      for (const key of ['layerTransitions', 'districtMorph', 'motion'])
+        checkboxes.get(key).disabled = render === 'static' || mapCapabilities[key] === false;
       map?.destroy();
       map = undefined;
       if (data) {

@@ -6,6 +6,7 @@ import { pathToFileURL } from 'node:url';
 import { build } from 'vite';
 import { candidateInks, diverging, sequential } from '../website/palette.js';
 import { buildLlmDocs } from './build-llm-docs.mjs';
+import { getMapCapabilities } from './map-capabilities.mjs';
 import { simplifySvg } from './simplify-svg.mjs';
 import { simplifyDataset } from './site-data.mjs';
 
@@ -66,7 +67,10 @@ function masthead(section) {
 const colophon = `<footer class="colophon" data-rule><div class="shell colophon-grid"><div class="colophon-mark"><a class="wordmark" href="./">SF<span aria-hidden="true"> / </span>SVG</a><p>Offline, dependency-free SVG maps of San Francisco. Software under the MIT license; geography retains its sources’ terms.</p></div><nav aria-label="The atlas"><h2>The atlas</h2><a href="./">Home</a><a href="./layers.html">Layers &amp; divisions</a><a href="./spot.html">One spot, three San Franciscos</a></nav><nav aria-label="Examples"><h2>Examples</h2><a href="./measures.html">Local measures</a><a href="./propositions.html">California propositions</a><a href="./candidates.html">Supervisorial votes</a><a href="./examples.html">All examples</a></nav><nav aria-label="Reference"><h2>Reference</h2><a href="./docs.html">Documentation</a><a href="./api.html">API reference</a><a href="${repository}/blob/main/SOURCES.md">Geographic sources</a><a href="${repository}/blob/main/CHANGELOG.md">Changelog</a></nav></div><p class="shell colophon-line">Set in your system’s serif and sans. Geography from DataSF, the San Francisco Association of Realtors, and BART. %RELEASE_LABEL%.</p></footer>`;
 
 const arrowDirections = { '→': 'e', '▶': 'e', '↗': 'ne', '↓': 's', '←': 'w' };
-const attribute = (value) => value.replaceAll('&', '&amp;').replaceAll('"', '&quot;');
+const attribute = (value) =>
+  value
+    .replace(/&(?!(?:amp|lt|gt|quot|apos|#\d+|#x[\da-f]+);)/gi, '&amp;')
+    .replaceAll('"', '&quot;');
 
 /** Social tags for pages that do not declare their own, from title, description, and canonical. */
 function socialTags(page) {
@@ -76,7 +80,7 @@ function socialTags(page) {
   const url = page.match(/<link rel="canonical" href="([^"]+)">/)?.[1];
   if (!title || !url) return '';
   return [
-    `<meta property="og:title" content="${attribute(title)}">`,
+    `<meta property="og:title" data-generated-social content="${attribute(title)}">`,
     description ? `<meta property="og:description" content="${description}">` : '',
     '<meta property="og:type" content="website">',
     `<meta property="og:url" content="${url}">`,
@@ -214,6 +218,13 @@ try {
   );
   if (!/^\d+\.\d+\.\d+$/.test(version)) throw new Error('Expected a stable package version');
   const releaseLabel = released ? `v${version} · on npm` : `v${version} · local preview`;
+  const capabilities = await getMapCapabilities(packageRoot);
+  const missing = Object.entries(capabilities)
+    .filter(([, available]) => !available)
+    .map(([name]) => name);
+  const featureStatus = missing.length
+    ? `<p class="shell" role="note">Preview features ${missing.map((name) => `<code>${name}</code>`).join(', ')} are not available in the selected npm package. Their examples below require an unreleased build; use the Markdown reference for this installed version.</p>`
+    : '';
   const boot = await readFile('website/boot.js', 'utf8');
   await build({
     configFile: false,
@@ -231,6 +242,16 @@ try {
     },
     plugins: [
       {
+        name: 'package-capabilities',
+        transform(_code, id) {
+          if (id === resolve('website/site-capabilities.js'))
+            return {
+              code: `export const mapCapabilities = ${JSON.stringify(capabilities)};`,
+              map: null,
+            };
+        },
+      },
+      {
         name: 'site-chrome',
         transformIndexHtml: {
           order: 'pre',
@@ -240,7 +261,10 @@ try {
       {
         name: 'release-metadata',
         transformIndexHtml: (html) =>
-          html.replaceAll('%MAP_VERSION%', version).replaceAll('%RELEASE_LABEL%', releaseLabel),
+          html
+            .replaceAll('%MAP_VERSION%', version)
+            .replaceAll('%RELEASE_LABEL%', releaseLabel)
+            .replaceAll('<!--feature-status-->', featureStatus),
       },
     ],
     build: {

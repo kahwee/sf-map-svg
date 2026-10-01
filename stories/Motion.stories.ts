@@ -77,10 +77,12 @@ export const CameraAndEntranceOwnership: Story = {
     map.setViewport([0, 0, 800], { animate: false });
     const positions: number[] = [];
     map.addEventListener('viewportchange', () => positions.push(map.getViewport()[2]));
-    map.setViewport([100, 100, 400], { animate: true, duration: 120 });
-    await waitFor(() => expect(map.getViewport()).toEqual([100, 100, 400]));
+    map.setViewport([100, 100, 400], { animate: true, duration: 60000 });
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!reduced) expect(positions.some((size) => size > 400 && size < 800)).toBe(true);
+    if (!reduced)
+      await waitFor(() => expect(positions.some((size) => size > 400 && size < 800)).toBe(true));
+    map.stopAnimation();
+    map.setViewport([100, 100, 400], { animate: false });
     expect(positions.every((size, i) => i === 0 || size <= positions[i - 1])).toBe(true);
     map.setViewport([150, 150, 300], { animate: true, duration: 1000 });
     map.setViewport([200, 200, 350], { animate: true, duration: 60 });

@@ -87,3 +87,13 @@ test('copied static examples render the selected source and layers with the publ
     assert.ok(!/NaN|Infinity/.test(svg));
   }
 });
+
+test('released studio snippets omit unsupported feature and animation options', () => {
+  const input = state({
+    animation: false,
+    supportedFeatures: { layerTransitions: false, districtMorph: false },
+  });
+  const options = copiedOptions(input);
+  assert.deepEqual(options.features, { motion: { duration: 600 } });
+  assert.doesNotMatch(staticCode(input), /animation:/);
+});

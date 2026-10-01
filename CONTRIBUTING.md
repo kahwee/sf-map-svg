@@ -37,6 +37,10 @@ For rendering changes, inspect the example page on desktop and at 390 px. Run `p
 
 For camera or animation changes, exercise **Checks / Motion lifecycle** in Storybook with normal and reduced motion. Verify interruption, rapid year switches, marker replacement, destruction during callbacks, and font-load invalidation. Label metrics are cached in screen pixels; preserve collision rules and invalidate them when fonts change. District style preparation must finish before mutating state, and reentrant callbacks must not overwrite a newer update.
 
+## Assistant-readable documentation
+
+Run `pnpm docs:llms` after changing package version, documentation, or emitted public type contracts. Commit the regenerated `llms.txt` and `llms-full.txt`; `pnpm check` rejects stale output. The Pages build generates Markdown and text documentation from the same package it uses for maps. Released previews use installed npm docs and declarations, and label unsupported preview features. The Pages browser gate covers delayed and failed geography loading as well as normal pages.
+
 ## Public npm releases
 
 GitHub Actions checks Node 24 and 26 on pushes and pull requests. The package jobs check formatting, data, types, and tests, build the examples, Storybook, and the offline Pages preview, then install a packed archive in a temporary consumer to verify the published entrypoints. A separate Chromium job runs Storybook interactions and coverage on Node 26. Run the same package check locally with `pnpm test:package`.

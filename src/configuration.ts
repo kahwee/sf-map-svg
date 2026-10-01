@@ -47,9 +47,11 @@ export function expandMapOptions(options: MapOptions): NeighborhoodExplorerOptio
               ? "map.on('overlayactivate', listener)"
               : null;
       throw new TypeError(
-        replacement
-          ? `Use ${replacement} instead of the flat ${key} option.`
-          : 'interface is internal and is not a supported createMap option.',
+        key === 'onMarkerActivate'
+          ? `Marker activation callbacks are not supported; use ${replacement} for selection changes.`
+          : replacement
+            ? `Use ${replacement} instead of the flat ${key} option.`
+            : 'interface is internal and is not a supported createMap option.',
       );
     }
   if (options.appearance !== undefined)

@@ -2,11 +2,16 @@
 
 User-visible changes are recorded here. Unreleased entries describe changes on `main` that are not part of a tagged package release.
 
-## Unreleased
+## 4.1.0 — 2026-09-30
 
 - Reject nonnumeric or nonfinite custom district IDs before they enter SVG markup or animation CSS; fall back to the primary district label when `labelPoints` is empty.
 - Stop district activation and keyboard focus after selection callbacks destroy the map or replace the selection; share pointer and keyboard activation guards.
 - Keep layers studio controls safe while data loads, honor the chosen rendering mode, and report failed loading without a second error. Narrow the older-release feature fallback to its supported compatibility cases.
+
+- Preserve existing HTML entities in generated social titles instead of double-escaping them.
+
+- Gate studio interactions until geography loads, keep failed loads safe, disable controls unsupported by static maps or the selected release, and label preview-only APIs on released documentation pages.
+- Make the camera ownership browser check independent of a short animation timing window; clarify that marker-change events report selection rather than every activation.
 
 - Make misplaced interactive-option errors name the supported appearance, feature, or event API.
 

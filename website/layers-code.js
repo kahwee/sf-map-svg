@@ -7,8 +7,12 @@ export function interactiveOptions(state) {
     labels: state.labels,
     layers: { ...state.layers },
     features: {
-      layerTransitions: state.features.layerTransitions && { duration: 480 },
-      districtMorph: state.features.districtMorph && { duration: 1300 },
+      ...(state.supportedFeatures?.layerTransitions === false
+        ? {}
+        : { layerTransitions: state.features.layerTransitions && { duration: 480 } }),
+      ...(state.supportedFeatures?.districtMorph === false
+        ? {}
+        : { districtMorph: state.features.districtMorph && { duration: 1300 } }),
       motion: state.features.motion && { duration: 600 },
     },
     attribution: 'compact',
@@ -62,7 +66,7 @@ export function staticCode(state) {
   const options = Object.entries(staticOptions(state));
   const lines = [
     ...options.map(([key, value]) => `  ${key}: ${literal(value)},`),
-    '  animation: true,',
+    ...(state.animation === false ? [] : ['  animation: true,']),
   ];
   const needsSource = state.layers.neighborhoodLines && state.source !== 'realtor';
   const sourceLines = needsSource
