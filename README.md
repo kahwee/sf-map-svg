@@ -75,4 +75,4 @@ pnpm test:stories:coverage
 pnpm test:package
 ```
 
-The [contributing guide](CONTRIBUTING.md) explains the geographic and release checks. Version 3 removes the five old compatibility entry points; [migrate before upgrading](docs/migration-v3.md).
+The [contributing guide](CONTRIBUTING.md) explains the geographic and release checks. If you are upgrading from v2, follow the [v3 migration guide](docs/migration-v3.md).

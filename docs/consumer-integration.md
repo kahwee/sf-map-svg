@@ -1,6 +1,6 @@
 # Consumer integration
 
-Use the version 3 root controller and explicit geographic data. The [migration guide](migration-v3.md) maps removed imports to supported calls.
+Use the root controller and import geographic data explicitly. The [migration guide](migration-v3.md) maps removed v2 imports to supported calls.
 
 For a compact browser guide:
 

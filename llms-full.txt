@@ -87,7 +87,7 @@ pnpm test:stories:coverage
 pnpm test:package
 ```
 
-The [contributing guide](https://github.com/kahwee/sf-map-svg/blob/main/CONTRIBUTING.md) explains the geographic and release checks. Version 3 removes the five old compatibility entry points; [migrate before upgrading](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v3.md).
+The [contributing guide](https://github.com/kahwee/sf-map-svg/blob/main/CONTRIBUTING.md) explains the geographic and release checks. If you are upgrading from v2, follow the [v3 migration guide](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v3.md).
 
 ---
 
@@ -386,7 +386,7 @@ For the controller and explicit data imports, see [the v3 migration guide](https
 
 # Consumer integration
 
-Use the version 3 root controller and explicit geographic data. The [migration guide](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v3.md) maps removed imports to supported calls.
+Use the root controller and import geographic data explicitly. The [migration guide](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v3.md) maps removed v2 imports to supported calls.
 
 For a compact browser guide:
 
