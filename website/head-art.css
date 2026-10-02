@@ -8,11 +8,12 @@
   content: "";
   position: absolute;
   z-index: -1;
-  inset-block: 14px 18px;
-  inset-inline-end: var(--gutter);
-  width: min(380px, 34vw);
+  inset-block-end: 20px;
+  inset-inline-end: 0;
+  width: min(190px, 18vw);
+  aspect-ratio: 1;
   background: var(--rule-strong);
-  opacity: 0.38;
+  opacity: 0.45;
   -webkit-mask: var(--head-art) center / contain no-repeat;
   mask: var(--head-art) center / contain no-repeat;
   pointer-events: none;
@@ -27,8 +28,9 @@
 }
 @media (max-width: 720px) {
   .page-head::after {
-    opacity: 0.16;
-    width: 70vw;
+    opacity: 0.12;
+    width: 46vw;
+    inset-block-end: 10px;
   }
 }
 @media (prefers-contrast: more) {
