@@ -1032,3 +1032,48 @@
     white-space: normal;
   }
 }
+
+/* Ink list: one row per colour so names never wrap */
+.color-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+}
+.color-field {
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 12px;
+  padding: 7px 0;
+  border-bottom: 1px dotted var(--rule);
+  font-size: 14px;
+  cursor: pointer;
+}
+.color-field input {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--rule-strong);
+  appearance: none;
+  background: none;
+  overflow: hidden;
+}
+.color-field input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.color-field input::-webkit-color-swatch {
+  border: 0;
+  border-radius: 50%;
+}
+.color-field input::-moz-color-swatch {
+  border: 0;
+  border-radius: 50%;
+}
+.color-field > span {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.color-field code {
+  display: inline;
+  margin: 0;
+  font-size: 12px;
+}

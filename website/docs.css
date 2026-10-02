@@ -244,3 +244,7 @@
 .api-search input::-webkit-search-cancel-button {
   display: none;
 }
+
+.toc li[data-dim] {
+  opacity: 0.35;
+}

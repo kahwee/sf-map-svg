@@ -62,6 +62,10 @@ if (search && filter) {
       entry.section.hidden = !hit;
       total += terms.length && hit ? Math.max(shown, 1) : 0;
     }
+    for (const [id, link] of links) {
+      const section = document.getElementById(id);
+      link.closest('li')?.toggleAttribute('data-dim', Boolean(section?.hidden));
+    }
     if (empty) empty.hidden = !terms.length || total > 0;
     if (count) count.textContent = terms.length ? `${total} match${total === 1 ? '' : 'es'}` : '';
   };
