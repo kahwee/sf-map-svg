@@ -248,3 +248,20 @@
 .toc li[data-dim] {
   opacity: 0.35;
 }
+.page-head-meta > a {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 12px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink-2);
+  text-decoration: none;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+.page-head-meta > a:is(:hover, :focus-visible) {
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
