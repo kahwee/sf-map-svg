@@ -19,7 +19,7 @@ unbounded geographic data can never fail.
 | Clustering and selected/focused markers | Selected/focused pins remain individually reachable. Coincident alternatives remain available through the chooser. |
 | Marker entrance and reduced motion | Entrances are optional, independent of camera motion, and cancel on preference changes or disposal. Stable IDs avoid repeated entrances on filtering. |
 | Hiding touch control while gestures are enabled | Returns touch scrolling to the page. Other toolbar controls remain independent. |
-| Runtime patch omitted/false/undefined | Omitted retains; false disables; undefined resets to the default. Nested feature objects replace, rather than deep-merge. |
+| Runtime patch omitted/false/undefined | Omitted retains; false disables boolean switches; undefined removes group/key overrides. Top-level mode/source/year/labels set to undefined retain their current values. Nested feature objects replace, rather than deep-merge. |
 | Compact shell and full attribution | Rejected before replacement. Use `createGuideController` for full attribution. Control overrides are honored and may deliberately alter layout. |
 | District style callbacks | Prepare and copy every style before committing. Hover/selection reuse the results; call `setDistrictStyle()` to refresh changed external data. Reentrant updates or destruction supersede pending work. |
 | Rapid district year changes | Both outgoing layers are tracked, inert, and removed on interruption, completion, reduced-motion changes, or destruction. Zero duration creates no transition copies. |
@@ -28,6 +28,8 @@ unbounded geographic data can never fail.
 | Camera and label scheduling | A shared frame advances the camera before rendering dependent labels, marker sizes, and clusters. State/events remain synchronous; cancellation preserves pending layout, and destruction cancels both kinds of work. |
 | Guide controllers and compatibility factories | `createGuideController`/`mountGuideController` share grouped options and lifecycle with `createMap`. Existing element factories retain flat options and their return types. |
 | Layer hidden and bundle cost | Visibility never unloads imported geography. Use narrow entrypoints or data injection to save bytes. |
+
+Live appearance patches prepare values, district styles and source replacement before committing; token objects merge by key. Styling callbacks that issue a newer presentation update supersede the pending patch. Resolved layer reads distinguish visibility settings from data availability and from zoom/collision label filtering. The additive selection envelope preserves existing event contracts.
 
 ## Failure boundaries and regression evidence
 
@@ -70,11 +72,6 @@ Exercise enable/disable round trips and callbacks that synchronously request a
 second update. Add published-type and bundle regressions when the import graph or
 public types change. Update this matrix when introducing a new interaction.
 
-## Verification for version 3
+## Verification
 
-- `pnpm check` covers Node regressions, types, lint, catalog topology, and bundle budgets.
-- `pnpm test:stories:coverage` runs Chromium stories and reports browser coverage.
-- `pnpm demo`, `pnpm build-storybook`, `pnpm test:package`, and `pnpm test:visual` cover examples, rendered stories, packed consumer imports, and reviewed map screenshots.
-- The packed consumer asserts removed compatibility entry points are absent.
-
-Live appearance patches prepare values, district styles and source replacement before committing; token objects merge by key. Styling callbacks that issue a newer presentation update supersede the pending patch. Resolved layer reads distinguish visibility settings from data availability and from zoom/collision label filtering. The additive selection envelope preserves existing event contracts.
+Follow the [validation and release runbook](https://github.com/kahwee/sf-map-svg/blob/main/docs/maintenance.md#validation-by-change). The packed consumer also asserts that removed compatibility entry points remain absent.

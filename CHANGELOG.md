@@ -4,6 +4,8 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Clarify the documentation paths, progressive enhancement and cleanup examples; consolidate browser validation and release instructions into one maintenance runbook. Check README and integration recipes against the packed package.
+
 ## 4.2.0 — 2026-10-01
 
 - Reuse one native dropdown treatment across Pages, with an inset chevron, a reserved end gutter, and preserved labels, keyboard behavior, and mobile pickers.

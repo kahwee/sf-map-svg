@@ -1,23 +1,47 @@
-# Consumer integration
+# Embedding and progressive enhancement
 
-Use the root controller and import geographic data explicitly. The [migration guide](migration-v3.md) maps removed v2 imports to supported calls.
+For basic mounting, events and cleanup, start with the [developer guide](developer-guide.md). The root controller takes explicit geography; the guide entry offers a smaller preset with the same grouped `configure()`, `camera`, `on()`, and `destroy()` contract. See the [migration guide](migration-v3.md) for removed v2 imports.
 
-For a compact browser guide:
+## Render a guide before JavaScript loads
+
+On the server or in a build step, render a compact frame:
 
 ```ts
-import { createGuideController } from '@kahwee/sf-map-svg/guide';
+import { createGuideShell } from '@kahwee/sf-map-svg/guide/static';
 
-const map = createGuideController({
+const markup = createGuideShell({ title: 'Explore San Francisco' });
+// Insert markup into your server-rendered HTML.
+```
+
+The shell uses an 800 × 800 projection with 28 units of padding, matching the interactive map. Use `createGuideSVG()` for custom dimensions. Rendering is offline, with zero runtime dependencies.
+
+## Enhance the existing frame
+
+In your browser entry, mount the controller into that shell:
+
+```ts
+import { mountGuideController } from '@kahwee/sf-map-svg/guide';
+
+const shell = document.querySelector<HTMLElement>('.sf-guide-shell');
+if (!shell) throw new Error('Missing guide shell');
+const guide = mountGuideController(shell, {
+  attribution: 'compact',
   features: { motion: { duration: 400 }, markerEntrance: true },
   appearance: { theme: 'transit' },
 });
-document.querySelector('#map')?.append(map.element);
-// Dispose when the containing view unmounts.
-map.destroy();
+
+// Call before your application removes the containing view.
+function disposeGuide() {
+  guide.destroy();
+}
 ```
 
-The guide controller uses the same `configure()`, `camera`, `on()`, and `destroy()` contract as `createMap()`. Motion is opt-in and follows the user's reduced-motion preference. For explicit data composition, `createMap(guideMapData, guideOptions)` remains available using `/guide/data` and `/presets`.
+Compact attribution is required for an existing shell. Invalid configuration leaves its static frame intact. `destroy()` disposes listeners and animation work; your application owns removal of the containing view. Motion is opt-in and follows reduced-motion preferences.
 
-To progressively enhance server-rendered `createGuideShell()` markup, use `mountGuideController(shell, options)` from `/guide`. It returns the controller and requires compact attribution. Invalid configuration leaves the static frame intact. Destroy the controller when unmounting. Existing `createGuideMap()` and `mountGuideMap()` return their original augmented elements and accept flat options for compatibility.
+For a new browser-only guide, use `createGuideController()` and mount its `.element` as shown in the developer guide. Existing `createGuideMap()` and `mountGuideMap()` retain their augmented-element return types and flat options for compatibility.
 
-For server rendering, import `renderMap` from the root and pass `guideMapData.map`, `staticMapData` from `/data/static`, or another explicit `StaticMapData`. Import `/data/full` when interactive lookup collections are also required. All rendering stays offline and has zero runtime dependencies. The guide's detailed geography loads only when `loadGuideDetailedData()` is called.
+## Choose the data boundary
+
+`createMap(guideMapData, guideOptions)` remains available through `/guide/data` and `/presets`. For server rendering, pass `guideMapData.map` or `/data/static` to `renderMap()`. Use `/data/full` when interactive lookup collections are needed. The guide's detailed geography loads only on an explicit `loadGuideDetailedData()` call; enabling a layer does not download it.
+
+See the [exact API contract](API.md), [worked examples](EXAMPLES.md), and [bundle measurements](guide-bundle-report.md).

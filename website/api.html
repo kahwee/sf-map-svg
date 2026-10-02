@@ -208,8 +208,8 @@
               <tr><td><code>getConfiguration</code></td><td>() → snapshot</td><td>%CONFIGURATION_SNAPSHOT%</td></tr>
               <!--configuration-inspection-->
               <tr><td><code>on</code></td><td>(type, listener) → unsubscribe</td><td>Typed events; see <a href="#events">Events</a>.</td></tr>
-              <tr><td><code>setMode</code></td><td>(mode)</td><td>Switch basemap, neighborhoods or districts.</td></tr>
-              <tr><td><code>setSource</code></td><td>(source)</td><td>Switch neighborhood definition.</td></tr>
+              <tr><td><code>setMode</code></td><td>(mode)</td><td>Switch mode and reset the camera. Use <code>configure({ mode })</code> to retain the camera.</td></tr>
+              <tr><td><code>setSource</code></td><td>(source)</td><td>Switch neighborhood definition and reset the camera. Use <code>configure({ source })</code> to retain the camera.</td></tr>
               <tr><td><code>setDistrictYear</code></td><td>(year, { animate?, duration? })</td><td>Switch district map; morphs with <code>districtMorph</code>.</td></tr>
               <tr><td><code>setDistrictStyle</code></td><td>(style | undefined)</td><td>Restyle districts.</td></tr>
               <tr><td><code>setLabels</code></td><td>(visible: boolean)</td><td>Show or hide labels.</td></tr>

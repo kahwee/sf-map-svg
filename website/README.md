@@ -1,5 +1,12 @@
 # Site components
 
+Edit authored HTML, CSS and TypeScript here; never patch generated `pages-dist`.
+Use the [maintenance runbook](../docs/maintenance.md) for browser validation,
+package/Pages alignment, and release steps. The visual guide is `docs.html`;
+`api.html` is the exact reference. Their Markdown exports come from the selected
+package, so package-owned documentation changes need a package release to appear
+in released exports. Site navigation and layout can deploy independently.
+
 ## Dropdown
 
 Use the shared native dropdown for single-value choices. `site.css` imports

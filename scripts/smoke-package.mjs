@@ -47,12 +47,21 @@ try {
   assert.match(await readFile(join(installed, 'LICENSE'), 'utf8'), /MIT License/);
   const assistantDocs = await readFile(join(installed, 'llms-full.txt'), 'utf8');
   assert.ok(assistantDocs.includes(`@kahwee/sf-map-svg ${manifest.version} ·`));
-  const developerGuide = await readFile(join(installed, 'docs/developer-guide.md'), 'utf8');
-  const browserRecipe = [...developerGuide.matchAll(/```ts\n([\s\S]*?)```/g)]
-    .map(([, code]) => code)
-    .filter((code) => !code.includes('node:fs'))
-    .join('\n');
-  await writeFile(join(temp, 'documented-consumer.mts'), browserRecipe);
+  const documentedModules = [];
+  for (const document of ['README.md', 'docs/developer-guide.md', 'docs/consumer-integration.md']) {
+    const markdown = await readFile(join(installed, document), 'utf8');
+    const recipe = [...markdown.matchAll(/```ts\n([\s\S]*?)```/g)]
+      .map(([, code]) => code)
+      .filter((code) => !code.includes('node:fs'))
+      .join('\n');
+    assert.ok(recipe.trim(), `${document} must contain a typed recipe`);
+    const filename = join(
+      temp,
+      `documented-${document.replaceAll('/', '-').replace('.md', '.mts')}`,
+    );
+    await writeFile(filename, recipe);
+    documentedModules.push(filename);
+  }
   execFileSync(
     join(root, 'node_modules/.bin/tsc'),
     [
@@ -64,7 +73,7 @@ try {
       'nodenext',
       '--target',
       'es2023',
-      join(temp, 'documented-consumer.mts'),
+      ...documentedModules,
     ],
     { cwd: temp, stdio: 'inherit' },
   );

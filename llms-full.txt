@@ -14,7 +14,7 @@ Use renderMap(data, options) for SVG strings; createMap(data, options) returns a
 
 Offline, self-contained San Francisco SVG maps. The package has no runtime dependencies. Geography is always an explicit import; the root entry does not bundle data.
 
-[Design playground](https://kahwee.github.io/sf-map-svg/playground.html) · [Live examples](https://kahwee.github.io/sf-map-svg/examples.html) · [Storybook source](https://github.com/kahwee/sf-map-svg/blob/main/stories/) · [Geographic sources](https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md) · [v3 migration](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v3.md)
+[Getting started](https://github.com/kahwee/sf-map-svg/blob/main/docs/developer-guide.md) · [API reference](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md) · [Design playground](https://kahwee.github.io/sf-map-svg/playground.html) · [Live examples](https://kahwee.github.io/sf-map-svg/examples.html) · [Storybook source](https://github.com/kahwee/sf-map-svg/blob/main/stories/) · [Geographic sources](https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md) · [v3 migration](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v3.md)
 
 ## Install
 
@@ -57,11 +57,16 @@ const map = createMap(fullMapData, {
   features: { motion: true },
   appearance: { theme: 'districts' },
 });
-document.querySelector('#map')?.append(map.element);
+const host = document.querySelector('#map');
+if (!host) throw new Error('Missing #map container');
+host.append(map.element);
 map.on('neighborhoodchange', ({ name }) => console.log(name));
 map.camera.zoom(1.5);
-// When the view is removed:
-map.destroy();
+// Call when your application removes this view.
+function disposeMap() {
+  map.destroy();
+  map.element.remove();
+}
 ```
 
 `createMap(data, options)` returns a controller. Use `map.element` for mounting, `map.configure({ features, layers, controls, appearance, mode, source, year, labels })` for runtime switches, `map.camera` for pan/zoom/fit/reset, and `map.on()` for typed events. Appearance can change live while preserving camera, selection, and focus. `getResolvedConfiguration()` explains effective layers; `getCapabilities()` reports supplied geography. SFAR realtor neighborhoods are the default when supplied; SF Find and analysis are explicit alternate sources. The `/data/full` preset includes all three collections and historical districts.
@@ -78,16 +83,7 @@ Call `destroy()` when removing an interactive map.
 
 Canonical geography is in [`data/`](https://github.com/kahwee/sf-map-svg/blob/main/data/README.md), with provenance in [`SOURCES.md`](https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md). The public `/data` entry exposes lookup, catalog, district maps, and source-specific neighborhood collections. These are deeply frozen; clone before editing.
 
-```sh
-pnpm install --frozen-lockfile
-pnpm check
-pnpm demo
-pnpm build-storybook
-pnpm test:stories:coverage
-pnpm test:package
-```
-
-The [contributing guide](https://github.com/kahwee/sf-map-svg/blob/main/CONTRIBUTING.md) explains the geographic and release checks. If you are upgrading from v2, follow the [v3 migration guide](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v3.md).
+Install with `pnpm install --frozen-lockfile`. See the [contributing guide](https://github.com/kahwee/sf-map-svg/blob/main/CONTRIBUTING.md) for architecture and the [validation and release runbook](https://github.com/kahwee/sf-map-svg/blob/main/docs/maintenance.md) for checks, browser inspection, and publishing. If you are upgrading from v2, follow the [v3 migration guide](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v3.md).
 
 ---
 
@@ -183,13 +179,15 @@ SFAR realtor neighborhoods are the default when supplied. If only an alternative
 
 | Change | Call |
 | --- | --- |
-| Layers, controls, behaviors | `map.configure({ layers, controls, features, appearance, mode, source, year, labels })` |
+| Presentation, layers, controls, behaviors | `map.configure({ layers, controls, features, appearance, mode, source, year, labels })` |
 | Map mode or neighborhood source | `map.setMode(mode)`, `map.setSource(source)` |
 | District boundaries or choropleth | `map.setDistrictYear(year)`, `map.setDistrictStyle(callback)` |
 | Master text visibility | `map.setLabels(visible)` |
 | Markers or route overlays | `map.setMarkers(items)`, `map.setOverlays(items)` |
 | Camera | `map.camera.set/pan/zoom/fit/reset(...)` |
 | Palette, typography, control styling | `map.configure({ appearance })`; retains camera, selection and focus |
+
+Appearance token objects merge by key; `undefined` removes an override and `appearance: undefined` resets the group. Static maps accept grouped `layers` and the shared `appearance` keys (`theme`, `colors`, `districtStyle`) too. See [the API contract](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md#live-configuration-and-inspection) and [the design playground](https://kahwee.github.io/sf-map-svg/playground.html).
 
 `configure` merges supplied keys; omitted keys keep their existing values. Set a layer or control key to `undefined` to remove its override. Set a whole group to `undefined` to reset that group. Set a feature to `false` to disable it. Explicit layer overrides keep winning after mode changes.
 
@@ -230,8 +228,6 @@ The package declarations are the exact type contract for your installed version.
 The generated `llms.txt` index links to Markdown documentation; `llms-full.txt` combines the guides and type contracts into one file. Both are built from the same package selected for the site. Local previews are labeled as working-tree docs. Released builds use the installed npm package's docs and declarations.
 
 See [API options](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md), [worked examples](https://github.com/kahwee/sf-map-svg/blob/main/docs/EXAMPLES.md), [consumer integration](https://github.com/kahwee/sf-map-svg/blob/main/docs/consumer-integration.md), and [v3 migration](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v3.md).
-
-Appearance token objects merge by key; `undefined` removes an override and `appearance: undefined` resets the group. Static maps accept grouped `layers` and the shared `appearance` keys (`theme`, `colors`, `districtStyle`) too. See [the API contract](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md#live-configuration-and-inspection) and [the design playground](https://kahwee.github.io/sf-map-svg/playground.html).
 
 ---
 
@@ -438,29 +434,53 @@ For the controller and explicit data imports, see [the v3 migration guide](https
 
 <!-- Generated from docs/consumer-integration.md; @kahwee/sf-map-svg 4.2.0 · local working tree. -->
 
-# Consumer integration
+# Embedding and progressive enhancement
 
-Use the root controller and import geographic data explicitly. The [migration guide](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v3.md) maps removed v2 imports to supported calls.
+For basic mounting, events and cleanup, start with the [developer guide](https://github.com/kahwee/sf-map-svg/blob/main/docs/developer-guide.md). The root controller takes explicit geography; the guide entry offers a smaller preset with the same grouped `configure()`, `camera`, `on()`, and `destroy()` contract. See the [migration guide](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v3.md) for removed v2 imports.
 
-For a compact browser guide:
+## Render a guide before JavaScript loads
+
+On the server or in a build step, render a compact frame:
 
 ```ts
-import { createGuideController } from '@kahwee/sf-map-svg/guide';
+import { createGuideShell } from '@kahwee/sf-map-svg/guide/static';
 
-const map = createGuideController({
+const markup = createGuideShell({ title: 'Explore San Francisco' });
+// Insert markup into your server-rendered HTML.
+```
+
+The shell uses an 800 × 800 projection with 28 units of padding, matching the interactive map. Use `createGuideSVG()` for custom dimensions. Rendering is offline, with zero runtime dependencies.
+
+## Enhance the existing frame
+
+In your browser entry, mount the controller into that shell:
+
+```ts
+import { mountGuideController } from '@kahwee/sf-map-svg/guide';
+
+const shell = document.querySelector<HTMLElement>('.sf-guide-shell');
+if (!shell) throw new Error('Missing guide shell');
+const guide = mountGuideController(shell, {
+  attribution: 'compact',
   features: { motion: { duration: 400 }, markerEntrance: true },
   appearance: { theme: 'transit' },
 });
-document.querySelector('#map')?.append(map.element);
-// Dispose when the containing view unmounts.
-map.destroy();
+
+// Call before your application removes the containing view.
+function disposeGuide() {
+  guide.destroy();
+}
 ```
 
-The guide controller uses the same `configure()`, `camera`, `on()`, and `destroy()` contract as `createMap()`. Motion is opt-in and follows the user's reduced-motion preference. For explicit data composition, `createMap(guideMapData, guideOptions)` remains available using `/guide/data` and `/presets`.
+Compact attribution is required for an existing shell. Invalid configuration leaves its static frame intact. `destroy()` disposes listeners and animation work; your application owns removal of the containing view. Motion is opt-in and follows reduced-motion preferences.
 
-To progressively enhance server-rendered `createGuideShell()` markup, use `mountGuideController(shell, options)` from `/guide`. It returns the controller and requires compact attribution. Invalid configuration leaves the static frame intact. Destroy the controller when unmounting. Existing `createGuideMap()` and `mountGuideMap()` return their original augmented elements and accept flat options for compatibility.
+For a new browser-only guide, use `createGuideController()` and mount its `.element` as shown in the developer guide. Existing `createGuideMap()` and `mountGuideMap()` retain their augmented-element return types and flat options for compatibility.
 
-For server rendering, import `renderMap` from the root and pass `guideMapData.map`, `staticMapData` from `/data/static`, or another explicit `StaticMapData`. Import `/data/full` when interactive lookup collections are also required. All rendering stays offline and has zero runtime dependencies. The guide's detailed geography loads only when `loadGuideDetailedData()` is called.
+## Choose the data boundary
+
+`createMap(guideMapData, guideOptions)` remains available through `/guide/data` and `/presets`. For server rendering, pass `guideMapData.map` or `/data/static` to `renderMap()`. Use `/data/full` when interactive lookup collections are needed. The guide's detailed geography loads only on an explicit `loadGuideDetailedData()` call; enabling a layer does not download it.
+
+See the [exact API contract](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md), [worked examples](https://github.com/kahwee/sf-map-svg/blob/main/docs/EXAMPLES.md), and [bundle measurements](https://github.com/kahwee/sf-map-svg/blob/main/docs/guide-bundle-report.md).
 
 ---
 
@@ -696,6 +716,8 @@ display geometry, and no precinct polygons or raw workbook data are shipped.
 User-visible changes are recorded here. Unreleased entries describe changes on `main` that are not part of a tagged package release.
 
 ## Unreleased
+
+- Clarify the documentation paths, progressive enhancement and cleanup examples; consolidate browser validation and release instructions into one maintenance runbook. Check README and integration recipes against the packed package.
 
 ## 4.2.0 — 2026-10-01
 

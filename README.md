@@ -2,7 +2,7 @@
 
 Offline, self-contained San Francisco SVG maps. The package has no runtime dependencies. Geography is always an explicit import; the root entry does not bundle data.
 
-[Design playground](https://kahwee.github.io/sf-map-svg/playground.html) · [Live examples](https://kahwee.github.io/sf-map-svg/examples.html) · [Storybook source](stories/) · [Geographic sources](SOURCES.md) · [v3 migration](docs/migration-v3.md)
+[Getting started](docs/developer-guide.md) · [API reference](docs/API.md) · [Design playground](https://kahwee.github.io/sf-map-svg/playground.html) · [Live examples](https://kahwee.github.io/sf-map-svg/examples.html) · [Storybook source](stories/) · [Geographic sources](SOURCES.md) · [v3 migration](docs/migration-v3.md)
 
 ## Install
 
@@ -45,11 +45,16 @@ const map = createMap(fullMapData, {
   features: { motion: true },
   appearance: { theme: 'districts' },
 });
-document.querySelector('#map')?.append(map.element);
+const host = document.querySelector('#map');
+if (!host) throw new Error('Missing #map container');
+host.append(map.element);
 map.on('neighborhoodchange', ({ name }) => console.log(name));
 map.camera.zoom(1.5);
-// When the view is removed:
-map.destroy();
+// Call when your application removes this view.
+function disposeMap() {
+  map.destroy();
+  map.element.remove();
+}
 ```
 
 `createMap(data, options)` returns a controller. Use `map.element` for mounting, `map.configure({ features, layers, controls, appearance, mode, source, year, labels })` for runtime switches, `map.camera` for pan/zoom/fit/reset, and `map.on()` for typed events. Appearance can change live while preserving camera, selection, and focus. `getResolvedConfiguration()` explains effective layers; `getCapabilities()` reports supplied geography. SFAR realtor neighborhoods are the default when supplied; SF Find and analysis are explicit alternate sources. The `/data/full` preset includes all three collections and historical districts.
@@ -66,13 +71,4 @@ Call `destroy()` when removing an interactive map.
 
 Canonical geography is in [`data/`](data/README.md), with provenance in [`SOURCES.md`](SOURCES.md). The public `/data` entry exposes lookup, catalog, district maps, and source-specific neighborhood collections. These are deeply frozen; clone before editing.
 
-```sh
-pnpm install --frozen-lockfile
-pnpm check
-pnpm demo
-pnpm build-storybook
-pnpm test:stories:coverage
-pnpm test:package
-```
-
-The [contributing guide](CONTRIBUTING.md) explains the geographic and release checks. If you are upgrading from v2, follow the [v3 migration guide](docs/migration-v3.md).
+Install with `pnpm install --frozen-lockfile`. See the [contributing guide](CONTRIBUTING.md) for architecture and the [validation and release runbook](https://github.com/kahwee/sf-map-svg/blob/main/docs/maintenance.md) for checks, browser inspection, and publishing. If you are upgrading from v2, follow the [v3 migration guide](docs/migration-v3.md).

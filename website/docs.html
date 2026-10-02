@@ -18,6 +18,12 @@
       <p class="lede" data-enter style="--i:4">Everything you need to render the city as SVG, from a single server-side string to an animated, keyboard-accessible explorer. For every option and method, see the <a href="./api.html">API reference</a>.</p>
     </header>
     <!--reference-version-->
+    <nav class="doc-paths shell" aria-label="Documentation paths">
+      <a href="#install"><strong>Start building</strong><span>Install, choose geography, mount a map.</span></a>
+      <a href="./api.html"><strong>Find a contract</strong><span>Options, defaults, methods and events.</span></a>
+      <a href="./playground.html"><strong>Try a design</strong><span>Change the map and copy working code.</span></a>
+      <a href="./examples.html"><strong>Explore examples</strong><span>Complete maps with data and sources.</span></a>
+    </nav>
 
     <div class="docs shell">
       <nav class="toc" aria-label="On this page">
@@ -43,7 +49,7 @@
       <article class="prose docs-body">
         <section id="introduction">
           <h2>Introduction</h2>
-          <p class="dropcap">This small TypeScript library, SF Map SVG, draws San Francisco as plain SVG. It knows the city’s precise coastline, the supervisorial districts of 2002, 2012 and 2022, three independent neighborhood definitions, park boundaries, highways, key roads and BART stations. It has no runtime dependencies, requests nothing from the network, and never loads map tiles.</p>
+          <p class="dropcap">This small TypeScript library, SF Map SVG, draws San Francisco as plain SVG. It knows the city’s precise coastline, the supervisorial districts of 2002, 2012 and 2022, three independent neighborhood definitions, park boundaries, highways, key roads and BART stations. The renderer has no runtime dependencies and never loads map tiles. You supply the geography explicitly, through bundled imports or your own data loading.</p>
           <p>It offers two ways to work, built on the same geography:</p>
           <ul>
             <li><strong><code>renderMap</code></strong> returns an SVG string and a projection. It needs no DOM, so it runs in Node, at the edge, or in a build step.</li>
@@ -74,7 +80,7 @@ const { svg, project, viewBox } = renderMap(staticMapData, {
 
 // Place your own points with the same projection.
 const [x, y] = project([-122.3937, 37.7955]); // Ferry Building</code></pre></div>
-          <figure class="docs-figure"><div class="plate-frame"><img src="./maps/figures/districts-2022.svg" data-dark-src="./maps/figures/districts-2022-dark.svg" alt="The 2022 supervisorial districts rendered as SVG" width="800" height="800" loading="lazy"></div><figcaption><b>Fig. 1.</b> The default map: coast, 2022 districts and district numbers.</figcaption></figure>
+          <figure class="docs-figure"><div class="plate-frame"><img src="./maps/figures/districts-2022.svg" data-dark-src="./maps/figures/districts-2022-dark.svg" alt="The 2022 supervisorial districts rendered as SVG" width="800" height="800" loading="lazy"></div><figcaption><b>Fig. 1.</b> The 2022 districts, fitted to the city’s coastline.</figcaption></figure>
           <p>The result is a single self-contained <code>&lt;svg&gt;</code> with a title and description. Insert it into HTML, save it as a file, or embed it in an <code>&lt;img&gt;</code>. User-supplied text and attributes are escaped. Each map gets unique ids; pass <code>idPrefix</code> for stable ids across builds.</p>
         </section>
 
@@ -142,15 +148,20 @@ const map = createMap(fullMapData, {
   layers: { bartStations: true },
   appearance: { theme: 'districts' },
 });
-document.querySelector('#map').append(map.element);
+const host = document.querySelector('#map');
+if (!host) throw new Error('Missing #map container');
+host.append(map.element);
 
 const stop = map.on('districtchange', ({ id, year }) =&gt; console.log(id, year));
 map.selectDistrict(5, { fit: true });
 map.camera.zoom(1.5, { animate: true });
 
-// When the view goes away:
-stop();
-map.destroy();</code></pre></div>
+// Call when your application removes this view.
+function disposeMap() {
+  stop();
+  map.destroy();
+  map.element.remove();
+}</code></pre></div>
           <p>%RUNTIME_HELP% The camera works in a fixed 800 × 800 projected space, so viewports serialize cleanly into URLs.</p>
         </section>
 

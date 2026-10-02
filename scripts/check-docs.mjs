@@ -6,6 +6,7 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const documents = [
   'README.md',
   'CONTRIBUTING.md',
+  'website/README.md',
   'data/README.md',
   ...(await readdir(new URL('../docs/', import.meta.url)))
     .filter((name) => name.endsWith('.md'))

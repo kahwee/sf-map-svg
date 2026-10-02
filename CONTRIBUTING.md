@@ -2,21 +2,13 @@
 
 Use pnpm 12 (declared in `package.json`) and Node 24 or newer.
 
-```sh
-pnpm install --frozen-lockfile
-pnpm check
-pnpm demo
-pnpm build-storybook
-pnpm exec playwright install chromium
-pnpm test:stories
-pnpm test:stories:coverage
-```
+Install with `pnpm install --frozen-lockfile`. The [validation and release runbook](docs/maintenance.md) is the canonical checklist for docs, site, library, geography, and publication changes.
 
 ## Source layout
 
 | Path              | Responsibility                                          |
 | ----------------- | ------------------------------------------------------- |
-| `src/api.ts`, `src/map.ts`, `src/static.ts` | v3 data-free exports, controller ownership, static rendering |
+| `src/api.ts`, `src/map.ts`, `src/static.ts` | Data-free exports, controller ownership, static rendering |
 | `src/configuration.ts`, `src/controller-types.ts` | Grouped API validation and public controller contracts |
 | `src/full-data.ts` | Explicit complete geographic preset (`/data/full`) |
 | `src/static-data.ts` | Explicit static geographic preset (`/data/static`) |
@@ -39,33 +31,13 @@ For camera or animation changes, exercise **Checks / Motion lifecycle** in Story
 
 ## Assistant-readable documentation
 
-Run `pnpm docs:llms` after changing package version, documentation, or emitted public type contracts. Commit the regenerated `llms.txt` and `llms-full.txt`; `pnpm check` rejects stale output. The Pages build generates Markdown and text documentation from the same package it uses for maps. Released previews use installed npm docs and declarations, and label unsupported preview features. The Pages browser gate covers delayed and failed geography loading as well as normal pages.
+Run `pnpm docs:llms` after changing package version, documentation, or emitted public type contracts. Commit the regenerated `llms.txt` and `llms-full.txt`; `pnpm check` rejects stale output. The Pages build generates Markdown and text documentation from the same package it uses for maps. Released builds use the installed npm package’s docs and declarations, and adapt examples to its supported API. The Pages browser gate covers delayed and failed geography loading as well as normal pages.
 
 ## Public npm releases
 
-GitHub Actions checks Node 24 and 26 on pushes and pull requests. The package jobs check formatting, data, types, and tests, build the examples, Storybook, and the offline Pages preview, then install a packed archive in a temporary consumer to verify the published entrypoints. A separate Chromium job runs Storybook interactions and coverage on Node 26. Run the same package check locally with `pnpm test:package`.
+Follow the [validation and release runbook](docs/maintenance.md#publish-a-stable-release). GitHub Actions checks Node 24 and 26; stable GitHub releases trigger trusted npm publishing of the validated archive. Normal pushes deploy eligible Pages updates without publishing npm.
 
-The `publish.yml` workflow publishes stable releases when a GitHub release is published, or when manually dispatched with an existing `vMAJOR.MINOR.PATCH` tag. It checks out that tag, requires its package version to match, reruns all checks including Chromium Storybook interactions, and publishes the exact archive that passed the consumer test. Prerelease tags are rejected. No package is published on normal pushes or pull requests.
-
-Before the first automated release, configure the package's npm Trusted Publisher settings:
-
-- Provider: GitHub Actions
-- Organization or user: `kahwee`
-- Repository: `sf-map-svg`
-- Workflow filename: `publish.yml`
-- Environment: leave blank (the workflow does not use a GitHub environment)
-- Allowed action: enable direct `npm publish`
-
-This npm-side trust configuration must match the workflow identity. The workflow uses a GitHub-hosted runner, Node 26, and `id-token: write`; it needs no stored npm token. See [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/) for setup. npm generates provenance when the repository and package meet its eligibility requirements; a private source repository does not receive public provenance. GitHub Actions must also be enabled with available runner minutes/billing before workflows can execute.
-
-To release:
-
-1. Update the version and changelog.
-2. Run `pnpm check`, `pnpm demo`, `pnpm build-storybook`, `pnpm test:stories:coverage`, and `pnpm test:package`.
-3. Record a dated `## <version> — YYYY-MM-DD` changelog section covering every change. Generate the full GitHub release body with `node scripts/release-notes.mjs > release-notes.md` (keep the temporary file outside Git), review and push the changes, tag the reviewed commit as `v<version>`, and publish its GitHub release with that body. The publish workflow rejects notes that omit any of the versioned changelog section.
-4. Inspect the publish workflow result, verify the registry version, and install that version in a clean project. A manual dispatch with the same tag can retry a failed attempt; npm rejects republishing an existing version.
-
-`publishConfig` fixes public access and the npm registry. Never include credentials, site account identifiers, original site application files, or unrelated YorkSF content. Only the map renderer, public geometry, tests, examples, and supporting documentation belong here. The software uses MIT; source geographic data retains the terms and attribution recorded in `SOURCES.md`.
+The software uses MIT; geographic data retains the terms and attribution recorded in `SOURCES.md`. Keep credentials and unrelated application content out of the repository and archive.
 
 ## Interactive examples and dependency updates
 
