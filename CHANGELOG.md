@@ -4,6 +4,9 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 4.2.0 — 2026-10-01
+
+- Reuse one native dropdown treatment across Pages, with an inset chevron, a reserved end gutter, and preserved labels, keyboard behavior, and mobile pickers.
 - Strengthen the playground with strict TypeScript, checked JavaScript/TypeScript snippets, versioned design links, persistent explicit layer choices and independent static rendering. Keep mobile controls unobstructed and picker labels legible in dark mode.
 - Express explicit configuration resets for consumers using `exactOptionalPropertyTypes`, including nested appearance tokens. Make Pages API and guide references describe their actual package version without internal preview warnings.
 
