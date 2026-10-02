@@ -94,7 +94,7 @@ function renderStatic(animation = state.animation) {
       ...staticOptions(state),
       animation,
       idPrefix: `studio-${++sequence}`,
-      title: 'San Francisco map from the SF / SVG layers studio',
+      title: 'San Francisco map from the SF Map SVG layers studio',
     },
   ).svg;
 }

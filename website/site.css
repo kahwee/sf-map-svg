@@ -1,7 +1,7 @@
 /* biome-ignore-all lint/complexity/noImportantStyles: reduced-motion, print, and transition overrides must beat animations and inline styles. */
 /* biome-ignore-all lint/style/noDescendingSpecificity: rules are grouped by component; their selectors target unrelated elements. */
 /*
- * SF / SVG site design system. Shared by every page, loaded before page styles.
+ * SF Map SVG site design system. Shared by every page, loaded before page styles.
  * A classic atlas: warm paper, ink, hairline and double rules, serif display and prose,
  * sans for interface and data. Motion uses CSS first, native View Transitions for
  * navigation, and motion.js only for what CSS cannot know.
@@ -359,15 +359,35 @@ hr {
 }
 .dateline {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding-block: 8px;
+  padding-block: 7px;
   border-bottom: 1px solid var(--rule);
-  font-family: var(--sans);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-family: var(--serif);
+  font-size: 14px;
+  font-style: italic;
   color: var(--muted);
+}
+.release-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 11px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  font: 500 12px / 1.6 var(--mono);
+  font-style: normal;
+  letter-spacing: 0;
+  color: var(--ink-2);
+  text-decoration: none;
+  background: var(--card);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+.release-pill:is(:hover, :focus-visible) {
+  border-color: var(--accent);
+  color: var(--accent-ink);
 }
 .masthead-bar {
   display: flex;
@@ -377,14 +397,35 @@ hr {
   border-bottom: 3px double var(--rule-strong);
 }
 .wordmark {
-  font-family: var(--serif);
-  font-size: 26px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
   text-decoration: none;
   white-space: nowrap;
 }
-.wordmark span {
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: 9px;
+  box-shadow: 0 1px 0 var(--shadow);
+  transition: transform var(--dur-spring) var(--spring);
+}
+.wordmark:is(:hover, :focus-visible) .brand-mark {
+  transform: rotate(-6deg) scale(1.06);
+}
+.brand-name {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.brand-name small {
+  font: 600 11px / 1 var(--sans);
+  letter-spacing: 0.16em;
   color: var(--accent);
 }
 .masthead nav {
@@ -825,8 +866,9 @@ figcaption code {
 /* ---------- Tables ---------- */
 .table-wrap {
   overflow-x: auto;
-  border-top: 2px solid var(--ink);
-  border-bottom: 1px solid var(--ink);
+  border: 1px solid var(--rule-strong);
+  border-radius: 10px;
+  background: var(--card);
 }
 table {
   width: 100%;
@@ -836,18 +878,27 @@ table {
 }
 th,
 td {
-  padding: 10px 12px;
+  padding: 11px 16px;
   border-bottom: 1px solid var(--rule);
   text-align: left;
   vertical-align: top;
 }
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+tbody tr:hover td {
+  background: var(--paper-2);
+}
 thead th {
+  position: sticky;
+  top: 0;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
-  border-bottom: 1px solid var(--ink);
+  background: var(--paper-2);
+  border-bottom: 1px solid var(--rule-strong);
 }
 td.num,
 th.num {
@@ -1197,8 +1248,12 @@ html.theme-wiping * {
   .segmented button {
     padding-inline: 11px;
   }
-  .wordmark {
-    font-size: 22px;
+  .brand-name {
+    font-size: 20px;
+  }
+  .brand-mark {
+    width: 30px;
+    height: 30px;
   }
 }
 
@@ -1239,5 +1294,21 @@ html.theme-wiping * {
   .skip,
   body::after {
     display: none !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .dateline {
+    font-size: 13px;
+  }
+  .dateline-tag {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .release-pill {
+    flex: none;
+    white-space: nowrap;
   }
 }

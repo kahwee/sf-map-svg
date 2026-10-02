@@ -1,3 +1,4 @@
+@import "./head-art.css";
 .reference-version {
   padding-block: 18px;
   color: var(--muted);
@@ -57,7 +58,7 @@
   border-left: 2px solid var(--accent);
 }
 .docs-body {
-  max-width: 760px;
+  max-width: 880px;
 }
 .docs-body section {
   scroll-margin-top: 24px;
@@ -118,21 +119,26 @@
 }
 .signature {
   display: block;
-  margin: 8px 0 18px;
-  padding: 14px 18px;
+  margin: 8px 0 20px;
+  padding: 16px 20px;
+  border: 1px solid var(--rule-strong);
   border-left: 3px solid var(--accent);
-  background: var(--paper-2);
+  border-radius: 0 10px 10px 0;
+  background: var(--card);
   font-family: var(--mono);
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 13.5px;
+  line-height: 1.65;
   overflow-x: auto;
   white-space: pre;
 }
-.api-table td:first-child {
-  white-space: nowrap;
+.api-table {
+  table-layout: auto;
 }
-.api-table td code,
-.api-table th code {
+.api-table td:first-child {
+  min-width: 9em;
+  line-height: 2;
+}
+.api-table td code {
   white-space: nowrap;
 }
 .api-table td:nth-child(2) {
@@ -143,6 +149,11 @@
 .api-table td:last-child {
   font-family: var(--serif);
   font-size: 15px;
+  color: var(--ink-2);
+}
+.api-table td:first-child code {
+  color: var(--accent-ink);
+  font-weight: 600;
 }
 .api-group {
   margin: 30px 0 10px;
@@ -173,4 +184,10 @@
   .toc ol {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+.page-head-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
 }

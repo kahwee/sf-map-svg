@@ -1,0 +1,55 @@
+/* Page heads: graticule and peninsula watermark. Imported by pages that use .page-head. */
+.page-head {
+  --head-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Cg fill='none' stroke='%23000' stroke-width='1'%3E%3Cpath d='M0 100H400M0 200H400M0 300H400M100 0V400M200 0V400M300 0V400' stroke-dasharray='2 6'/%3E%3Ccircle cx='200' cy='200' r='190' stroke-opacity='.5'/%3E%3C/g%3E%3Cpath d='M34.7 48.6L15.0 48.6L12.0 25.1L14.2 22.9L19.4 22.1L21.4 15.6L25.0 17.5L30.2 16.5L29.3 17.3L32.7 17.3L34.4 16.0L35.1 16.9L35.4 15.8L37.2 16.4L36.3 15.4L38.5 16.2L38.5 15.4L41.1 16.7L40.9 17.9L45.1 23.1L44.3 24.1L44.9 26.0L41.7 28.5L43.7 26.6L45.8 27.2L44.7 28.3L45.5 28.8L44.4 30.8L45.8 31.2L46.0 30.4L45.8 31.9L46.4 30.8L46.1 33.5L45.2 33.7L47.3 34.4L47.3 35.6L43.0 36.0L48.1 36.6L49.4 38.3L47.9 38.8L49.5 38.9L47.2 38.9L47.4 40.7L50.0 40.4L51.7 41.7L50.8 42.1L52.0 41.8L50.9 43.1L51.9 43.3L50.0 43.0L51.7 46.1L50.7 45.4L51.3 46.6L50.0 46.3L51.1 47.1L47.8 45.2L47.0 43.4L45.4 44.7L47.2 46.0L46.2 47.8L47.7 48.5Z' transform='translate(-26 -36) scale(7.4)' fill='%23000'/%3E%3C/svg%3E");
+  position: relative;
+  isolation: isolate;
+}
+.page-head::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset-block: 14px 18px;
+  inset-inline-end: var(--gutter);
+  width: min(380px, 34vw);
+  background: var(--rule-strong);
+  opacity: 0.38;
+  -webkit-mask: var(--head-art) center / contain no-repeat;
+  mask: var(--head-art) center / contain no-repeat;
+  pointer-events: none;
+}
+.page-head-meta > a {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 12px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink-2);
+  text-decoration: none;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+.page-head-meta > a:is(:hover, :focus-visible) {
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.reference-version {
+  margin-block: 22px 0;
+  padding: 12px 18px;
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--teal);
+  border-radius: 0 10px 10px 0;
+  background: var(--card);
+}
+@media (max-width: 720px) {
+  .page-head::after {
+    opacity: 0.16;
+    width: 70vw;
+  }
+}
+@media (prefers-contrast: more) {
+  .page-head::after {
+    display: none;
+  }
+}

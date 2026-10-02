@@ -57,6 +57,11 @@ const themeToggle =
   '<path class="tt-rays" d="M12 1.5v2.2M12 20.3v2.2M1.5 12h2.2M20.3 12h2.2M4.6 4.6l1.5 1.5M17.9 17.9l1.5 1.5M4.6 19.4l1.5-1.5M17.9 6.1l1.5-1.5" ' +
   'stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg></button>';
 
+const brandMark =
+  '<svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="15" fill="#1b4142"/><path d="M12 25.1L19.4 22.1L21.4 15.5L25 17.5L38.5 15.4L45.1 23.1L42.6 29.6L46 36.4L49.6 40.2L51.2 46L47.7 48.6L15 48.6Z" fill="#f1e8d4" stroke="#f1e8d4" stroke-width="1.4" stroke-linejoin="round"/><path d="M12 33.5H44M26 17.5V48.6" fill="none" stroke="#1b4142" stroke-opacity=".28" stroke-width="1.2"/><circle cx="43" cy="26" r="4.4" fill="#e8764f" stroke="#1b4142" stroke-width="1.6"/></svg>';
+const wordmark = (label) =>
+  `<a class="wordmark" href="./"${label ? ' aria-label="SF Map SVG home"' : ''}>${brandMark}<span class="brand-name">SF Map<small>SVG</small></span></a>`;
+
 function masthead(section) {
   const links = sections
     .map(
@@ -64,10 +69,10 @@ function masthead(section) {
         `<a href="${href}"${id === section ? ' aria-current="page"' : ''}>${label}</a>`,
     )
     .join('');
-  return `<a class="skip" href="#content">Skip to content</a><header class="masthead"><div class="dateline shell"><span>An atlas of San Francisco in SVG</span><span>%RELEASE_LABEL%</span></div><div class="masthead-bar shell"><a class="wordmark" href="./" aria-label="SF / SVG home">SF<span aria-hidden="true"> / </span>SVG</a><nav aria-label="Main navigation">${links}</nav><div class="masthead-end"><a class="masthead-github" href="${repository}">GitHub ↗</a>${themeToggle}</div></div></header>`;
+  return `<a class="skip" href="#content">Skip to content</a><header class="masthead"><div class="dateline shell"><span class="dateline-tag">An atlas of San Francisco, drawn in SVG</span><a class="release-pill" href="https://www.npmjs.com/package/@kahwee/sf-map-svg">%RELEASE_LABEL%<span aria-hidden="true"> ↗</span></a></div><div class="masthead-bar shell">${wordmark(true)}<nav aria-label="Main navigation">${links}</nav><div class="masthead-end"><a class="masthead-github" href="${repository}">GitHub ↗</a>${themeToggle}</div></div></header>`;
 }
 
-const colophon = `<footer class="colophon" data-rule><div class="shell colophon-grid"><div class="colophon-mark"><a class="wordmark" href="./">SF<span aria-hidden="true"> / </span>SVG</a><p>Offline, dependency-free SVG maps of San Francisco. Software under the MIT license; geography retains its sources’ terms.</p></div><nav aria-label="The atlas"><h2>The atlas</h2><a href="./">Home</a><a href="./layers.html">Layers &amp; divisions</a><a href="./playground.html">Map design playground</a><a href="./spot.html">One spot, three San Franciscos</a></nav><nav aria-label="Examples"><h2>Examples</h2><a href="./measures.html">Local measures</a><a href="./propositions.html">California propositions</a><a href="./candidates.html">Supervisorial votes</a><a href="./examples.html">All examples</a></nav><nav aria-label="Reference"><h2>Reference</h2><a href="./docs.html">Documentation</a><a href="./api.html">API reference</a><a href="${repository}/blob/main/SOURCES.md">Geographic sources</a><a href="${repository}/blob/main/CHANGELOG.md">Changelog</a></nav></div><p class="shell colophon-line">Set in your system’s serif and sans. Geography from DataSF, the San Francisco Association of Realtors, and BART. %RELEASE_LABEL%.</p></footer>`;
+const colophon = `<footer class="colophon" data-rule><div class="shell colophon-grid"><div class="colophon-mark">${wordmark(false)}<p>Offline, dependency-free SVG maps of San Francisco. Software under the MIT license; geography retains its sources’ terms.</p></div><nav aria-label="The atlas"><h2>The atlas</h2><a href="./">Home</a><a href="./layers.html">Layers &amp; divisions</a><a href="./playground.html">Map design playground</a><a href="./spot.html">One spot, three San Franciscos</a></nav><nav aria-label="Examples"><h2>Examples</h2><a href="./measures.html">Local measures</a><a href="./propositions.html">California propositions</a><a href="./candidates.html">Supervisorial votes</a><a href="./examples.html">All examples</a></nav><nav aria-label="Reference"><h2>Reference</h2><a href="./docs.html">Documentation</a><a href="./api.html">API reference</a><a href="${repository}/blob/main/SOURCES.md">Geographic sources</a><a href="${repository}/blob/main/CHANGELOG.md">Changelog</a></nav></div><p class="shell colophon-line">Set in your system’s serif and sans. Geography from DataSF, the San Francisco Association of Realtors, and BART. %RELEASE_LABEL%.</p></footer>`;
 
 const arrowDirections = { '→': 'e', '▶': 'e', '↗': 'ne', '↓': 's', '←': 'w' };
 const attribute = (value) =>
