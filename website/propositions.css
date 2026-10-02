@@ -88,7 +88,7 @@
   bottom: 0;
   height: 22px;
   border-top: 1px solid var(--ink);
-  font: 500 11px var(--sans);
+  font: 500 12px var(--sans);
   color: var(--muted);
 }
 .strip-axis span {
@@ -119,7 +119,7 @@
   border-radius: 50%;
   background: var(--fill, var(--card));
   color: var(--dot-ink, var(--ink));
-  font: 600 10px var(--sans);
+  font: 600 12px var(--sans);
   transform: translateX(calc(var(--x, 0.5) * 100cqw));
   transition:
     transform var(--dur-slow) var(--spring-soft),

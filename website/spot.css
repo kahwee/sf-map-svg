@@ -113,7 +113,7 @@
   box-shadow: inset 3px 0 0 var(--accent);
 }
 .spot-card-tag {
-  font: 600 11px var(--sans);
+  font: 600 12px var(--sans);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);

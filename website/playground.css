@@ -31,7 +31,7 @@
 }
 .desk-number span {
   display: block;
-  font: 9px var(--mono);
+  font: 12px var(--mono);
   letter-spacing: 0.08em;
   margin-top: 16px;
   white-space: nowrap;
@@ -86,7 +86,7 @@
   content: "−";
 }
 .design-controls summary span {
-  font: 10px var(--mono);
+  font: 12px var(--mono);
   color: var(--teal);
 }
 .control-body {
@@ -121,7 +121,7 @@
 }
 .palette-card strong {
   display: block;
-  font: 550 11px var(--sans);
+  font: 550 12px var(--sans);
   margin-top: 8px;
 }
 .palette-swatches {
@@ -138,7 +138,7 @@
   right: 8px;
   bottom: 7px;
   color: var(--teal);
-  font-size: 11px;
+  font-size: 12px;
 }
 .field {
   display: block;
@@ -166,7 +166,7 @@
   gap: 10px;
 }
 .control-note {
-  font: 11px / 1.6 var(--sans);
+  font: 12px / 1.6 var(--sans);
   color: var(--muted);
   margin: 6px 0 14px;
 }
@@ -228,7 +228,7 @@
   grid-template-columns: 30px 1fr;
   gap: 8px;
   align-items: center;
-  font: 11px var(--sans);
+  font: 12px var(--sans);
 }
 .color-field input {
   width: 30px;
@@ -240,7 +240,7 @@
 }
 .color-field code {
   display: block;
-  font: 9px var(--mono);
+  font: 12px var(--mono);
   color: var(--muted);
   margin-top: 2px;
   text-transform: uppercase;
@@ -253,7 +253,7 @@
 }
 .field output {
   float: right;
-  font: 10px var(--mono);
+  font: 12px var(--mono);
   color: var(--teal);
 }
 .design-output {
@@ -285,7 +285,7 @@
   background: none;
   color: var(--muted);
   padding: 7px 10px;
-  font: 550 11px var(--sans);
+  font: 550 12px var(--sans);
   cursor: pointer;
 }
 .renderer-switch button[aria-pressed="true"] {
@@ -293,7 +293,7 @@
   color: var(--on-ink);
 }
 .board-state {
-  font: 9px var(--mono);
+  font: 12px var(--mono);
   color: var(--teal);
 }
 .board-paper {
@@ -302,7 +302,7 @@
   background: radial-gradient(var(--rule) 0.7px, transparent 0.7px) 0 0 / 12px 12px;
 }
 .board-coordinate {
-  font: 8px var(--mono);
+  font: 12px var(--mono);
   letter-spacing: 0.15em;
   color: var(--muted);
   padding-bottom: 10px;
@@ -311,7 +311,7 @@
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  font: 10px var(--mono);
+  font: 12px var(--mono);
   color: var(--muted);
   padding-top: 10px;
   border-top: 1px solid var(--rule);
@@ -363,7 +363,7 @@
   background: var(--card);
   color: var(--ink);
   border-color: var(--rule-strong);
-  font-size: 11px;
+  font-size: 12px;
   padding: 5px 8px;
   min-height: 32px;
 }
@@ -371,19 +371,19 @@
   padding: 6px 8px;
   margin: 0;
   background: var(--card);
-  font-size: 11px;
+  font-size: 12px;
 }
 #design-map .sf-explorer-feature-controls label {
   color: var(--ink);
-  font-size: 11px;
+  font-size: 12px;
 }
 #design-map .sf-explorer-feature-controls .dropdown {
   max-width: 240px;
-  --dropdown-font: 400 11px var(--sans);
+  --dropdown-font: 400 12px var(--sans);
 }
 #design-map .sf-explorer-hint {
   background: transparent;
-  font: 9px / 1.4 var(--sans);
+  font: 12px / 1.4 var(--sans);
   color: var(--muted);
   padding: 6px 0;
   margin: 0;
@@ -407,7 +407,7 @@
   border-top: 1px solid var(--rule);
 }
 .board-footer p {
-  font: 11px / 1.5 var(--sans);
+  font: 12px / 1.5 var(--sans);
   color: var(--muted);
   margin: 0;
   max-width: 65%;
@@ -421,7 +421,7 @@
   background: transparent;
   color: var(--ink);
   padding: 6px 9px;
-  font: 11px var(--sans);
+  font: 12px var(--sans);
   cursor: pointer;
 }
 .history-actions button:first-child,
@@ -449,7 +449,7 @@
   padding: 24px 0 8px;
 }
 .takeaway-bar .eyebrow {
-  font-size: 9px;
+  font-size: 12px;
 }
 .takeaway-bar p {
   font: 20px var(--serif);
@@ -462,7 +462,7 @@
   justify-content: flex-end;
 }
 .export-note {
-  font: 11px / 1.6 var(--sans);
+  font: 12px / 1.6 var(--sans);
   color: var(--muted);
   margin: 0 0 30px;
 }
@@ -479,7 +479,7 @@
   gap: 12px;
 }
 .code-heading .eyebrow {
-  font-size: 9px;
+  font-size: 12px;
 }
 .code-heading h2 {
   font: 28px var(--serif);
@@ -489,7 +489,7 @@
   max-height: 380px;
   overflow: auto;
   margin: 0;
-  font: 11px / 1.7 var(--mono);
+  font: 12px / 1.7 var(--mono);
   tab-size: 2;
   white-space: pre;
 }
@@ -510,7 +510,7 @@
 }
 .state-inspector p {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .inspector-row {
   display: flex;
@@ -519,7 +519,7 @@
   border-bottom: 1px dotted var(--rule);
 }
 .inspector-row span:last-child {
-  font: 10px var(--mono);
+  font: 12px var(--mono);
   color: var(--teal);
 }
 .desk-footnote {
@@ -585,7 +585,7 @@
     gap: 6px;
   }
   .board-footer p {
-    font-size: 10px;
+    font-size: 12px;
   }
 }
 @media (max-width: 620px) {
@@ -600,7 +600,7 @@
     max-width: 330px;
   }
   .workshop-head .eyebrow {
-    font-size: 9px;
+    font-size: 12px;
   }
   .live-dot {
     margin-left: 8px;
@@ -645,7 +645,7 @@
     right: 7px;
   }
   .board-edition {
-    font-size: 9px;
+    font-size: 12px;
     margin-top: 4px;
     padding-top: 5px;
   }
@@ -653,18 +653,18 @@
     padding: 7px 10px;
   }
   .board-footer p {
-    font-size: 9px;
+    font-size: 12px;
   }
   .board-bar {
     padding: 7px;
   }
   .renderer-switch button {
-    font-size: 10px;
+    font-size: 12px;
     padding: 5px 9px;
   }
   #design-map .sf-explorer-hint {
     background: transparent;
-    font-size: 8px;
+    font-size: 12px;
     padding: 3px 0;
   }
   .takeaway-bar {
@@ -701,7 +701,7 @@
     font-size: 25px;
   }
   .state-inspector summary span {
-    font-size: 10px;
+    font-size: 12px;
   }
   .design-controls details:first-of-type summary {
     padding-top: 0;
@@ -732,7 +732,7 @@
 .code-language {
   display: grid;
   gap: 4px;
-  font: 11px var(--sans);
+  font: 12px var(--sans);
   color: var(--muted);
   margin-left: auto;
 }
@@ -803,7 +803,7 @@
   height: 24px;
   border-radius: 50%;
   background: color-mix(in srgb, var(--teal) 14%, transparent);
-  font: 600 11px var(--mono);
+  font: 600 12px var(--mono);
 }
 .palette-card {
   border-radius: 10px;
@@ -854,7 +854,7 @@
   overflow: hidden;
 }
 .color-field code {
-  font-size: 11px;
+  font-size: 12px;
 }
 .field output {
   font-size: 12px;
@@ -880,7 +880,7 @@
   font-size: 12px;
 }
 .board-coordinate {
-  font-size: 11px;
+  font-size: 12px;
 }
 .board-paper {
   padding-bottom: 14px;
@@ -900,7 +900,7 @@
   font-size: 12px;
 }
 #design-map .sf-explorer-hint {
-  font-size: 11px;
+  font-size: 12px;
 }
 .board-footer p {
   font-size: 13px;
@@ -915,7 +915,7 @@
 }
 .takeaway-bar .eyebrow,
 .code-heading .eyebrow {
-  font-size: 11px;
+  font-size: 12px;
 }
 .export-note {
   font-size: 13px;
@@ -997,13 +997,13 @@
     font-size: 12px;
   }
   .board-edition {
-    font-size: 11px;
+    font-size: 12px;
   }
   .renderer-switch button {
     font-size: 12px;
   }
   #design-map .sf-explorer-hint {
-    font-size: 10px;
+    font-size: 12px;
   }
   .design-controls {
     padding-inline: 16px;
