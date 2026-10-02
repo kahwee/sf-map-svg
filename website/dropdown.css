@@ -1,0 +1,71 @@
+/* Reusable native single-select. The wrapper owns the decorative chevron;
+   the select keeps its labels, keyboard behavior and platform picker. */
+.dropdown {
+  position: relative;
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  color: var(--ink);
+}
+.dropdown > .dropdown-control {
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  margin: 0;
+  padding-block: var(--dropdown-padding-block, 10px);
+  padding-inline: var(--dropdown-padding-inline, 14px) 44px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--dropdown-radius, 8px);
+  background: var(--card);
+  color: inherit;
+  font: var(--dropdown-font, 500 15px var(--sans));
+  letter-spacing: 0;
+  text-transform: none;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.dropdown::after {
+  content: "";
+  position: absolute;
+  inset-inline-end: 16px;
+  top: 50%;
+  width: 12px;
+  height: 8px;
+  transform: translateY(-50%);
+  background: currentColor;
+  mask:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  pointer-events: none;
+}
+.dropdown > .dropdown-control:enabled:hover {
+  border-color: var(--teal);
+}
+.dropdown > .dropdown-control:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 3px;
+}
+.dropdown:focus-within::after {
+  color: var(--teal);
+}
+.dropdown:has(> :disabled)::after {
+  opacity: 0.45;
+}
+.dropdown > .dropdown-control:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+@media (forced-colors: active) {
+  .dropdown > .dropdown-control {
+    appearance: auto;
+    padding-inline: var(--dropdown-padding-inline, 14px);
+  }
+  .dropdown::after {
+    display: none;
+  }
+  .dropdown > .dropdown-control:focus-visible {
+    outline-color: Highlight;
+  }
+}

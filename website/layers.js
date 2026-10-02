@@ -1,5 +1,6 @@
 import { createMap } from '@kahwee/sf-map-svg';
 import { renderMap } from '@kahwee/sf-map-svg/static';
+import { enhanceDropdowns } from './dropdown.js';
 import { interactiveCode, interactiveOptions, staticCode, staticOptions } from './layers-code.js';
 import { mapCapabilities } from './site-capabilities.js';
 import { loadSiteMapData, neighborhoodSources } from './site-map-data.js';
@@ -143,6 +144,7 @@ function createInteractive() {
       ? `Supervisorial District ${selection.id} · ${selection.year} boundaries`
       : 'Select a neighborhood or district on the map to identify it.';
   });
+  enhanceDropdowns(map.element);
   $('studio-map').replaceChildren(map.element);
   updateCode();
 }

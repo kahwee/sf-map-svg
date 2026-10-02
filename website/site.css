@@ -7,6 +7,8 @@
  * navigation, and motion.js only for what CSS cannot know.
  */
 
+@import "./dropdown.css";
+
 /* ---------- Tokens ---------- */
 :root {
   color-scheme: light dark;
@@ -615,7 +617,6 @@ hr {
   text-transform: uppercase;
   color: var(--muted);
 }
-select,
 input[type="search"],
 input[type="text"] {
   min-height: 44px;

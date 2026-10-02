@@ -1,4 +1,5 @@
 import { createMap, renderMap } from '@kahwee/sf-map-svg';
+import { enhanceDropdowns } from './dropdown.js';
 import {
   colorNames,
   featureNames,
@@ -269,6 +270,7 @@ function paint() {
         ? 'Choose a pin or explore the map.'
         : 'Click an area to explore. Drag to pan.';
     }
+    enhanceDropdowns(map.element);
     $('design-map').querySelector('svg')?.setAttribute('data-design-preview', '');
     $('edition-name').textContent = palettes.find((palette) => palette.id === state.palette).name;
     $('edition-year').textContent = state.year;

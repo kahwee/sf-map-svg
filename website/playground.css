@@ -53,6 +53,8 @@
   align-items: start;
 }
 .design-controls {
+  --dropdown-radius: 0;
+  --dropdown-font: 400 13px var(--sans);
   font-family: var(--sans);
   min-width: 0;
 }
@@ -144,7 +146,6 @@
   margin-bottom: 14px;
   color: var(--ink-2);
 }
-.field select,
 .field input[type="text"] {
   display: block;
   width: 100%;
@@ -156,9 +157,12 @@
   font: 13px var(--sans);
   border-radius: 0;
 }
+.field .dropdown {
+  margin-top: 5px;
+}
 .field-pair {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 0.65fr) minmax(0, 1fr);
   gap: 10px;
 }
 .control-note {
@@ -327,6 +331,9 @@
   width: 100%;
   display: block;
 }
+#design-map:has(.sf-explorer-feature-controls:not([hidden])) {
+  aspect-ratio: auto;
+}
 #design-map .sf-explorer {
   border: 0;
   background: transparent;
@@ -369,9 +376,9 @@
 #design-map .sf-explorer-feature-controls label {
   font-size: 11px;
 }
-#design-map .sf-explorer-feature-controls select {
-  max-width: 180px;
-  font-size: 11px;
+#design-map .sf-explorer-feature-controls .dropdown {
+  max-width: 240px;
+  --dropdown-font: 400 11px var(--sans);
 }
 #design-map .sf-explorer-hint {
   background: transparent;
@@ -709,4 +716,10 @@
 
 #design-map .sf-explorer-zoom {
   display: none;
+}
+
+#design-map:has(.sf-explorer-feature-controls:not([hidden])) .sf-explorer-toolbar {
+  position: static;
+  justify-content: flex-end;
+  padding-bottom: 8px;
 }

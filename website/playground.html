@@ -23,9 +23,9 @@
           <details open><summary><span>01</span> Find your feeling</summary><div id="palette-picker" class="palette-picker"></div></details>
           <details open><summary><span>02</span> Compose the city</summary>
             <div class="control-body">
-              <label class="field">Map view<select id="design-mode"><option value="districts">Districts</option><option value="neighborhoods">Neighborhoods</option><option value="basemap">Basemap</option></select></label>
-              <div class="field-pair"><label class="field">District year<select id="design-year"><option>2002</option><option>2012</option><option selected>2022</option></select></label><label class="field">Color theme<select id="design-theme"><option value="districts">Soft districts</option><option value="transit">Uniform land</option></select></label></div>
-              <label class="field">Neighborhood definition<select id="design-source"><option value="realtor">SFAR realtor · 92</option><option value="sf-find">SF Find · 117</option><option value="analysis">Analysis · 41</option></select></label>
+              <label class="field">Map view<span class="dropdown"><select class="dropdown-control" id="design-mode"><option value="districts">Districts</option><option value="neighborhoods">Neighborhoods</option><option value="basemap">Basemap</option></select></span></label>
+              <div class="field-pair"><label class="field">District year<span class="dropdown"><select class="dropdown-control" id="design-year"><option>2002</option><option>2012</option><option selected>2022</option></select></span></label><label class="field">Color theme<span class="dropdown"><select class="dropdown-control" id="design-theme"><option value="districts">Soft districts</option><option value="transit">Uniform land</option></select></span></label></div>
+              <label class="field">Neighborhood definition<span class="dropdown"><select class="dropdown-control" id="design-source"><option value="realtor">SFAR realtor · 92</option><option value="sf-find">SF Find · 117</option><option value="analysis">Analysis · 41</option></select></span></label>
               <p class="control-note">Definitions remain independent of district year.</p>
               <div id="design-layers" class="toggle-grid"></div>
             </div>
@@ -34,7 +34,7 @@
           <details><summary><span>04</span> Type &amp; finishing touches</summary><div class="control-body">
             <label class="field">SVG title<input id="design-title" type="text" maxlength="120"></label>
             <label class="toggle"><span>Visible text labels</span><input id="design-labels" type="checkbox" checked></label>
-            <label class="field">Label font<select id="design-font"><option value="system-ui,sans-serif">Clean sans</option><option value="Georgia,serif">Editorial serif</option><option value="ui-monospace,monospace">Technical mono</option></select></label>
+            <label class="field">Label font<span class="dropdown"><select class="dropdown-control" id="design-font"><option value="system-ui,sans-serif">Clean sans</option><option value="Georgia,serif">Editorial serif</option><option value="ui-monospace,monospace">Technical mono</option></select></span></label>
             <label class="field">Label weight <output id="weight-value">550</output><input id="design-weight" type="range" min="100" max="900" step="50"></label>
             <label class="field">Label size <output id="size-value">12 px</output><input id="design-size" type="range" min="11" max="24" step="1"></label>
             <label class="field">Pin radius <output id="radius-value">6 px</output><input id="design-radius" type="range" min="3" max="16" step="1"></label>
