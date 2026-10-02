@@ -118,13 +118,22 @@ import * as geometry from '@kahwee/sf-map-svg/geometry';
 const options: MapOptions = { features: { motion: true }, appearance: { colors: { water: '#fff' } } };
 const controller = () => createMap(fullMapData, options);
 const guideController = () => createGuideController(options);
+const liveContract = () => {
+  const map = controller();
+  map.configure({ mode: 'districts', year: 2012, appearance: { colors: { water: '#123456' } } });
+  map.getResolvedConfiguration().layers.bartStations satisfies boolean;
+  map.getCapabilities().sources satisfies readonly NeighborhoodSource[];
+  map.on('selectionchange', (event) => {
+    if (event.kind === 'marker') event.current?.lng satisfies number | undefined;
+  });
+};
 const shellController = (shell: HTMLElement) => mountGuideController(shell, options);
-const staticOptions: StaticMapOptions = { width: 390, landmarks: true, bartStations: true, overlays: [{ id: 'route', geometry: { type: 'LineString', coordinates: [[-122.4, 37.7], [-122.41, 37.71]] } }] };
+const staticOptions: StaticMapOptions = { layers: { bartStations: true }, appearance: { colors: { water: '#123456' } }, markers: [{ id: 'readonly', lng: -122.4, lat: 37.76 }] as const, width: 390, landmarks: true, bartStations: true, overlays: [{ id: 'route', geometry: { type: 'LineString', coordinates: [[-122.4, 37.7], [-122.41, 37.71]] } }] };
 const svg: string = renderMap(fullMapData.map, staticOptions).svg;
 const staticSvg: string = renderMap(staticMapData).svg;
 const source: NeighborhoodSource = 'realtor';
 const name: string | undefined = getNeighborhood('NoPa', { source })?.properties.canonicalName;
-void [controller, svg, staticSvg, name, geometry, createGuideMap, loadGuideDetailedData, guideMapData];
+void [controller, liveContract, svg, staticSvg, name, geometry, createGuideMap, loadGuideDetailedData, guideMapData];
 `,
   );
   execFileSync(

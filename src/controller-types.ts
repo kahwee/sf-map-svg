@@ -29,11 +29,16 @@ export type MapAppearance = Pick<
   | 'selectedMarkerColor'
 >;
 export type MapControls = NonNullable<NeighborhoodExplorerOptions['controls']>;
-/** Omitted groups/keys retain their values; undefined groups reset all keys in that group. */
+/** Omitted keys retain values. Undefined presentation groups reset; undefined mode/source/year/labels retain their current value. */
 export interface MapConfiguration {
   features?: MapFeatures;
   layers?: InteractiveLayers;
   controls?: MapControls;
+  appearance?: MapAppearance;
+  mode?: NonNullable<NeighborhoodExplorerOptions['mode']>;
+  source?: NeighborhoodSource;
+  year?: DistrictYear;
+  labels?: boolean;
 }
 export interface MapOptions
   extends Omit<
@@ -48,8 +53,33 @@ export interface MapConfigurationSnapshot {
   /** Explicit overrides; absent values continue to follow the current mode. */
   layers: InteractiveLayers;
   controls: MapControls;
+  appearance?: MapAppearance;
 }
+export interface MapCapabilities {
+  sources: readonly NeighborhoodSource[];
+  years: readonly DistrictYear[];
+  /** Data availability, independent of requested layer visibility. */
+  layers: Readonly<Record<keyof InteractiveLayers, boolean>>;
+}
+export interface ResolvedMapConfiguration extends MapConfigurationSnapshot {
+  mode: NonNullable<MapOptions['mode']>;
+  source: NeighborhoodSource;
+  year: DistrictYear;
+  labels: boolean;
+  /** Effective switches after mode defaults and data availability; label switches honor labels. */
+  layers: Record<keyof InteractiveLayers, boolean>;
+}
+export type MapSelectionChange =
+  | { kind: 'marker'; current: MapMarker | null; previous: MapMarker | null }
+  | {
+      kind: 'neighborhood';
+      current: NeighborhoodSelection | null;
+      previous: NeighborhoodSelection | null;
+    }
+  | { kind: 'district'; current: DistrictSelection | null; previous: DistrictSelection | null };
 export interface MapEvents {
+  /** Common selection envelope; existing change events retain their payloads. */
+  selectionchange: MapSelectionChange;
   districtchange: DistrictSelection | { id: null; year: DistrictYear; district: null };
   districthover: DistrictSelection | { id: null; year: DistrictYear; district: null };
   districtactivate: DistrictSelection;
@@ -64,9 +94,11 @@ export interface MapEvents {
   mapresize: undefined;
 }
 export interface MapCamera {
+  /** Fixed 800 × 800 projected space, not longitude/latitude. */
   get(): MapViewport;
   set(view: MapViewport, options?: CameraOptions): void;
   fit(geometry: Geometry, options?: CameraOptions & { padding?: number | MapPadding }): void;
+  /** Delta in projected map units. */
   pan(x: number, y: number, options?: CameraOptions): void;
   zoom(factor: number, options?: CameraOptions): void;
   reset(options?: CameraOptions): void;
@@ -80,6 +112,8 @@ export interface MapController {
   readonly destroyed: boolean;
   configure(patch: MapConfiguration): void;
   getConfiguration(): MapConfigurationSnapshot;
+  getResolvedConfiguration(): ResolvedMapConfiguration;
+  getCapabilities(): MapCapabilities;
   on<K extends keyof MapEvents>(type: K, listener: (detail: MapEvents[K]) => void): () => void;
   /** Reconcile stable IDs; retained markers preserve nodes, focus, and entrance animations. */
   setMarkers(markers: readonly MapMarker[]): void;

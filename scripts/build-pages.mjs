@@ -28,6 +28,7 @@ const darkWater = (svg) =>
 const pages = [
   { file: 'index.html', section: 'atlas' },
   { file: 'layers.html', section: 'layers' },
+  { file: 'playground.html', section: 'playground' },
   { file: 'examples.html', section: 'examples' },
   { file: 'measures.html', section: 'examples' },
   { file: 'propositions.html', section: 'examples' },
@@ -41,6 +42,7 @@ const pages = [
 const sections = [
   ['atlas', './', 'Atlas'],
   ['layers', './layers.html', 'Layers'],
+  ['playground', './playground.html', 'Playground'],
   ['examples', './examples.html', 'Examples'],
   ['docs', './docs.html', 'Docs'],
   ['api', './api.html', 'API'],
@@ -64,7 +66,7 @@ function masthead(section) {
   return `<a class="skip" href="#content">Skip to content</a><header class="masthead"><div class="dateline shell"><span>An atlas of San Francisco in SVG</span><span>%RELEASE_LABEL%</span></div><div class="masthead-bar shell"><a class="wordmark" href="./" aria-label="SF / SVG home">SF<span aria-hidden="true"> / </span>SVG</a><nav aria-label="Main navigation">${links}</nav><div class="masthead-end"><a class="masthead-github" href="${repository}">GitHub ↗</a>${themeToggle}</div></div></header>`;
 }
 
-const colophon = `<footer class="colophon" data-rule><div class="shell colophon-grid"><div class="colophon-mark"><a class="wordmark" href="./">SF<span aria-hidden="true"> / </span>SVG</a><p>Offline, dependency-free SVG maps of San Francisco. Software under the MIT license; geography retains its sources’ terms.</p></div><nav aria-label="The atlas"><h2>The atlas</h2><a href="./">Home</a><a href="./layers.html">Layers &amp; divisions</a><a href="./spot.html">One spot, three San Franciscos</a></nav><nav aria-label="Examples"><h2>Examples</h2><a href="./measures.html">Local measures</a><a href="./propositions.html">California propositions</a><a href="./candidates.html">Supervisorial votes</a><a href="./examples.html">All examples</a></nav><nav aria-label="Reference"><h2>Reference</h2><a href="./docs.html">Documentation</a><a href="./api.html">API reference</a><a href="${repository}/blob/main/SOURCES.md">Geographic sources</a><a href="${repository}/blob/main/CHANGELOG.md">Changelog</a></nav></div><p class="shell colophon-line">Set in your system’s serif and sans. Geography from DataSF, the San Francisco Association of Realtors, and BART. %RELEASE_LABEL%.</p></footer>`;
+const colophon = `<footer class="colophon" data-rule><div class="shell colophon-grid"><div class="colophon-mark"><a class="wordmark" href="./">SF<span aria-hidden="true"> / </span>SVG</a><p>Offline, dependency-free SVG maps of San Francisco. Software under the MIT license; geography retains its sources’ terms.</p></div><nav aria-label="The atlas"><h2>The atlas</h2><a href="./">Home</a><a href="./layers.html">Layers &amp; divisions</a><a href="./playground.html">Map design playground</a><a href="./spot.html">One spot, three San Franciscos</a></nav><nav aria-label="Examples"><h2>Examples</h2><a href="./measures.html">Local measures</a><a href="./propositions.html">California propositions</a><a href="./candidates.html">Supervisorial votes</a><a href="./examples.html">All examples</a></nav><nav aria-label="Reference"><h2>Reference</h2><a href="./docs.html">Documentation</a><a href="./api.html">API reference</a><a href="${repository}/blob/main/SOURCES.md">Geographic sources</a><a href="${repository}/blob/main/CHANGELOG.md">Changelog</a></nav></div><p class="shell colophon-line">Set in your system’s serif and sans. Geography from DataSF, the San Francisco Association of Realtors, and BART. %RELEASE_LABEL%.</p></footer>`;
 
 const arrowDirections = { '→': 'e', '▶': 'e', '↗': 'ne', '↓': 's', '←': 'w' };
 const attribute = (value) =>
@@ -264,7 +266,55 @@ try {
           html
             .replaceAll('%MAP_VERSION%', version)
             .replaceAll('%RELEASE_LABEL%', releaseLabel)
-            .replaceAll('<!--feature-status-->', featureStatus),
+            .replaceAll('<!--feature-status-->', featureStatus)
+            .replaceAll(
+              '%APPEARANCE_SHORT%',
+              capabilities.runtimeAppearance
+                ? 'Update live with configure.'
+                : 'Set at construction.',
+            )
+            .replaceAll(
+              '%APPEARANCE_HELP%',
+              capabilities.runtimeAppearance
+                ? 'Update with <code>map.configure({ appearance })</code> while preserving camera, selection and focus. Token objects merge by key; <code>appearance: undefined</code> resets the group.'
+                : 'Appearance is set at construction. Recreate the map to change its palette and typography.',
+            )
+            .replaceAll(
+              '%CONFIGURATION_KEYS%',
+              capabilities.runtimeAppearance
+                ? 'features?, layers?, controls?, appearance?, mode?, source?, year?, labels?'
+                : 'features?, layers?, controls?',
+            )
+            .replaceAll(
+              '%CONFIGURATION_SNAPSHOT%',
+              capabilities.runtimeAppearance
+                ? 'Detached feature, layer, control and appearance overrides. Styling callbacks keep their identity.'
+                : 'Detached copy of features, layers and controls.',
+            )
+            .replaceAll(
+              '%RUNTIME_HELP%',
+              capabilities.runtimeAppearance
+                ? 'Update <code>layers</code>, <code>controls</code>, <code>features</code>, <code>appearance</code>, mode, source, year and labels with <code>map.configure()</code>. Live appearance retains camera, selection and focus. Try it in the <a href="./playground.html">map design playground</a>.'
+                : 'Options are grouped: <code>layers</code>, <code>controls</code> and <code>features</code> can change with <code>map.configure()</code>; appearance is set at construction. Explore palettes in the <a href="./playground.html">map design playground</a>.',
+            )
+            .replaceAll(
+              '<!--static-presentation-->',
+              capabilities.staticPresentation
+                ? '<tr><td><code>layers</code>, <code>appearance</code></td><td>StaticMapLayers, StaticMapAppearance</td><td>Shared presentation vocabulary. Grouped keys override flat keys; static appearance supports theme, colors and districtStyle. Neighborhood labels remain browser-only.</td></tr>'
+                : '',
+            )
+            .replaceAll(
+              '<!--configuration-inspection-->',
+              capabilities.runtimeAppearance
+                ? '<tr><td><code>getResolvedConfiguration</code></td><td>() → ResolvedMapConfiguration</td><td>Current mode/source/year/labels and effective layer switches; label collision and zoom rules still apply.</td></tr><tr><td><code>getCapabilities</code></td><td>() → MapCapabilities</td><td>Supplied sources, years and layer data availability, independent of visibility.</td></tr>'
+                : '',
+            )
+            .replaceAll(
+              '<!--selection-envelope-->',
+              capabilities.runtimeAppearance
+                ? '<tr><td><code>selectionchange</code></td><td>{ kind, current, previous }</td><td>Common detached envelope for marker, neighborhood and district selection; null clears. Existing change events retain their payloads.</td></tr>'
+                : '',
+            ),
       },
     ],
     build: {
@@ -284,6 +334,11 @@ try {
   const site = simplifyDataset(fullMapData);
   await mkdir('pages-dist/data', { recursive: true });
   await writeFile('pages-dist/data/site-map.json', JSON.stringify(site));
+  // Full precision is fetched only when the design playground exports an SVG.
+  await writeFile(
+    'pages-dist/data/export-map.json',
+    JSON.stringify({ map: fullMapData.map, neighborhoods: fullMapData.neighborhoods }),
+  );
 
   // Full-precision downloads, display copies, and thumbnails with dark twins.
   for (const folder of ['display', 'thumb', 'plates', 'figures'])

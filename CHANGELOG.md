@@ -2,6 +2,13 @@
 
 User-visible changes are recorded here. Unreleased entries describe changes on `main` that are not part of a tagged package release.
 
+## Unreleased
+
+- Share grouped `layers` and supported `appearance` options between static and interactive maps, retaining flat static options and existing defaults; accept readonly static marker arrays.
+- Update interactive appearance, mode, source, district year and labels through `configure`, preserving camera and retained marker nodes. Merge appearance tokens by key and validate combined patches before commit.
+- Add `getResolvedConfiguration()` and `getCapabilities()` for effective layer switches and supplied geography, plus an additive `selectionchange` event with consistent current/previous snapshots.
+- Add a live Pages map design playground with six editable palettes, layers, typography, sample pins/routes, browser/static previews, undo/redo, shareable designs, copyable code and full-city SVG export. Keep released-package previews compatible with their installed API.
+
 ## 4.1.0 — 2026-10-01
 
 - Validate canonical and generated GeoJSON during data checks, rejecting invalid WGS84 coordinates and malformed polygon rings before release.

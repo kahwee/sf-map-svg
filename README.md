@@ -2,7 +2,7 @@
 
 Offline, self-contained San Francisco SVG maps. The package has no runtime dependencies. Geography is always an explicit import; the root entry does not bundle data.
 
-[Live examples](https://kahwee.github.io/sf-map-svg/examples.html) · [Storybook source](stories/) · [Geographic sources](SOURCES.md) · [v3 migration](docs/migration-v3.md)
+[Design playground](https://kahwee.github.io/sf-map-svg/playground.html) · [Live examples](https://kahwee.github.io/sf-map-svg/examples.html) · [Storybook source](stories/) · [Geographic sources](SOURCES.md) · [v3 migration](docs/migration-v3.md)
 
 ## Install
 
@@ -52,7 +52,7 @@ map.camera.zoom(1.5);
 map.destroy();
 ```
 
-`createMap(data, options)` returns a controller. Use `map.element` for mounting, `map.configure({ features, layers, controls })` for runtime switches, `map.camera` for pan/zoom/fit/reset, and `map.on()` for typed events. Appearance is set at construction. SFAR realtor neighborhoods are the default when supplied; SF Find and analysis are explicit alternate sources. The `/data/full` preset includes all three collections and historical districts.
+`createMap(data, options)` returns a controller. Use `map.element` for mounting, `map.configure({ features, layers, controls, appearance, mode, source, year, labels })` for runtime switches, `map.camera` for pan/zoom/fit/reset, and `map.on()` for typed events. Appearance can change live while preserving camera, selection, and focus. `getResolvedConfiguration()` explains effective layers; `getCapabilities()` reports supplied geography. SFAR realtor neighborhoods are the default when supplied; SF Find and analysis are explicit alternate sources. The `/data/full` preset includes all three collections and historical districts.
 
 See [controller options, events, and lifecycle](docs/API.md#interactive-maps),
 [examples](docs/EXAMPLES.md), and [consumer integration](docs/consumer-integration.md).

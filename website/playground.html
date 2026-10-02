@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Make San Francisco your own. A live SVG map design playground with curated palettes, layers, typography, motion, shareable designs and copyable code.">
+  <link rel="canonical" href="https://kahwee.github.io/sf-map-svg/playground.html">
+  <title>Make the city your own · SF / SVG</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./playground.css">
+</head>
+<body>
+  <!--site-header-->
+  <main id="content" class="playground-page">
+    <header class="workshop-head shell">
+      <div><p class="eyebrow">The map design desk <span class="live-dot" aria-hidden="true"></span> <b>Live playground</b></p><h1>Make the city <em>your own.</em></h1><p>Start with a feeling. Play with the details. Take the map—and the code—with you.</p></div>
+      <div class="desk-number" aria-hidden="true">SF<br><span>37° 46′ N / 122° 25′ W</span></div>
+    </header>
+    <section class="design-desk shell" aria-label="Live map design playground">
+      <form id="design-controls" class="design-controls" onsubmit="return false">
+        <fieldset id="design-fields" disabled>
+          <legend class="sr-only">Map design options</legend>
+          <details open><summary><span>01</span> Find your feeling</summary><div id="palette-picker" class="palette-picker"></div></details>
+          <details open><summary><span>02</span> Compose the city</summary>
+            <div class="control-body">
+              <label class="field">Map view<select id="design-mode"><option value="districts">Districts</option><option value="neighborhoods">Neighborhoods</option><option value="basemap">Basemap</option></select></label>
+              <div class="field-pair"><label class="field">District year<select id="design-year"><option>2002</option><option>2012</option><option selected>2022</option></select></label><label class="field">Color theme<select id="design-theme"><option value="districts">Soft districts</option><option value="transit">Uniform land</option></select></label></div>
+              <label class="field">Neighborhood definition<select id="design-source"><option value="realtor">SFAR realtor · 92</option><option value="sf-find">SF Find · 117</option><option value="analysis">Analysis · 41</option></select></label>
+              <p class="control-note">Definitions remain independent of district year.</p>
+              <div id="design-layers" class="toggle-grid"></div>
+            </div>
+          </details>
+          <details open><summary><span>03</span> Mix your inks</summary><div class="control-body"><div id="design-colors" class="color-grid"></div></div></details>
+          <details><summary><span>04</span> Type &amp; finishing touches</summary><div class="control-body">
+            <label class="field">SVG title<input id="design-title" type="text" maxlength="120"></label>
+            <label class="toggle"><span>Visible text labels</span><input id="design-labels" type="checkbox" checked></label>
+            <label class="field">Label font<select id="design-font"><option value="system-ui,sans-serif">Clean sans</option><option value="Georgia,serif">Editorial serif</option><option value="ui-monospace,monospace">Technical mono</option></select></label>
+            <label class="field">Label weight <output id="weight-value">550</output><input id="design-weight" type="range" min="100" max="900" step="50"></label>
+            <label class="field">Label size <output id="size-value">12 px</output><input id="design-size" type="range" min="11" max="24" step="1"></label>
+            <label class="field">Pin radius <output id="radius-value">6 px</output><input id="design-radius" type="range" min="3" max="16" step="1"></label>
+            <p class="control-note">Font and screen sizes apply to the browser map. SVG title applies to export.</p>
+          </div></details>
+          <details><summary><span>05</span> Places &amp; movement</summary><div class="control-body">
+            <label class="toggle"><span>Five sample city pins</span><input id="design-pins" type="checkbox"></label>
+            <label class="toggle"><span>Sketch a route across the city</span><input id="design-route" type="checkbox"></label>
+            <p class="control-note">The route is an illustrative sketch, not directions.</p>
+            <div id="design-features" class="toggle-grid"></div>
+            <label class="toggle"><span>Map navigation controls</span><input id="design-chrome" type="checkbox" checked></label>
+            <label class="toggle"><span>Draw-in animation for SVG</span><input id="design-animation" type="checkbox"></label>
+            <p class="control-note">Motion always respects reduced-motion preferences.</p>
+          </div></details>
+        </fieldset>
+      </form>
+      <div class="design-output">
+        <section class="drawing-board" aria-label="Live map preview">
+          <div class="board-bar"><fieldset class="renderer-switch" aria-label="Preview renderer"><button id="preview-interactive" type="button" aria-pressed="true" disabled>Browser map</button><button id="preview-static" type="button" aria-pressed="false" disabled>Static SVG</button></fieldset><span id="live-state" class="board-state" role="status">Loading geography…</span></div>
+          <div class="board-paper"><div class="board-coordinate" aria-hidden="true">SAN FRANCISCO / DESIGN STUDY</div><div id="design-map" aria-busy="true"><p class="stage-loading">Preparing your canvas…</p></div><div class="board-edition"><span id="edition-name">Original atlas</span><span id="edition-year">2022</span><span aria-hidden="true">↗ N</span></div></div>
+          <div class="board-footer"><p id="design-selection">Click a district to explore. Drag to pan.</p><div class="history-actions"><button id="design-undo" type="button" disabled aria-label="Undo design change">↶</button><button id="design-redo" type="button" disabled aria-label="Redo design change">↷</button><button id="design-reset" type="button" disabled>Reset</button></div></div>
+        </section>
+      </div>
+    </section>
+    <section class="design-takeaways shell" aria-label="Export and code">
+        <div class="takeaway-bar"><div><span class="eyebrow">Yours to keep</span><p>One city. Infinite expressions.</p></div><div><button id="design-share" class="button secondary small" type="button" disabled>Copy design link ↗</button><button id="design-download" class="button small" type="button" disabled>Export city SVG ↓</button></div></div>
+        <p class="export-note">SVG export uses full-precision geography, the full city extent, and static labels. The browser preview uses display-simplified geography; zoom and screen sizing stay in the browser.</p>
+        <section class="design-code" aria-label="Code for this design"><div class="code-heading"><div><span class="eyebrow">What you see, what you ship</span><h2>Your map, in code.</h2></div><button id="design-copy" class="button secondary small" type="button" disabled>Copy code</button></div><p id="api-version" class="control-note">%RELEASE_LABEL% · explicit data imports, zero runtime dependencies.</p><pre><code id="design-code"></code></pre></section>
+        <details class="state-inspector"><summary>Under the hood <span>Resolved layers &amp; data</span></summary><p>Availability comes from supplied geography. Effective switches include mode defaults and master label visibility; zoom and collision rules can still hide individual labels.</p><div id="design-inspector"></div></details>
+    </section>
+    <section class="desk-footnote shell"><p><b>A small map with a large imagination.</b> Geography stays precise. Neighborhood sources stay distinct. Your design travels as a self-contained SVG or a few lines of JavaScript.</p><a href="./api.html">Explore the API reference →</a></section>
+  </main>
+  <!--site-footer-->
+  <script type="module" src="./playground.js"></script>
+</body>
+</html>

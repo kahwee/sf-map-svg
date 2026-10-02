@@ -209,3 +209,178 @@ export const DistrictUpdatesAreAtomic: Story = {
     expect(map.getSelectedDistrict()).toBeNull();
   },
 };
+
+/** Live styling must retain camera, focus, marker nodes, and active selections. */
+export const LivePresentation: Story = {
+  play: async () => {
+    map.selectMarker('one', { fit: false });
+    map.selectNeighborhood('Inner Mission', { fit: false });
+    map.camera.set([100, 100, 400], { animate: false });
+    const marker = map.element.querySelector<SVGElement>('[data-marker-id="one"]');
+    marker?.focus();
+    map.configure({
+      appearance: {
+        colors: { water: '#142d45', land: '#234660', marker: '#ffbb55' },
+        labelStyle: { fontFamily: 'Georgia,serif', fontWeight: 700 },
+        markerRadius: 10,
+      },
+      labels: true,
+    });
+    expect(map.camera.get()).toEqual([100, 100, 400]);
+    expect(map.getSelectedMarker()?.id).toBe('one');
+    expect(map.getSelectedNeighborhood()?.name).toBe('Inner Mission');
+    expect(map.element.querySelector('[data-marker-id="one"]')).toBe(marker);
+    expect(document.activeElement).toBe(marker);
+    expect(map.element.querySelector('svg rect')?.getAttribute('fill')).toBe('#142d45');
+    expect(
+      map.element.querySelector('[data-layer="explorer-labels"]')?.getAttribute('font-family'),
+    ).toBe('Georgia,serif');
+    map.configure({ appearance: { colors: { water: '#112233' } } });
+    expect(map.getConfiguration().appearance?.colors?.land).toBe('#234660');
+    const before = map.getConfiguration();
+    for (const patch of [
+      { source: 'sf-find', appearance: { colors: { water: '#abcdef' } } },
+      { appearance: { markerRadius: 30 }, layers: { highways: false } },
+    ]) {
+      expect(() => map.configure(patch as never)).toThrow();
+      expect(map.getConfiguration()).toEqual(before);
+      expect(map.element.querySelector('svg rect')?.getAttribute('fill')).toBe('#112233');
+    }
+    map.configure({ appearance: undefined, mode: 'basemap', labels: false });
+    expect(map.getConfiguration().appearance).toEqual({});
+    expect(map.getResolvedConfiguration().layers.neighborhoodLabels).toBe(false);
+    expect(map.getResolvedConfiguration().mode).toBe('basemap');
+    expect(map.getCapabilities().sources).toEqual(['realtor']);
+    expect(map.getCapabilities().years).toEqual([]);
+    expect(map.getCapabilities().layers.bartStations).toBe(true);
+  },
+};
+export const SelectionEnvelope: Story = {
+  play: async () => {
+    const changes: import('../src/controller-types.js').MapSelectionChange[] = [];
+    map.on('selectionchange', (event) => {
+      changes.push(event);
+      if (event.kind === 'marker' && event.current) event.current.label = 'Consumer mutation';
+    });
+    map.selectMarker('one', { fit: false });
+    map.selectMarker(null, { fit: false });
+    expect(changes[0]).toMatchObject({ kind: 'marker', previous: null, current: { id: 'one' } });
+    expect(changes[1]).toMatchObject({ kind: 'marker', previous: { id: 'one' }, current: null });
+    if (changes[1].kind === 'marker') expect(changes[1].previous?.label).toBeUndefined();
+    map.selectNeighborhood('Inner Mission', { fit: false });
+    map.selectNeighborhood(null, { fit: false });
+    expect(changes[2]).toMatchObject({
+      kind: 'neighborhood',
+      current: { name: 'Inner Mission' },
+      previous: null,
+    });
+    expect(changes[3]).toMatchObject({
+      kind: 'neighborhood',
+      current: null,
+      previous: { name: 'Inner Mission' },
+    });
+    map.destroy();
+    expect(() => map.getCapabilities()).toThrow('destroyed');
+  },
+};
+export const ReentrantPresentation: Story = {
+  render: () => {
+    map = createMap(
+      { map: mapData, neighborhoods: {}, districts: districtMaps },
+      { mode: 'districts' },
+    );
+    return map.element;
+  },
+  play: async () => {
+    const original = map.element.querySelector('svg rect')?.getAttribute('fill');
+    expect(() =>
+      map.configure({
+        appearance: { colors: { water: '#123456' }, districtStyle: () => ({ opacity: 2 }) },
+        labels: false,
+      }),
+    ).toThrow();
+    expect(map.element.querySelector('svg rect')?.getAttribute('fill')).toBe(original);
+    expect(map.getResolvedConfiguration().labels).toBe(true);
+    let changed = false;
+    map.configure({
+      appearance: {
+        colors: { water: '#abcdef' },
+        districtStyle: () => {
+          if (!changed) {
+            changed = true;
+            map.configure({ appearance: { colors: { water: '#112233' } } });
+          }
+          return { fill: '#ff0000' };
+        },
+      },
+    });
+    expect(map.element.querySelector('svg rect')?.getAttribute('fill')).toBe('#112233');
+    expect(map.getConfiguration().appearance?.colors?.water).toBe('#112233');
+    map.selectDistrict(3);
+    const viewport = map.camera.get();
+    const events: import('../src/controller-types.js').MapSelectionChange[] = [];
+    map.on('selectionchange', (event) => events.push(event));
+    map.configure({ year: 2012, appearance: { theme: 'districts' } });
+    expect(map.getSelectedDistrict()?.id).toBe(3);
+    expect(map.getResolvedConfiguration().year).toBe(2012);
+    expect(map.camera.get()).toEqual(viewport);
+    expect(events[0]).toMatchObject({
+      kind: 'district',
+      current: { id: 3, year: 2012 },
+      previous: { id: 3, year: 2022 },
+    });
+  },
+};
+
+export const ConvenienceSetterSupersedesPatch: Story = {
+  render: () => {
+    map = createMap(
+      { map: mapData, neighborhoods: {}, districts: districtMaps },
+      { mode: 'districts' },
+    );
+    return map.element;
+  },
+  play: async () => {
+    let changed = false;
+    const original = map.element.querySelector('svg rect')?.getAttribute('fill');
+    map.configure({
+      mode: 'districts',
+      appearance: {
+        colors: { water: '#abcdef' },
+        districtStyle: () => {
+          if (!changed) {
+            changed = true;
+            map.setMode('basemap');
+          }
+          return {};
+        },
+      },
+    });
+    expect(map.getResolvedConfiguration().mode).toBe('basemap');
+    expect(map.element.querySelector('svg rect')?.getAttribute('fill')).toBe(original);
+  },
+};
+
+export const AppearanceSupersedesYearCallback: Story = {
+  render: () => {
+    map = createMap(
+      { map: mapData, neighborhoods: {}, districts: districtMaps },
+      { mode: 'districts' },
+    );
+    return map.element;
+  },
+  play: async () => {
+    let update = false;
+    map.setDistrictStyle(() => {
+      if (update) {
+        update = false;
+        map.configure({ appearance: { colors: { water: '#123456' } } });
+      }
+      return {};
+    });
+    update = true;
+    map.setDistrictYear(2012);
+    expect(map.getResolvedConfiguration().year).toBe(2022);
+    expect(map.element.querySelector('svg rect')?.getAttribute('fill')).toBe('#123456');
+  },
+};

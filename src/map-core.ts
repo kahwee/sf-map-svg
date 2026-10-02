@@ -158,6 +158,12 @@ const transitColors = {
   marker: '#0073ae',
   selected: '#0073ae',
 };
+export function resolveMapColors(
+  theme: SFMapOptions['theme'],
+  colors: SFMapOptions['colors'] = {},
+) {
+  return { ...defaults, ...(theme === 'transit' ? transitColors : {}), ...colors };
+}
 let sequence = 0;
 
 /** Make an offline SVG and the matching longitude/latitude projection. */
@@ -189,7 +195,7 @@ export function createSFMapWithData(options: SFMapOptions, data: SFMapData) {
     );
   if (theme !== 'districts' && theme !== 'transit')
     throw new TypeError('Theme must be districts or transit.');
-  const colors = { ...defaults, ...(theme === 'transit' ? transitColors : {}), ...options.colors };
+  const colors = resolveMapColors(theme, options.colors);
   const animation = normalizeStaticAnimation(options.animation);
   const animated = animation !== null;
   const geometry = getLayerPathsWithData(options, data, false);

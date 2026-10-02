@@ -1,6 +1,8 @@
 import type { Bounds, NeighborhoodFeature, NeighborhoodSource } from '../data/types.js';
+import { copyAppearance } from './appearance.js';
 import { createCamera, validateCameraOptions } from './camera.js';
 import { clusterPoints } from './clusters.js';
+import type { MapAppearance, MapConfiguration } from './controller-types.js';
 import { renderDistrictAppearance } from './district-layer.js';
 import { createDistrictMorph } from './district-morph.js';
 import { prepareDistrictStyles } from './district-style.js';
@@ -14,7 +16,12 @@ import { createFrameScheduler } from './frame-scheduler.js';
 import { geometryPath } from './geometry.js';
 import { createLabelRenderer } from './label-renderer.js';
 import { createLayerTransitions } from './layer-transition.js';
-import { createSFMapWithData, districtColors, getLayerPathsWithData } from './map-core.js';
+import {
+  createSFMapWithData,
+  districtColors,
+  getLayerPathsWithData,
+  resolveMapColors,
+} from './map-core.js';
 import { createMarkerLayer, type MarkerItem } from './marker-layer.js';
 import { attachNavigation } from './navigation.js';
 import type {
@@ -69,13 +76,28 @@ const normalizeName = (value: string) =>
 const formatSourceLabel = (source: NeighborhoodSource) =>
   sourceNames[source] ?? `${source} neighborhoods`;
 
+/** Private bridge between the renderer and its public lifecycle controller. */
+type MapEngineElement = NeighborhoodExplorerElement & {
+  applyPresentation(
+    patch: MapConfiguration,
+    onCommit?: () => void,
+    isCurrent?: () => boolean,
+  ): boolean;
+  getMapState(): {
+    mode: ExplorerMode;
+    source: NeighborhoodSource;
+    year: DistrictYear;
+    labels: boolean;
+  };
+};
+
 let explorerCount = 0;
 
 /** Create an offline, browser-only neighborhood explorer. Call destroy() before disposal. */
 export function createNeighborhoodExplorerCore(
   options: NeighborhoodExplorerOptions = {},
   data: InteractiveSFMapData,
-): NeighborhoodExplorerElement {
+): MapEngineElement {
   validateExplorerOptions(options);
   let {
     source = 'realtor',
@@ -118,7 +140,7 @@ export function createNeighborhoodExplorerCore(
   if (!['neighborhoods', 'districts', 'basemap'].includes(mode))
     throw new RangeError(`Unknown map mode: ${mode}`);
   if (chrome !== 'explorer' && chrome !== 'map') throw new RangeError('Unknown interface.');
-  const minLabelSize = labelSize.min ?? 11,
+  let minLabelSize = labelSize.min ?? 11,
     maxLabelSize = labelSize.max ?? 12;
   if (
     ![minLabelSize, maxLabelSize, markerRadius, markerHitSize].every(Number.isFinite) ||
@@ -581,7 +603,11 @@ export function createNeighborhoodExplorerCore(
     if (fills && fade && enabled('districtFills')) districtTransition.fade(fills, fade);
     updateDistrictAppearance();
   }
-  function setDistrictYear(next: DistrictYear, options: CameraOptions = {}) {
+  function setDistrictYear(
+    next: DistrictYear,
+    options: CameraOptions = {},
+    preparedStyles?: ReturnType<typeof prepareDistrictStyles>,
+  ) {
     if (destroyed) return;
     validateCameraOptions(options);
     if (![2002, 2012, 2022].includes(next))
@@ -590,7 +616,8 @@ export function createNeighborhoodExplorerCore(
       throw new RangeError(`No ${next} district dataset was supplied.`);
     if (next === year) return;
     const revision = districtRevision;
-    const prepared = prepareDistrictStyles(data.map.districts[next], districtStyle);
+    const prepared =
+      preparedStyles ?? prepareDistrictStyles(data.map.districts[next], districtStyle);
     if (destroyed || revision !== districtRevision) return;
     const committedRevision = ++districtRevision;
     const geometry = getLayerPathsWithData({ year: next }, data.map, false);
@@ -1336,8 +1363,7 @@ export function createNeighborhoodExplorerCore(
     if (!destroyed && neighborhoodRevision === revision && target) moveView(target, options);
     return true;
   }
-  function setSource(next: NeighborhoodSource) {
-    if (destroyed) return;
+  function prepareSource(next: NeighborhoodSource, reset = true) {
     if (!Object.hasOwn(collections, next))
       throw new RangeError(`Unknown neighborhood source: ${next}`);
     const collection = collections[next];
@@ -1417,36 +1443,43 @@ export function createNeighborhoodExplorerCore(
         area: (bounds[2] - bounds[0]) * (bounds[3] - bounds[1]),
       };
     });
-    const hadSelection = !!selected;
-    source = next;
-    sourceSelect.value = source;
-    selected = undefined;
-    const revision = ++neighborhoodRevision;
-    delete root.dataset.selectedNeighborhood;
-    root.dataset.source = source;
-    layerFades.crossfade(areas, () => areas.replaceChildren(...nextItems.map((item) => item.node)));
-    neighborhoodSelect.replaceChildren(element('option', 'No neighborhood selected'));
-    neighborhoodSelect.options[0].value = '';
-    neighborhoodSelect.append(...nextOptions);
-    items = nextItems;
-    if (items[0]) items[0].node.setAttribute('tabindex', '0');
-    updateResults();
-    updateDetail();
-    updateComposition();
-    status.textContent =
-      mode === 'basemap'
-        ? 'San Francisco basemap.'
-        : mode === 'districts'
-          ? `${year} supervisorial districts. Numbers identify each district.`
-          : `${formatSourceLabel(source)}. Select a neighborhood to begin.`;
-    if (hadSelection)
-      root.dispatchEvent(
-        new CustomEvent('neighborhoodchange', {
-          bubbles: true,
-          detail: { feature: null, source, id: null, name: null },
-        }),
+    return () => {
+      const hadSelection = !!selected;
+      source = next;
+      sourceSelect.value = source;
+      selected = undefined;
+      const revision = ++neighborhoodRevision;
+      delete root.dataset.selectedNeighborhood;
+      root.dataset.source = source;
+      layerFades.crossfade(areas, () =>
+        areas.replaceChildren(...nextItems.map((item) => item.node)),
       );
-    if (!destroyed && neighborhoodRevision === revision) resetView();
+      neighborhoodSelect.replaceChildren(element('option', 'No neighborhood selected'));
+      neighborhoodSelect.options[0].value = '';
+      neighborhoodSelect.append(...nextOptions);
+      items = nextItems;
+      if (items[0]) items[0].node.setAttribute('tabindex', '0');
+      updateResults();
+      updateDetail();
+      updateComposition();
+      status.textContent =
+        mode === 'basemap'
+          ? 'San Francisco basemap.'
+          : mode === 'districts'
+            ? `${year} supervisorial districts. Numbers identify each district.`
+            : `${formatSourceLabel(source)}. Select a neighborhood to begin.`;
+      if (hadSelection)
+        root.dispatchEvent(
+          new CustomEvent('neighborhoodchange', {
+            bubbles: true,
+            detail: { feature: null, source, id: null, name: null },
+          }),
+        );
+      if (reset && !destroyed && neighborhoodRevision === revision) resetView();
+    };
+  }
+  function setSource(next: NeighborhoodSource) {
+    if (!destroyed) prepareSource(next)();
   }
   function syncFeatureControls() {
     featureControls.hidden = neighborhoodLabel.hidden && markerLabel.hidden;
@@ -1891,7 +1924,160 @@ export function createNeighborhoodExplorerCore(
     scheduleLabels();
     root.dispatchEvent(new CustomEvent('mapresize', { bubbles: true }));
   };
+
+  let presentationRevision = 0;
+  function applyPresentation(
+    patch: MapConfiguration,
+    onCommit?: () => void,
+    isCurrent: () => boolean = () => true,
+  ) {
+    const revision = ++presentationRevision;
+    const nextYear = patch.year ?? year;
+    const nextMode = patch.mode ?? mode;
+    if (
+      (patch.year !== undefined || nextMode === 'districts') &&
+      (!data.map.districts?.[nextYear] || !data.districts?.[nextYear])
+    )
+      throw new RangeError(`No ${nextYear} district dataset was supplied.`);
+    if (nextMode === 'neighborhoods' && !sources.length)
+      throw new RangeError('No neighborhood dataset was supplied.');
+    const commitSource =
+      patch.source !== undefined && patch.source !== source
+        ? prepareSource(patch.source, false)
+        : undefined;
+    const appearance: MapAppearance | undefined = patch.appearance;
+    const nextStyle = appearance ? appearance.districtStyle : districtStyle;
+    const districtVersion = districtRevision;
+    const prepared =
+      appearance || nextYear !== year
+        ? prepareDistrictStyles(data.map.districts?.[nextYear] ?? [], nextStyle)
+        : districtStyles;
+    if (
+      destroyed ||
+      !isCurrent() ||
+      revision !== presentationRevision ||
+      districtVersion !== districtRevision
+    )
+      return false;
+    if (nextYear !== year) {
+      // Validate target paths and label coordinates before any presentation group commits.
+      getLayerPathsWithData({ year: nextYear }, data.map, false);
+      for (const feature of data.districts?.[nextYear]?.features ?? [])
+        for (const point of feature.properties.labelPoints) map.project(point);
+    }
+    onCommit?.();
+    if (appearance) {
+      districtRevision++;
+      const next = copyAppearance(appearance);
+      theme = next.theme ?? 'transit';
+      colors = next.colors ?? {};
+      labelStyle = next.labelStyle ?? {};
+      areaStyle = next.areaStyle ?? {};
+      styleOptions = next.style ?? {};
+      minLabelSize = next.labelSize?.min ?? 11;
+      maxLabelSize = next.labelSize?.max ?? 12;
+      markerRadius = next.markerRadius ?? 6;
+      markerHitSize = next.markerHitSize ?? 44;
+      markerColor = next.markerColor ?? colors.marker ?? '#245b61';
+      selectedMarkerColor = next.selectedMarkerColor ?? colors.selected ?? '#f04f32';
+      districtTransition.cancel();
+      const fills = districtLayers.find((layer) => layer.dataset.layer === 'district-fills');
+      const fade = layerFades.duration();
+      const stylesChanged =
+        nextStyle !== districtStyle ||
+        [...prepared].some(([id, value]) =>
+          (['fill', 'stroke', 'opacity'] as const).some(
+            (key) => value[key] !== districtStyles.get(id)?.[key],
+          ),
+        );
+      if (fills && fade && enabled('districtFills') && nextYear === year && stylesChanged)
+        districtTransition.fade(fills, fade);
+      districtStyle = nextStyle;
+      districtStyles = prepared;
+      const palette = resolveMapColors(theme, colors);
+      svg.querySelector('rect')?.setAttribute('fill', palette.water);
+      svg.querySelector('[data-layer="coast"]')?.setAttribute('fill', palette.land);
+      svg.querySelector('[data-layer="coastline"]')?.setAttribute('stroke', palette.district);
+      for (const [layer, color] of [
+        ['landmarks', palette.park],
+        ['highways', palette.highway],
+        ['key-roads', palette.road],
+      ] as const)
+        for (const node of svg.querySelectorAll(`[data-layer="${layer}"] path`)) {
+          node.setAttribute(layer === 'landmarks' ? 'fill' : 'stroke', color);
+          if (layer === 'highways')
+            node.setAttribute('stroke-width', theme === 'transit' ? '2' : '1.4');
+        }
+      for (const [token, fallback, name] of [
+        ['ink', '#18364f', 'ink'],
+        ['surface', '#fff', 'surface'],
+        ['accent', '#163d61', 'accent'],
+        ['border', '#cedae3', 'border'],
+        ['focus', '#1676b8', 'focus'],
+        ['controlGap', '6px', 'control-gap'],
+        ['font', 'system-ui,sans-serif', 'font'],
+      ] as const)
+        root.style.setProperty(`--sf-map-${name}`, styleOptions[token] ?? fallback);
+      labelLayer.setAttribute(
+        'font-family',
+        labelStyle.fontFamily ?? styleOptions.font ?? 'system-ui,sans-serif',
+      );
+      labelRenderer.invalidateMetrics();
+      for (const station of stationItems)
+        station.node.setAttribute('stroke', colors.bart ?? '#0073ae');
+      for (const kind of ['bart', 'park', 'highway', 'road'] as const) {
+        const symbol = legend.querySelector<HTMLElement>(`.sf-explorer-legend-${kind}`);
+        if (symbol) {
+          symbol.style.removeProperty(kind === 'bart' ? 'border-color' : 'background-color');
+          if (colors[kind])
+            symbol.style.setProperty(
+              kind === 'bart' ? 'border-color' : 'background-color',
+              colors[kind],
+            );
+        }
+      }
+      for (const item of items) {
+        const active = item.feature === selected;
+        item.node.setAttribute(
+          'fill',
+          active ? (areaStyle.selectedFill ?? '#408dbe') : 'transparent',
+        );
+        item.node.setAttribute(
+          'stroke',
+          active ? (areaStyle.selectedStroke ?? '#176ba2') : (colors.neighborhood ?? '#9caebc'),
+        );
+      }
+      for (const item of markerItems) {
+        item.dot.setAttribute(
+          'fill',
+          item.marker.id === selectedMarker
+            ? selectedMarkerColor
+            : (item.marker.color ?? markerColor),
+        );
+        item.ring.setAttribute(
+          'stroke',
+          features.selectedMarkerRing
+            ? (features.selectedMarkerRing.color ?? selectedMarkerColor)
+            : selectedMarkerColor,
+        );
+      }
+      invalidateClusters();
+      updateDistrictAppearance();
+    }
+    if (nextYear !== year) setDistrictYear(nextYear, {}, prepared);
+    if (destroyed || revision !== presentationRevision || !isCurrent()) return false;
+    commitSource?.();
+    if (destroyed || revision !== presentationRevision || !isCurrent()) return false;
+    if (commitSource && appearance)
+      for (const item of items) item.node.setAttribute('stroke', colors.neighborhood ?? '#9caebc');
+    if (patch.mode !== undefined) setMode(patch.mode, false);
+    if (patch.labels !== undefined) setLabels(patch.labels);
+    scheduleLabels();
+    return true;
+  }
   const explorer = Object.assign(root, {
+    applyPresentation,
+    getMapState: () => ({ mode, source, year, labels }),
     selectNeighborhood,
     getSelection,
     selectDistrict,

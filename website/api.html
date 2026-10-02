@@ -70,6 +70,7 @@
           <div class="table-wrap"><table class="api-table">
             <thead><tr><th>Option</th><th>Type · default</th><th>Description</th></tr></thead>
             <tbody>
+              <!--static-presentation-->
               <tr><td><code>year</code></td><td>2002 | 2012 | 2022 · 2022</td><td>District map year.</td></tr>
               <tr><td><code>theme</code></td><td>'districts' | 'transit' · 'districts'</td><td>Soft district palette or quiet transit palette.</td></tr>
               <tr><td><code>width</code>, <code>height</code></td><td>number · 800</td><td>SVG size and view box.</td></tr>
@@ -118,7 +119,7 @@
               <tr><td><code>layers</code></td><td>InteractiveLayers</td><td>See <a href="#layers">layers</a>.</td></tr>
               <tr><td><code>controls</code></td><td>MapControls</td><td>See <a href="#controls">controls</a>.</td></tr>
               <tr><td><code>features</code></td><td>MapFeatures</td><td>See <a href="#features">features</a>.</td></tr>
-              <tr><td><code>appearance</code></td><td>MapAppearance</td><td>See <a href="#appearance">appearance</a>. Set once.</td></tr>
+              <tr><td><code>appearance</code></td><td>MapAppearance</td><td>See <a href="#appearance">appearance</a>. %APPEARANCE_SHORT%</td></tr>
               <tr><td><code>markers</code></td><td>MapMarker[]</td><td>Initial markers.</td></tr>
               <tr><td><code>overlays</code></td><td>MapOverlay[]</td><td>Initial overlays.</td></tr>
               <tr><td><code>legend</code></td><td>{ builtins?, hidden?, items? }</td><td>Legend entries.</td></tr>
@@ -170,6 +171,7 @@
 
         <section class="api-entry" id="appearance">
           <h2>appearance</h2>
+          <p>%APPEARANCE_HELP%</p>
           <div class="table-wrap"><table class="api-table">
             <thead><tr><th>Key</th><th>Type · default</th><th>Description</th></tr></thead>
             <tbody>
@@ -195,8 +197,9 @@
               <tr><td><code>overlayElement</code></td><td>HTMLDivElement</td><td>Positioned layer for your own HTML.</td></tr>
               <tr><td><code>camera</code></td><td>MapCamera</td><td>See <a href="#camera">MapCamera</a>.</td></tr>
               <tr><td><code>destroyed</code></td><td>boolean</td><td>True after <code>destroy()</code>.</td></tr>
-              <tr><td><code>configure</code></td><td>(patch: { features?, layers?, controls? })</td><td>Atomic runtime change; invalid patches change nothing. Omitted keys retain values; undefined groups reset.</td></tr>
-              <tr><td><code>getConfiguration</code></td><td>() → snapshot</td><td>Detached copy of features, layers and controls.</td></tr>
+              <tr><td><code>configure</code></td><td>(patch: { %CONFIGURATION_KEYS% })</td><td>Atomic runtime change; invalid patches change nothing. Omitted keys retain values; undefined groups reset.</td></tr>
+              <tr><td><code>getConfiguration</code></td><td>() → snapshot</td><td>%CONFIGURATION_SNAPSHOT%</td></tr>
+              <!--configuration-inspection-->
               <tr><td><code>on</code></td><td>(type, listener) → unsubscribe</td><td>Typed events; see <a href="#events">Events</a>.</td></tr>
               <tr><td><code>setMode</code></td><td>(mode)</td><td>Switch basemap, neighborhoods or districts.</td></tr>
               <tr><td><code>setSource</code></td><td>(source)</td><td>Switch neighborhood definition.</td></tr>
@@ -238,6 +241,7 @@
           <div class="table-wrap"><table class="api-table">
             <thead><tr><th>Event</th><th>Detail</th><th>When</th></tr></thead>
             <tbody>
+              <!--selection-envelope-->
               <tr><td><code>districtchange</code></td><td>{ id, year, district }</td><td>District selection changes.</td></tr>
               <tr><td><code>districthover</code></td><td>{ id, year, district }</td><td>The hovered district changes.</td></tr>
               <tr><td><code>districtactivate</code></td><td>{ id, year, district }</td><td>A district is clicked or activated by keyboard.</td></tr>

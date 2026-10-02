@@ -73,3 +73,43 @@ test('misplaced interactive options explain their supported replacement', () => 
     );
   }
 });
+
+test('appearance token patches merge, reset, and preserve styling callbacks', () => {
+  const districtStyle = () => ({ fill: '#abc' });
+  const current = prepareConfiguration(
+    { features: {}, layers: {}, controls: {} },
+    {
+      appearance: {
+        colors: { water: '#111111', land: '#eeeeee' },
+        labelStyle: { fontFamily: 'Georgia' },
+        districtStyle,
+      },
+    },
+  );
+  const next = prepareConfiguration(current, {
+    appearance: { colors: { water: '#222222' }, labelStyle: { fontWeight: 700 } },
+  });
+  assert.deepEqual(next.appearance.colors, { water: '#222222', land: '#eeeeee' });
+  assert.deepEqual(next.appearance.labelStyle, { fontFamily: 'Georgia', fontWeight: 700 });
+  assert.equal(next.appearance.districtStyle, districtStyle);
+  const removed = prepareConfiguration(current, { appearance: { colors: { water: undefined } } });
+  assert.deepEqual(removed.appearance.colors, { land: '#eeeeee' });
+  assert.deepEqual(expandMapOptions({ appearance: { colors: { water: undefined } } }), {
+    colors: {},
+  });
+  next.appearance.colors.land = '#aaaaaa';
+  assert.equal(current.appearance.colors.land, '#eeeeee');
+  assert.deepEqual(prepareConfiguration(current, { appearance: undefined }).appearance, {});
+  for (const patch of [
+    { appearance: { labelSize: { min: 20, max: 12 } } },
+    { appearance: { markerRadius: 30 } },
+    { appearance: { theme: 'oops' } },
+    { appearance: { labelStyle: { fontWeight: '700' } } },
+    { appearance: { colors: { ocean: 'red' } } },
+    { mode: 'oops' },
+    { year: 2024 },
+    { source: 'oops' },
+    { labels: 1 },
+  ])
+    assert.throws(() => prepareConfiguration(current, patch));
+});

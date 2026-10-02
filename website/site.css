@@ -685,17 +685,19 @@ figcaption code {
   height: auto;
 }
 /* Inline maps follow the page theme: dark water, and land dimmed like paper under a lamp. */
-:root[data-theme="dark"] svg[data-sf-map] > rect:first-of-type {
+:root[data-theme="dark"] svg[data-sf-map]:not([data-design-preview]) > rect:first-of-type {
   fill: var(--water);
 }
-:root[data-theme="dark"] svg[data-sf-map] [data-layer="geography"] {
+:root[data-theme="dark"] svg[data-sf-map]:not([data-design-preview]) [data-layer="geography"] {
   filter: brightness(0.84) saturate(0.92);
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) svg[data-sf-map] > rect:first-of-type {
+  :root:not([data-theme="light"]) svg[data-sf-map]:not([data-design-preview]) > rect:first-of-type {
     fill: var(--water);
   }
-  :root:not([data-theme="light"]) svg[data-sf-map] [data-layer="geography"] {
+  :root:not([data-theme="light"])
+    svg[data-sf-map]:not([data-design-preview])
+    [data-layer="geography"] {
     filter: brightness(0.84) saturate(0.92);
   }
 }

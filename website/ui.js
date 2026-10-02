@@ -66,17 +66,22 @@ export function highlight(code) {
     .join('');
 }
 
-/** Copy text, then announce the result in the button itself. */
+const copyStates = new WeakMap();
+
+/** Copy text, then announce the result without losing icons or accessible labels. */
 export async function copyText(button, text) {
-  const original = button.textContent;
+  const state = copyStates.get(button) ?? { original: [...button.childNodes] };
+  clearTimeout(state.timer);
+  copyStates.set(button, state);
   try {
     await navigator.clipboard.writeText(text);
     button.textContent = 'Copied';
   } catch {
     button.textContent = 'Select to copy';
   }
-  setTimeout(() => {
-    button.textContent = original;
+  state.timer = setTimeout(() => {
+    button.replaceChildren(...state.original);
+    copyStates.delete(button);
   }, 1600);
 }
 

@@ -54,7 +54,7 @@ exceptions are not transactional validation errors and do not roll back an alrea
 committed change. Direct mutation of the returned DOM can invalidate invariants;
 use the public methods and `overlayElement` extension point.
 
-The generic static renderer retains its existing broader option surface; strict
+Static grouped layers and appearance reject unknown keys, while flat compatibility options retain their existing surface; strict
 interactive option-key validation is not a claim that all static options share the
 same schema. Host layout, delayed images, fonts, and application cards need their
 own CLS tests. The scale bar is an approximate local Mercator scale, not survey
@@ -76,3 +76,5 @@ public types change. Update this matrix when introducing a new interaction.
 - `pnpm test:stories:coverage` runs Chromium stories and reports browser coverage.
 - `pnpm demo`, `pnpm build-storybook`, `pnpm test:package`, and `pnpm test:visual` cover examples, rendered stories, packed consumer imports, and reviewed map screenshots.
 - The packed consumer asserts removed compatibility entry points are absent.
+
+Live appearance patches prepare values, district styles and source replacement before committing; token objects merge by key. Styling callbacks that issue a newer presentation update supersede the pending patch. Resolved layer reads distinguish visibility settings from data availability and from zoom/collision label filtering. The additive selection envelope preserves existing event contracts.

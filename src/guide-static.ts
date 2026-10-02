@@ -1,25 +1,22 @@
 import { guideMapData } from './guide-data.js';
 import { guideShellCSS } from './guide-shell.js';
-import { createSFMapWithData } from './map-core.js';
+import { renderMap } from './static.js';
 import type { SFMapOptions } from './types.js';
 
 /** Server-safe overview using exactly the guide browser geography. */
 export function createGuideSVG(options: SFMapOptions = {}) {
-  return createSFMapWithData(
-    {
-      theme: 'transit',
-      districtFills: false,
-      districtLines: false,
-      districtLabels: false,
-      neighborhoodLines: true,
-      landmarks: true,
-      highways: true,
-      keyRoads: true,
-      bartStations: true,
-      ...options,
-    },
-    guideMapData.map,
-  );
+  return renderMap(guideMapData.map, {
+    theme: 'transit',
+    districtFills: false,
+    districtLines: false,
+    districtLabels: false,
+    neighborhoodLines: true,
+    landmarks: true,
+    highways: true,
+    keyRoads: true,
+    bartStations: true,
+    ...options,
+  });
 }
 
 /** Stable compact frame, progressively enhanced with mountGuideMap(). No browser globals. */

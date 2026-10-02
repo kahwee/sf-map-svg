@@ -35,6 +35,9 @@ export interface MapOverlay {
   label?: string;
 }
 export interface SFMapOptions {
+  /** Grouped presentation; supplied keys take precedence over flat compatibility options. */
+  layers?: StaticMapLayers;
+  appearance?: StaticMapAppearance;
   theme?: 'districts' | 'transit';
   width?: number;
   height?: number;
@@ -53,7 +56,7 @@ export interface SFMapOptions {
   roadLabels?: boolean;
   landmarks?: boolean;
   bartStations?: boolean;
-  markers?: MapMarker[];
+  markers?: readonly MapMarker[];
   overlays?: readonly MapOverlay[];
   title?: string;
   idPrefix?: string;
@@ -82,6 +85,10 @@ export interface SFMapOptions {
     >
   >;
 }
+
+/** Presentation supported by both the static and interactive renderers. */
+export type StaticMapLayers = Omit<InteractiveLayers, 'neighborhoodLabels'>;
+export type StaticMapAppearance = Pick<SFMapOptions, 'theme' | 'colors' | 'districtStyle'>;
 
 /** Serializable viewport in the interactive map's fixed 800 × 800 projected space. */
 export type MapViewport = readonly [x: number, y: number, size: number];
@@ -265,8 +272,13 @@ export interface TransitAnimationElement extends HTMLElement {
 export type {
   MapAppearance,
   MapCamera,
+  MapCapabilities,
   MapConfiguration,
+  MapConfigurationSnapshot,
   MapController,
+  MapControls,
   MapEvents,
   MapOptions,
+  MapSelectionChange,
+  ResolvedMapConfiguration,
 } from './controller-types.js';

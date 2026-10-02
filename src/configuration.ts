@@ -1,21 +1,9 @@
+import { appearanceKeys, copyAppearance, prepareAppearance } from './appearance.js';
 import type { MapConfiguration, MapConfigurationSnapshot, MapOptions } from './controller-types.js';
 import { controlKeys, layerKeys, normalizeFeatures, validateSwitchPatch } from './features.js';
 import type { NeighborhoodExplorerOptions } from './types.js';
 import { assertOptions, validateExplorerOptions } from './validation.js';
 
-const appearanceKeys = [
-  'theme',
-  'colors',
-  'labelStyle',
-  'areaStyle',
-  'districtStyle',
-  'labelSize',
-  'style',
-  'markerRadius',
-  'markerHitSize',
-  'markerColor',
-  'selectedMarkerColor',
-] as const;
 const featureKeys = [
   'motion',
   'markerEntrance',
@@ -54,11 +42,11 @@ export function expandMapOptions(options: MapOptions): NeighborhoodExplorerOptio
             : 'interface is internal and is not a supported createMap option.',
       );
     }
-  if (options.appearance !== undefined)
-    assertOptions(options.appearance, 'appearance', appearanceKeys);
+  const preparedAppearance =
+    options.appearance === undefined ? undefined : prepareAppearance({}, options.appearance);
   if (options.features !== undefined) normalizeFeatures(options.features);
-  const { features, appearance, ...rest } = options;
-  const expanded = { ...rest, ...appearance, ...features };
+  const { features, appearance: _appearance, ...rest } = options;
+  const expanded = { ...rest, ...preparedAppearance, ...features };
   validateExplorerOptions(expanded);
   return expanded;
 }
@@ -68,7 +56,24 @@ export function prepareConfiguration(
   current: MapConfigurationSnapshot,
   patch: MapConfiguration,
 ): MapConfigurationSnapshot {
-  assertOptions(patch, 'configuration', ['features', 'layers', 'controls']);
+  assertOptions(patch, 'configuration', [
+    'features',
+    'layers',
+    'controls',
+    'appearance',
+    'mode',
+    'source',
+    'year',
+    'labels',
+  ]);
+  if (patch.mode !== undefined && !['basemap', 'neighborhoods', 'districts'].includes(patch.mode))
+    throw new RangeError('Unknown map mode.');
+  if (patch.source !== undefined && !['realtor', 'sf-find', 'analysis'].includes(patch.source))
+    throw new RangeError('Unknown neighborhood source.');
+  if (patch.year !== undefined && ![2002, 2012, 2022].includes(patch.year))
+    throw new RangeError('District year must be 2002, 2012, or 2022.');
+  if (patch.labels !== undefined && typeof patch.labels !== 'boolean')
+    throw new TypeError('Labels must be a boolean.');
   const features =
     'features' in patch
       ? normalizeFeatures(
@@ -91,11 +96,17 @@ export function prepareConfiguration(
       if (next[property as keyof T] === undefined) delete next[property as keyof T];
     return next;
   };
-  return structuredClone({
-    features,
-    layers: switches('layers', current.layers, layerKeys),
-    controls: switches('controls', current.controls, controlKeys),
-  });
+  return {
+    ...structuredClone({
+      features,
+      layers: switches('layers', current.layers, layerKeys),
+      controls: switches('controls', current.controls, controlKeys),
+    }),
+    appearance:
+      'appearance' in patch
+        ? prepareAppearance(current.appearance ?? {}, patch.appearance)
+        : copyAppearance(current.appearance),
+  };
 }
 function checkedFeatures(value: NonNullable<MapConfiguration['features']>) {
   normalizeFeatures(value);
