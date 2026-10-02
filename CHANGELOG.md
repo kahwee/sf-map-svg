@@ -4,6 +4,9 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Strengthen the playground with strict TypeScript, checked JavaScript/TypeScript snippets, versioned design links, persistent explicit layer choices and independent static rendering. Keep mobile controls unobstructed and picker labels legible in dark mode.
+- Express explicit configuration resets for consumers using `exactOptionalPropertyTypes`, including nested appearance tokens. Make Pages API and guide references describe their actual package version without internal preview warnings.
+
 - Share grouped `layers` and supported `appearance` options between static and interactive maps, retaining flat static options and existing defaults; accept readonly static marker arrays.
 - Update interactive appearance, mode, source, district year and labels through `configure`, preserving camera and retained marker nodes. Merge appearance tokens by key and validate combined patches before commit.
 - Add `getResolvedConfiguration()` and `getCapabilities()` for effective layer switches and supplied geography, plus an additive `selectionchange` event with consistent current/previous snapshots.

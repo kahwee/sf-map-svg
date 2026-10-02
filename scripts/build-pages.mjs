@@ -6,6 +6,7 @@ import { pathToFileURL } from 'node:url';
 import { build } from 'vite';
 import { candidateInks, diverging, sequential } from '../website/palette.js';
 import { buildLlmDocs } from './build-llm-docs.mjs';
+import { checkPlaygroundCode } from './check-playground-code.mjs';
 import { getMapCapabilities } from './map-capabilities.mjs';
 import { simplifySvg } from './simplify-svg.mjs';
 import { simplifyDataset } from './site-data.mjs';
@@ -221,12 +222,8 @@ try {
   if (!/^\d+\.\d+\.\d+$/.test(version)) throw new Error('Expected a stable package version');
   const releaseLabel = released ? `v${version} · on npm` : `v${version} · local preview`;
   const capabilities = await getMapCapabilities(packageRoot);
-  const missing = Object.entries(capabilities)
-    .filter(([, available]) => !available)
-    .map(([name]) => name);
-  const featureStatus = missing.length
-    ? `<p class="shell" role="note">Preview features ${missing.map((name) => `<code>${name}</code>`).join(', ')} are not available in the selected npm package. Their examples below require an unreleased build; use the Markdown reference for this installed version.</p>`
-    : '';
+  await checkPlaygroundCode(packageRoot, capabilities);
+  const referenceStatus = `<p class="shell reference-version" role="note">This reference describes <code>@kahwee/sf-map-svg ${version}</code>${released ? ', the version used throughout this site' : ' from the local working tree'}. Examples and options below match this version.</p>`;
   const boot = await readFile('website/boot.js', 'utf8');
   await build({
     configFile: false,
@@ -266,7 +263,11 @@ try {
           html
             .replaceAll('%MAP_VERSION%', version)
             .replaceAll('%RELEASE_LABEL%', releaseLabel)
-            .replaceAll('<!--feature-status-->', featureStatus)
+            .replaceAll(
+              '%STATIC_MARKERS_TYPE%',
+              capabilities.staticPresentation ? 'readonly MapMarker[]' : 'MapMarker[]',
+            )
+            .replaceAll('<!--reference-version-->', referenceStatus)
             .replaceAll(
               '%APPEARANCE_SHORT%',
               capabilities.runtimeAppearance

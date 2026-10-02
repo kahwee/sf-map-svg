@@ -18,7 +18,7 @@
       <p class="lede" data-enter style="--i:4">Every entry point, option, method and event, with defaults. For explanations and patterns, start with <a href="./docs.html">the guide</a>. Types ship with the package; this page follows them.</p>
       <p class="page-head-meta" data-enter style="--i:5"><span>Package <code>@kahwee/sf-map-svg</code></span><a href="./api.md">Markdown reference</a><a href="./llms-full.txt" download>LLM documentation</a><span>%RELEASE_LABEL%</span></p>
     </header>
-    <!--feature-status-->
+    <!--reference-version-->
 
     <div class="docs shell">
       <nav class="toc" aria-label="Reference contents">
@@ -86,8 +86,8 @@
               <tr><td><code>roadLabels</code></td><td>boolean · same as keyRoads</td><td>Road names.</td></tr>
               <tr><td><code>bartStations</code></td><td>boolean · false</td><td>The eight BART stations in the city.</td></tr>
               <tr><td><code>labels</code></td><td>boolean · true</td><td>Hide every visible label while keeping titles.</td></tr>
-              <tr><td><code>markers</code></td><td>MapMarker[] · []</td><td>Points drawn above everything else.</td></tr>
-              <tr><td><code>overlays</code></td><td>MapOverlay[] · []</td><td>Your own lines and polygons.</td></tr>
+              <tr><td><code>markers</code></td><td>%STATIC_MARKERS_TYPE% · []</td><td>Points drawn above everything else.</td></tr>
+              <tr><td><code>overlays</code></td><td>readonly MapOverlay[] · []</td><td>Your own lines and polygons.</td></tr>
               <tr><td><code>colors</code></td><td>Partial&lt;Record&lt;ColorKey, string&gt;&gt;</td><td>water, land, district, neighborhood, highway, road, park, landmark, bart, label, marker, selected.</td></tr>
               <tr><td><code>animation</code></td><td>boolean | { duration?, delay? } · false</td><td>Self-contained draw-in. <code>duration</code> defaults to 2400 ms and scales the sequence.</td></tr>
               <tr><td><code>title</code></td><td>string · 'San Francisco map'</td><td>Accessible title.</td></tr>
@@ -120,8 +120,8 @@
               <tr><td><code>controls</code></td><td>MapControls</td><td>See <a href="#controls">controls</a>.</td></tr>
               <tr><td><code>features</code></td><td>MapFeatures</td><td>See <a href="#features">features</a>.</td></tr>
               <tr><td><code>appearance</code></td><td>MapAppearance</td><td>See <a href="#appearance">appearance</a>. %APPEARANCE_SHORT%</td></tr>
-              <tr><td><code>markers</code></td><td>MapMarker[]</td><td>Initial markers.</td></tr>
-              <tr><td><code>overlays</code></td><td>MapOverlay[]</td><td>Initial overlays.</td></tr>
+              <tr><td><code>markers</code></td><td>readonly MapMarker[]</td><td>Initial markers.</td></tr>
+              <tr><td><code>overlays</code></td><td>readonly MapOverlay[]</td><td>Initial overlays.</td></tr>
               <tr><td><code>legend</code></td><td>{ builtins?, hidden?, items? }</td><td>Legend entries.</td></tr>
               <tr><td><code>strings</code></td><td>Partial&lt;Record&lt;StringKey, string&gt;&gt;</td><td>Replace interface text for translation.</td></tr>
               <tr><td><code>attribution</code></td><td>'full' | 'compact' · 'full'</td><td>Source credit style.</td></tr>

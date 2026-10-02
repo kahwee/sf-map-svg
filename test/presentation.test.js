@@ -6,14 +6,17 @@ import { createGuideSVG } from '../dist/src/guide-static.js';
 import { getLayerPaths, renderMap } from '../dist/src/static.js';
 import { staticMapData } from '../dist/src/static-data.js';
 import {
+  designHash,
   initialState,
   interactiveOptions,
+  paletteName,
   palettes,
   playgroundCode,
   readState,
+  setMode,
   staticData,
   staticOptions,
-} from '../website/playground-model.js';
+} from '../website/playground-model.ts';
 
 const capabilities = {
   animation: true,
@@ -108,6 +111,10 @@ test('share state round-trips and rejects malformed or executable settings', () 
     null,
     [],
     { source: 'other' },
+    { version: 2 },
+    { colors: [] },
+    { radius: 3.5 },
+    { weight: 525 },
     { size: 100 },
     { layers: { highways: 'yes' } },
     { colors: { water: 'url(https://example.com)' } },
@@ -118,4 +125,21 @@ test('share state round-trips and rejects malformed or executable settings', () 
   const options = interactiveOptions(state, { layerTransitions: false, districtMorph: false });
   assert.equal(options.features.layerTransitions, undefined);
   assert.equal(options.features.districtMorph, undefined);
+});
+
+test('mode defaults follow the view while explicit layer overrides survive share and undo snapshots', () => {
+  const state = initialState();
+  state.layerOverrides.districtLines = true;
+  setMode(state, 'neighborhoods');
+  assert.equal(state.layers.districtLines, true);
+  assert.equal(state.layers.districtFills, false);
+  assert.equal(state.layers.neighborhoodLines, true);
+  const restored = readState(`#${designHash(state)}`);
+  assert.deepEqual(restored, state);
+  setMode(restored, 'basemap');
+  assert.equal(restored.layers.districtLines, true);
+  assert.equal(restored.layers.neighborhoodLines, false);
+  assert.equal(paletteName(state), 'Original atlas');
+  state.colors.water = '#123456';
+  assert.equal(paletteName(state), 'Custom palette');
 });

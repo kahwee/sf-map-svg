@@ -1,3 +1,45 @@
+import type { NeighborhoodSource } from '../dist/data/types.js';
+import type {
+  DistrictYear,
+  MapData,
+  MapOptions,
+  MapOverlay,
+  StaticMapOptions,
+} from '../dist/src/api.js';
+
+export interface PreviewCapabilities {
+  runtimeAppearance?: boolean;
+  staticPresentation?: boolean;
+  animation?: boolean;
+  layerTransitions?: boolean;
+  districtMorph?: boolean;
+}
+export type CodeLanguage = 'javascript' | 'typescript';
+export interface PlaygroundState {
+  palette: string;
+  render: 'interactive' | 'static';
+  mode: NonNullable<MapOptions['mode']>;
+  source: NeighborhoodSource;
+  year: DistrictYear;
+  labels: boolean;
+  layers: Record<keyof typeof layerNames, boolean>;
+  layerOverrides: Partial<Record<keyof typeof layerNames, boolean>>;
+  features: Record<keyof typeof featureNames, boolean>;
+  colors: Record<keyof typeof colorNames, string>;
+  theme: NonNullable<StaticMapOptions['theme']>;
+  font: string;
+  weight: number;
+  size: number;
+  radius: number;
+  pins: boolean;
+  route: boolean;
+  title: string;
+  chrome: boolean;
+  animation: boolean;
+}
+/** Object.keys with known keys; only use on locally constructed records. */
+export const keys = <T extends object>(value: T) => Object.keys(value) as (keyof T)[];
+
 export const layerNames = {
   districtFills: 'District colors',
   districtLines: 'District boundaries',
@@ -33,7 +75,13 @@ export const colorNames = {
   marker: 'Pins',
   selected: 'Selection',
 };
-export const palettes = [
+export const palettes: {
+  id: string;
+  name: string;
+  mood: string;
+  colors: PlaygroundState['colors'];
+  theme: PlaygroundState['theme'];
+}[] = [
   {
     id: 'atlas',
     name: 'Original atlas',
@@ -156,7 +204,7 @@ export const sampleMarkers = [
   { id: 'twin-peaks', label: 'Twin Peaks', lng: -122.4476, lat: 37.7544 },
   { id: 'coit', label: 'Coit Tower', lng: -122.4058, lat: 37.8024 },
 ];
-export const sampleOverlays = [
+export const sampleOverlays: MapOverlay[] = [
   {
     id: 'city-sketch',
     label: 'Illustrative route, not directions',
@@ -175,7 +223,9 @@ export const sampleOverlays = [
     visible: true,
   },
 ];
-export function initialState() {
+export function initialState(): PlaygroundState {
+  const original = palettes[0];
+  if (!original) throw new Error('The playground needs an initial palette.');
   return {
     palette: 'atlas',
     render: 'interactive',
@@ -183,19 +233,30 @@ export function initialState() {
     source: 'realtor',
     year: 2022,
     labels: true,
-    layers: Object.fromEntries(
-      Object.keys(layerNames).map((key) => [
-        key,
-        key.startsWith('district') || ['landmarks', 'bartStations'].includes(key),
-      ]),
-    ),
-    features: Object.fromEntries(
-      Object.keys(featureNames).map((key) => [
-        key,
-        ['motion', 'layerTransitions', 'districtMorph', 'selectedMarkerRing'].includes(key),
-      ]),
-    ),
-    colors: { ...palettes[0].colors },
+    layers: {
+      districtFills: true,
+      districtLines: true,
+      districtLabels: true,
+      neighborhoodLines: false,
+      neighborhoodLabels: false,
+      landmarks: true,
+      highways: false,
+      keyRoads: false,
+      roadLabels: false,
+      bartStations: true,
+    },
+    layerOverrides: {},
+    features: {
+      motion: true,
+      layerTransitions: true,
+      districtMorph: true,
+      northArrow: false,
+      scaleBar: false,
+      markerEntrance: false,
+      selectedMarkerRing: true,
+      clustering: false,
+    },
+    colors: { ...original.colors },
     theme: 'districts',
     font: 'system-ui,sans-serif',
     weight: 550,
@@ -208,12 +269,13 @@ export function initialState() {
     animation: false,
   };
 }
-export function interactiveOptions(state, capabilities) {
-  const features = Object.fromEntries(
-    Object.entries(state.features).filter(
-      ([key]) => !['layerTransitions', 'districtMorph'].includes(key) || capabilities[key],
-    ),
-  );
+export function interactiveOptions(
+  state: PlaygroundState,
+  capabilities: PreviewCapabilities,
+): MapOptions {
+  const features: MapOptions['features'] = { ...state.features };
+  if (!capabilities.layerTransitions) delete features.layerTransitions;
+  if (!capabilities.districtMorph) delete features.districtMorph;
   return {
     mode: state.mode,
     source: state.source,
@@ -249,7 +311,10 @@ export function interactiveOptions(state, capabilities) {
     },
   };
 }
-export function staticOptions(state, capabilities) {
+export function staticOptions(
+  state: PlaygroundState,
+  capabilities: PreviewCapabilities,
+): StaticMapOptions {
   const { neighborhoodLabels: _unsupported, ...layers } = state.layers;
   const appearance = { theme: state.theme, colors: { ...state.colors } };
   return {
@@ -262,38 +327,49 @@ export function staticOptions(state, capabilities) {
     ...(capabilities.staticPresentation ? { layers, appearance } : { ...layers, ...appearance }),
   };
 }
-export function staticData(data, source) {
+export function staticData(data: MapData, source: NeighborhoodSource) {
   if (source === 'realtor') return data.map;
+  const collection = data.neighborhoods?.[source];
+  if (!collection) throw new Error(`No ${source} neighborhood data supplied.`);
   return {
     ...data.map,
-    neighborhoods: data.neighborhoods[source].features.map((feature) => ({
+    neighborhoods: collection.features.map((feature) => ({
       name: feature.properties.canonicalName,
       geometry: feature.geometry,
     })),
   };
 }
-export function playgroundCode(state, capabilities) {
+export function playgroundCode(
+  state: PlaygroundState,
+  capabilities: PreviewCapabilities,
+  language: CodeLanguage = 'javascript',
+) {
   const interactive = state.render === 'interactive';
   const options = interactive
     ? interactiveOptions(state, capabilities)
     : staticOptions(state, capabilities);
   let imports = `import { ${interactive ? 'createMap' : 'renderMap'} } from '@kahwee/sf-map-svg';\nimport { ${interactive ? 'fullMapData' : 'staticMapData'} } from '@kahwee/sf-map-svg/data/${interactive ? 'full' : 'static'}';`;
+  const type = interactive ? 'MapOptions' : 'StaticMapOptions';
+  if (language === 'typescript') imports += `\nimport type { ${type} } from '@kahwee/sf-map-svg';`;
+  const annotation = language === 'typescript' ? `: ${type}` : '';
+  const jsdoc =
+    language === 'javascript' ? `/** @type {import('@kahwee/sf-map-svg').${type}} */\n` : '';
   let data = interactive ? 'fullMapData' : 'staticMapData';
   if (!interactive && state.source !== 'realtor' && state.layers.neighborhoodLines) {
     imports += `\nimport { neighborhoodCollections } from '@kahwee/sf-map-svg/data';\n\nconst neighborhoods = neighborhoodCollections[${JSON.stringify(state.source)}].features\n  .map(({ properties, geometry }) => ({ name: properties.canonicalName, geometry }));`;
     data = '{ ...staticMapData, neighborhoods }';
   }
-  return `${imports}\n\nconst options = ${JSON.stringify(options, null, 2)};\n\n${interactive ? `const map = createMap(${data}, options);\ndocument.querySelector('#map').append(map.element);\n\n// In your view's cleanup hook:\n// map.destroy();\n// map.element.remove();` : `const { svg } = renderMap(${data}, options);\n// Save svg as a file, or insert it into your page.`}`;
+  return `${imports}\n\n${jsdoc}const options${annotation} = ${JSON.stringify(options, null, 2)};\n\n${interactive ? `const map = createMap(${data}, options);\nconst host = document.querySelector('#map');\nif (!host) throw new Error('Add a #map container before mounting.');\nhost.append(map.element);\n\n// In your view's cleanup hook:\n// map.destroy();\n// map.element.remove();` : `const { svg } = renderMap(${data}, options);\n// Save svg as a file, or insert it into your page.`}`;
 }
-/** Share links carry only bounded, validated playground settings; no code is evaluated. */
-export function readState(hash) {
+/** Share links carry bounded settings only. Version 1 also accepts older unversioned links. */
+export function readState(hash: string): PlaygroundState {
   const state = initialState();
   if (!hash) return state;
-  if (hash.length > 12000) throw new Error('This design link is too large.');
-  const value = JSON.parse(decodeURIComponent(hash.replace(/^#design=/, '')));
-  if (!value || typeof value !== 'object' || Array.isArray(value))
-    throw new Error('Invalid design link.');
-  for (const [key, allowed] of Object.entries({
+  if (!hash.startsWith('#design=') || hash.length > 12000) throw new Error('Invalid design link.');
+  const value: unknown = JSON.parse(decodeURIComponent(hash.slice(8)));
+  if (!isRecord(value) || (value.version !== undefined && value.version !== 1))
+    throw new Error('Invalid design link version.');
+  const enums = {
     palette: palettes.map((p) => p.id),
     render: ['interactive', 'static'],
     mode: ['districts', 'neighborhoods', 'basemap'],
@@ -301,53 +377,107 @@ export function readState(hash) {
     theme: ['districts', 'transit'],
     font: ['system-ui,sans-serif', 'Georgia,serif', 'ui-monospace,monospace'],
     year: [2002, 2012, 2022],
-  })) {
-    if (value[key] !== undefined) {
-      if (!allowed.includes(value[key])) throw new Error(`Invalid ${key}.`);
-      state[key] = value[key];
+  };
+  for (const key of keys(enums)) {
+    const next = value[key];
+    if (next !== undefined) {
+      if (!(enums[key] as readonly unknown[]).includes(next)) throw new Error(`Invalid ${key}.`);
+      // Validation above establishes the matching enum member; preserve correlation via assign.
+      Object.assign(state, { [key]: next });
     }
   }
-  for (const key of ['labels', 'pins', 'route', 'chrome', 'animation'])
-    if (value[key] !== undefined) {
-      if (typeof value[key] !== 'boolean') throw new Error(`Invalid ${key}.`);
-      state[key] = value[key];
+  for (const key of ['labels', 'pins', 'route', 'chrome', 'animation'] as const) {
+    const next = value[key];
+    if (next !== undefined) {
+      if (typeof next !== 'boolean') throw new Error(`Invalid ${key}.`);
+      state[key] = next;
     }
-  for (const [key, names] of [
-    ['layers', layerNames],
-    ['features', featureNames],
-  ])
-    if (value[key] !== undefined) {
-      if (!value[key] || typeof value[key] !== 'object' || Array.isArray(value[key]))
-        throw new Error(`Invalid ${key}.`);
-      for (const name of Object.keys(names))
-        if (value[key][name] !== undefined) {
-          if (typeof value[key][name] !== 'boolean') throw new Error(`Invalid ${name}.`);
-          state[key][name] = value[key][name];
-        }
-    }
-  if (value.colors !== undefined) {
-    if (!value.colors || typeof value.colors !== 'object') throw new Error('Invalid palette.');
-    for (const key of Object.keys(colorNames))
-      if (value.colors[key] !== undefined) {
-        if (typeof value.colors[key] !== 'string' || !/^#[\da-f]{6}$/i.test(value.colors[key]))
-          throw new Error('Invalid color.');
-        state.colors[key] = value.colors[key];
+  }
+  readSwitches(state.layers, value.layers);
+  readSwitches(state.features, value.features);
+  const overrides = value.layerOverrides ?? value.layers;
+  if (overrides !== undefined) {
+    if (!isRecord(overrides)) throw new Error('Invalid layer overrides.');
+    for (const key of keys(layerNames)) {
+      const next = overrides[key];
+      if (next !== undefined) {
+        if (typeof next !== 'boolean') throw new Error('Invalid layer override.');
+        state.layerOverrides[key] = next;
       }
-  }
-  for (const [key, min, max] of [
-    ['weight', 100, 900],
-    ['size', 11, 24],
-    ['radius', 3, 16],
-  ])
-    if (value[key] !== undefined) {
-      if (!Number.isFinite(value[key]) || value[key] < min || value[key] > max)
-        throw new Error(`Invalid ${key}.`);
-      state[key] = value[key];
     }
+  }
+  if (value.colors !== undefined) {
+    if (!isRecord(value.colors)) throw new Error('Invalid palette.');
+    for (const key of keys(colorNames)) {
+      const next = value.colors[key];
+      if (next !== undefined) {
+        if (typeof next !== 'string' || !/^#[\da-f]{6}$/i.test(next))
+          throw new Error('Invalid color.');
+        state.colors[key] = next;
+      }
+    }
+  }
+  for (const [key, min, max, step] of [
+    ['weight', 100, 900, 50],
+    ['size', 11, 24, 1],
+    ['radius', 3, 16, 1],
+  ] as const) {
+    const next = value[key];
+    if (next !== undefined) {
+      if (
+        typeof next !== 'number' ||
+        !Number.isFinite(next) ||
+        next < min ||
+        next > max ||
+        (next - min) % step !== 0
+      )
+        throw new Error(`Invalid ${key}.`);
+      state[key] = next;
+    }
+  }
   if (value.title !== undefined) {
     if (typeof value.title !== 'string' || value.title.length > 120)
       throw new Error('Invalid title.');
     state.title = value.title;
   }
   return state;
+}
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+function readSwitches<T extends Record<string, boolean>>(target: T, value: unknown) {
+  if (value === undefined) return;
+  if (!isRecord(value)) throw new Error('Invalid switches.');
+  for (const key of keys(target)) {
+    const next = value[String(key)];
+    if (next !== undefined) {
+      if (typeof next !== 'boolean') throw new Error(`Invalid ${String(key)}.`);
+      Object.assign(target, { [key]: next });
+    }
+  }
+}
+export function designHash(state: PlaygroundState): string {
+  return `design=${encodeURIComponent(JSON.stringify({ version: 1, ...state }))}`;
+}
+export function paletteName(state: PlaygroundState): string {
+  const preset = palettes.find((p) => p.id === state.palette);
+  return preset &&
+    preset.theme === state.theme &&
+    keys(colorNames).every((key) => preset.colors[key] === state.colors[key])
+    ? preset.name
+    : 'Custom palette';
+}
+
+/** Mode defaults follow the view; explicit layer choices survive switching views. */
+export function setMode(state: PlaygroundState, mode: PlaygroundState['mode']) {
+  state.mode = mode;
+  for (const key of keys(layerNames)) {
+    if (
+      (key.startsWith('district') || key.startsWith('neighborhood')) &&
+      !Object.hasOwn(state.layerOverrides, key)
+    )
+      state.layers[key] = key.startsWith(
+        mode === 'districts' ? 'district' : mode === 'neighborhoods' ? 'neighborhood' : 'none',
+      );
+  }
 }

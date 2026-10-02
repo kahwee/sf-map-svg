@@ -84,6 +84,13 @@ for (const [path, limit] of Object.entries(dataBudgets)) {
 const release = JSON.parse(await readFile(join(root, 'release.json'), 'utf8'));
 const llms = await readFile(join(root, 'llms.txt'), 'utf8');
 const fullDocs = await readFile(join(root, 'llms-full.txt'), 'utf8');
+const apiHtml = await readFile(join(root, 'api.html'), 'utf8');
+if (apiHtml.includes('Preview features') || apiHtml.includes('selected npm package'))
+  fail('API reference exposes internal preview warnings');
+if (
+  !apiHtml.includes(`This reference describes <code>@kahwee/sf-map-svg ${release.version}</code>`)
+)
+  fail('API reference does not identify the documented package version');
 for (const [name, content] of [
   ['llms.txt', llms],
   ['llms-full.txt', fullDocs],
@@ -283,6 +290,18 @@ async function checkPlayground() {
     await page.waitForFunction(() => !document.querySelector('#design-map .sf-explorer'));
     if (!(await page.locator('#option-neighborhoodLabels').isDisabled()))
       fail('playground: static preview enables browser-only layers');
+    await page.getByRole('button', { name: 'Browser map', exact: true }).click();
+    await page.waitForFunction(
+      (view) => document.querySelector('#design-map svg')?.getAttribute('viewBox') === view,
+      viewport,
+    );
+    if (
+      (await page.locator('#design-map .sf-explorer').getAttribute('data-selected-district')) !==
+      '3'
+    )
+      fail('playground: returning from static preview lost district selection');
+    await page.getByRole('button', { name: 'Static SVG', exact: true }).click();
+    await page.waitForFunction(() => !document.querySelector('#design-map .sf-explorer'));
     await page.locator('#design-mode').selectOption('neighborhoods');
     await page.locator('#design-source').selectOption('analysis');
     await page.waitForFunction(() =>
@@ -329,6 +348,54 @@ async function checkPlayground() {
       page.waitForEvent('download'),
       page.getByRole('button', { name: 'Export city SVG', exact: true }).click(),
     ]);
+    // Both native pickers must remain legible and controls reachable on a short phone.
+    await page.setViewportSize({ width: 390, height: 600 });
+    await page.getByRole('button', { name: 'Browser map', exact: true }).click();
+    await page
+      .locator('details')
+      .filter({ has: page.locator('#design-pins') })
+      .evaluate((node) => {
+        node.open = true;
+      });
+    await page.locator('#design-pins').check();
+    await page.waitForFunction(
+      () =>
+        document.querySelectorAll('#design-map .sf-explorer-feature-controls select').length === 2,
+    );
+    await page.locator('#design-source').focus();
+    const accessible = await page.locator('#design-source').evaluate((node) => {
+      node.scrollIntoView({ block: 'center' });
+      const rect = node.getBoundingClientRect();
+      return document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2) === node;
+    });
+    if (!accessible) fail('playground: short-phone preview obscures the focused source control');
+    const contrast = await page
+      .locator('#design-map .sf-explorer-feature-controls label')
+      .first()
+      .evaluate((node) => {
+        const channels = (value) =>
+          value
+            .match(/[\d.]+/g)
+            .slice(0, 3)
+            .map(Number)
+            .map((v) => {
+              const n = v / 255;
+              return n <= 0.04045 ? n / 12.92 : ((n + 0.055) / 1.055) ** 2.4;
+            });
+        const luminance = (value) => {
+          const [r, g, b] = channels(value);
+          return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        };
+        const a = luminance(getComputedStyle(node).color);
+        const b = luminance(
+          getComputedStyle(node.closest('.sf-explorer-feature-controls')).backgroundColor,
+        );
+        return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+      });
+    if (contrast < 4.5) fail(`playground: dark picker label contrast is ${contrast.toFixed(2)}:1`);
+    await page.locator('#design-language').selectOption('typescript');
+    if (!(await page.locator('#design-code').innerText()).includes('const options: MapOptions'))
+      fail('playground: TypeScript selection does not generate typed options');
     await page.unroute('**/data/site-map.json');
     await page.route('**/data/site-map.json', (route) => route.abort());
     await page.reload({ waitUntil: 'domcontentloaded' });

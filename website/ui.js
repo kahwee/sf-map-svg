@@ -1,5 +1,11 @@
 // Shared interface pieces for the site: segmented controls, code blocks, and copying.
 
+/** @template {keyof HTMLElementTagNameMap} T
+ * @param {T} tag
+ * @param {string} [text]
+ * @param {string} [className]
+ * @returns {HTMLElementTagNameMap[T]}
+ */
 const element = (tag, text, className) => {
   const node = document.createElement(tag);
   if (text !== undefined) node.textContent = text;

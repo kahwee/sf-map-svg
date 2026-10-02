@@ -14,7 +14,9 @@ import type {
   NeighborhoodSelection,
 } from './types.js';
 
-export type MapAppearance = Pick<
+/** Patch properties can explicitly remove overrides, including with exactOptionalPropertyTypes. */
+type Resettable<T> = { [K in keyof T]?: T[K] | undefined };
+type AppearanceOptions = Pick<
   NeighborhoodExplorerOptions,
   | 'theme'
   | 'colors'
@@ -28,17 +30,27 @@ export type MapAppearance = Pick<
   | 'markerColor'
   | 'selectedMarkerColor'
 >;
+export type MapAppearance = {
+  [K in keyof AppearanceOptions]?: K extends
+    | 'colors'
+    | 'style'
+    | 'labelStyle'
+    | 'labelSize'
+    | 'areaStyle'
+    ? Resettable<NonNullable<AppearanceOptions[K]>> | undefined
+    : AppearanceOptions[K] | undefined;
+};
 export type MapControls = NonNullable<NeighborhoodExplorerOptions['controls']>;
 /** Omitted keys retain values. Undefined presentation groups reset; undefined mode/source/year/labels retain their current value. */
 export interface MapConfiguration {
-  features?: MapFeatures;
-  layers?: InteractiveLayers;
-  controls?: MapControls;
-  appearance?: MapAppearance;
-  mode?: NonNullable<NeighborhoodExplorerOptions['mode']>;
-  source?: NeighborhoodSource;
-  year?: DistrictYear;
-  labels?: boolean;
+  features?: Resettable<MapFeatures> | undefined;
+  layers?: Resettable<InteractiveLayers> | undefined;
+  controls?: Resettable<MapControls> | undefined;
+  appearance?: MapAppearance | undefined;
+  mode?: NonNullable<NeighborhoodExplorerOptions['mode']> | undefined;
+  source?: NeighborhoodSource | undefined;
+  year?: DistrictYear | undefined;
+  labels?: boolean | undefined;
 }
 export interface MapOptions
   extends Omit<
@@ -46,14 +58,14 @@ export interface MapOptions
     keyof MapFeatures | keyof MapAppearance | 'interface' | 'onMarkerActivate' | 'onOverlayActivate'
   > {
   features?: MapFeatures;
-  appearance?: MapAppearance;
+  appearance?: MapAppearance | undefined;
 }
 export interface MapConfigurationSnapshot {
   features: MapFeatures;
   /** Explicit overrides; absent values continue to follow the current mode. */
   layers: InteractiveLayers;
   controls: MapControls;
-  appearance?: MapAppearance;
+  appearance: MapAppearance;
 }
 export interface MapCapabilities {
   sources: readonly NeighborhoodSource[];

@@ -34,7 +34,7 @@ export type {
 export function createMap(data: InteractiveSFMapData, options: MapOptions = {}): MapController {
   const expanded = expandMapOptions(options);
   let config = prepareConfiguration(
-    { features: {}, layers: {}, controls: {} },
+    { features: {}, layers: {}, controls: {}, appearance: {} },
     {
       features: options.features,
       layers: options.layers,

@@ -62,12 +62,12 @@
     <section class="design-takeaways shell" aria-label="Export and code">
         <div class="takeaway-bar"><div><span class="eyebrow">Yours to keep</span><p>One city. Infinite expressions.</p></div><div><button id="design-share" class="button secondary small" type="button" disabled>Copy design link ↗</button><button id="design-download" class="button small" type="button" disabled>Export city SVG ↓</button></div></div>
         <p class="export-note">SVG export uses full-precision geography, the full city extent, and static labels. The browser preview uses display-simplified geography; zoom and screen sizing stay in the browser.</p>
-        <section class="design-code" aria-label="Code for this design"><div class="code-heading"><div><span class="eyebrow">What you see, what you ship</span><h2>Your map, in code.</h2></div><button id="design-copy" class="button secondary small" type="button" disabled>Copy code</button></div><p id="api-version" class="control-note">%RELEASE_LABEL% · explicit data imports, zero runtime dependencies.</p><pre><code id="design-code"></code></pre></section>
+        <section class="design-code" aria-label="Code for this design"><div class="code-heading"><div><span class="eyebrow">What you see, what you ship</span><h2>Your map, in code.</h2></div><label class="code-language" for="design-language">Language<span class="dropdown"><select class="dropdown-control" id="design-language"><option value="javascript">JavaScript</option><option value="typescript">TypeScript</option></select></span></label><button id="design-copy" class="button secondary small" type="button" disabled>Copy code</button></div><p id="api-version" class="control-note">%RELEASE_LABEL% · explicit data imports, zero runtime dependencies.</p><pre><code id="design-code"></code></pre></section>
         <details class="state-inspector"><summary>Under the hood <span>Resolved layers &amp; data</span></summary><p>Availability comes from supplied geography. Effective switches include mode defaults and master label visibility; zoom and collision rules can still hide individual labels.</p><div id="design-inspector"></div></details>
     </section>
     <section class="desk-footnote shell"><p><b>A small map with a large imagination.</b> Geography stays precise. Neighborhood sources stay distinct. Your design travels as a self-contained SVG or a few lines of JavaScript.</p><a href="./api.html">Explore the API reference →</a></section>
   </main>
   <!--site-footer-->
-  <script type="module" src="./playground.js"></script>
+  <script type="module" src="./playground.ts"></script>
 </body>
 </html>

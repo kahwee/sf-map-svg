@@ -374,6 +374,7 @@
   font-size: 11px;
 }
 #design-map .sf-explorer-feature-controls label {
+  color: var(--ink);
   font-size: 11px;
 }
 #design-map .sf-explorer-feature-controls .dropdown {
@@ -619,9 +620,9 @@
   }
   .drawing-board {
     order: 1;
-    position: sticky;
-    top: 0;
-    z-index: 4;
+    position: relative;
+    top: auto;
+    z-index: auto;
     width: 100%;
     box-shadow: 0 4px 12px var(--shadow);
   }
@@ -722,4 +723,25 @@
   position: static;
   justify-content: flex-end;
   padding-bottom: 8px;
+}
+
+.code-heading {
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.code-language {
+  display: grid;
+  gap: 4px;
+  font: 11px var(--sans);
+  color: var(--muted);
+  margin-left: auto;
+}
+.code-language .dropdown {
+  min-width: 150px;
+}
+@media (max-height: 700px) {
+  .drawing-board {
+    position: relative;
+    top: auto;
+  }
 }

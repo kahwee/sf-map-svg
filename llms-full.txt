@@ -288,7 +288,7 @@ District style callbacks are evaluated once per district at construction and on 
 
 `map.configure({ appearance, mode, source, year, labels, layers, features, controls })` updates an existing map. Appearance updates preserve the camera, selections, retained marker nodes, and keyboard focus. Mode/source changes through `configure` preserve the camera; existing `setMode` and `setSource` convenience methods retain their reset behavior. Switching neighborhood source clears the neighborhood selection. Changing district year retains a selected district when it exists in the new year. Unsupported datasets, invalid appearance values, and invalid district-style callback results fail during preparation before commit. A reentrant styling callback can supersede the pending patch.
 
-Appearance token objects (`colors`, `style`, `labelStyle`, `labelSize`, `areaStyle`) merge supplied keys; other appearance properties replace. Omitted keys retain their value, an explicit `undefined` property removes that override, and `appearance: undefined` resets the whole appearance group. Feature objects retain their existing replacement semantics. Mode/source/year/labels ignore `undefined`; reset them with an explicit value.
+Appearance token objects (`colors`, `style`, `labelStyle`, `labelSize`, `areaStyle`) merge supplied keys; other appearance properties replace. Omitted keys retain their value, an explicit `undefined` property removes that override, and `appearance: undefined` resets the whole appearance group. Feature objects retain their existing replacement semantics. Mode/source/year/labels ignore `undefined`; reset them with an explicit value. Patch types explicitly permit these resets with TypeScript’s `exactOptionalPropertyTypes` enabled.
 
 ```ts
 map.configure({
@@ -697,6 +697,9 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Strengthen the playground with strict TypeScript, checked JavaScript/TypeScript snippets, versioned design links, persistent explicit layer choices and independent static rendering. Keep mobile controls unobstructed and picker labels legible in dark mode.
+- Express explicit configuration resets for consumers using `exactOptionalPropertyTypes`, including nested appearance tokens. Make Pages API and guide references describe their actual package version without internal preview warnings.
+
 - Share grouped `layers` and supported `appearance` options between static and interactive maps, retaining flat static options and existing defaults; accept readonly static marker arrays.
 - Update interactive appearance, mode, source, district year and labels through `configure`, preserving camera and retained marker nodes. Merge appearance tokens by key and validate combined patches before commit.
 - Add `getResolvedConfiguration()` and `getCapabilities()` for effective layer switches and supplied geography, plus an additive `selectionchange` event with consistent current/previous snapshots.
@@ -1048,29 +1051,36 @@ export declare function createMap(data: InteractiveSFMapData, options?: MapOptio
 ```ts
 import type { Geometry, NeighborhoodSource } from '../data/types.js';
 import type { CameraOptions, DistrictSelection, DistrictStyle, DistrictYear, InteractiveLayers, MapFeatures, MapMarker, MapOverlay, MapPadding, MapViewport, NeighborhoodExplorerOptions, NeighborhoodSelection } from './types.js';
-export type MapAppearance = Pick<NeighborhoodExplorerOptions, 'theme' | 'colors' | 'labelStyle' | 'areaStyle' | 'districtStyle' | 'labelSize' | 'style' | 'markerRadius' | 'markerHitSize' | 'markerColor' | 'selectedMarkerColor'>;
+/** Patch properties can explicitly remove overrides, including with exactOptionalPropertyTypes. */
+type Resettable<T> = {
+    [K in keyof T]?: T[K] | undefined;
+};
+type AppearanceOptions = Pick<NeighborhoodExplorerOptions, 'theme' | 'colors' | 'labelStyle' | 'areaStyle' | 'districtStyle' | 'labelSize' | 'style' | 'markerRadius' | 'markerHitSize' | 'markerColor' | 'selectedMarkerColor'>;
+export type MapAppearance = {
+    [K in keyof AppearanceOptions]?: K extends 'colors' | 'style' | 'labelStyle' | 'labelSize' | 'areaStyle' ? Resettable<NonNullable<AppearanceOptions[K]>> | undefined : AppearanceOptions[K] | undefined;
+};
 export type MapControls = NonNullable<NeighborhoodExplorerOptions['controls']>;
 /** Omitted keys retain values. Undefined presentation groups reset; undefined mode/source/year/labels retain their current value. */
 export interface MapConfiguration {
-    features?: MapFeatures;
-    layers?: InteractiveLayers;
-    controls?: MapControls;
-    appearance?: MapAppearance;
-    mode?: NonNullable<NeighborhoodExplorerOptions['mode']>;
-    source?: NeighborhoodSource;
-    year?: DistrictYear;
-    labels?: boolean;
+    features?: Resettable<MapFeatures> | undefined;
+    layers?: Resettable<InteractiveLayers> | undefined;
+    controls?: Resettable<MapControls> | undefined;
+    appearance?: MapAppearance | undefined;
+    mode?: NonNullable<NeighborhoodExplorerOptions['mode']> | undefined;
+    source?: NeighborhoodSource | undefined;
+    year?: DistrictYear | undefined;
+    labels?: boolean | undefined;
 }
 export interface MapOptions extends Omit<NeighborhoodExplorerOptions, keyof MapFeatures | keyof MapAppearance | 'interface' | 'onMarkerActivate' | 'onOverlayActivate'> {
     features?: MapFeatures;
-    appearance?: MapAppearance;
+    appearance?: MapAppearance | undefined;
 }
 export interface MapConfigurationSnapshot {
     features: MapFeatures;
     /** Explicit overrides; absent values continue to follow the current mode. */
     layers: InteractiveLayers;
     controls: MapControls;
-    appearance?: MapAppearance;
+    appearance: MapAppearance;
 }
 export interface MapCapabilities {
     sources: readonly NeighborhoodSource[];
@@ -1191,6 +1201,7 @@ export interface MapController {
     /** Idempotent; stops work and managed subscriptions. Does not remove host-owned DOM. */
     destroy(): void;
 }
+export {};
 ```
 
 ### dist/data/types.d.ts

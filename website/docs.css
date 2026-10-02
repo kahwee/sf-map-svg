@@ -1,3 +1,9 @@
+.reference-version {
+  padding-block: 18px;
+  color: var(--muted);
+  font: 13px / 1.7 var(--sans);
+  border-bottom: 1px solid var(--rule);
+}
 .docs {
   display: grid;
   grid-template-columns: 220px minmax(0, 1fr);

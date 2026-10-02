@@ -5,6 +5,9 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { checkPlaygroundCode } from './check-playground-code.mjs';
+import { getMapCapabilities } from './map-capabilities.mjs';
+
 const root = fileURLToPath(new URL('../', import.meta.url));
 const temp = await mkdtemp(join(tmpdir(), 'sf-map-package-'));
 const [flag, archiveArgument, ...extra] = process.argv.slice(2);
@@ -55,6 +58,8 @@ try {
     [
       '--noEmit',
       '--strict',
+      '--exactOptionalPropertyTypes',
+      '--noUncheckedIndexedAccess',
       '--module',
       'nodenext',
       '--target',
@@ -121,6 +126,8 @@ const guideController = () => createGuideController(options);
 const liveContract = () => {
   const map = controller();
   map.configure({ mode: 'districts', year: 2012, appearance: { colors: { water: '#123456' } } });
+  map.configure({ appearance: undefined, layers: undefined, controls: undefined, features: undefined });
+  map.configure({ appearance: { colors: { water: undefined }, labelStyle: { fontWeight: undefined }, labelSize: { min: undefined }, style: { ink: undefined }, areaStyle: { selectedFill: undefined } }, layers: { bartStations: undefined }, controls: { zoom: undefined } });
   map.getResolvedConfiguration().layers.bartStations satisfies boolean;
   map.getCapabilities().sources satisfies readonly NeighborhoodSource[];
   map.on('selectionchange', (event) => {
@@ -141,6 +148,8 @@ void [controller, liveContract, svg, staticSvg, name, geometry, createGuideMap, 
     [
       '--noEmit',
       '--strict',
+      '--exactOptionalPropertyTypes',
+      '--noUncheckedIndexedAccess',
       '--module',
       'nodenext',
       '--target',
@@ -150,6 +159,7 @@ void [controller, liveContract, svg, staticSvg, name, geometry, createGuideMap, 
     { cwd: temp, stdio: 'inherit' },
   );
   console.log('Installed package TypeScript declarations passed.');
+  await checkPlaygroundCode(installed, await getMapCapabilities(installed));
 } finally {
   await rm(temp, { recursive: true, force: true });
 }

@@ -26,3 +26,15 @@ Set `--dropdown-radius`, `--dropdown-font`, `--dropdown-padding-block`, and
 `--dropdown-padding-inline` on a containing component to customize it. Keep the
 end gutter and chevron inset consistent. Logical spacing also supports RTL.
 Forced-colors mode uses the platform's native arrow for visibility.
+
+## Playground
+
+`playground.ts` owns the form and preview lifecycle; `playground-model.ts` owns the
+validated design state, API option adapters, versioned share links, and generated
+JavaScript/TypeScript examples. `pnpm typecheck:website` checks both in strict mode.
+Mode defaults follow the view while explicit layer overrides survive mode changes.
+Static previews render without creating an interactive controller. Mobile previews
+scroll with the page so controls cannot be covered by a tall pinned map.
+
+Pages references and snippets describe the package used by that build. Released
+builds adapt unsupported grouped static options to the published flat API.
