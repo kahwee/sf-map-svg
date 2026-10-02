@@ -14,6 +14,7 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 - Update interactive appearance, mode, source, district year and labels through `configure`, preserving camera and retained marker nodes. Merge appearance tokens by key and validate combined patches before commit.
 - Add `getResolvedConfiguration()` and `getCapabilities()` for effective layer switches and supplied geography, plus an additive `selectionchange` event with consistent current/previous snapshots.
 - Add a live Pages map design playground with six editable palettes, layers, typography, sample pins/routes, browser/static previews, undo/redo, shareable designs, copyable code and full-city SVG export. Keep released-package previews compatible with their installed API.
+- Refresh the Pages site: a new SF Map SVG mark traced from the real coastline, a reframed header with a release link, card-style reference tables that no longer collapse, a live filter for the API reference, an aligned playground with one-row-per-colour inks, and 12px minimum type for labels and badges.
 
 ## 4.1.0 — 2026-10-01
 
