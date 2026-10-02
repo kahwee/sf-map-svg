@@ -41,6 +41,13 @@
       </nav>
 
       <article class="docs-body">
+        <search class="api-search" hidden>
+          <label class="sr-only" for="api-filter">Filter the reference</label>
+          <input id="api-filter" type="search" placeholder="Filter options, methods and events" autocomplete="off" spellcheck="false">
+          <kbd aria-hidden="true">/</kbd>
+          <output id="api-count" aria-live="polite"></output>
+        </search>
+        <p class="api-empty" hidden>Nothing in the reference matches that. Try a shorter word, such as <code>layers</code> or <code>camera</code>.</p>
         <section class="api-entry" id="entry-points">
           <h2>Entry points</h2>
           <p>Import from the smallest entry that has what you need. Data entries export frozen objects; clone before editing.</p>
