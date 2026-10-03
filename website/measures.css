@@ -94,7 +94,7 @@
 .measure-verdict {
   grid-area: verdict;
   justify-self: end;
-  font: 600 11px var(--sans);
+  font: 600 12px var(--sans);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }

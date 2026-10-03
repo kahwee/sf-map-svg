@@ -13,7 +13,7 @@ import { validateExplorerOptions } from './validation.js';
 function controllerOptions(options: MapOptions): MapOptions {
   expandMapOptions(options);
   const config = prepareConfiguration(
-    { features: {}, layers: guideOptions.layers ?? {}, controls: {} },
+    { features: {}, layers: guideOptions.layers ?? {}, controls: {}, appearance: {} },
     {
       features: options.features,
       layers: options.layers === undefined ? {} : options.layers,

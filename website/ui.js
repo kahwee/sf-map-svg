@@ -1,5 +1,11 @@
 // Shared interface pieces for the site: segmented controls, code blocks, and copying.
 
+/** @template {keyof HTMLElementTagNameMap} T
+ * @param {T} tag
+ * @param {string} [text]
+ * @param {string} [className]
+ * @returns {HTMLElementTagNameMap[T]}
+ */
 const element = (tag, text, className) => {
   const node = document.createElement(tag);
   if (text !== undefined) node.textContent = text;
@@ -66,17 +72,22 @@ export function highlight(code) {
     .join('');
 }
 
-/** Copy text, then announce the result in the button itself. */
+const copyStates = new WeakMap();
+
+/** Copy text, then announce the result without losing icons or accessible labels. */
 export async function copyText(button, text) {
-  const original = button.textContent;
+  const state = copyStates.get(button) ?? { original: [...button.childNodes] };
+  clearTimeout(state.timer);
+  copyStates.set(button, state);
   try {
     await navigator.clipboard.writeText(text);
     button.textContent = 'Copied';
   } catch {
     button.textContent = 'Select to copy';
   }
-  setTimeout(() => {
-    button.textContent = original;
+  state.timer = setTimeout(() => {
+    button.replaceChildren(...state.original);
+    copyStates.delete(button);
   }, 1600);
 }
 

@@ -2,7 +2,32 @@
 
 User-visible changes are recorded here. Unreleased entries describe changes on `main` that are not part of a tagged package release.
 
-## 4.1.0 — 2026-09-30
+## Unreleased
+
+## 4.3.0 — 2026-10-02
+
+- Add `selectFeature` with typed marker, neighborhood source/ID and district year/ID references. Missing or mismatched identities preserve current geography and selection.
+- Accept the same source-aware map data in static and interactive rendering. Static maps can explicitly select a supplied neighborhood definition without manually rebuilding renderer rows; compact static inputs remain supported.
+- Include current mode, source, year and labels in configuration snapshots. Route controller mode/source/label setters through atomic configuration and support explicit camera preservation with `{ resetView: false }`.
+- Refine the Pages atlas opening with concise copy, a map ahead of statistics on phones, coordinate captions and three direct paths into designing, exploring and building. Improve shared theme-button touch targets and stack API reference records on phones while retaining table semantics.
+
+- Clarify the documentation paths, progressive enhancement and cleanup examples; consolidate browser validation and release instructions into one maintenance runbook. Check README and integration recipes against the packed package.
+
+## 4.2.0 — 2026-10-01
+
+- Reuse one native dropdown treatment across Pages, with an inset chevron, a reserved end gutter, and preserved labels, keyboard behavior, and mobile pickers.
+- Strengthen the playground with strict TypeScript, checked JavaScript/TypeScript snippets, versioned design links, persistent explicit layer choices and independent static rendering. Keep mobile controls unobstructed and picker labels legible in dark mode.
+- Express explicit configuration resets for consumers using `exactOptionalPropertyTypes`, including nested appearance tokens. Make Pages API and guide references describe their actual package version without internal preview warnings.
+
+- Share grouped `layers` and supported `appearance` options between static and interactive maps, retaining flat static options and existing defaults; accept readonly static marker arrays.
+- Update interactive appearance, mode, source, district year and labels through `configure`, preserving camera and retained marker nodes. Merge appearance tokens by key and validate combined patches before commit.
+- Add `getResolvedConfiguration()` and `getCapabilities()` for effective layer switches and supplied geography, plus an additive `selectionchange` event with consistent current/previous snapshots.
+- Add a live Pages map design playground with six editable palettes, layers, typography, sample pins/routes, browser/static previews, undo/redo, shareable designs, copyable code and full-city SVG export. Keep released-package previews compatible with their installed API.
+- Refresh the Pages site: a new SF Map SVG mark traced from the real coastline, a reframed header with a release link, card-style reference tables that no longer collapse, a live filter for the API reference, an aligned playground with one-row-per-colour inks, and 12px minimum type for labels and badges.
+
+## 4.1.0 — 2026-10-01
+
+- Validate canonical and generated GeoJSON during data checks, rejecting invalid WGS84 coordinates and malformed polygon rings before release.
 
 - Reject nonnumeric or nonfinite custom district IDs before they enter SVG markup or animation CSS; fall back to the primary district label when `labelPoints` is empty.
 - Stop district activation and keyboard focus after selection callbacks destroy the map or replace the selection; share pointer and keyboard activation guards.

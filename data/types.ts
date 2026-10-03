@@ -52,6 +52,14 @@ export interface FeatureCollection<P = Readonly<Record<string, unknown>>> {
   };
   readonly features: readonly Feature<P>[];
 }
+export type PointFeatureCollection<P = Readonly<Record<string, unknown>>> = Omit<
+  FeatureCollection<P>,
+  'features'
+> & {
+  readonly features: readonly (Feature<P> & {
+    readonly geometry: Extract<Geometry, { readonly type: 'Point' }>;
+  })[];
+};
 export type NeighborhoodSource = 'sf-find' | 'analysis' | 'realtor';
 export interface NeighborhoodProperties {
   readonly name: string;
@@ -61,7 +69,7 @@ export interface NeighborhoodProperties {
   readonly definitionSource: NeighborhoodSource;
   readonly nameSources: readonly string[];
   readonly note?: string;
-  readonly sourceCode?: string;
+  readonly sourceCode?: string | null;
   readonly realtorDistrict?: string;
 }
 export interface NeighborhoodEntry extends NeighborhoodProperties {

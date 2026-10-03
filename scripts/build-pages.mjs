@@ -6,6 +6,7 @@ import { pathToFileURL } from 'node:url';
 import { build } from 'vite';
 import { candidateInks, diverging, sequential } from '../website/palette.js';
 import { buildLlmDocs } from './build-llm-docs.mjs';
+import { checkPlaygroundCode } from './check-playground-code.mjs';
 import { getMapCapabilities } from './map-capabilities.mjs';
 import { simplifySvg } from './simplify-svg.mjs';
 import { simplifyDataset } from './site-data.mjs';
@@ -28,6 +29,7 @@ const darkWater = (svg) =>
 const pages = [
   { file: 'index.html', section: 'atlas' },
   { file: 'layers.html', section: 'layers' },
+  { file: 'playground.html', section: 'playground' },
   { file: 'examples.html', section: 'examples' },
   { file: 'measures.html', section: 'examples' },
   { file: 'propositions.html', section: 'examples' },
@@ -41,6 +43,7 @@ const pages = [
 const sections = [
   ['atlas', './', 'Atlas'],
   ['layers', './layers.html', 'Layers'],
+  ['playground', './playground.html', 'Playground'],
   ['examples', './examples.html', 'Examples'],
   ['docs', './docs.html', 'Docs'],
   ['api', './api.html', 'API'],
@@ -54,6 +57,11 @@ const themeToggle =
   '<path class="tt-rays" d="M12 1.5v2.2M12 20.3v2.2M1.5 12h2.2M20.3 12h2.2M4.6 4.6l1.5 1.5M17.9 17.9l1.5 1.5M4.6 19.4l1.5-1.5M17.9 6.1l1.5-1.5" ' +
   'stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg></button>';
 
+const brandMark =
+  '<svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="15" fill="#1b4142"/><path d="M12 25.1L19.4 22.1L21.4 15.5L25 17.5L38.5 15.4L45.1 23.1L42.6 29.6L46 36.4L49.6 40.2L51.2 46L47.7 48.6L15 48.6Z" fill="#f1e8d4" stroke="#f1e8d4" stroke-width="1.4" stroke-linejoin="round"/><path d="M12 33.5H44M26 17.5V48.6" fill="none" stroke="#1b4142" stroke-opacity=".28" stroke-width="1.2"/><circle cx="43" cy="26" r="4.4" fill="#e8764f" stroke="#1b4142" stroke-width="1.6"/></svg>';
+const wordmark = (label) =>
+  `<a class="wordmark" href="./"${label ? ' aria-label="SF Map SVG home"' : ''}>${brandMark}<span class="brand-name">SF Map<small>SVG</small></span></a>`;
+
 function masthead(section) {
   const links = sections
     .map(
@@ -61,10 +69,10 @@ function masthead(section) {
         `<a href="${href}"${id === section ? ' aria-current="page"' : ''}>${label}</a>`,
     )
     .join('');
-  return `<a class="skip" href="#content">Skip to content</a><header class="masthead"><div class="dateline shell"><span>An atlas of San Francisco in SVG</span><span>%RELEASE_LABEL%</span></div><div class="masthead-bar shell"><a class="wordmark" href="./" aria-label="SF / SVG home">SF<span aria-hidden="true"> / </span>SVG</a><nav aria-label="Main navigation">${links}</nav><div class="masthead-end"><a class="masthead-github" href="${repository}">GitHub ↗</a>${themeToggle}</div></div></header>`;
+  return `<a class="skip" href="#content">Skip to content</a><header class="masthead"><div class="dateline shell"><span class="dateline-tag">An atlas of San Francisco, drawn in SVG</span><a class="release-pill" href="https://www.npmjs.com/package/@kahwee/sf-map-svg">%RELEASE_LABEL%<span aria-hidden="true"> ↗</span></a></div><div class="masthead-bar shell">${wordmark(true)}<nav aria-label="Main navigation">${links}</nav><div class="masthead-end"><a class="masthead-github" href="${repository}">GitHub ↗</a>${themeToggle}</div></div></header>`;
 }
 
-const colophon = `<footer class="colophon" data-rule><div class="shell colophon-grid"><div class="colophon-mark"><a class="wordmark" href="./">SF<span aria-hidden="true"> / </span>SVG</a><p>Offline, dependency-free SVG maps of San Francisco. Software under the MIT license; geography retains its sources’ terms.</p></div><nav aria-label="The atlas"><h2>The atlas</h2><a href="./">Home</a><a href="./layers.html">Layers &amp; divisions</a><a href="./spot.html">One spot, three San Franciscos</a></nav><nav aria-label="Examples"><h2>Examples</h2><a href="./measures.html">Local measures</a><a href="./propositions.html">California propositions</a><a href="./candidates.html">Supervisorial votes</a><a href="./examples.html">All examples</a></nav><nav aria-label="Reference"><h2>Reference</h2><a href="./docs.html">Documentation</a><a href="./api.html">API reference</a><a href="${repository}/blob/main/SOURCES.md">Geographic sources</a><a href="${repository}/blob/main/CHANGELOG.md">Changelog</a></nav></div><p class="shell colophon-line">Set in your system’s serif and sans. Geography from DataSF, the San Francisco Association of Realtors, and BART. %RELEASE_LABEL%.</p></footer>`;
+const colophon = `<footer class="colophon" data-rule><div class="shell colophon-grid"><div class="colophon-mark">${wordmark(false)}<p>Offline, dependency-free SVG maps of San Francisco. Software under the MIT license; geography retains its sources’ terms.</p></div><nav aria-label="The atlas"><h2>The atlas</h2><a href="./">Home</a><a href="./layers.html">Layers &amp; divisions</a><a href="./playground.html">Map design playground</a><a href="./spot.html">One spot, three San Franciscos</a></nav><nav aria-label="Examples"><h2>Examples</h2><a href="./measures.html">Local measures</a><a href="./propositions.html">California propositions</a><a href="./candidates.html">Supervisorial votes</a><a href="./examples.html">All examples</a></nav><nav aria-label="Reference"><h2>Reference</h2><a href="./docs.html">Documentation</a><a href="./api.html">API reference</a><a href="${repository}/blob/main/SOURCES.md">Geographic sources</a><a href="${repository}/blob/main/CHANGELOG.md">Changelog</a></nav></div><p class="shell colophon-line">Set in your system’s serif and sans. Geography from DataSF, the San Francisco Association of Realtors, and BART. %RELEASE_LABEL%.</p></footer>`;
 
 const arrowDirections = { '→': 'e', '▶': 'e', '↗': 'ne', '↓': 's', '←': 'w' };
 const attribute = (value) =>
@@ -219,12 +227,8 @@ try {
   if (!/^\d+\.\d+\.\d+$/.test(version)) throw new Error('Expected a stable package version');
   const releaseLabel = released ? `v${version} · on npm` : `v${version} · local preview`;
   const capabilities = await getMapCapabilities(packageRoot);
-  const missing = Object.entries(capabilities)
-    .filter(([, available]) => !available)
-    .map(([name]) => name);
-  const featureStatus = missing.length
-    ? `<p class="shell" role="note">Preview features ${missing.map((name) => `<code>${name}</code>`).join(', ')} are not available in the selected npm package. Their examples below require an unreleased build; use the Markdown reference for this installed version.</p>`
-    : '';
+  await checkPlaygroundCode(packageRoot, capabilities);
+  const referenceStatus = `<p class="shell reference-version" role="note">This reference describes <code>@kahwee/sf-map-svg ${version}</code>${released ? ', the version used throughout this site' : ' from the local working tree'}. Examples and options below match this version.</p>`;
   const boot = await readFile('website/boot.js', 'utf8');
   await build({
     configFile: false,
@@ -263,8 +267,97 @@ try {
         transformIndexHtml: (html) =>
           html
             .replaceAll('%MAP_VERSION%', version)
+            .replaceAll(
+              '%STATIC_INPUT_TYPE%',
+              capabilities.sourceAwareStatic ? 'StaticMapInput' : 'StaticMapData',
+            )
+            .replaceAll(
+              '<!--static-source-->',
+              capabilities.sourceAwareStatic
+                ? '<tr><td><code>source</code></td><td>NeighborhoodSource</td><td>Select a supplied definition when using source-aware MapData (including fullMapData). SFAR is preferred by default; unavailable sources fail. Compact StaticMapData already chooses its neighborhoods.</td></tr>'
+                : '',
+            )
+            .replaceAll(
+              '<!--feature-selection-->',
+              capabilities.featureSelection
+                ? '<tr><td><code>selectFeature</code></td><td>(reference, options?) → boolean</td><td>Typed kind/ID with neighborhood source or district year. Select only in current geography; mismatches return false without switching. A null ID clears that kind.</td></tr>'
+                : '',
+            )
             .replaceAll('%RELEASE_LABEL%', releaseLabel)
-            .replaceAll('<!--feature-status-->', featureStatus),
+            .replaceAll(
+              '%STATIC_MARKERS_TYPE%',
+              capabilities.staticPresentation ? 'readonly MapMarker[]' : 'MapMarker[]',
+            )
+            .replaceAll('<!--reference-version-->', referenceStatus)
+            .replaceAll(
+              '%APPEARANCE_SHORT%',
+              capabilities.runtimeAppearance
+                ? 'Update live with configure.'
+                : 'Set at construction.',
+            )
+            .replaceAll(
+              '%APPEARANCE_HELP%',
+              capabilities.runtimeAppearance
+                ? 'Update with <code>map.configure({ appearance })</code> while preserving camera, selection and focus. Token objects merge by key; <code>appearance: undefined</code> resets the group.'
+                : 'Appearance is set at construction. Recreate the map to change its palette and typography.',
+            )
+            .replaceAll(
+              '%CONFIGURATION_KEYS%',
+              capabilities.runtimeAppearance
+                ? 'features?, layers?, controls?, appearance?, mode?, source?, year?, labels?'
+                : 'features?, layers?, controls?',
+            )
+            .replaceAll(
+              '%CONFIGURATION_SNAPSHOT%',
+              capabilities.completeConfiguration
+                ? 'Current mode/source/year/labels plus detached presentation overrides. Camera and selection are separate. Styling callbacks keep their identity.'
+                : capabilities.runtimeAppearance
+                  ? 'Detached feature, layer, control and appearance overrides. Styling callbacks keep their identity.'
+                  : 'Detached copy of features, layers and controls.',
+            )
+            .replaceAll(
+              '%VIEW_UPDATE_ARGUMENT%',
+              capabilities.viewUpdateOptions ? ', options?' : '',
+            )
+            .replaceAll(
+              '%VIEW_UPDATE_HELP%',
+              capabilities.viewUpdateOptions
+                ? 'Pass <code>{ resetView: false }</code> to preserve the camera. Setters share the atomic configuration path.'
+                : 'Use <code>configure()</code> to retain the camera.',
+            )
+            .replaceAll(
+              '%RUNTIME_HELP%',
+              capabilities.runtimeAppearance
+                ? 'Update <code>layers</code>, <code>controls</code>, <code>features</code>, <code>appearance</code>, mode, source, year and labels with <code>map.configure()</code>. Live appearance retains camera, selection and focus. Try it in the <a href="./playground.html">map design playground</a>.'
+                : 'Options are grouped: <code>layers</code>, <code>controls</code> and <code>features</code> can change with <code>map.configure()</code>; appearance is set at construction. Explore palettes in the <a href="./playground.html">map design playground</a>.',
+            )
+            .replaceAll(
+              '<!--static-presentation-->',
+              capabilities.staticPresentation
+                ? '<tr><td><code>layers</code>, <code>appearance</code></td><td>StaticMapLayers, StaticMapAppearance</td><td>Shared presentation vocabulary. Grouped keys override flat keys; static appearance supports theme, colors and districtStyle. Neighborhood labels remain browser-only.</td></tr>'
+                : '',
+            )
+            .replaceAll(
+              '<!--configuration-inspection-->',
+              capabilities.runtimeAppearance
+                ? '<tr><td><code>getResolvedConfiguration</code></td><td>() → ResolvedMapConfiguration</td><td>Current mode/source/year/labels and effective layer switches; label collision and zoom rules still apply.</td></tr><tr><td><code>getCapabilities</code></td><td>() → MapCapabilities</td><td>Supplied sources, years and layer data availability, independent of visibility.</td></tr>'
+                : '',
+            )
+            .replaceAll(
+              '<!--selection-envelope-->',
+              capabilities.runtimeAppearance
+                ? '<tr><td><code>selectionchange</code></td><td>{ kind, current, previous }</td><td>Common detached envelope for marker, neighborhood and district selection; null clears. Existing change events retain their payloads.</td></tr>'
+                : '',
+            )
+            .replace(/<table class="api-table">[\s\S]*?<\/table>/g, (table) =>
+              table
+                .replace('<table ', '<table role="table" ')
+                .replaceAll('<thead>', '<thead role="rowgroup">')
+                .replaceAll('<tbody>', '<tbody role="rowgroup">')
+                .replaceAll('<tr>', '<tr role="row">')
+                .replaceAll('<th>', '<th role="columnheader">')
+                .replaceAll('<td>', '<td role="cell">'),
+            ),
       },
     ],
     build: {
@@ -284,6 +377,11 @@ try {
   const site = simplifyDataset(fullMapData);
   await mkdir('pages-dist/data', { recursive: true });
   await writeFile('pages-dist/data/site-map.json', JSON.stringify(site));
+  // Full precision is fetched only when the design playground exports an SVG.
+  await writeFile(
+    'pages-dist/data/export-map.json',
+    JSON.stringify({ map: fullMapData.map, neighborhoods: fullMapData.neighborhoods }),
+  );
 
   // Full-precision downloads, display copies, and thumbnails with dark twins.
   for (const folder of ['display', 'thumb', 'plates', 'figures'])

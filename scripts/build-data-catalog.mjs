@@ -1,39 +1,55 @@
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
+import { validateMapFeatureCollection } from './lib/validate-map-geojson.mjs';
 
-const files = [
-  'coast',
-  'districts-2002',
-  'districts-2012',
-  'districts-2022',
-  'highways',
-  'key-roads',
-  'landmarks',
-  'bart-stations',
-  'neighborhoods',
-  'neighborhoods-analysis',
-  'neighborhoods-realtor',
+const datasets = [
+  { file: 'coast', role: 'coast' },
+  { file: 'districts-2002', role: 'district' },
+  { file: 'districts-2012', role: 'district' },
+  { file: 'districts-2022', role: 'district' },
+  { file: 'highways', role: 'highway' },
+  { file: 'key-roads', role: 'road' },
+  { file: 'landmarks', role: 'landmark' },
+  { file: 'bart-stations', role: 'station' },
+  { file: 'neighborhoods', role: 'neighborhood' },
+  { file: 'neighborhoods-analysis', role: 'neighborhood' },
+  { file: 'neighborhoods-realtor', role: 'neighborhood' },
+  { file: 'guide/coast', role: 'coast' },
+  { file: 'guide/highways', role: 'highway' },
+  { file: 'guide/highways-detailed', role: 'highway' },
+  { file: 'guide/key-roads', role: 'road' },
+  { file: 'guide/landmarks', role: 'landmark' },
+  { file: 'guide/bart-stations', role: 'station' },
+  { file: 'guide/neighborhoods-realtor', role: 'neighborhood' },
 ];
 const collections = await Promise.all(
-  files.map(async (file) => ({
-    file: `${file}.json`,
-    data: JSON.parse(await readFile(new URL(`../data/${file}.json`, import.meta.url), 'utf8')),
-  })),
+  datasets.map(async ({ file, role }) => {
+    const data = JSON.parse(
+      await readFile(new URL(`../data/${file}.json`, import.meta.url), 'utf8'),
+    );
+    validateMapFeatureCollection(data, role, `${file}.json`);
+    return { file: `${file}.json`, data };
+  }),
 );
 const catalog = {
   schemaVersion: 1,
   description:
     'Complete inventories of the three listed neighborhood sources, not a claim that every informal San Francisco neighborhood has one agreed boundary. Canonical names are package display names; sourceName preserves the source label. Aliases aid name lookup and do not establish identical boundaries across sources.',
-  datasets: collections.map(({ file, data }) => ({
-    id: data.id,
-    file,
-    title: data.title,
-    featureCount: data.features.length,
-    definition: data.definition,
-    sources: data.sources,
-  })),
+  datasets: collections
+    .filter(({ file }) => !file.startsWith('guide/'))
+    .map(({ file, data }) => ({
+      id: data.id,
+      file,
+      title: data.title,
+      featureCount: data.features.length,
+      definition: data.definition,
+      sources: data.sources,
+    })),
   neighborhoods: collections
-    .filter(({ data }) => ['sf-find', 'analysis', 'realtor'].includes(data.id))
+    .filter(
+      ({ file, data }) =>
+        !file.startsWith('guide/') && ['sf-find', 'analysis', 'realtor'].includes(data.id),
+    )
     .flatMap(({ file, data }) =>
       data.features.map((f) => ({
         id: f.id,

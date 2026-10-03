@@ -5,6 +5,9 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { checkPlaygroundCode } from './check-playground-code.mjs';
+import { getMapCapabilities } from './map-capabilities.mjs';
+
 const root = fileURLToPath(new URL('../', import.meta.url));
 const temp = await mkdtemp(join(tmpdir(), 'sf-map-package-'));
 const [flag, archiveArgument, ...extra] = process.argv.slice(2);
@@ -44,22 +47,33 @@ try {
   assert.match(await readFile(join(installed, 'LICENSE'), 'utf8'), /MIT License/);
   const assistantDocs = await readFile(join(installed, 'llms-full.txt'), 'utf8');
   assert.ok(assistantDocs.includes(`@kahwee/sf-map-svg ${manifest.version} ·`));
-  const developerGuide = await readFile(join(installed, 'docs/developer-guide.md'), 'utf8');
-  const browserRecipe = [...developerGuide.matchAll(/```ts\n([\s\S]*?)```/g)]
-    .map(([, code]) => code)
-    .filter((code) => !code.includes('node:fs'))
-    .join('\n');
-  await writeFile(join(temp, 'documented-consumer.mts'), browserRecipe);
+  const documentedModules = [];
+  for (const document of ['README.md', 'docs/developer-guide.md', 'docs/consumer-integration.md']) {
+    const markdown = await readFile(join(installed, document), 'utf8');
+    const recipe = [...markdown.matchAll(/```ts\n([\s\S]*?)```/g)]
+      .map(([, code]) => code)
+      .filter((code) => !code.includes('node:fs'))
+      .join('\n');
+    assert.ok(recipe.trim(), `${document} must contain a typed recipe`);
+    const filename = join(
+      temp,
+      `documented-${document.replaceAll('/', '-').replace('.md', '.mts')}`,
+    );
+    await writeFile(filename, recipe);
+    documentedModules.push(filename);
+  }
   execFileSync(
     join(root, 'node_modules/.bin/tsc'),
     [
       '--noEmit',
       '--strict',
+      '--exactOptionalPropertyTypes',
+      '--noUncheckedIndexedAccess',
       '--module',
       'nodenext',
       '--target',
       'es2023',
-      join(temp, 'documented-consumer.mts'),
+      ...documentedModules,
     ],
     { cwd: temp, stdio: 'inherit' },
   );
@@ -118,13 +132,24 @@ import * as geometry from '@kahwee/sf-map-svg/geometry';
 const options: MapOptions = { features: { motion: true }, appearance: { colors: { water: '#fff' } } };
 const controller = () => createMap(fullMapData, options);
 const guideController = () => createGuideController(options);
+const liveContract = () => {
+  const map = controller();
+  map.configure({ mode: 'districts', year: 2012, appearance: { colors: { water: '#123456' } } });
+  map.configure({ appearance: undefined, layers: undefined, controls: undefined, features: undefined });
+  map.configure({ appearance: { colors: { water: undefined }, labelStyle: { fontWeight: undefined }, labelSize: { min: undefined }, style: { ink: undefined }, areaStyle: { selectedFill: undefined } }, layers: { bartStations: undefined }, controls: { zoom: undefined } });
+  map.getResolvedConfiguration().layers.bartStations satisfies boolean;
+  map.getCapabilities().sources satisfies readonly NeighborhoodSource[];
+  map.on('selectionchange', (event) => {
+    if (event.kind === 'marker') event.current?.lng satisfies number | undefined;
+  });
+};
 const shellController = (shell: HTMLElement) => mountGuideController(shell, options);
-const staticOptions: StaticMapOptions = { width: 390, landmarks: true, bartStations: true, overlays: [{ id: 'route', geometry: { type: 'LineString', coordinates: [[-122.4, 37.7], [-122.41, 37.71]] } }] };
+const staticOptions: StaticMapOptions = { layers: { bartStations: true }, appearance: { colors: { water: '#123456' } }, markers: [{ id: 'readonly', lng: -122.4, lat: 37.76 }] as const, width: 390, landmarks: true, bartStations: true, overlays: [{ id: 'route', geometry: { type: 'LineString', coordinates: [[-122.4, 37.7], [-122.41, 37.71]] } }] };
 const svg: string = renderMap(fullMapData.map, staticOptions).svg;
 const staticSvg: string = renderMap(staticMapData).svg;
 const source: NeighborhoodSource = 'realtor';
 const name: string | undefined = getNeighborhood('NoPa', { source })?.properties.canonicalName;
-void [controller, svg, staticSvg, name, geometry, createGuideMap, loadGuideDetailedData, guideMapData];
+void [controller, liveContract, svg, staticSvg, name, geometry, createGuideMap, loadGuideDetailedData, guideMapData];
 `,
   );
   execFileSync(
@@ -132,6 +157,8 @@ void [controller, svg, staticSvg, name, geometry, createGuideMap, loadGuideDetai
     [
       '--noEmit',
       '--strict',
+      '--exactOptionalPropertyTypes',
+      '--noUncheckedIndexedAccess',
       '--module',
       'nodenext',
       '--target',
@@ -141,6 +168,7 @@ void [controller, svg, staticSvg, name, geometry, createGuideMap, loadGuideDetai
     { cwd: temp, stdio: 'inherit' },
   );
   console.log('Installed package TypeScript declarations passed.');
+  await checkPlaygroundCode(installed, await getMapCapabilities(installed));
 } finally {
   await rm(temp, { recursive: true, force: true });
 }

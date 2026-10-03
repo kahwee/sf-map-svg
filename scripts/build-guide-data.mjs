@@ -130,23 +130,21 @@ while (pending.size) {
   simplifyArc([...arc.slice(midpoint), start]);
 }
 const simplifyTopology = (geometry) => {
+  const ring = (coordinates) => {
+    const next = coordinates.filter((point) => retained.has(key(point)));
+    if (next.length < 3) return coordinates;
+    if (key(next[0]) !== key(next[next.length - 1])) next.push(next[0]);
+    return next.length >= 4 ? next : coordinates;
+  };
   if (geometry.type === 'Polygon')
     return {
       ...geometry,
-      coordinates: geometry.coordinates.map((ring) => {
-        const next = ring.filter((point) => retained.has(key(point)));
-        return next.length >= 4 ? next : ring;
-      }),
+      coordinates: geometry.coordinates.map(ring),
     };
   if (geometry.type === 'MultiPolygon')
     return {
       ...geometry,
-      coordinates: geometry.coordinates.map((polygon) =>
-        polygon.map((ring) => {
-          const next = ring.filter((point) => retained.has(key(point)));
-          return next.length >= 4 ? next : ring;
-        }),
-      ),
+      coordinates: geometry.coordinates.map((polygon) => polygon.map(ring)),
     };
   return geometry;
 };
@@ -176,15 +174,43 @@ const overviewCoast = collection(trimmedCoast, 'guide-coast-overview', 'Guide co
 ]);
 function simplifyGeometry(geometry, tolerance) {
   const line = (coordinates) => simplifyLine(coordinates, tolerance);
+  const ring = (coordinates) => {
+    if (coordinates.length <= 4 || key(coordinates[0]) !== key(coordinates.at(-1)))
+      return coordinates;
+    const open = coordinates.slice(0, -1);
+    let pivot = 2;
+    for (let index = 3; index < open.length - 1; index++)
+      if (
+        distanceToSegment(open[index], open[0], open[0]) >
+        distanceToSegment(open[pivot], open[0], open[0])
+      )
+        pivot = index;
+    const simplifyArc = (arc) => {
+      const simplified = line(arc);
+      if (simplified.length >= 3) return simplified;
+      let farthest = 1;
+      for (let index = 2; index < arc.length - 1; index++)
+        if (
+          distanceToSegment(arc[index], arc[0], arc.at(-1)) >
+          distanceToSegment(arc[farthest], arc[0], arc.at(-1))
+        )
+          farthest = index;
+      return [arc[0], arc[farthest], arc.at(-1)];
+    };
+    const firstArc = simplifyArc(open.slice(0, pivot + 1));
+    const secondArc = simplifyArc([...open.slice(pivot), open[0]]);
+    const simplified = [...firstArc.slice(0, -1), ...secondArc];
+    return simplified.length >= 4 ? simplified : coordinates;
+  };
   switch (geometry.type) {
     case 'LineString':
       return { ...geometry, coordinates: line(geometry.coordinates) };
     case 'MultiLineString':
       return { ...geometry, coordinates: geometry.coordinates.map(line) };
     case 'Polygon':
-      return { ...geometry, coordinates: geometry.coordinates.map(line) };
+      return { ...geometry, coordinates: geometry.coordinates.map(ring) };
     case 'MultiPolygon':
-      return { ...geometry, coordinates: geometry.coordinates.map((polygon) => polygon.map(line)) };
+      return { ...geometry, coordinates: geometry.coordinates.map((polygon) => polygon.map(ring)) };
     default:
       return geometry;
   }

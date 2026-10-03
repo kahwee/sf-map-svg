@@ -14,7 +14,10 @@ import { geometryPath } from '@kahwee/sf-map-svg/geometry';
 
 const source: NeighborhoodSource = 'realtor';
 const mission = getNeighborhood('Inner Mission', { source });
-const map = renderMap(fullMapData.map, { landmarks: true, bartStations: true });
+const map = renderMap(fullMapData, {
+  source: 'realtor',
+  layers: { landmarks: true, bartStations: true },
+});
 if (mission) {
   geometryPath(mission.geometry, map.project);
   // @ts-expect-error Public helper geometry is readonly.

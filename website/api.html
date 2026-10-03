@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="API reference for SF / SVG: renderMap, getLayerPaths, createMap, the map controller, camera, events, features, layers, data entry points and types.">
+  <meta name="description" content="API reference for SF Map SVG: renderMap, getLayerPaths, createMap, the map controller, camera, events, features, layers, data entry points and types.">
   <link rel="canonical" href="https://kahwee.github.io/sf-map-svg/api.html">
-  <title>API reference · SF / SVG</title>
+  <title>API reference · SF Map SVG</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="./docs.css">
 </head>
@@ -18,7 +18,7 @@
       <p class="lede" data-enter style="--i:4">Every entry point, option, method and event, with defaults. For explanations and patterns, start with <a href="./docs.html">the guide</a>. Types ship with the package; this page follows them.</p>
       <p class="page-head-meta" data-enter style="--i:5"><span>Package <code>@kahwee/sf-map-svg</code></span><a href="./api.md">Markdown reference</a><a href="./llms-full.txt" download>LLM documentation</a><span>%RELEASE_LABEL%</span></p>
     </header>
-    <!--feature-status-->
+    <!--reference-version-->
 
     <div class="docs shell">
       <nav class="toc" aria-label="Reference contents">
@@ -41,6 +41,13 @@
       </nav>
 
       <article class="docs-body">
+        <search class="api-search" hidden>
+          <label class="sr-only" for="api-filter">Filter the reference</label>
+          <input id="api-filter" type="search" placeholder="Filter options, methods and events" autocomplete="off" spellcheck="false">
+          <kbd aria-hidden="true">/</kbd>
+          <output id="api-count" aria-live="polite"></output>
+        </search>
+        <p class="api-empty" hidden>Nothing in the reference matches that. Try a shorter word, such as <code>layers</code> or <code>camera</code>.</p>
         <section class="api-entry" id="entry-points">
           <h2>Entry points</h2>
           <p>Import from the smallest entry that has what you need. Data entries export frozen objects; clone before editing.</p>
@@ -64,12 +71,14 @@
 
         <section class="api-entry" id="render-map">
           <h2>renderMap</h2>
-          <code class="signature">renderMap(data: StaticMapData, options?: StaticMapOptions)
+          <code class="signature">renderMap(data: %STATIC_INPUT_TYPE%, options?: StaticMapOptions)
   → { svg: string; project: (position) =&gt; [x, y]; viewBox: [0, 0, width, height] }</code>
           <p>Renders a self-contained SVG string with no DOM. <code>project</code> converts <code>[lng, lat]</code> into the SVG’s coordinates.</p>
           <div class="table-wrap"><table class="api-table">
             <thead><tr><th>Option</th><th>Type · default</th><th>Description</th></tr></thead>
             <tbody>
+              <!--static-presentation-->
+              <!--static-source-->
               <tr><td><code>year</code></td><td>2002 | 2012 | 2022 · 2022</td><td>District map year.</td></tr>
               <tr><td><code>theme</code></td><td>'districts' | 'transit' · 'districts'</td><td>Soft district palette or quiet transit palette.</td></tr>
               <tr><td><code>width</code>, <code>height</code></td><td>number · 800</td><td>SVG size and view box.</td></tr>
@@ -85,8 +94,8 @@
               <tr><td><code>roadLabels</code></td><td>boolean · same as keyRoads</td><td>Road names.</td></tr>
               <tr><td><code>bartStations</code></td><td>boolean · false</td><td>The eight BART stations in the city.</td></tr>
               <tr><td><code>labels</code></td><td>boolean · true</td><td>Hide every visible label while keeping titles.</td></tr>
-              <tr><td><code>markers</code></td><td>MapMarker[] · []</td><td>Points drawn above everything else.</td></tr>
-              <tr><td><code>overlays</code></td><td>MapOverlay[] · []</td><td>Your own lines and polygons.</td></tr>
+              <tr><td><code>markers</code></td><td>%STATIC_MARKERS_TYPE% · []</td><td>Points drawn above everything else.</td></tr>
+              <tr><td><code>overlays</code></td><td>readonly MapOverlay[] · []</td><td>Your own lines and polygons.</td></tr>
               <tr><td><code>colors</code></td><td>Partial&lt;Record&lt;ColorKey, string&gt;&gt;</td><td>water, land, district, neighborhood, highway, road, park, landmark, bart, label, marker, selected.</td></tr>
               <tr><td><code>animation</code></td><td>boolean | { duration?, delay? } · false</td><td>Self-contained draw-in. <code>duration</code> defaults to 2400 ms and scales the sequence.</td></tr>
               <tr><td><code>title</code></td><td>string · 'San Francisco map'</td><td>Accessible title.</td></tr>
@@ -97,7 +106,7 @@
 
         <section class="api-entry" id="get-layer-paths">
           <h2>getLayerPaths</h2>
-          <code class="signature">getLayerPaths(data: StaticMapData, options?: StaticMapOptions)
+          <code class="signature">getLayerPaths(data: %STATIC_INPUT_TYPE%, options?: StaticMapOptions)
   → { year, viewBox, project, coast, districts, neighborhoods, highways,
       landmarks, keyRoads, bartStations }</code>
           <p>Returns fitted path strings and points for each layer without building SVG markup, for canvas renderers and custom drawings.</p>
@@ -118,9 +127,9 @@
               <tr><td><code>layers</code></td><td>InteractiveLayers</td><td>See <a href="#layers">layers</a>.</td></tr>
               <tr><td><code>controls</code></td><td>MapControls</td><td>See <a href="#controls">controls</a>.</td></tr>
               <tr><td><code>features</code></td><td>MapFeatures</td><td>See <a href="#features">features</a>.</td></tr>
-              <tr><td><code>appearance</code></td><td>MapAppearance</td><td>See <a href="#appearance">appearance</a>. Set once.</td></tr>
-              <tr><td><code>markers</code></td><td>MapMarker[]</td><td>Initial markers.</td></tr>
-              <tr><td><code>overlays</code></td><td>MapOverlay[]</td><td>Initial overlays.</td></tr>
+              <tr><td><code>appearance</code></td><td>MapAppearance</td><td>See <a href="#appearance">appearance</a>. %APPEARANCE_SHORT%</td></tr>
+              <tr><td><code>markers</code></td><td>readonly MapMarker[]</td><td>Initial markers.</td></tr>
+              <tr><td><code>overlays</code></td><td>readonly MapOverlay[]</td><td>Initial overlays.</td></tr>
               <tr><td><code>legend</code></td><td>{ builtins?, hidden?, items? }</td><td>Legend entries.</td></tr>
               <tr><td><code>strings</code></td><td>Partial&lt;Record&lt;StringKey, string&gt;&gt;</td><td>Replace interface text for translation.</td></tr>
               <tr><td><code>attribution</code></td><td>'full' | 'compact' · 'full'</td><td>Source credit style.</td></tr>
@@ -170,6 +179,7 @@
 
         <section class="api-entry" id="appearance">
           <h2>appearance</h2>
+          <p>%APPEARANCE_HELP%</p>
           <div class="table-wrap"><table class="api-table">
             <thead><tr><th>Key</th><th>Type · default</th><th>Description</th></tr></thead>
             <tbody>
@@ -195,11 +205,13 @@
               <tr><td><code>overlayElement</code></td><td>HTMLDivElement</td><td>Positioned layer for your own HTML.</td></tr>
               <tr><td><code>camera</code></td><td>MapCamera</td><td>See <a href="#camera">MapCamera</a>.</td></tr>
               <tr><td><code>destroyed</code></td><td>boolean</td><td>True after <code>destroy()</code>.</td></tr>
-              <tr><td><code>configure</code></td><td>(patch: { features?, layers?, controls? })</td><td>Atomic runtime change; invalid patches change nothing. Omitted keys retain values; undefined groups reset.</td></tr>
-              <tr><td><code>getConfiguration</code></td><td>() → snapshot</td><td>Detached copy of features, layers and controls.</td></tr>
+              <tr><td><code>configure</code></td><td>(patch: { %CONFIGURATION_KEYS% })</td><td>Atomic runtime change; invalid patches change nothing. Omitted keys retain values; undefined groups reset.</td></tr>
+              <tr><td><code>getConfiguration</code></td><td>() → snapshot</td><td>%CONFIGURATION_SNAPSHOT%</td></tr>
+              <!--configuration-inspection-->
+              <!--feature-selection-->
               <tr><td><code>on</code></td><td>(type, listener) → unsubscribe</td><td>Typed events; see <a href="#events">Events</a>.</td></tr>
-              <tr><td><code>setMode</code></td><td>(mode)</td><td>Switch basemap, neighborhoods or districts.</td></tr>
-              <tr><td><code>setSource</code></td><td>(source)</td><td>Switch neighborhood definition.</td></tr>
+              <tr><td><code>setMode</code></td><td>(mode%VIEW_UPDATE_ARGUMENT%)</td><td>Switch mode; by default reset the camera. %VIEW_UPDATE_HELP%</td></tr>
+              <tr><td><code>setSource</code></td><td>(source%VIEW_UPDATE_ARGUMENT%)</td><td>Switch neighborhood definition; by default reset the camera. %VIEW_UPDATE_HELP%</td></tr>
               <tr><td><code>setDistrictYear</code></td><td>(year, { animate?, duration? })</td><td>Switch district map; morphs with <code>districtMorph</code>.</td></tr>
               <tr><td><code>setDistrictStyle</code></td><td>(style | undefined)</td><td>Restyle districts.</td></tr>
               <tr><td><code>setLabels</code></td><td>(visible: boolean)</td><td>Show or hide labels.</td></tr>
@@ -238,6 +250,7 @@
           <div class="table-wrap"><table class="api-table">
             <thead><tr><th>Event</th><th>Detail</th><th>When</th></tr></thead>
             <tbody>
+              <!--selection-envelope-->
               <tr><td><code>districtchange</code></td><td>{ id, year, district }</td><td>District selection changes.</td></tr>
               <tr><td><code>districthover</code></td><td>{ id, year, district }</td><td>The hovered district changes.</td></tr>
               <tr><td><code>districtactivate</code></td><td>{ id, year, district }</td><td>A district is clicked or activated by keyboard.</td></tr>

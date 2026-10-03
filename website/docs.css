@@ -1,3 +1,9 @@
+@import "./head-art.css";
+.reference-version {
+  padding-block: 18px;
+  color: var(--muted);
+  font: 13px / 1.7 var(--sans);
+}
 .docs {
   display: grid;
   grid-template-columns: 220px minmax(0, 1fr);
@@ -51,7 +57,7 @@
   border-left: 2px solid var(--accent);
 }
 .docs-body {
-  max-width: 760px;
+  max-width: 880px;
 }
 .docs-body section {
   scroll-margin-top: 24px;
@@ -112,21 +118,26 @@
 }
 .signature {
   display: block;
-  margin: 8px 0 18px;
-  padding: 14px 18px;
+  margin: 8px 0 20px;
+  padding: 16px 20px;
+  border: 1px solid var(--rule-strong);
   border-left: 3px solid var(--accent);
-  background: var(--paper-2);
+  border-radius: 0 10px 10px 0;
+  background: var(--card);
   font-family: var(--mono);
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 13.5px;
+  line-height: 1.65;
   overflow-x: auto;
   white-space: pre;
 }
-.api-table td:first-child {
-  white-space: nowrap;
+.api-table {
+  table-layout: auto;
 }
-.api-table td code,
-.api-table th code {
+.api-table td:first-child {
+  min-width: 9em;
+  line-height: 2;
+}
+.api-table td code {
   white-space: nowrap;
 }
 .api-table td:nth-child(2) {
@@ -137,6 +148,11 @@
 .api-table td:last-child {
   font-family: var(--serif);
   font-size: 15px;
+  color: var(--ink-2);
+}
+.api-table td:first-child code {
+  color: var(--accent-ink);
+  font-weight: 600;
 }
 .api-group {
   margin: 30px 0 10px;
@@ -144,6 +160,29 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
+}
+
+.doc-paths {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  padding-block: 24px;
+}
+.doc-paths a {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  color: var(--ink);
+  text-decoration: none;
+  font: 14px / 1.5 var(--sans);
+}
+.doc-paths a > span {
+  color: var(--muted);
+}
+.doc-paths a:is(:hover, :focus-visible) {
+  border-color: var(--accent);
 }
 
 @media (max-width: 900px) {
@@ -159,6 +198,7 @@
   .toc ol {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  .doc-paths,
   .layer-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -166,5 +206,114 @@
 @media (max-width: 480px) {
   .toc ol {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.api-search {
+  position: sticky;
+  top: 12px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+  padding: 4px 14px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: var(--card);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--shadow) 35%, transparent);
+}
+.api-search:focus-within {
+  border-color: var(--accent);
+}
+.api-search[hidden],
+.api-empty[hidden],
+.api-entry[hidden] {
+  display: none;
+}
+.api-search input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 0;
+  border: 0;
+  outline: 0;
+  background: none;
+  color: var(--ink);
+  font: 15px var(--sans);
+}
+.api-search kbd {
+  padding: 1px 8px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 6px;
+  font: 12px var(--mono);
+  color: var(--muted);
+}
+.api-search output {
+  min-width: 5.5em;
+  text-align: right;
+  font: 13px var(--sans);
+  color: var(--muted);
+}
+.api-empty {
+  padding: 28px 0;
+  color: var(--muted);
+}
+.api-search input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.toc li[data-dim] {
+  opacity: 0.35;
+}
+.page-head-meta > a {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 12px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink-2);
+  text-decoration: none;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+.page-head-meta > a:is(:hover, :focus-visible) {
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* Reference rows become readable records on phones; explicit roles preserve table semantics. */
+@media (max-width: 620px) {
+  .api-table,
+  .api-table tbody {
+    display: block;
+  }
+  .api-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .api-table tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    padding: 16px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .api-table tbody tr:last-child {
+    border-bottom: 0;
+  }
+  .api-table td {
+    display: block;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    overflow-wrap: anywhere;
+  }
+  .api-table td code {
+    white-space: normal;
   }
 }

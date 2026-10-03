@@ -1,4 +1,5 @@
 import { createMap } from '@kahwee/sf-map-svg';
+import { enhanceDropdowns } from './dropdown.js';
 import { prefersReducedMotion, whenVisible } from './motion-kit.js';
 import { mountPlates } from './plates.js';
 import { mapCapabilities } from './site-capabilities.js';
@@ -237,6 +238,7 @@ async function start() {
       return;
     }
   }
+  enhanceDropdowns(map.element);
   host.replaceChildren(map.element);
   buildControls();
   const current = steps.find((step) => step.classList.contains('is-active')) ?? steps[0];
