@@ -267,6 +267,22 @@ try {
         transformIndexHtml: (html) =>
           html
             .replaceAll('%MAP_VERSION%', version)
+            .replaceAll(
+              '%STATIC_INPUT_TYPE%',
+              capabilities.sourceAwareStatic ? 'StaticMapInput' : 'StaticMapData',
+            )
+            .replaceAll(
+              '<!--static-source-->',
+              capabilities.sourceAwareStatic
+                ? '<tr><td><code>source</code></td><td>NeighborhoodSource</td><td>Select a supplied definition when using source-aware MapData (including fullMapData). SFAR is preferred by default; unavailable sources fail. Compact StaticMapData already chooses its neighborhoods.</td></tr>'
+                : '',
+            )
+            .replaceAll(
+              '<!--feature-selection-->',
+              capabilities.featureSelection
+                ? '<tr><td><code>selectFeature</code></td><td>(reference, options?) → boolean</td><td>Typed kind/ID with neighborhood source or district year. Select only in current geography; mismatches return false without switching. A null ID clears that kind.</td></tr>'
+                : '',
+            )
             .replaceAll('%RELEASE_LABEL%', releaseLabel)
             .replaceAll(
               '%STATIC_MARKERS_TYPE%',
@@ -293,9 +309,21 @@ try {
             )
             .replaceAll(
               '%CONFIGURATION_SNAPSHOT%',
-              capabilities.runtimeAppearance
-                ? 'Detached feature, layer, control and appearance overrides. Styling callbacks keep their identity.'
-                : 'Detached copy of features, layers and controls.',
+              capabilities.completeConfiguration
+                ? 'Current mode/source/year/labels plus detached presentation overrides. Camera and selection are separate. Styling callbacks keep their identity.'
+                : capabilities.runtimeAppearance
+                  ? 'Detached feature, layer, control and appearance overrides. Styling callbacks keep their identity.'
+                  : 'Detached copy of features, layers and controls.',
+            )
+            .replaceAll(
+              '%VIEW_UPDATE_ARGUMENT%',
+              capabilities.viewUpdateOptions ? ', options?' : '',
+            )
+            .replaceAll(
+              '%VIEW_UPDATE_HELP%',
+              capabilities.viewUpdateOptions
+                ? 'Pass <code>{ resetView: false }</code> to preserve the camera. Setters share the atomic configuration path.'
+                : 'Use <code>configure()</code> to retain the camera.',
             )
             .replaceAll(
               '%RUNTIME_HELP%',
@@ -320,6 +348,15 @@ try {
               capabilities.runtimeAppearance
                 ? '<tr><td><code>selectionchange</code></td><td>{ kind, current, previous }</td><td>Common detached envelope for marker, neighborhood and district selection; null clears. Existing change events retain their payloads.</td></tr>'
                 : '',
+            )
+            .replace(/<table class="api-table">[\s\S]*?<\/table>/g, (table) =>
+              table
+                .replace('<table ', '<table role="table" ')
+                .replaceAll('<thead>', '<thead role="rowgroup">')
+                .replaceAll('<tbody>', '<tbody role="rowgroup">')
+                .replaceAll('<tr>', '<tr role="row">')
+                .replaceAll('<th>', '<th role="columnheader">')
+                .replaceAll('<td>', '<td role="cell">'),
             ),
       },
     ],

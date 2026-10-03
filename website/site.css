@@ -486,6 +486,7 @@ hr {
 
 /* Theme toggle: the icon follows the applied theme, before scripts run. */
 .theme-toggle {
+  position: relative;
   display: none;
   flex: none;
   place-items: center;
@@ -498,6 +499,13 @@ hr {
   color: inherit;
   cursor: pointer;
   transition: transform var(--dur-spring) var(--spring);
+}
+/* Expand the hit area without changing the masthead or icon geometry. */
+.theme-toggle::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
 }
 .js .theme-toggle {
   display: inline-grid;

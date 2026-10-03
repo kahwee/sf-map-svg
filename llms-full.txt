@@ -2,13 +2,13 @@
 
 > Offline San Francisco SVG maps with explicit geographic imports, no runtime dependencies, static rendering, and a browser controller.
 
-@kahwee/sf-map-svg 4.2.0 · local working tree. Node >=24.0.0 for server rendering; browsers need a DOM and a JSON-capable bundler.
+@kahwee/sf-map-svg 4.3.0 · local working tree. Node >=24.0.0 for server rendering; browsers need a DOM and a JSON-capable bundler.
 
 These are working-tree docs. Unreleased changelog entries may describe APIs absent from npm; verify the installed version before copying them.
 
 Use renderMap(data, options) for SVG strings; createMap(data, options) returns a controller. Mount map.element and destroy it on unmount. Choose mode explicitly: createMap defaults to basemap. Geography is separate; staticMapData and fullMapData have different shapes.
 
-<!-- Generated from README.md; @kahwee/sf-map-svg 4.2.0 · local working tree. -->
+<!-- Generated from README.md; @kahwee/sf-map-svg 4.3.0 · local working tree. -->
 
 # SF Map SVG
 
@@ -87,7 +87,7 @@ Install with `pnpm install --frozen-lockfile`. See the [contributing guide](http
 
 ---
 
-<!-- Generated from docs/developer-guide.md; @kahwee/sf-map-svg 4.2.0 · local working tree. -->
+<!-- Generated from docs/developer-guide.md; @kahwee/sf-map-svg 4.3.0 · local working tree. -->
 
 # Developer guide
 
@@ -171,7 +171,7 @@ function disposeMap() {
 | Visible labels | On | On, subject to zoom/collisions |
 | Motion features | Static animation off | Off; opt in via `features` |
 
-A layer switch does not download missing geography. `fullMapData` has `.map` for static rendering and separate lookup collections for interactive use. `staticMapData` is already a static data object. Use `renderMap(guideMapData.map, options)`, not `renderMap(guideMapData, options)`.
+A layer switch does not download missing geography. `fullMapData` has `.map` for static rendering and separate lookup collections for interactive use. `staticMapData` is already a static data object. Use `renderMap(guideMapData, options)` or `renderMap(fullMapData, { source: 'sf-find' })` to share source-aware geography with the browser controller. Passing `.map` remains supported as compact static geography; it already chooses its neighborhoods and does not accept a `source` option.
 
 SFAR realtor neighborhoods are the default when supplied. If only an alternative collection is supplied, the controller selects that available source. Choose `source` explicitly when comparing definitions. Sources retain separate identities; they are not interchangeable polygons.
 
@@ -198,7 +198,7 @@ map.configure({ features: { motion: false } });
 map.configure({ layers: undefined }); // clear all explicit layer overrides
 ```
 
-`getConfiguration()` returns a detached snapshot of these groups, including explicit layer overrides. It is not a full serialization of mode, source, year, camera, or selection. Appearance overrides are included. Use `getResolvedConfiguration()` for current mode/source/year/labels and effective layer switches, and `getCapabilities()` for supplied geography. Invalid configuration patches leave the current map unchanged.
+`getConfiguration()` returns current mode/source/year/labels and a detached snapshot of the presentation groups, including explicit layer and appearance overrides. Camera and selection remain separate runtime state. Use `getResolvedConfiguration()` for current mode/source/year/labels and effective layer switches, and `getCapabilities()` for supplied geography. Invalid configuration patches leave the current map unchanged. Convenience methods use the same atomic update path: pass `map.setMode(mode, { resetView: false })` or `map.setSource(source, { resetView: false })` to keep the camera. Their default still resets the view.
 
 ## Markers, routes and camera coordinates
 
@@ -231,7 +231,7 @@ See [API options](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md), [
 
 ---
 
-<!-- Generated from docs/API.md; @kahwee/sf-map-svg 4.2.0 · local working tree. -->
+<!-- Generated from docs/API.md; @kahwee/sf-map-svg 4.3.0 · local working tree. -->
 
 # Map options and lifecycle
 
@@ -240,6 +240,8 @@ and event types are exported by [src/api.ts](https://github.com/kahwee/sf-map-sv
 [src/types.ts](https://github.com/kahwee/sf-map-svg/blob/main/src/types.ts) and [src/controller-types.ts](https://github.com/kahwee/sf-map-svg/blob/main/src/controller-types.ts).
 
 ## Static maps
+
+Static maps accept compact `StaticMapData` or the same source-aware `MapData` as interactive maps. With `MapData`, `source` selects a supplied neighborhood definition; SFAR realtor is preferred by default, followed by SF Find and analysis when available. A requested unavailable source throws before styling callbacks run. Compact `StaticMapData` already chooses its neighborhoods, so it rejects a `source` option. Both data shapes retain the static renderer defaults.
 
 Static maps accept the same grouped presentation vocabulary as interactive maps:
 
@@ -282,7 +284,7 @@ District style callbacks are evaluated once per district at construction and on 
 
 ## Live configuration and inspection
 
-`map.configure({ appearance, mode, source, year, labels, layers, features, controls })` updates an existing map. Appearance updates preserve the camera, selections, retained marker nodes, and keyboard focus. Mode/source changes through `configure` preserve the camera; existing `setMode` and `setSource` convenience methods retain their reset behavior. Switching neighborhood source clears the neighborhood selection. Changing district year retains a selected district when it exists in the new year. Unsupported datasets, invalid appearance values, and invalid district-style callback results fail during preparation before commit. A reentrant styling callback can supersede the pending patch.
+`map.configure({ appearance, mode, source, year, labels, layers, features, controls })` updates an existing map. Appearance updates preserve the camera, selections, retained marker nodes, and keyboard focus. Mode/source changes through `configure` preserve the camera; the `setMode(mode, { resetView: false })` and `setSource(source, { resetView: false })` convenience methods use the same atomic update path and preserve the camera. Omit the second argument to retain their existing reset behavior. Invalid view-update options fail before changing configuration. Switching neighborhood source clears the neighborhood selection. Changing district year retains a selected district when it exists in the new year. Unsupported datasets, invalid appearance values, and invalid district-style callback results fail during preparation before commit. A reentrant styling callback can supersede the pending patch.
 
 Appearance token objects (`colors`, `style`, `labelStyle`, `labelSize`, `areaStyle`) merge supplied keys; other appearance properties replace. Omitted keys retain their value, an explicit `undefined` property removes that override, and `appearance: undefined` resets the whole appearance group. Feature objects retain their existing replacement semantics. Mode/source/year/labels ignore `undefined`; reset them with an explicit value. Patch types explicitly permit these resets with TypeScript’s `exactOptionalPropertyTypes` enabled.
 
@@ -298,7 +300,7 @@ const effective = map.getResolvedConfiguration();
 const available = map.getCapabilities();
 ```
 
-`getConfiguration()` returns detached feature, layer, control, and appearance overrides; district style callbacks retain their function identity. `getResolvedConfiguration()` adds the current mode, source, year and master labels and resolves **layer switches** through mode defaults, available data, and the master label switch. Appearance/control fields remain overrides. It does not claim that every label is visible: zoom and collision filtering still apply. `getCapabilities()` returns supplied `sources`, usable district `years`, and layer data availability for the current source/year, independent of visibility overrides. These reads throw after destruction.
+`getConfiguration()` returns the current mode, source, year and master labels, together with detached feature, layer, control, and appearance overrides; district style callbacks retain their function identity. `getResolvedConfiguration()` adds the current mode, source, year and master labels and resolves **layer switches** through mode defaults, available data, and the master label switch. Appearance/control fields remain overrides. It does not claim that every label is visible: zoom and collision filtering still apply. `getCapabilities()` returns supplied `sources`, usable district `years`, and layer data availability for the current source/year, independent of visibility overrides. These reads throw after destruction.
 
 ## Common selection event
 
@@ -313,6 +315,18 @@ map.on('selectionchange', (event) => {
 
 `kind` is `marker`, `neighborhood`, or `district`. `current` and `previous` are detached selection snapshots or `null`. The event follows committed selection changes, including clearing and a changed district vintage; it does not represent every activation. Existing `markerchange`, `neighborhoodchange`, and `districtchange` events remain supported.
 
+## Source-aware feature selection
+
+`selectFeature(reference, options)` accepts one typed identity for each selectable kind:
+
+```ts
+map.selectFeature({ kind: 'marker', id: 'ferry' }, { fit: false });
+map.selectFeature({ kind: 'neighborhood', source: 'realtor', id: 'inner-mission' });
+map.selectFeature({ kind: 'district', year: 2022, id: 3 });
+```
+
+Neighborhood IDs are exact source-scoped feature IDs, rather than display names or aliases. District identity includes the boundary year. This operation returns `false` for a missing feature or a source/year other than the map's current supplied geography; it never silently switches definitions or years. Choose geography through `configure` first. An `id` of `null` clears that kind in the referenced current geography. Malformed references throw. Existing `selectMarker`, `selectNeighborhood`, and `selectDistrict` shortcuts remain supported.
+
 ## Coordinates and units
 
 GeoJSON and static projection inputs use `[longitude, latitude]` in WGS84; markers use `{ lng, lat }`. Static `project` returns SVG units. `projectToScreen(lng, lat)` returns pixels relative to the mounted canvas. Camera viewports and pan deltas use the fixed 800 × 800 projected map space, independent of canvas size. Marker radius uses screen pixels in browser maps and SVG units in static output.
@@ -321,7 +335,7 @@ Explore presentation options in the [live map design playground](https://kahwee.
 
 ---
 
-<!-- Generated from docs/EXAMPLES.md; @kahwee/sf-map-svg 4.2.0 · local working tree. -->
+<!-- Generated from docs/EXAMPLES.md; @kahwee/sf-map-svg 4.3.0 · local working tree. -->
 
 # Examples
 
@@ -432,7 +446,7 @@ For the controller and explicit data imports, see [the v3 migration guide](https
 
 ---
 
-<!-- Generated from docs/consumer-integration.md; @kahwee/sf-map-svg 4.2.0 · local working tree. -->
+<!-- Generated from docs/consumer-integration.md; @kahwee/sf-map-svg 4.3.0 · local working tree. -->
 
 # Embedding and progressive enhancement
 
@@ -484,7 +498,7 @@ See the [exact API contract](https://github.com/kahwee/sf-map-svg/blob/main/docs
 
 ---
 
-<!-- Generated from docs/migration-v3.md; @kahwee/sf-map-svg 4.2.0 · local working tree. -->
+<!-- Generated from docs/migration-v3.md; @kahwee/sf-map-svg 4.3.0 · local working tree. -->
 
 # Migrate to version 3
 
@@ -525,7 +539,7 @@ District styles are now prepared once per district on construction and style/yea
 
 ---
 
-<!-- Generated from SOURCES.md; @kahwee/sf-map-svg 4.2.0 · local working tree. -->
+<!-- Generated from SOURCES.md; @kahwee/sf-map-svg 4.3.0 · local working tree. -->
 
 # Geometry and provenance
 
@@ -709,13 +723,20 @@ display geometry, and no precinct polygons or raw workbook data are shipped.
 
 ---
 
-<!-- Generated from CHANGELOG.md; @kahwee/sf-map-svg 4.2.0 · local working tree. -->
+<!-- Generated from CHANGELOG.md; @kahwee/sf-map-svg 4.3.0 · local working tree. -->
 
 # Changelog
 
 User-visible changes are recorded here. Unreleased entries describe changes on `main` that are not part of a tagged package release.
 
 ## Unreleased
+
+## 4.3.0 — 2026-10-02
+
+- Add `selectFeature` with typed marker, neighborhood source/ID and district year/ID references. Missing or mismatched identities preserve current geography and selection.
+- Accept the same source-aware map data in static and interactive rendering. Static maps can explicitly select a supplied neighborhood definition without manually rebuilding renderer rows; compact static inputs remain supported.
+- Include current mode, source, year and labels in configuration snapshots. Route controller mode/source/label setters through atomic configuration and support explicit camera preservation with `{ resetView: false }`.
+- Refine the Pages atlas opening with concise copy, a map ahead of statistics on phones, coordinate captions and three direct paths into designing, exploring and building. Improve shared theme-button touch targets and stack API reference records on phones while retaining table semantics.
 
 - Clarify the documentation paths, progressive enhancement and cleanup examples; consolidate browser validation and release instructions into one maintenance runbook. Check README and integration recipes against the packed package.
 
@@ -1022,7 +1043,7 @@ consistent home, and makes animation and subscription ownership predictable.
 
 # Published type contracts
 
-@kahwee/sf-map-svg 4.2.0 · local working tree. These declarations are generated by TypeScript. Use package export paths, not the internal filenames below. Imported relative contracts are included for context, not as additional public entry points.
+@kahwee/sf-map-svg 4.3.0 · local working tree. These declarations are generated by TypeScript. Use package export paths, not the internal filenames below. Imported relative contracts are included for context, not as additional public entry points.
 
 | Public import | Declaration |
 | --- | --- |
@@ -1101,7 +1122,12 @@ export interface MapOptions extends Omit<NeighborhoodExplorerOptions, keyof MapF
     features?: MapFeatures;
     appearance?: MapAppearance | undefined;
 }
+/** Current geographic choices and detached presentation overrides; excludes camera and selection. */
 export interface MapConfigurationSnapshot {
+    mode: NonNullable<MapOptions['mode']>;
+    source: NeighborhoodSource;
+    year: DistrictYear;
+    labels: boolean;
     features: MapFeatures;
     /** Explicit overrides; absent values continue to follow the current mode. */
     layers: InteractiveLayers;
@@ -1134,6 +1160,19 @@ export type MapSelectionChange = {
     kind: 'district';
     current: DistrictSelection | null;
     previous: DistrictSelection | null;
+};
+/** Dataset identity is explicit; selection never switches geography implicitly. */
+export type MapFeatureReference = {
+    kind: 'marker';
+    id: string | null;
+} | {
+    kind: 'neighborhood';
+    source: NeighborhoodSource;
+    id: string | null;
+} | {
+    kind: 'district';
+    year: DistrictYear;
+    id: number | null;
 };
 export interface MapEvents {
     /** Common selection envelope; existing change events retain their payloads. */
@@ -1174,6 +1213,10 @@ export interface MapEvents {
     };
     mapresize: undefined;
 }
+/** Convenience setters retain their historic reset default; false preserves the camera. */
+export interface MapViewUpdateOptions {
+    resetView?: boolean;
+}
 export interface MapCamera {
     /** Fixed 800 × 800 projected space, not longitude/latitude. */
     get(): MapViewport;
@@ -1201,6 +1244,10 @@ export interface MapController {
     /** Reconcile stable IDs; retained markers preserve nodes, focus, and entrance animations. */
     setMarkers(markers: readonly MapMarker[]): void;
     setOverlays(overlays: readonly MapOverlay[]): void;
+    /** False for missing IDs or a source/year other than the current geography. */
+    selectFeature(reference: MapFeatureReference, options?: CameraOptions & {
+        fit?: boolean;
+    }): boolean;
     selectMarker(id: string | null, options?: CameraOptions & {
         fit?: boolean;
     }): boolean;
@@ -1215,8 +1262,8 @@ export interface MapController {
     getSelectedDistrict(): DistrictSelection | null;
     setDistrictYear(year: DistrictYear, options?: CameraOptions): void;
     setDistrictStyle(style: ((district: DistrictSelection['district']) => DistrictStyle) | undefined): void;
-    setSource(source: NeighborhoodSource): void;
-    setMode(mode: NonNullable<MapOptions['mode']>): void;
+    setSource(source: NeighborhoodSource, options?: MapViewUpdateOptions): void;
+    setMode(mode: NonNullable<MapOptions['mode']>, options?: MapViewUpdateOptions): void;
     setLabels(visible: boolean): void;
     setTouchNavigation(enabled: boolean): void;
     projectToScreen(lng: number, lat: number): {
@@ -1409,6 +1456,8 @@ export interface SFMapOptions {
     height?: number;
     padding?: number;
     year?: DistrictYear;
+    /** Select a supplied neighborhood definition when rendering source-aware MapData. */
+    source?: NeighborhoodSource;
     districtLines?: boolean;
     neighborhoodLines?: boolean;
     districtFills?: boolean;
@@ -1619,7 +1668,7 @@ export interface NeighborhoodExplorerElement extends HTMLElement {
 export interface TransitAnimationElement extends HTMLElement {
     destroy(): void;
 }
-export type { MapAppearance, MapCamera, MapCapabilities, MapConfiguration, MapConfigurationSnapshot, MapController, MapControls, MapEvents, MapOptions, MapSelectionChange, ResolvedMapConfiguration, } from './controller-types.js';
+export type { MapAppearance, MapCamera, MapCapabilities, MapConfiguration, MapConfigurationSnapshot, MapController, MapControls, MapEvents, MapFeatureReference, MapOptions, MapSelectionChange, MapViewUpdateOptions, ResolvedMapConfiguration, } from './controller-types.js';
 ```
 
 ### dist/src/explorer-data.d.ts
@@ -1746,18 +1795,21 @@ export declare function createSFMapWithData(options: SFMapOptions, data: SFMapDa
 ### dist/src/static.d.ts
 
 ```ts
+import type { InteractiveSFMapData } from './explorer-data.js';
 import { type SFMapData } from './map-core.js';
 import type { SFMapOptions } from './types.js';
+/** Either compact static geography or the same source-aware geography used by createMap. */
+export type StaticMapInput = SFMapData | InteractiveSFMapData;
 export type { DistrictRowData, SFMapData as StaticMapData } from './map-core.js';
 export type { DistrictStyle, DistrictYear, SFMapOptions as StaticMapOptions, StaticMapAppearance, StaticMapLayers, } from './types.js';
 /** Server-safe SVG rendering with explicit data; returns SVG plus projection helpers. */
-export declare function renderMap(data: SFMapData, options?: SFMapOptions): {
+export declare function renderMap(data: StaticMapInput, options?: SFMapOptions): {
     svg: string;
     project: (coordinates: import("../data/types.js").Position) => [number, number];
     viewBox: [number, number, number, number];
 };
 /** Project canonical layer geometry without constructing an SVG string. */
-export declare function getLayerPaths(data: SFMapData, options?: SFMapOptions): {
+export declare function getLayerPaths(data: StaticMapInput, options?: SFMapOptions): {
     year: import("./types.js").DistrictYear;
     viewBox: [number, number, number, number];
     project: (coordinates: import("../data/types.js").Position) => [number, number];

@@ -6,6 +6,8 @@ and event types are exported by [src/api.ts](../src/api.ts) and defined in
 
 ## Static maps
 
+Static maps accept compact `StaticMapData` or the same source-aware `MapData` as interactive maps. With `MapData`, `source` selects a supplied neighborhood definition; SFAR realtor is preferred by default, followed by SF Find and analysis when available. A requested unavailable source throws before styling callbacks run. Compact `StaticMapData` already chooses its neighborhoods, so it rejects a `source` option. Both data shapes retain the static renderer defaults.
+
 Static maps accept the same grouped presentation vocabulary as interactive maps:
 
 ```ts
@@ -47,7 +49,7 @@ District style callbacks are evaluated once per district at construction and on 
 
 ## Live configuration and inspection
 
-`map.configure({ appearance, mode, source, year, labels, layers, features, controls })` updates an existing map. Appearance updates preserve the camera, selections, retained marker nodes, and keyboard focus. Mode/source changes through `configure` preserve the camera; existing `setMode` and `setSource` convenience methods retain their reset behavior. Switching neighborhood source clears the neighborhood selection. Changing district year retains a selected district when it exists in the new year. Unsupported datasets, invalid appearance values, and invalid district-style callback results fail during preparation before commit. A reentrant styling callback can supersede the pending patch.
+`map.configure({ appearance, mode, source, year, labels, layers, features, controls })` updates an existing map. Appearance updates preserve the camera, selections, retained marker nodes, and keyboard focus. Mode/source changes through `configure` preserve the camera; the `setMode(mode, { resetView: false })` and `setSource(source, { resetView: false })` convenience methods use the same atomic update path and preserve the camera. Omit the second argument to retain their existing reset behavior. Invalid view-update options fail before changing configuration. Switching neighborhood source clears the neighborhood selection. Changing district year retains a selected district when it exists in the new year. Unsupported datasets, invalid appearance values, and invalid district-style callback results fail during preparation before commit. A reentrant styling callback can supersede the pending patch.
 
 Appearance token objects (`colors`, `style`, `labelStyle`, `labelSize`, `areaStyle`) merge supplied keys; other appearance properties replace. Omitted keys retain their value, an explicit `undefined` property removes that override, and `appearance: undefined` resets the whole appearance group. Feature objects retain their existing replacement semantics. Mode/source/year/labels ignore `undefined`; reset them with an explicit value. Patch types explicitly permit these resets with TypeScript’s `exactOptionalPropertyTypes` enabled.
 
@@ -63,7 +65,7 @@ const effective = map.getResolvedConfiguration();
 const available = map.getCapabilities();
 ```
 
-`getConfiguration()` returns detached feature, layer, control, and appearance overrides; district style callbacks retain their function identity. `getResolvedConfiguration()` adds the current mode, source, year and master labels and resolves **layer switches** through mode defaults, available data, and the master label switch. Appearance/control fields remain overrides. It does not claim that every label is visible: zoom and collision filtering still apply. `getCapabilities()` returns supplied `sources`, usable district `years`, and layer data availability for the current source/year, independent of visibility overrides. These reads throw after destruction.
+`getConfiguration()` returns the current mode, source, year and master labels, together with detached feature, layer, control, and appearance overrides; district style callbacks retain their function identity. `getResolvedConfiguration()` adds the current mode, source, year and master labels and resolves **layer switches** through mode defaults, available data, and the master label switch. Appearance/control fields remain overrides. It does not claim that every label is visible: zoom and collision filtering still apply. `getCapabilities()` returns supplied `sources`, usable district `years`, and layer data availability for the current source/year, independent of visibility overrides. These reads throw after destruction.
 
 ## Common selection event
 
@@ -77,6 +79,18 @@ map.on('selectionchange', (event) => {
 ```
 
 `kind` is `marker`, `neighborhood`, or `district`. `current` and `previous` are detached selection snapshots or `null`. The event follows committed selection changes, including clearing and a changed district vintage; it does not represent every activation. Existing `markerchange`, `neighborhoodchange`, and `districtchange` events remain supported.
+
+## Source-aware feature selection
+
+`selectFeature(reference, options)` accepts one typed identity for each selectable kind:
+
+```ts
+map.selectFeature({ kind: 'marker', id: 'ferry' }, { fit: false });
+map.selectFeature({ kind: 'neighborhood', source: 'realtor', id: 'inner-mission' });
+map.selectFeature({ kind: 'district', year: 2022, id: 3 });
+```
+
+Neighborhood IDs are exact source-scoped feature IDs, rather than display names or aliases. District identity includes the boundary year. This operation returns `false` for a missing feature or a source/year other than the map's current supplied geography; it never silently switches definitions or years. Choose geography through `configure` first. An `id` of `null` clears that kind in the referenced current geography. Malformed references throw. Existing `selectMarker`, `selectNeighborhood`, and `selectDistrict` shortcuts remain supported.
 
 ## Coordinates and units
 

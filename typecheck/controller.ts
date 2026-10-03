@@ -17,5 +17,15 @@ map.on('click', () => {});
 createMap(guideMapData, { motion: true });
 // @ts-expect-error Controller is not a DOM node.
 document.body.append(map);
-const svg: string = renderMap(guideMapData.map).svg;
+map.setMode('basemap', { resetView: false });
+map.setSource('realtor', { resetView: false });
+map.selectFeature({ kind: 'neighborhood', source: 'realtor', id: 'inner-mission' });
+map.selectFeature({ kind: 'district', year: 2022, id: 1 });
+// @ts-expect-error Neighborhood identity requires its source.
+map.selectFeature({ kind: 'neighborhood', id: 'inner-mission' });
+// @ts-expect-error District identity requires a numeric ID.
+map.selectFeature({ kind: 'district', year: 2022, id: '1' });
+const source: string = map.getConfiguration().source;
+void source;
+const svg: string = renderMap(guideMapData, { source: 'realtor' }).svg;
 void svg;

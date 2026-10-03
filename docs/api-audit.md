@@ -19,6 +19,7 @@ unbounded geographic data can never fail.
 | Clustering and selected/focused markers | Selected/focused pins remain individually reachable. Coincident alternatives remain available through the chooser. |
 | Marker entrance and reduced motion | Entrances are optional, independent of camera motion, and cancel on preference changes or disposal. Stable IDs avoid repeated entrances on filtering. |
 | Hiding touch control while gestures are enabled | Returns touch scrolling to the page. Other toolbar controls remain independent. |
+| Convenience mode/source setters | Share the atomic configuration path. `{ resetView: false }` preserves the camera; omitted options retain the historic reset. Invalid options and unavailable geography leave state unchanged. |
 | Runtime patch omitted/false/undefined | Omitted retains; false disables boolean switches; undefined removes group/key overrides. Top-level mode/source/year/labels set to undefined retain their current values. Nested feature objects replace, rather than deep-merge. |
 | Compact shell and full attribution | Rejected before replacement. Use `createGuideController` for full attribution. Control overrides are honored and may deliberately alter layout. |
 | District style callbacks | Prepare and copy every style before committing. Hover/selection reuse the results; call `setDistrictStyle()` to refresh changed external data. Reentrant updates or destruction supersede pending work. |

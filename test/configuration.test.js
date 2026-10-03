@@ -113,3 +113,34 @@ test('appearance token patches merge, reset, and preserve styling callbacks', ()
   ])
     assert.throws(() => prepareConfiguration(current, patch));
 });
+
+test('static rendering accepts shared source-aware geography without changing compact defaults', async () => {
+  const { fullMapData } = await import('../dist/src/full-data.js');
+  const { renderMap, getLayerPaths } = api;
+  const options = { layers: { neighborhoodLines: true }, idPrefix: 'shared-data' };
+  assert.equal(renderMap(fullMapData, options).svg, renderMap(fullMapData.map, options).svg);
+  for (const source of ['realtor', 'sf-find', 'analysis']) {
+    const paths = getLayerPaths(fullMapData, { source });
+    assert.equal(paths.neighborhoods.length, fullMapData.neighborhoods[source].features.length);
+    assert.equal(
+      paths.neighborhoods[0].name,
+      fullMapData.neighborhoods[source].features[0].properties.sourceName,
+    );
+  }
+  let callbacks = 0;
+  const coastOnly = { map: { coast: fullMapData.map.coast }, neighborhoods: {} };
+  assert.equal(getLayerPaths(coastOnly).neighborhoods.length, 0);
+  for (const data of [coastOnly, fullMapData.map]) {
+    assert.throws(() =>
+      renderMap(data, {
+        source: 'sf-find',
+        districtStyle: () => {
+          callbacks++;
+          return {};
+        },
+      }),
+    );
+  }
+  assert.equal(callbacks, 0);
+  assert.throws(() => getLayerPaths(fullMapData, { source: 'invalid' }));
+});

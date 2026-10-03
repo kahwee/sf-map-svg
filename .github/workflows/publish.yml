@@ -72,5 +72,12 @@ jobs:
           mkdir -p "$RUNNER_TEMP/package"
           pnpm pack --pack-destination "$RUNNER_TEMP/package"
           pnpm test:package --archive "$RUNNER_TEMP"/package/*.tgz
+          node --input-type=module - "$RUNNER_TEMP"/package/*.tgz <<'NODE'
+          import { readFileSync, appendFileSync } from 'node:fs';
+          import { createHash } from 'node:crypto';
+          const integrity = `sha512-${createHash('sha512').update(readFileSync(process.argv[2])).digest('base64')}`;
+          console.log(`Published archive integrity: ${integrity}`);
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY, `Archive integrity: \`${integrity}\`\n`);
+          NODE
       - name: Publish with npm trusted publishing
         run: npm publish "$RUNNER_TEMP"/package/*.tgz --access public --ignore-scripts

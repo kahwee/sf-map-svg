@@ -60,7 +60,12 @@ export interface MapOptions
   features?: MapFeatures;
   appearance?: MapAppearance | undefined;
 }
+/** Current geographic choices and detached presentation overrides; excludes camera and selection. */
 export interface MapConfigurationSnapshot {
+  mode: NonNullable<MapOptions['mode']>;
+  source: NeighborhoodSource;
+  year: DistrictYear;
+  labels: boolean;
   features: MapFeatures;
   /** Explicit overrides; absent values continue to follow the current mode. */
   layers: InteractiveLayers;
@@ -89,6 +94,11 @@ export type MapSelectionChange =
       previous: NeighborhoodSelection | null;
     }
   | { kind: 'district'; current: DistrictSelection | null; previous: DistrictSelection | null };
+/** Dataset identity is explicit; selection never switches geography implicitly. */
+export type MapFeatureReference =
+  | { kind: 'marker'; id: string | null }
+  | { kind: 'neighborhood'; source: NeighborhoodSource; id: string | null }
+  | { kind: 'district'; year: DistrictYear; id: number | null };
 export interface MapEvents {
   /** Common selection envelope; existing change events retain their payloads. */
   selectionchange: MapSelectionChange;
@@ -104,6 +114,10 @@ export interface MapEvents {
   clusteractivate: { markers: MapMarker[] };
   viewportchange: { viewport: MapViewport };
   mapresize: undefined;
+}
+/** Convenience setters retain their historic reset default; false preserves the camera. */
+export interface MapViewUpdateOptions {
+  resetView?: boolean;
 }
 export interface MapCamera {
   /** Fixed 800 × 800 projected space, not longitude/latitude. */
@@ -130,6 +144,11 @@ export interface MapController {
   /** Reconcile stable IDs; retained markers preserve nodes, focus, and entrance animations. */
   setMarkers(markers: readonly MapMarker[]): void;
   setOverlays(overlays: readonly MapOverlay[]): void;
+  /** False for missing IDs or a source/year other than the current geography. */
+  selectFeature(
+    reference: MapFeatureReference,
+    options?: CameraOptions & { fit?: boolean },
+  ): boolean;
   selectMarker(id: string | null, options?: CameraOptions & { fit?: boolean }): boolean;
   getSelectedMarker(): MapMarker | null;
   selectNeighborhood(name: string | null, options?: CameraOptions & { fit?: boolean }): boolean;
@@ -140,8 +159,8 @@ export interface MapController {
   setDistrictStyle(
     style: ((district: DistrictSelection['district']) => DistrictStyle) | undefined,
   ): void;
-  setSource(source: NeighborhoodSource): void;
-  setMode(mode: NonNullable<MapOptions['mode']>): void;
+  setSource(source: NeighborhoodSource, options?: MapViewUpdateOptions): void;
+  setMode(mode: NonNullable<MapOptions['mode']>, options?: MapViewUpdateOptions): void;
   setLabels(visible: boolean): void;
   setTouchNavigation(enabled: boolean): void;
   projectToScreen(lng: number, lat: number): { x: number; y: number; visible: boolean };

@@ -71,13 +71,14 @@
 
         <section class="api-entry" id="render-map">
           <h2>renderMap</h2>
-          <code class="signature">renderMap(data: StaticMapData, options?: StaticMapOptions)
+          <code class="signature">renderMap(data: %STATIC_INPUT_TYPE%, options?: StaticMapOptions)
   → { svg: string; project: (position) =&gt; [x, y]; viewBox: [0, 0, width, height] }</code>
           <p>Renders a self-contained SVG string with no DOM. <code>project</code> converts <code>[lng, lat]</code> into the SVG’s coordinates.</p>
           <div class="table-wrap"><table class="api-table">
             <thead><tr><th>Option</th><th>Type · default</th><th>Description</th></tr></thead>
             <tbody>
               <!--static-presentation-->
+              <!--static-source-->
               <tr><td><code>year</code></td><td>2002 | 2012 | 2022 · 2022</td><td>District map year.</td></tr>
               <tr><td><code>theme</code></td><td>'districts' | 'transit' · 'districts'</td><td>Soft district palette or quiet transit palette.</td></tr>
               <tr><td><code>width</code>, <code>height</code></td><td>number · 800</td><td>SVG size and view box.</td></tr>
@@ -105,7 +106,7 @@
 
         <section class="api-entry" id="get-layer-paths">
           <h2>getLayerPaths</h2>
-          <code class="signature">getLayerPaths(data: StaticMapData, options?: StaticMapOptions)
+          <code class="signature">getLayerPaths(data: %STATIC_INPUT_TYPE%, options?: StaticMapOptions)
   → { year, viewBox, project, coast, districts, neighborhoods, highways,
       landmarks, keyRoads, bartStations }</code>
           <p>Returns fitted path strings and points for each layer without building SVG markup, for canvas renderers and custom drawings.</p>
@@ -207,9 +208,10 @@
               <tr><td><code>configure</code></td><td>(patch: { %CONFIGURATION_KEYS% })</td><td>Atomic runtime change; invalid patches change nothing. Omitted keys retain values; undefined groups reset.</td></tr>
               <tr><td><code>getConfiguration</code></td><td>() → snapshot</td><td>%CONFIGURATION_SNAPSHOT%</td></tr>
               <!--configuration-inspection-->
+              <!--feature-selection-->
               <tr><td><code>on</code></td><td>(type, listener) → unsubscribe</td><td>Typed events; see <a href="#events">Events</a>.</td></tr>
-              <tr><td><code>setMode</code></td><td>(mode)</td><td>Switch mode and reset the camera. Use <code>configure({ mode })</code> to retain the camera.</td></tr>
-              <tr><td><code>setSource</code></td><td>(source)</td><td>Switch neighborhood definition and reset the camera. Use <code>configure({ source })</code> to retain the camera.</td></tr>
+              <tr><td><code>setMode</code></td><td>(mode%VIEW_UPDATE_ARGUMENT%)</td><td>Switch mode; by default reset the camera. %VIEW_UPDATE_HELP%</td></tr>
+              <tr><td><code>setSource</code></td><td>(source%VIEW_UPDATE_ARGUMENT%)</td><td>Switch neighborhood definition; by default reset the camera. %VIEW_UPDATE_HELP%</td></tr>
               <tr><td><code>setDistrictYear</code></td><td>(year, { animate?, duration? })</td><td>Switch district map; morphs with <code>districtMorph</code>.</td></tr>
               <tr><td><code>setDistrictStyle</code></td><td>(style | undefined)</td><td>Restyle districts.</td></tr>
               <tr><td><code>setLabels</code></td><td>(visible: boolean)</td><td>Show or hide labels.</td></tr>

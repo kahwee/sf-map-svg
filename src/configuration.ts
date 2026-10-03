@@ -51,11 +51,16 @@ export function expandMapOptions(options: MapOptions): NeighborhoodExplorerOptio
   return expanded;
 }
 
+type PresentationSnapshot = Pick<
+  MapConfigurationSnapshot,
+  'features' | 'layers' | 'controls' | 'appearance'
+>;
+
 /** Prepare the entire configuration before any DOM mutation. */
 export function prepareConfiguration(
-  current: MapConfigurationSnapshot,
+  current: PresentationSnapshot,
   patch: MapConfiguration,
-): MapConfigurationSnapshot {
+): PresentationSnapshot {
   assertOptions(patch, 'configuration', [
     'features',
     'layers',

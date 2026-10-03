@@ -282,3 +282,38 @@
   border-color: var(--accent);
   color: var(--accent-ink);
 }
+
+/* Reference rows become readable records on phones; explicit roles preserve table semantics. */
+@media (max-width: 620px) {
+  .api-table,
+  .api-table tbody {
+    display: block;
+  }
+  .api-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .api-table tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    padding: 16px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .api-table tbody tr:last-child {
+    border-bottom: 0;
+  }
+  .api-table td {
+    display: block;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    overflow-wrap: anywhere;
+  }
+  .api-table td code {
+    white-space: normal;
+  }
+}

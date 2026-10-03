@@ -1300,7 +1300,11 @@ export function createNeighborhoodExplorerCore(
     options: { fit?: boolean } & CameraOptions = {},
   ) {
     if (destroyed) return false;
-    const feature = name === null ? undefined : getNeighborhood(name, source);
+    const feature =
+      name === null
+        ? undefined
+        : (collections[source]?.features.find((entry) => entry.id === name) ??
+          getNeighborhood(name, source));
     if (name !== null && !feature) return false;
     validateCameraOptions(options);
     const selectedItem = items.find((item) => item.feature === feature);
@@ -1941,6 +1945,8 @@ export function createNeighborhoodExplorerCore(
       throw new RangeError(`No ${nextYear} district dataset was supplied.`);
     if (nextMode === 'neighborhoods' && !sources.length)
       throw new RangeError('No neighborhood dataset was supplied.');
+    if (patch.source !== undefined && !Object.hasOwn(collections, patch.source))
+      throw new RangeError(`Unknown neighborhood source: ${patch.source}`);
     const commitSource =
       patch.source !== undefined && patch.source !== source
         ? prepareSource(patch.source, false)

@@ -4,6 +4,13 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 4.3.0 — 2026-10-02
+
+- Add `selectFeature` with typed marker, neighborhood source/ID and district year/ID references. Missing or mismatched identities preserve current geography and selection.
+- Accept the same source-aware map data in static and interactive rendering. Static maps can explicitly select a supplied neighborhood definition without manually rebuilding renderer rows; compact static inputs remain supported.
+- Include current mode, source, year and labels in configuration snapshots. Route controller mode/source/label setters through atomic configuration and support explicit camera preservation with `{ resetView: false }`.
+- Refine the Pages atlas opening with concise copy, a map ahead of statistics on phones, coordinate captions and three direct paths into designing, exploring and building. Improve shared theme-button touch targets and stack API reference records on phones while retaining table semantics.
+
 - Clarify the documentation paths, progressive enhancement and cleanup examples; consolidate browser validation and release instructions into one maintenance runbook. Check README and integration recipes against the packed package.
 
 ## 4.2.0 — 2026-10-01

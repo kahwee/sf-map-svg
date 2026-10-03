@@ -43,6 +43,8 @@ export interface SFMapOptions {
   height?: number;
   padding?: number;
   year?: DistrictYear;
+  /** Select a supplied neighborhood definition when rendering source-aware MapData. */
+  source?: NeighborhoodSource;
   districtLines?: boolean;
   neighborhoodLines?: boolean;
   districtFills?: boolean;
@@ -278,7 +280,9 @@ export type {
   MapController,
   MapControls,
   MapEvents,
+  MapFeatureReference,
   MapOptions,
   MapSelectionChange,
+  MapViewUpdateOptions,
   ResolvedMapConfiguration,
 } from './controller-types.js';

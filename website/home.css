@@ -4,7 +4,8 @@
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
   align-items: center;
   gap: clamp(32px, 5vw, 80px);
-  padding-block: clamp(40px, 6vw, 88px);
+  padding-block: clamp(36px, 5vw, 72px);
+  row-gap: 36px;
 }
 .hero h1 {
   max-width: 11ch;
@@ -20,13 +21,14 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 18px;
-  margin: 36px 0 0;
+  grid-column: 1 / -1;
+  margin: 0;
   padding-top: 18px;
-  border-top: 1px solid var(--rule);
+  border-top: 3px double var(--rule-strong);
 }
 .hero-facts dt {
   font-family: var(--serif);
-  font-size: 40px;
+  font-size: clamp(32px, 3vw, 42px);
   line-height: 1;
   font-variant-numeric: lining-nums tabular-nums;
 }
@@ -35,6 +37,16 @@
   font-family: var(--sans);
   font-size: 12px;
   line-height: 1.35;
+  color: var(--muted);
+}
+.plate-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+  font: 500 12px var(--sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--muted);
 }
 .hero-plate .plate-frame {
@@ -75,6 +87,50 @@
   .js .plate-replay {
     opacity: 1;
   }
+}
+
+/* ---------- Atlas contents ---------- */
+.atlas-index {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding-block: 24px;
+  border-block: 1px solid var(--rule);
+  background: var(--paper-2);
+}
+.atlas-index a {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 12px 24px;
+  text-decoration: none;
+}
+.atlas-index a + a {
+  border-left: 1px solid var(--rule-strong);
+}
+.index-number {
+  font: italic 16px var(--serif);
+  color: var(--accent);
+}
+.atlas-index b {
+  display: block;
+  font: 500 22px / 1.2 var(--serif);
+}
+.atlas-index small {
+  display: block;
+  margin-top: 8px;
+  font: 400 13px / 1.5 var(--sans);
+  color: var(--ink-2);
+}
+.index-arrow {
+  margin-left: auto;
+  color: var(--accent);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.atlas-index a:is(:hover, :focus-visible) .index-arrow {
+  transform: translate(3px, -3px);
+}
+.atlas-index a:is(:hover, :focus-visible) b {
+  color: var(--accent-ink);
 }
 
 /* ---------- How the map is made ---------- */
@@ -248,7 +304,20 @@
     grid-template-columns: minmax(0, 1fr);
   }
   .hero-plate {
+    width: 100%;
     max-width: 560px;
+    justify-self: center;
+  }
+  .atlas-index {
+    grid-template-columns: minmax(0, 1fr);
+    padding-block: 8px;
+  }
+  .atlas-index a {
+    padding: 18px 0;
+  }
+  .atlas-index a + a {
+    border-left: 0;
+    border-top: 1px solid var(--rule);
   }
   .making-grid {
     grid-template-columns: minmax(0, 1fr);
@@ -278,6 +347,13 @@
   }
 }
 @media (max-width: 620px) {
+  .hero .button {
+    padding-inline: 16px;
+    font-size: 14px;
+  }
+  .hero .lede {
+    margin-block: 20px 24px;
+  }
   .hero-facts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

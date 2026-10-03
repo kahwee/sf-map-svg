@@ -77,6 +77,7 @@ export function createMap(data: InteractiveSFMapData, options: MapOptions = {}):
     ) as MapCapabilities['layers'],
   });
   const snapshot = () => ({
+    ...element.getMapState(),
     ...structuredClone({
       features: config.features,
       layers: config.layers,
@@ -179,9 +180,11 @@ export function createMap(data: InteractiveSFMapData, options: MapOptions = {}):
               next.features[key as keyof typeof next.features],
             ]),
           );
+    let committed = false;
     element.applyPresentation(
       { ...patch, ...('appearance' in patch ? { appearance: next.appearance } : {}) },
       () => {
+        committed = true;
         config = next;
         if (hasFeatures) element.setFeatures(features);
         if (hasLayers) element.setLayers(layers);
@@ -189,6 +192,16 @@ export function createMap(data: InteractiveSFMapData, options: MapOptions = {}):
       },
       () => !destroyed && revision === configurationRevision,
     );
+    return committed && !destroyed && revision === configurationRevision;
+  }
+  function updateView(
+    patch: import('./controller-types.js').MapConfiguration,
+    options: import('./controller-types.js').MapViewUpdateOptions = {},
+  ) {
+    assertOptions(options, 'view update', ['resetView']);
+    if (options.resetView !== undefined && typeof options.resetView !== 'boolean')
+      throw new TypeError('resetView must be a boolean.');
+    if (configure(patch) && options.resetView !== false) element.resetView();
   }
   return Object.freeze({
     element,
@@ -197,7 +210,9 @@ export function createMap(data: InteractiveSFMapData, options: MapOptions = {}):
     get destroyed() {
       return destroyed;
     },
-    configure: use(configure),
+    configure: use((patch) => {
+      configure(patch);
+    }),
     getConfiguration: use(snapshot),
     getResolvedConfiguration: use(resolved),
     getCapabilities: use(capabilities),
@@ -233,6 +248,50 @@ export function createMap(data: InteractiveSFMapData, options: MapOptions = {}):
     }),
     setMarkers: use(element.setMarkers),
     setOverlays: use(element.setOverlays),
+    selectFeature: use((reference, options) => {
+      assertOptions(reference, 'feature reference');
+      if (!['marker', 'neighborhood', 'district'].includes(reference.kind))
+        throw new TypeError('Unknown feature kind.');
+      assertOptions(
+        reference,
+        'feature reference',
+        reference.kind === 'marker'
+          ? ['kind', 'id']
+          : reference.kind === 'neighborhood'
+            ? ['kind', 'id', 'source']
+            : ['kind', 'id', 'year'],
+      );
+      if (reference.kind === 'district') {
+        if (
+          reference.id !== null &&
+          (typeof reference.id !== 'number' || !Number.isFinite(reference.id))
+        )
+          throw new TypeError('District IDs must be finite numbers or null.');
+        if (![2002, 2012, 2022].includes(reference.year))
+          throw new RangeError('Unknown district year.');
+        if (reference.year !== element.getMapState().year || !yearList.includes(reference.year))
+          return false;
+        return element.selectDistrict(reference.id, options);
+      }
+      if (reference.id !== null && (typeof reference.id !== 'string' || !reference.id))
+        throw new TypeError('Feature IDs must be nonempty strings or null.');
+      if (reference.kind === 'marker') return element.selectMarker(reference.id, options);
+      if (!['realtor', 'sf-find', 'analysis'].includes(reference.source))
+        throw new RangeError('Unknown neighborhood source.');
+      if (
+        reference.source !== element.getMapState().source ||
+        !sourceList.includes(reference.source)
+      )
+        return false;
+      const feature =
+        reference.id === null
+          ? null
+          : data.neighborhoods[reference.source]?.features.find(
+              (entry) => entry.id === reference.id,
+            );
+      if (reference.id !== null && !feature) return false;
+      return element.selectNeighborhood(feature?.id ?? null, options);
+    }),
     selectMarker: use(element.selectMarker),
     getSelectedMarker: use(element.getSelectedMarker),
     selectNeighborhood: use(element.selectNeighborhood),
@@ -246,17 +305,10 @@ export function createMap(data: InteractiveSFMapData, options: MapOptions = {}):
     setDistrictStyle: use((style) => {
       configure({ appearance: { districtStyle: style } });
     }),
-    setSource: use((...args: Parameters<MapController['setSource']>) => {
-      configurationRevision++;
-      element.setSource(...args);
-    }),
-    setMode: use((...args: Parameters<MapController['setMode']>) => {
-      configurationRevision++;
-      element.setMode(...args);
-    }),
-    setLabels: use((...args: Parameters<MapController['setLabels']>) => {
-      configurationRevision++;
-      element.setLabels(...args);
+    setSource: use((source, options) => updateView({ source }, options)),
+    setMode: use((mode, options) => updateView({ mode }, options)),
+    setLabels: use((labels) => {
+      configure({ labels });
     }),
     setTouchNavigation: use(element.setTouchNavigation),
     projectToScreen: use(element.projectToScreen),

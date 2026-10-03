@@ -22,24 +22,32 @@
       <div class="hero-copy">
         <p class="eyebrow" data-enter style="--i:0">Plate I · <b>An atlas of San Francisco</b></p>
         <h1 data-split data-vt-title>San Francisco, line by line.</h1>
-        <p class="lede" data-enter style="--i:5">A small library that draws the city as plain SVG — its coast, eleven supervisorial districts across three map years, three ways of naming its neighborhoods, parks, highways and BART — with motion built in and nothing to download at runtime.</p>
-        <div class="button-row" data-enter style="--i:6"><a class="button" href="#making">See how the map is made ↓</a><a class="button secondary" href="./docs.html">Read the docs →</a></div>
+        <p class="lede" data-enter style="--i:5">The coast, the neighborhoods, the lines that connect them. Beautiful offline SVG maps, ready for your stories, guides and data.</p>
+        <div class="button-row" data-enter style="--i:6"><a class="button" href="#making">Explore the atlas ↓</a><a class="button secondary" href="./docs.html">Read the docs →</a></div>
         <div class="hero-install" data-enter style="--i:7"><span class="install"><span>pnpm add @kahwee/sf-map-svg</span><button class="copy" type="button" data-copy="pnpm add @kahwee/sf-map-svg">Copy</button></span></div>
-        <dl class="hero-facts" data-enter style="--i:8">
-          <div><dt><span class="sr-only">11</span><span class="count" aria-hidden="true" style="--to:11;--d:2;--i:0"></span></dt><dd>supervisorial districts</dd></div>
-          <div><dt><span class="sr-only">3</span><span class="count" aria-hidden="true" style="--to:3;--d:1;--i:1"></span></dt><dd>district map years</dd></div>
-          <div><dt><span class="sr-only">250</span><span class="count" aria-hidden="true" style="--to:250;--d:3;--i:2"></span></dt><dd>neighborhood areas, three definitions</dd></div>
-          <div><dt><span class="sr-only">0</span><span class="count" aria-hidden="true" style="--to:0;--d:1;--i:3"></span></dt><dd>runtime dependencies</dd></div>
-        </dl>
+
       </div>
       <figure class="plate hero-plate" data-enter="fade" style="--i:2">
+        <div class="plate-heading"><span>San Francisco</span><span>37°46′ N · 122°25′ W</span></div>
         <div class="plate-frame" data-plate="./maps/plates/hero.svg">
           <noscript><img src="./maps/plates/hero.svg" alt="San Francisco drawn as SVG: coast, supervisorial districts, SFAR neighborhoods, parks, highways and BART stations" width="800" height="800"></noscript>
           <button class="plate-replay" type="button">Replay <span aria-hidden="true">↺</span></button>
         </div>
         <figcaption><b>Plate I.</b> San Francisco in 2022: coast, districts, SFAR neighborhoods, parks, highways and BART, drawn by <code>renderMap(data, { animation: true })</code>. Every line is SVG; nothing loads from a tile server.</figcaption>
       </figure>
+        <dl class="hero-facts" data-enter style="--i:8">
+          <div><dt><span class="sr-only">11</span><span class="count" aria-hidden="true" style="--to:11;--d:2;--i:0"></span></dt><dd>supervisorial districts</dd></div>
+          <div><dt><span class="sr-only">3</span><span class="count" aria-hidden="true" style="--to:3;--d:1;--i:1"></span></dt><dd>district map years</dd></div>
+          <div><dt><span class="sr-only">250</span><span class="count" aria-hidden="true" style="--to:250;--d:3;--i:2"></span></dt><dd>neighborhood areas, three definitions</dd></div>
+          <div><dt><span class="sr-only">0</span><span class="count" aria-hidden="true" style="--to:0;--d:1;--i:3"></span></dt><dd>runtime dependencies</dd></div>
+        </dl>
     </section>
+
+    <nav class="shell atlas-index" aria-label="Choose your starting point">
+      <a href="./playground.html"><span class="index-number" aria-hidden="true">01</span><span><b>Make it yours.</b><small>Palettes, layers and a map to take home.</small></span><span class="index-arrow" aria-hidden="true">↗</span></a>
+      <a href="./spot.html"><span class="index-number" aria-hidden="true">02</span><span><b>Find your San Francisco.</b><small>One spot, three neighborhood definitions.</small></span><span class="index-arrow" aria-hidden="true">↗</span></a>
+      <a href="./docs.html"><span class="index-number" aria-hidden="true">03</span><span><b>Build something beautiful.</b><small>From a first SVG to an interactive guide.</small></span><span class="index-arrow" aria-hidden="true">↗</span></a>
+    </nav>
 
     <section id="making" class="section making" aria-labelledby="making-title">
       <div class="shell section-head" data-reveal="stagger">
@@ -150,8 +158,7 @@ import { staticMapData } from '@kahwee/sf-map-svg/data/static';
 
 const { svg, project } = renderMap(staticMapData, {
   year: 2022,
-  neighborhoodLines: true,
-  bartStations: true,
+  layers: { neighborhoodLines: true, bartStations: true },
   animation: true, // draws itself, even inside &lt;img&gt;
 });</code></pre></div>
         <div class="code"><div class="code-label">Interactive · browser <button class="copy" type="button">Copy</button></div><pre><code>import { createMap } from '@kahwee/sf-map-svg';

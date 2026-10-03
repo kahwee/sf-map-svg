@@ -7,6 +7,10 @@ import { join, resolve } from 'node:path';
 export async function getMapCapabilities(packageRoot) {
   const temporary = await mkdtemp(join(tmpdir(), 'sf-map-capabilities-'));
   const probes = {
+    sourceAwareStatic: "'source' extends keyof SFMapOptions",
+    featureSelection: "'selectFeature' extends keyof MapController",
+    completeConfiguration: "'mode' extends keyof MapConfigurationSnapshot",
+    viewUpdateOptions: "'1' extends keyof Parameters<MapController['setMode']>",
     runtimeAppearance: "'appearance' extends keyof MapConfiguration",
     staticPresentation: "'layers' extends keyof SFMapOptions",
     animation: "'animation' extends keyof SFMapOptions",
@@ -14,7 +18,7 @@ export async function getMapCapabilities(packageRoot) {
     districtMorph: "'districtMorph' extends keyof MapFeatures",
   };
   try {
-    const imports = `import type { MapConfiguration } from ${JSON.stringify(join(packageRoot, 'dist/src/controller-types.js'))};\nimport type { SFMapOptions, MapFeatures } from ${JSON.stringify(join(packageRoot, 'dist/src/types.js'))};\n`;
+    const imports = `import type { MapConfiguration, MapConfigurationSnapshot, MapController } from ${JSON.stringify(join(packageRoot, 'dist/src/controller-types.js'))};\nimport type { SFMapOptions, MapFeatures } from ${JSON.stringify(join(packageRoot, 'dist/src/types.js'))};\n`;
     const file = join(temporary, 'capabilities.mts');
     const names = Object.keys(probes);
     await writeFile(

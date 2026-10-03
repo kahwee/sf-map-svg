@@ -138,6 +138,7 @@ export const CoastOnly: Story = {
     expect(() => map.setMode('neighborhoods')).toThrow('No neighborhood dataset');
     expect(map.element.dataset.mode).toBe('basemap');
     expect(() => map.setSource('realtor')).toThrow();
+    expect(() => map.configure({ source: 'realtor' })).toThrow();
     expect(map.getSelectedMarker()?.id).toBe('pin');
   },
 };
@@ -382,5 +383,104 @@ export const AppearanceSupersedesYearCallback: Story = {
     map.setDistrictYear(2012);
     expect(map.getResolvedConfiguration().year).toBe(2022);
     expect(map.element.querySelector('svg rect')?.getAttribute('fill')).toBe('#123456');
+  },
+};
+
+/** Convenience setters share atomic configuration and expose camera intent. */
+export const PredictableViewUpdates: Story = {
+  play: async () => {
+    map.camera.set([100, 100, 400], { animate: false });
+    map.setMode('basemap', { resetView: false });
+    expect(map.camera.get()).toEqual([100, 100, 400]);
+    map.setSource('realtor', { resetView: false });
+    expect(map.camera.get()).toEqual([100, 100, 400]);
+    expect(map.getConfiguration()).toMatchObject({
+      mode: 'basemap',
+      source: 'realtor',
+      year: 2022,
+      labels: true,
+    });
+    const before = map.getConfiguration();
+    expect(() => map.setMode('neighborhoods', { resetView: 'no' } as never)).toThrow();
+    expect(map.getConfiguration()).toEqual(before);
+    expect(map.camera.get()).toEqual([100, 100, 400]);
+    map.setMode('neighborhoods');
+    await waitFor(() => expect(map.camera.get()).toEqual([0, 0, 800]));
+    map.setLabels(false);
+    expect(map.getConfiguration().labels).toBe(false);
+    const detached = map.getConfiguration();
+    detached.layers.highways = false;
+    expect(map.getConfiguration().layers.highways).toBeUndefined();
+  },
+};
+
+export const SourceAwareSelection: Story = {
+  play: async () => {
+    expect(map.selectFeature({ kind: 'marker', id: 'one' }, { fit: false })).toBe(true);
+    expect(
+      map.selectFeature(
+        { kind: 'neighborhood', source: 'realtor', id: 'inner-mission' },
+        { fit: false },
+      ),
+    ).toBe(true);
+    expect(map.getSelectedNeighborhood()?.id).toBe('inner-mission');
+    const before = map.getConfiguration();
+    const camera = map.camera.get();
+    expect(map.selectFeature({ kind: 'neighborhood', source: 'sf-find', id: 'mission' })).toBe(
+      false,
+    );
+    expect(map.selectFeature({ kind: 'neighborhood', source: 'realtor', id: 'missing' })).toBe(
+      false,
+    );
+    expect(map.selectFeature({ kind: 'district', year: 2012, id: 1 })).toBe(false);
+    expect(map.getConfiguration()).toEqual(before);
+    expect(map.camera.get()).toEqual(camera);
+    expect(map.getSelectedNeighborhood()?.id).toBe('inner-mission');
+    expect(() => map.selectFeature({ kind: 'marker' } as never)).toThrow();
+    expect(() =>
+      map.selectFeature({ kind: 'neighborhood', source: 'other', id: null } as never),
+    ).toThrow();
+    expect(
+      map.selectFeature({ kind: 'neighborhood', source: 'realtor', id: null }, { fit: false }),
+    ).toBe(true);
+    expect(map.getSelectedNeighborhood()).toBeNull();
+    map.destroy();
+    expect(() => map.selectFeature({ kind: 'marker', id: null })).toThrow('destroyed');
+  },
+};
+
+/** IDs take precedence when a custom collection's display name matches another ID. */
+export const ExactNeighborhoodIdentity: Story = {
+  render: () => {
+    const collection = guideMapData.neighborhoods.realtor;
+    if (!collection) throw new Error('Missing realtor collection');
+    const first = collection.features[0];
+    const second = collection.features[1];
+    map = createMap(
+      {
+        map: { coast: guideMapData.map.coast },
+        neighborhoods: {
+          realtor: {
+            ...collection,
+            features: [
+              {
+                ...first,
+                id: 'first',
+                properties: { ...first.properties, canonicalName: 'second' },
+              },
+              { ...second, id: 'second' },
+            ],
+          },
+        },
+      },
+      { mode: 'neighborhoods' },
+    );
+    return map.element;
+  },
+  play: async () => {
+    expect(
+      map.selectFeature({ kind: 'neighborhood', source: 'realtor', id: 'second' }, { fit: false }),
+    ).toBe(true);
+    expect(map.getSelectedNeighborhood()?.id).toBe('second');
   },
 };

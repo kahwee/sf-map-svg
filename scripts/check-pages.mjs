@@ -28,15 +28,15 @@ const pages = [
 const budgets = {
   index: 45,
   layers: 45,
-  playground: 50,
+  playground: 51, // Source-aware rendering and typed feature selection add 0.3 KB.
   examples: 12,
   measures: 25,
   propositions: 25,
   candidates: 25,
   spot: 15,
   transit: 480,
-  docs: 12,
-  api: 12,
+  docs: 12.5, // Readable stacked reference records on phones.
+  api: 12.5,
   404: 12,
 };
 // Pre-rendered maps and datasets, gzip KB. Full geography loads only when exporting.

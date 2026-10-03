@@ -80,7 +80,7 @@ function disposeMap() {
 | Visible labels | On | On, subject to zoom/collisions |
 | Motion features | Static animation off | Off; opt in via `features` |
 
-A layer switch does not download missing geography. `fullMapData` has `.map` for static rendering and separate lookup collections for interactive use. `staticMapData` is already a static data object. Use `renderMap(guideMapData.map, options)`, not `renderMap(guideMapData, options)`.
+A layer switch does not download missing geography. `fullMapData` has `.map` for static rendering and separate lookup collections for interactive use. `staticMapData` is already a static data object. Use `renderMap(guideMapData, options)` or `renderMap(fullMapData, { source: 'sf-find' })` to share source-aware geography with the browser controller. Passing `.map` remains supported as compact static geography; it already chooses its neighborhoods and does not accept a `source` option.
 
 SFAR realtor neighborhoods are the default when supplied. If only an alternative collection is supplied, the controller selects that available source. Choose `source` explicitly when comparing definitions. Sources retain separate identities; they are not interchangeable polygons.
 
@@ -107,7 +107,7 @@ map.configure({ features: { motion: false } });
 map.configure({ layers: undefined }); // clear all explicit layer overrides
 ```
 
-`getConfiguration()` returns a detached snapshot of these groups, including explicit layer overrides. It is not a full serialization of mode, source, year, camera, or selection. Appearance overrides are included. Use `getResolvedConfiguration()` for current mode/source/year/labels and effective layer switches, and `getCapabilities()` for supplied geography. Invalid configuration patches leave the current map unchanged.
+`getConfiguration()` returns current mode/source/year/labels and a detached snapshot of the presentation groups, including explicit layer and appearance overrides. Camera and selection remain separate runtime state. Use `getResolvedConfiguration()` for current mode/source/year/labels and effective layer switches, and `getCapabilities()` for supplied geography. Invalid configuration patches leave the current map unchanged. Convenience methods use the same atomic update path: pass `map.setMode(mode, { resetView: false })` or `map.setSource(source, { resetView: false })` to keep the camera. Their default still resets the view.
 
 ## Markers, routes and camera coordinates
 
