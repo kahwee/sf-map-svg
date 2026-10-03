@@ -169,7 +169,7 @@
   },
   "packageManager": "pnpm@12.6.0",
   "devDependencies": {
-    "@biomejs/biome": "2.5.14",
+    "@biomejs/biome": "2.5.15",
     "@storybook/addon-a11y": "10.6.0",
     "@storybook/addon-docs": "^10.6.0",
     "@storybook/addon-vitest": "10.6.0",
