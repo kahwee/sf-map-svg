@@ -4,6 +4,12 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 4.3.1 — 2026-10-04
+
+- Reject unknown flat static options and invalid values before rendering or invoking district styling callbacks, matching grouped-option validation.
+- Ignore undefined static color overrides so SVG attributes retain the selected theme's defaults; preserve grouped-option precedence.
+- Describe the actual neighborhood source, enabled and supplied layers, and park and BART station counts in static SVG descriptions. Compact geography uses a source-neutral description.
+
 ## 4.3.0 — 2026-10-02
 
 - Add `selectFeature` with typed marker, neighborhood source/ID and district year/ID references. Missing or mismatched identities preserve current geography and selection.

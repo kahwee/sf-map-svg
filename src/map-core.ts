@@ -162,7 +162,10 @@ export function resolveMapColors(
   theme: SFMapOptions['theme'],
   colors: SFMapOptions['colors'] = {},
 ) {
-  return { ...defaults, ...(theme === 'transit' ? transitColors : {}), ...colors };
+  const supplied = Object.fromEntries(
+    Object.entries(colors).filter(([, value]) => value !== undefined),
+  );
+  return { ...defaults, ...(theme === 'transit' ? transitColors : {}), ...supplied };
 }
 let sequence = 0;
 
@@ -224,8 +227,30 @@ export function createSFMapWithData(options: SFMapOptions, data: SFMapData) {
           };
         })
       : [];
+  const neighborhoodDescription =
+    options.source === 'realtor'
+      ? 'SFAR realtor neighborhood areas, defined in August 2010'
+      : options.source === 'sf-find'
+        ? 'SF Find neighborhood areas'
+        : options.source === 'analysis'
+          ? 'DataSF analysis neighborhood areas'
+          : 'the supplied neighborhood areas';
+  const description = [
+    districts.length && (districtFills || districtLines || (labels && districtLabels))
+      ? `San Francisco district boundaries (${year}).`
+      : 'San Francisco map.',
+    neighborhoodLines && data.neighborhoods?.length
+      ? `Dashed lines show ${neighborhoodDescription}.`
+      : '',
+    landmarks && landmarkData.length ? `Park and landmark features: ${landmarkData.length}.` : '',
+    keyRoads && roadData.length ? 'Selected road corridors.' : '',
+    bartStations && stationData.length ? `BART stations: ${stationData.length}.` : '',
+    'See SOURCES.md for geographic sources.',
+  ]
+    .filter(Boolean)
+    .join(' ');
   const parts = [
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" role="img" aria-labelledby="${idPrefix}-title" data-sf-map="" data-year="${year}"${animated ? ` data-sf-animate="${idPrefix}"` : ''} style="max-width:100%;height:auto"><title id="${idPrefix}-title">${escapeXml(title)}</title><desc>San Francisco supervisorial district boundaries (${year}).${neighborhoodLines ? ' Dashed lines show SFAR realtor neighborhood areas, defined in August 2010.' : ''}${landmarks ? ' Highlighted areas show six parks and landmarks.' : ''}${keyRoads ? ' Thin gray lines show selected road corridors.' : ''}${bartStations ? ' Rings mark the eight San Francisco BART stations.' : ''} Geometry from DataSF${bartStations ? ' and BART' : ''}. See package SOURCES.md.</desc>${animation ? staticAnimationStyle(idPrefix, animation) : ''}<defs><clipPath id="${idPrefix}-coast"><path d="${coastPath}" fill-rule="evenodd" clip-rule="evenodd"/></clipPath></defs><rect width="${width}" height="${height}" fill="${escapeXml(colors.water)}"/><g data-layer="geography"><path data-layer="coast" d="${coastPath}" fill="${escapeXml(colors.land)}" fill-rule="evenodd"/>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" role="img" aria-labelledby="${idPrefix}-title" data-sf-map="" data-year="${year}"${animated ? ` data-sf-animate="${idPrefix}"` : ''} style="max-width:100%;height:auto"><title id="${idPrefix}-title">${escapeXml(title)}</title><desc>${escapeXml(description)}</desc>${animation ? staticAnimationStyle(idPrefix, animation) : ''}<defs><clipPath id="${idPrefix}-coast"><path d="${coastPath}" fill-rule="evenodd" clip-rule="evenodd"/></clipPath></defs><rect width="${width}" height="${height}" fill="${escapeXml(colors.water)}"/><g data-layer="geography"><path data-layer="coast" d="${coastPath}" fill="${escapeXml(colors.land)}" fill-rule="evenodd"/>`,
   ];
   // Explicit drawing order keeps optional overlays and user markers predictable.
   if (districtFills) parts.push(layers.districtFills(districtPaths, context));
