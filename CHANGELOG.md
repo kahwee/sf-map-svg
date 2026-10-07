@@ -1,5 +1,7 @@
 # Changelog
 
+- Update compatible development tooling and refresh dependency security fixes.
+
 User-visible changes are recorded here. Unreleased entries describe changes on `main` that are not part of a tagged package release.
 
 ## Unreleased
