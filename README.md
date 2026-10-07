@@ -72,3 +72,7 @@ Call `destroy()` when removing an interactive map.
 Canonical geography is in [`data/`](data/README.md), with provenance in [`SOURCES.md`](SOURCES.md). The public `/data` entry exposes lookup, catalog, district maps, and source-specific neighborhood collections. These are deeply frozen; clone before editing.
 
 Install with `pnpm install --frozen-lockfile`. See the [contributing guide](CONTRIBUTING.md) for architecture and the [validation and release runbook](https://github.com/kahwee/sf-map-svg/blob/main/docs/maintenance.md) for checks, browser inspection, and publishing. If you are upgrading from v2, follow the [v3 migration guide](docs/migration-v3.md).
+
+## CI maintenance
+
+[GitHub Actions maintenance](.github/ACTIONS.md) covers workflows, parallel checks, action versions, and weekly updates.
