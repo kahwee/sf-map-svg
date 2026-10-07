@@ -62,10 +62,12 @@ jobs:
           gh release view "$RELEASE_TAG" --json body --jq .body > "$RUNNER_TEMP/github-release-notes.md"
           node scripts/release-notes.mjs --verify "$RUNNER_TEMP/github-release-notes.md"
       - run: pnpm install --frozen-lockfile
-      - run: pnpm check
-      - run: pnpm demo
-      - run: pnpm build-storybook
-      - run: pnpm exec playwright install --with-deps chromium
+      # Browser installation is independent; validation must finish before browser tests.
+      - parallel:
+          - name: Validate and build package, demo and Storybook
+            run: pnpm check && pnpm demo && pnpm build-storybook
+          - name: Install browser
+            run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:stories:coverage
       - name: Pack and test the exact archive to publish
         run: |

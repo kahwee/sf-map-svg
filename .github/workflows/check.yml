@@ -45,9 +45,11 @@ jobs:
           node-version: '26'
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright install --with-deps chromium
+      # Storybook build and browser installation write different output directories.
+      - parallel:
+          - run: pnpm exec playwright install --with-deps chromium
+          - run: pnpm build-storybook
       - run: pnpm test:stories:coverage
-      - run: pnpm build-storybook
       - run: pnpm build:pages
       - run: pnpm test:visual
       - run: pnpm test:studio

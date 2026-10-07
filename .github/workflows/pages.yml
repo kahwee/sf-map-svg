@@ -49,8 +49,10 @@ jobs:
           node-version: '26'
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm check
-      - run: pnpm exec playwright install --with-deps chromium
+      # Browser installation is independent; validation must finish before browser tests.
+      - parallel:
+          - run: pnpm check
+          - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:stories:coverage
       - run: pnpm build-storybook
       - name: Wait for the published version
