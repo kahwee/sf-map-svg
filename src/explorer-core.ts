@@ -22,7 +22,9 @@ import {
   getLayerPathsWithData,
   resolveMapColors,
 } from './map-core.js';
+import { createMarkerChooser } from './marker-chooser.js';
 import { createMarkerLayer, type MarkerItem } from './marker-layer.js';
+import { createMarkerNavigation } from './marker-navigation.js';
 import { attachNavigation } from './navigation.js';
 import type {
   CameraOptions,
@@ -281,6 +283,8 @@ export function createNeighborhoodExplorerCore(
 .sf-explorer-toolbar button{min-width:44px;padding:6px 10px}
 .sf-explorer-zoom{font-size:12px;min-width:42px;text-align:center;font-variant-numeric:tabular-nums;color:#496578}
 .sf-explorer-canvas{position:relative;aspect-ratio:1;overflow:hidden;touch-action:pan-y pinch-zoom}
+.sf-marker-chooser{position:absolute;z-index:2;top:12px;right:12px;display:flex;flex-direction:column;gap:6px;box-sizing:border-box;width:280px;max-width:calc(100% - 24px);max-height:calc(100% - 24px);overflow:auto;padding:12px;border:1px solid var(--sf-map-border);border-radius:8px;background:var(--sf-map-surface);color:var(--sf-map-ink);box-shadow:0 6px 20px #0003}
+.sf-marker-chooser button{min-height:44px;text-align:left;overflow-wrap:anywhere}
 .sf-explorer-canvas>svg{display:block;width:100%;height:100%;max-width:none;cursor:grab;user-select:none}
 .sf-explorer-canvas>svg:active{cursor:grabbing}
 .sf-explorer-canvas path[data-neighborhood-id]{cursor:pointer}
@@ -790,6 +794,13 @@ export function createNeighborhoodExplorerCore(
   }));
   let markerItems: MarkerItem[] = [];
   let selectedMarker: string | null = null;
+  const markerNavigation = createMarkerNavigation(svg, controller.signal);
+  const markerChooser = createMarkerChooser(canvas, svg, (id) => {
+    if (destroyed) return;
+    selectMarker(id);
+    if (!destroyed && selectedMarker === id)
+      markerItems.find((item) => item.marker.id === id)?.node.focus({ preventScroll: true });
+  });
   let markerRevision = 0;
   let neighborhoodRevision = 0;
   const clusterLayer = svgElement('g', { 'data-layer': 'marker-clusters' });
@@ -797,6 +808,7 @@ export function createNeighborhoodExplorerCore(
   let clusterSignature = '';
   let clusterEvents = new AbortController();
   function invalidateClusters() {
+    markerChooser.close();
     clusterEvents.abort();
     clusterEvents = new AbortController();
     clusterSignature = '';
@@ -805,6 +817,7 @@ export function createNeighborhoodExplorerCore(
     for (const item of markerItems) item.node.style.display = '';
   }
   function drawClusters(unit: number) {
+    const hadClusterFocus = clusterLayer.contains(document.activeElement);
     for (const item of markerItems) item.node.style.display = '';
     const eligible = markerItems.filter(
       (item) => item.marker.id !== selectedMarker && document.activeElement !== item.node,
@@ -826,8 +839,9 @@ export function createNeighborhoodExplorerCore(
       for (const group of clusters) {
         const node = svgElement('g', {
           role: 'button',
-          tabindex: 0,
-          'aria-label': `${group.length} places. Zoom to explore; all places are available in the marker chooser.`,
+          tabindex: -1,
+          'data-cluster-ids': JSON.stringify(group.map((item) => item.marker.id)),
+          'aria-label': `${group.length} places. Activate to explore or choose a place.`,
         });
         node.style.cursor = 'pointer';
         node.append(
@@ -848,10 +862,17 @@ export function createNeighborhoodExplorerCore(
         const activate = () => {
           if (destroyed || signal.aborted) return;
           const markers = group.map((item) => ({ ...item.marker }));
-          fitGeometry({
-            type: 'MultiPoint',
-            coordinates: markers.map((marker) => [marker.lng, marker.lat]),
-          });
+          const minimumUnit = 800 / 12 / Math.max(1, canvas.getBoundingClientRect().width);
+          if (
+            clusterPoints(group, minimumUnit, features.clustering ? features.clustering.radius : 36)
+              .length === 1
+          )
+            markerChooser.open(markers, node);
+          else
+            fitGeometry({
+              type: 'MultiPoint',
+              coordinates: markers.map((marker) => [marker.lng, marker.lat]),
+            });
           if (destroyed || signal.aborted) return;
           root.dispatchEvent(
             new CustomEvent('clusteractivate', { bubbles: true, detail: { markers } }),
@@ -879,6 +900,11 @@ export function createNeighborhoodExplorerCore(
       node.querySelector('circle')?.setAttribute('r', String(22 * unit));
       node.querySelector('text')?.setAttribute('font-size', String(12 * unit));
     });
+    markerNavigation.sync([
+      ...markerItems.map((item) => item.node),
+      ...(Array.from(clusterLayer.children) as SVGElement[]),
+    ]);
+    if (hadClusterFocus && document.activeElement === svg) markerNavigation.recover();
   }
   let overlayEvents = new AbortController();
   function setOverlays(overlays: readonly MapOverlay[]) {
@@ -1562,7 +1588,7 @@ export function createNeighborhoodExplorerCore(
     if (title) title.textContent = 'San Francisco map';
     svg.setAttribute(
       'aria-label',
-      `${description} Arrow keys pan; plus and minus zoom; Home resets. Districts and neighborhoods: brackets move focus; Enter selects. The neighborhood and marker menus include every supplied item.`,
+      `${description} Arrow keys pan; plus and minus zoom; Home resets. Districts, neighborhoods, markers and clusters: brackets move focus; Enter selects. Coincident pins open a place chooser. The neighborhood and marker menus include every supplied item.`,
     );
     attribution.textContent = description;
     scheduleLabels();
@@ -1687,10 +1713,11 @@ export function createNeighborhoodExplorerCore(
     syncFeatureControls();
     const revision = markerRevision + 1;
     selectMarker(nextSelection, { fit: false });
-    if (!destroyed && markerRevision === revision && focusedMarker)
-      (markerItems.find((item) => item.marker.id === focusedMarker)?.node ?? svg).focus({
-        preventScroll: true,
-      });
+    if (!destroyed && markerRevision === revision && focusedMarker) {
+      markerNavigation.sync(markerItems.map((item) => item.node));
+      markerNavigation.recover();
+      if (!markerItems.length) svg.focus({ preventScroll: true });
+    }
   }
   function setControls(patch: NonNullable<NeighborhoodExplorerOptions['controls']>) {
     if (destroyed) return;
@@ -1859,18 +1886,35 @@ export function createNeighborhoodExplorerCore(
     }
   });
   listen(markerLayer, 'focusout', scheduleLabels);
+  listen(markerLayer, 'focusin', scheduleLabels);
+  function activateMarker(id: string, node: SVGElement) {
+    const item = markerItems.find((item) => item.marker.id === id);
+    if (!item) return;
+    const coincident = markerItems.filter(
+      (other) => other.point[0] === item.point[0] && other.point[1] === item.point[1],
+    );
+    if (coincident.length > 1)
+      markerChooser.open(
+        coincident.map((other) => other.marker),
+        node,
+      );
+    else {
+      selectMarker(id);
+      if (!destroyed && selectedMarker === id)
+        markerItems.find((other) => other.marker.id === id)?.node.focus({ preventScroll: true });
+    }
+  }
   listen(markerLayer, 'click', (event) => {
     const node =
       event.target instanceof Element ? event.target.closest<SVGElement>('[data-marker-id]') : null;
-    if (node?.dataset.markerId) selectMarker(node.dataset.markerId);
+    if (node?.dataset.markerId) activateMarker(node.dataset.markerId, node);
   });
   listen(markerLayer, 'keydown', (event) => {
     const node =
       event.target instanceof Element ? event.target.closest<SVGElement>('[data-marker-id]') : null;
     if (node?.dataset.markerId && (event.key === 'Enter' || event.key === ' ')) {
       event.preventDefault();
-      selectMarker(node.dataset.markerId);
-      node.focus();
+      activateMarker(node.dataset.markerId, node);
     }
   });
   listen(svg, 'click', (event) => {
@@ -2113,6 +2157,7 @@ export function createNeighborhoodExplorerCore(
     zoomBy,
     destroy() {
       destroyed = true;
+      markerChooser.close();
       camera.destroy();
       districtTransition.cancel();
       layerFades.cancel();

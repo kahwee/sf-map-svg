@@ -41,6 +41,10 @@ If a district callback destroys the map or selects a newer district, the interru
 
 `setMarkers()` reconciles by stable marker `id`: retained markers keep their DOM nodes, focus, and in-progress entrance animations; only new IDs animate in. Identical ordered marker updates are a visual no-op. Camera state and `viewportchange` events remain synchronous, while animated camera steps and their dependent label/marker layout commit in the same browser frame.
 
+Visible markers and clusters share one tab stop. Use `[` and `]` to move focus, Enter or Space to activate, and Tab to leave the group. Arrow keys retain map panning. Marker replacement preserves the focused ID when available and moves focus to a surviving marker when it is removed.
+
+Activating coincident pins opens a place chooser, including when compact embeds hide the native marker picker. Clusters zoom when their members can separate at maximum zoom; otherwise they open the chooser. Escape or Close returns focus to the originating pin or cluster when it remains visible. Choosing a place selects its marker; replacing markers or destroying the map closes the chooser. `clusteractivate` still reports the activated cluster's markers.
+
 For a small guide, import `guideMapData` from `/guide/data` and pass it to `createMap`. The optional `/guide` entry also provides `createGuideMap`, `mountGuideMap`, and detailed-data loading for existing guide layouts. `/transit` provides the standalone schematic transit animation. See [examples](EXAMPLES.md) and [consumer integration](consumer-integration.md).
 
 For the guide preset with the same controller API, use `createGuideController(options)` from `/guide` (or `/guide/map`). It accepts grouped `MapOptions` and returns `MapController`; `mountGuideController(shell, options)` enhances a `createGuideShell()` container. Both use the lightweight guide geography. Existing `createGuideMap` and `mountGuideMap` calls retain their element-based API.

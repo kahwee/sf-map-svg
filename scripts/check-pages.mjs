@@ -27,8 +27,8 @@ const pages = [
 // Initial JavaScript and CSS, gzip KB. Transit embeds the library's animation with its geometry.
 const budgets = {
   index: 45,
-  layers: 45.5, // Flat static validation and source-aware SVG descriptions add 0.4 KB.
-  playground: 51, // Source-aware rendering and typed feature selection add 0.3 KB.
+  layers: 46.5, // Includes the coincident-pin chooser and shared marker keyboard navigation (46.0 KB measured).
+  playground: 52, // Includes the coincident-pin chooser and shared marker keyboard navigation (51.6 KB measured).
   examples: 12,
   measures: 25,
   propositions: 25,

@@ -6,6 +6,9 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Add a place chooser for coincident pins and clusters that cannot separate at maximum zoom, including compact embeds with hidden native pickers.
+- Give visible markers and clusters one tab stop with bracket-key navigation, preserving focus across marker reordering and recovering focus when a marker is removed.
+
 ## 4.3.1 — 2026-10-04
 
 - Reject unknown flat static options and invalid values before rendering or invoking district styling callbacks, matching grouped-option validation.

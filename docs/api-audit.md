@@ -16,7 +16,7 @@ unbounded geographic data can never fail.
 | A new camera request during animation | The new request cancels the prior generation. A callback cannot revive it after cancellation/disposal. |
 | Selection callback selecting another item | Newer selection wins. The old selection cannot subsequently move the camera or send a stale activation callback. |
 | `selectNeighborhood(..., {fit:false})` in basemap mode | Selection can change presentation, but preserves the camera. Explicit layer overrides remain authoritative. |
-| Clustering and selected/focused markers | Selected/focused pins remain individually reachable. Coincident alternatives remain available through the chooser. |
+| Clustering and selected/focused markers | Selected/focused pins remain individually reachable. Coincident pins and clusters that cannot separate at maximum zoom open a place chooser, including compact shells with hidden native pickers. Visible pins and clusters share one tab stop with bracket-key navigation. |
 | Marker entrance and reduced motion | Entrances are optional, independent of camera motion, and cancel on preference changes or disposal. Stable IDs avoid repeated entrances on filtering. |
 | Hiding touch control while gestures are enabled | Returns touch scrolling to the page. Other toolbar controls remain independent. |
 | Convenience mode/source setters | Share the atomic configuration path. `{ resetView: false }` preserves the camera; omitted options retain the historic reset. Invalid options and unavailable geography leave state unchanged. |
@@ -61,7 +61,7 @@ Static grouped layers and appearance reject unknown keys, while flat compatibili
 interactive option-key validation is not a claim that all static options share the
 same schema. Host layout, delayed images, fonts, and application cards need their
 own CLS tests. The scale bar is an approximate local Mercator scale, not survey
-instrumentation. Clustering does not spiderfy coincident locations. Geographic
+instrumentation. Coincident locations use a place chooser rather than spiderfying. Geographic
 source correctness remains governed by SOURCES.md and existing topology tests.
 
 ## Extending the contract

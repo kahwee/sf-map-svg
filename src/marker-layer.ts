@@ -65,7 +65,7 @@ export function createMarkerLayer(layer: SVGGElement) {
         transform: `translate(${point[0]},${point[1]})`,
         'data-marker-id': marker.id,
         role: 'button',
-        tabindex: 0,
+        tabindex: -1,
         'aria-label': marker.label ?? marker.id,
         'aria-pressed': 'false',
       });
