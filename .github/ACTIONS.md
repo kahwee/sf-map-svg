@@ -30,8 +30,8 @@ Versions below match the current workflow and composite-action references. SHA-p
 | [actions/checkout](https://github.com/actions/checkout) | `v7.0.1` |
 | [actions/configure-pages](https://github.com/actions/configure-pages) | `v6.0.0` |
 | [actions/deploy-pages](https://github.com/actions/deploy-pages) | `v5.0.1` |
-| [actions/setup-node](https://github.com/actions/setup-node) | `v7.0.0` |
-| [actions/upload-artifact](https://github.com/actions/upload-artifact) | `v7.0.1` |
+| [actions/setup-node](https://github.com/actions/setup-node) | `v7.1.0` |
+| [actions/upload-artifact](https://github.com/actions/upload-artifact) | `v7.0.2` |
 | [actions/upload-pages-artifact](https://github.com/actions/upload-pages-artifact) | `v5.0.0` |
 | [pnpm/action-setup](https://github.com/pnpm/action-setup) | `v6.1.0` |
 

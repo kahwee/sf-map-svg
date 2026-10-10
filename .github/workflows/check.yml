@@ -20,7 +20,7 @@ jobs:
       - uses: pnpm/action-setup@v6.1.0
         with:
           version: 12.6.0
-      - uses: actions/setup-node@v7.0.0
+      - uses: actions/setup-node@v7.1.0
         with:
           node-version: ${{ matrix.node }}
           cache: pnpm
@@ -40,7 +40,7 @@ jobs:
       - uses: pnpm/action-setup@v6.1.0
         with:
           version: 12.6.0
-      - uses: actions/setup-node@v7.0.0
+      - uses: actions/setup-node@v7.1.0
         with:
           node-version: '26'
           cache: pnpm
@@ -56,7 +56,7 @@ jobs:
       - run: pnpm test:pages
       - name: Upload visual differences
         if: failure()
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: visual-differences
           path: test-results/visual/
@@ -78,7 +78,7 @@ jobs:
           fi
       - name: Upload Storybook coverage
         if: always()
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: storybook-coverage
           path: coverage/storybook/
