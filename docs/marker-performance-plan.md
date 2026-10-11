@@ -1,0 +1,42 @@
+# Viewport marker rendering plan
+
+The October 10–11 benchmark at renderer commit `1d523d9` measured 2,000-marker pan frame p95 of 166.7 ms in Chromium, 200.3 ms in Firefox, and 302 ms in WebKit at 800 px. Disabling labels reduced Chromium to 50 ms. The synchronous camera calls were much cheaper than the rendered frames, and replacing all marker IDs was expensive, especially in WebKit.
+
+## Implementation
+
+1. Keep every supplied record and native picker option. Detach clustered pins and pins outside the padded viewport from the SVG; reuse their nodes when they return. Keep selected and focused pins reachable, including during callbacks and updates.
+2. Compute deterministic clusters against the complete catalog so counts and membership do not fluctuate at viewport edges. Cache groups until marker data, zoom/width, selection, focus, or clustering changes. Cull cluster symbols by their centers and screen-sized extent when panning.
+3. Update only mounted marker sizes, and skip identical SVG attributes. Compute cluster label obstacles from cached projected centers instead of measuring each cluster DOM node. Avoid unnecessary text-node writes and measurements for labels that cannot intersect the viewport.
+4. Add interactive Storybook stories with 2,000 typed markers at desktop and phone sizes. Exercise overview → zoom → pan → zoom out, clustering toggles, record updates, offscreen selection, keyboard focus, and disposal. Assert the rendered subset and full picker catalog, rather than a machine-specific FPS threshold.
+5. Compare the same production-bundle benchmark across Chromium, Firefox, and WebKit. Report API-call and frame timings separately, along with mounted pin/cluster counts. Preserve the dated baseline in the README.
+6. Keep generated public declarations aligned and compile clean packed-package consumers with current stable TypeScript. Install and pin the latest stable Bun as an additional static-rendering compatibility check; retain pnpm and the existing Node build/test workflows.
+
+## Storyboard
+
+Open **Checks / 2000 markers / Desktop** or **Phone** in Storybook. The phone canvas is 390 px; controls wrap without horizontal scrolling. Both stories run the same interaction assertions and remain usable after the checks finish. Each story owns its controller and destroys it on teardown.
+
+| Scene | Action | What the check observes |
+| --- | --- | --- |
+| City overview | Start with clustering on | Fewer than 2,000 mounted symbols; all 2,000 picker records. |
+| Individual pins | Toggle clustering off | Most city pins mount at overview scale. |
+| Close view | Zoom in twice | Less than half the overview pins remain mounted. |
+| Move through the city | Pan east | New IDs enter the viewport as old pins detach. |
+| Refresh the catalog | Update labels | Retained pin identity and updated accessible name; picker still contains every record. |
+| Find a distant place | Select a currently offscreen ID through the API | Selection mounts the pin and fits it inside the viewport. |
+| Return to overview | Clear selection, reset, restore clustering | Overview counts return, then clustering reduces mounted symbols again. |
+
+The production-bundle browser suite separately pans a keyboard-focused pin outside the viewport, verifies focus remains on the mounted pin, blurs it, and checks it detaches. Panning back must reuse the node with its updated radius. A small pan at fixed zoom must preserve overlapping cluster membership and node identity. These checks run in Chromium, Firefox, and WebKit at 1440 px and 390 px.
+
+## Boundaries
+
+This change optimizes rendering, not geographic data or source definitions. It does not discard offscreen records, reset selection, cap the supplied catalog, or introduce runtime dependencies. A small screen-space overscan preserves pins crossing the viewport edge. Culling must not move keyboard focus silently or change coincident-place selection. Static SVG exports continue to render the supplied data independently of interactive viewport culling.
+
+Check clustering-disabled views as well as clustered views. Verify retained nodes, current marker values in cluster events, selected/focused pins, radius and style updates after reattachment, resize, reduced motion, and cancellation during disposal. Run required package, browser, Storybook, Pages and visual gates; inspect the 2,000-marker stories at desktop and 390 px before pushing.
+
+## Results and verification — October 11, 2026
+
+The [README comparison](../README.md#viewport-renderer-results) and [saved JSON](benchmarks/markers-2026-10-11.json) retain the baseline and new measurements. Desktop pan frame p95 changed from 166.7 to 16.8 ms in Chromium, 200.3 to 49.4 ms in Firefox, and 302.0 to 49.0 ms in WebKit. At the sampled 4× desktop view, 228 individual pins mount from the 2,000-place catalog; the picker retains all records. WebKit full-ID replacement still costs a median 805 ms. Use stable IDs and reuse the catalog; culling improves pan without removing creation costs. Firefox and WebKit frame results still exceed a 60 Hz budget.
+
+Validation passed: 93 Node tests, 87 Storybook checks with coverage, all 42 focused browser cases across three engines and two widths, Bun 1.4.3 smoke checks, strict packed-package TypeScript consumers, generated playground examples, bundle budgets, demo/Storybook/Pages builds, and Pages/studio checks. Manual Agent Browser inspection covered the 2,000-marker stories, generated SVG examples, and interactive example at desktop/phone sizes, with no browser errors or horizontal overflow. The preview server now serves `.mjs` examples with the JavaScript MIME type.
+
+The five screenshot checks retain a pre-existing mismatch against committed expectations in this environment. Each actual screenshot is byte-identical to the unchanged `a065893` baseline checkout; no new screenshot differences were introduced and expectations were not rewritten.

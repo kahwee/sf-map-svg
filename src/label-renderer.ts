@@ -1,4 +1,5 @@
 import type { Bounds } from '../data/types.js';
+import { setAttributeIfChanged } from './dom.js';
 import { layoutLabels } from './explorer-layout.js';
 
 export interface RenderLabel {
@@ -26,35 +27,42 @@ export function createLabelRenderer(layer: SVGGElement) {
     draw(labels: RenderLabel[], view: readonly number[], width: number, obstacles: Bounds[]) {
       const unit = view[2] / width;
       const keys = new Set<string>();
-      const pending = labels.map((label) => {
-        const key = JSON.stringify([
-          label.kind,
-          label.name,
-          label.point,
-          label.fontSize,
-          label.fontWeight,
-        ]);
-        keys.add(key);
-        let entry = entries.get(key);
-        if (!entry) {
-          const node = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-          node.textContent = label.name;
-          node.setAttribute('stroke-linejoin', 'round');
-          node.setAttribute('paint-order', 'stroke');
-          node.setAttribute('data-label-kind', label.kind);
-          entry = { node };
-          entries.set(key, entry);
-        }
-        const { node } = entry;
-        node.setAttribute('font-size', String(label.fontSize * unit));
-        node.setAttribute('font-weight', String(label.fontWeight));
-        node.setAttribute('fill', label.fill);
-        node.setAttribute('stroke', label.halo);
-        node.setAttribute('stroke-width', String(3 * unit));
-        // Batch writes before measuring new labels. Hidden candidates stay detached.
-        if (entry.width === undefined && !node.parentNode) layer.append(node);
-        return { label, entry };
-      });
+      const pending = labels
+        .filter((label) => {
+          const y = (label.point[1] - view[1]) / unit;
+          // Labels are centered horizontally; an anchor outside vertically cannot fit.
+          const margin = label.fontSize * 1.25 + label.offset + 3;
+          return y >= -margin && y <= width + margin;
+        })
+        .map((label) => {
+          const key = JSON.stringify([
+            label.kind,
+            label.name,
+            label.point,
+            label.fontSize,
+            label.fontWeight,
+          ]);
+          keys.add(key);
+          let entry = entries.get(key);
+          if (!entry) {
+            const node = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            node.textContent = label.name;
+            node.setAttribute('stroke-linejoin', 'round');
+            node.setAttribute('paint-order', 'stroke');
+            node.setAttribute('data-label-kind', label.kind);
+            entry = { node };
+            entries.set(key, entry);
+          }
+          const { node } = entry;
+          setAttributeIfChanged(node, 'font-size', label.fontSize * unit);
+          setAttributeIfChanged(node, 'font-weight', label.fontWeight);
+          setAttributeIfChanged(node, 'fill', label.fill);
+          setAttributeIfChanged(node, 'stroke', label.halo);
+          setAttributeIfChanged(node, 'stroke-width', 3 * unit);
+          // Batch writes before measuring new labels. Hidden candidates stay detached.
+          if (entry.width === undefined && !node.parentNode) layer.append(node);
+          return { label, entry };
+        });
       for (const [key, entry] of entries) {
         if (!keys.has(key)) {
           entry.node.remove();
@@ -77,8 +85,8 @@ export function createLabelRenderer(layer: SVGGElement) {
       for (const { node } of measured) if (!visible.has(node)) node.remove();
       let previous: SVGTextElement | null = null;
       for (const item of placed) {
-        item.node.setAttribute('x', String(view[0] + item.left * unit));
-        item.node.setAttribute('y', String(view[1] + (item.top + item.fontSize) * unit));
+        setAttributeIfChanged(item.node, 'x', view[0] + item.left * unit);
+        setAttributeIfChanged(item.node, 'y', view[1] + (item.top + item.fontSize) * unit);
         const next: ChildNode | null = previous ? previous.nextSibling : layer.firstChild;
         if (next !== item.node) layer.insertBefore(item.node, next);
         previous = item.node;

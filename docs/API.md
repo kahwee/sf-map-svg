@@ -39,7 +39,9 @@ The controller also supports marker, neighborhood, and district selection; distr
 
 If a district callback destroys the map or selects a newer district, the interrupted activation stops without moving keyboard focus or sending a stale event.
 
-`setMarkers()` reconciles by stable marker `id`: retained markers keep their DOM nodes, focus, and in-progress entrance animations; only new IDs animate in. Identical ordered marker updates are a visual no-op. Camera state and `viewportchange` events remain synchronous, while animated camera steps and their dependent label/marker layout commit in the same browser frame.
+`setMarkers()` reconciles by stable marker `id`: retained markers keep their cached nodes, focus, and in-progress entrance animations; only new IDs animate in. Identical ordered marker updates are a visual no-op. Camera state and `viewportchange` events remain synchronous, while animated camera steps and their dependent label/marker layout commit in the same browser frame.
+
+Interactive maps mount only pins and cluster symbols intersecting a padded viewport; clustered member pins detach. All records remain in the native picker and selectable through the API. Selected and keyboard-focused pins stay mounted, even outside the viewport, and retained nodes return when panning back. Cluster membership uses the complete catalog and stays stable during pan at the same zoom. Static SVG exports are unaffected.
 
 Visible markers and clusters share one tab stop. Use `[` and `]` to move focus, Enter or Space to activate, and Tab to leave the group. Arrow keys retain map panning. Marker replacement preserves the focused ID when available and moves focus to a surviving marker when it is removed.
 
@@ -100,6 +102,6 @@ Neighborhood IDs are exact source-scoped feature IDs, rather than display names 
 
 ## Coordinates and units
 
-GeoJSON and static projection inputs use `[longitude, latitude]` in WGS84; markers use `{ lng, lat }`. Static `project` returns SVG units. `projectToScreen(lng, lat)` returns pixels relative to the mounted canvas. Camera viewports and pan deltas use the fixed 800 × 800 projected map space, independent of canvas size. Marker radius uses screen pixels in browser maps and SVG units in static output.
+GeoJSON and static projection inputs use `[longitude, latitude]` in WGS84; markers use `{ lng, lat }`. Static `project` returns SVG units. `projectToScreen(lng, lat)` returns pixels relative to the mounted canvas. Camera viewports use the fixed 800 × 800 projected map space, independent of canvas size. Pan deltas use screen pixels, converted using the mounted canvas width. Marker radius uses screen pixels in browser maps and SVG units in static output.
 
 Explore presentation options in the [live map design playground](https://kahwee.github.io/sf-map-svg/playground.html). The page identifies its package version; released builds use compatible options for that installed version.

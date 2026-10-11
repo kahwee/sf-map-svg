@@ -17,6 +17,7 @@ unbounded geographic data can never fail.
 | Selection callback selecting another item | Newer selection wins. The old selection cannot subsequently move the camera or send a stale activation callback. |
 | `selectNeighborhood(..., {fit:false})` in basemap mode | Selection can change presentation, but preserves the camera. Explicit layer overrides remain authoritative. |
 | Clustering and selected/focused markers | Selected/focused pins remain individually reachable. Coincident pins and clusters that cannot separate at maximum zoom open a place chooser, including compact shells with hidden native pickers. Visible pins and clusters share one tab stop with bracket-key navigation. |
+| Viewport marker rendering | Offscreen pins and cluster symbols detach with screen-space overscan. Full catalog/picker and cached node identities remain available; selected/focused pins stay mounted. Pan reuses global cluster membership and nodes until zoom, data, selection, focus, or clustering changes. |
 | Marker entrance and reduced motion | Entrances are optional, independent of camera motion, and cancel on preference changes or disposal. Stable IDs avoid repeated entrances on filtering. |
 | Hiding touch control while gestures are enabled | Returns touch scrolling to the page. Other toolbar controls remain independent. |
 | Convenience mode/source setters | Share the atomic configuration path. `{ resetView: false }` preserves the camera; omitted options retain the historic reset. Invalid options and unavailable geography leave state unchanged. |
@@ -45,7 +46,7 @@ Live appearance patches prepare values, district styles and source replacement b
 | Accessibility | Feature round trips, keyboard activation, focus recovery after removal/clustering, independent controls, touch names, and reduced motion have browser regressions. Hiding every alternative chooser is a consumer accessibility decision. |
 | Output safety | SVG text and attributes are escaped. This is not a security sandbox for CSS tokens or caller-provided DOM. Keep untrusted callout content in `textContent`; the consumer controls CSS/resource policy. |
 | Packaging | Clean tarball install exercises entrypoints and emitted declarations, including `LineString` overlays. No runtime dependencies or embedded geographic coordinate blobs were added. |
-| Performance | Production bundle checks enforce the guide and renderer ceilings and inspect dataset inclusion. Grouping has a 2,000-marker regression; millions of markers are outside this guide-oriented design. |
+| Performance | Production bundle checks enforce the guide and renderer ceilings and inspect dataset inclusion. Viewport culling, focus, reattachment, and cluster reuse have 2,000-marker regressions across three engines and two widths; millions of markers are outside this guide-oriented design. |
 
 Regression sources: `test/api-contract.test.js`, `test/camera.test.js`,
 `test/viewport.test.js`, `stories/Robustness.stories.ts`,

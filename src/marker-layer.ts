@@ -111,7 +111,9 @@ export function createMarkerLayer(layer: SVGGElement) {
         animation.finished.then(release, release);
       }
 
-      layer.append(node);
+      // Plain overview pins are immediately available before the first resize.
+      // Clustered views let the viewport renderer mount their visible symbols.
+      if (!features.clustering) layer.append(node);
       return { marker, point, node, dot, hit, ring, title };
     },
   };

@@ -6,7 +6,7 @@ This guide describes the checked-in workflows. Follow each linked YAML file for 
 
 | Workflow | Events | Jobs |
 | --- | --- | --- |
-| [check.yml](workflows/check.yml) | `push`, `pull_request`, `workflow_dispatch` | `check`, `browsers`, `stories` |
+| [check.yml](workflows/check.yml) | `push`, `pull_request`, `workflow_dispatch` | `check`, `bun`, `browsers`, `stories` |
 | [maintenance.yml](workflows/maintenance.yml) | `schedule`, `workflow_dispatch` | `audit` |
 | [pages.yml](workflows/pages.yml) | `push`, `workflow_run`, `workflow_dispatch` | `package-ready`, `build`, `deploy` |
 | [publish.yml](workflows/publish.yml) | `release`, `workflow_dispatch` | `publish` |
@@ -33,9 +33,12 @@ Versions below match the current workflow and composite-action references. SHA-p
 | [actions/setup-node](https://github.com/actions/setup-node) | `v7.1.0` |
 | [actions/upload-artifact](https://github.com/actions/upload-artifact) | `v7.0.2` |
 | [actions/upload-pages-artifact](https://github.com/actions/upload-pages-artifact) | `v5.0.0` |
+| [oven-sh/setup-bun](https://github.com/oven-sh/setup-bun) | `0c5077e51419868618aeaa5fe8019c62421857d6` (`v2.2.0`) |
 | [pnpm/action-setup](https://github.com/pnpm/action-setup) | `v6.1.0` |
 
 ## Greenkeeping
+
+The `bun` job reads Bun 1.4.3 from `.bun-version` and checks compiled ESM/JSON imports, static rendering, and projection. The build and full test workflows continue to use Node and pnpm.
 
 The `browsers` job checks a production bundle in Chromium, Firefox, and WebKit at desktop and phone widths. It also records a 2,000-marker Chromium benchmark as an artifact. Timings describe that runner; they do not impose a hardware-independent performance threshold. Failed browser checks retain Playwright traces.
 

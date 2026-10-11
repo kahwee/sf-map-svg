@@ -141,3 +141,81 @@ test('reduced motion overrides animation and marker updates close the chooser', 
     await page.evaluate(() => window.map.element.getAnimations({ subtree: true }).length),
   ).toBe(0);
 });
+
+test('2000-place viewport culling retains records, nodes, and keyboard focus', async ({ page }) => {
+  const result = await page.evaluate(async () => {
+    const { grid, mount, settle } = window.harness;
+    const markers = grid(2000);
+    mount({ markers, features: {} });
+    await settle();
+    const pins = () => [...window.map.element.querySelectorAll('[data-marker-id]')];
+    const overview = pins().length;
+    window.map.camera.set([100, 100, 200]);
+    await settle();
+    const zoomed = pins().length;
+    const retained = pins()[0];
+    const id = retained.dataset.markerId;
+    retained.focus();
+    window.map.camera.set([500, 500, 200]);
+    await settle();
+    const focusRetained = document.activeElement === retained && retained.isConnected;
+    const tabStops = window.map.element.querySelectorAll('[data-marker-id][tabindex="0"]').length;
+    window.map.element.querySelector('button').focus();
+    window.map.camera.pan(1, 0);
+    await settle();
+    const culledAfterBlur = !retained.isConnected;
+    window.map.setMarkers(
+      markers.map((marker) => ({ ...marker, radius: 9, label: `${marker.label} updated` })),
+    );
+    window.map.camera.set([100, 100, 200]);
+    await settle();
+    const returned = window.map.element.querySelector(`[data-marker-id="${id}"]`);
+    const identity = returned === retained;
+    const radius = Number(returned.querySelector('circle[stroke="#fff9e9"]').getAttribute('r'));
+    const expectedRadius =
+      (9 * window.map.camera.get()[2]) / window.map.overlayElement.getBoundingClientRect().width;
+    const offscreen = markers.find(
+      (marker) => !pins().some((node) => node.dataset.markerId === marker.id),
+    );
+    window.map.selectMarker(offscreen.id);
+    await settle();
+    const selected = !!window.map.element.querySelector(`[data-marker-id="${offscreen.id}"]`);
+    const catalog = window.map.element.querySelectorAll('.sf-explorer-feature-controls select')[1]
+      .options.length;
+    window.map.selectMarker(null, { fit: false });
+    window.map.configure({ features: { clustering: true } });
+    window.map.camera.set([100, 100, 400]);
+    await settle();
+    const clusters = () => [...window.map.element.querySelectorAll('[data-cluster-ids]')];
+    const before = new Map(clusters().map((node) => [node.dataset.clusterIds, node]));
+    window.map.camera.pan(2, 0);
+    await settle();
+    const shared = clusters().filter((node) => before.has(node.dataset.clusterIds));
+    return {
+      overview,
+      zoomed,
+      focusRetained,
+      tabStops,
+      culledAfterBlur,
+      identity,
+      radius,
+      expectedRadius,
+      selected,
+      catalog,
+      shared: shared.length,
+      stableClusters: shared.every((node) => before.get(node.dataset.clusterIds) === node),
+    };
+  });
+  expect(result.overview).toBeGreaterThan(1500);
+  expect(result.zoomed).toBeGreaterThan(0);
+  expect(result.zoomed).toBeLessThan(result.overview / 2);
+  expect(result.focusRetained).toBe(true);
+  expect(result.tabStops).toBe(1);
+  expect(result.culledAfterBlur).toBe(true);
+  expect(result.identity).toBe(true);
+  expect(result.radius).toBeCloseTo(result.expectedRadius, 4);
+  expect(result.selected).toBe(true);
+  expect(result.catalog).toBe(2001);
+  expect(result.shared).toBeGreaterThan(0);
+  expect(result.stableClusters).toBe(true);
+});

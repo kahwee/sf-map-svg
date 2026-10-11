@@ -124,7 +124,7 @@ export interface MapCamera {
   get(): MapViewport;
   set(view: MapViewport, options?: CameraOptions): void;
   fit(geometry: Geometry, options?: CameraOptions & { padding?: number | MapPadding }): void;
-  /** Delta in projected map units. */
+  /** Delta in screen pixels, converted using the mounted canvas width. */
   pan(x: number, y: number, options?: CameraOptions): void;
   zoom(factor: number, options?: CameraOptions): void;
   reset(options?: CameraOptions): void;
@@ -141,7 +141,7 @@ export interface MapController {
   getResolvedConfiguration(): ResolvedMapConfiguration;
   getCapabilities(): MapCapabilities;
   on<K extends keyof MapEvents>(type: K, listener: (detail: MapEvents[K]) => void): () => void;
-  /** Reconcile stable IDs; retained markers preserve nodes, focus, and entrance animations. */
+  /** Reconcile stable IDs; preserve cached nodes, focus, and entrances. Offscreen pins detach. */
   setMarkers(markers: readonly MapMarker[]): void;
   setOverlays(overlays: readonly MapOverlay[]): void;
   /** False for missing IDs or a source/year other than the current geography. */

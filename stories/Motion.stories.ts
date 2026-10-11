@@ -87,6 +87,8 @@ export const CameraAndEntranceOwnership: Story = {
     map.setViewport([150, 150, 300], { animate: true, duration: 1000 });
     map.setViewport([200, 200, 350], { animate: true, duration: 60 });
     await waitFor(() => expect(map.getViewport()).toEqual([200, 200, 350]));
+    // Entrances are observed on mounted pins; offscreen pins are now culled.
+    map.setViewport([0, 0, 800], { animate: false });
     map.setFeatures({ markerEntrance: { duration: 1000, stagger: 20 } });
     map.setMarkers([{ id: 'new', lng: -122.4, lat: 37.77 }]);
     const animations = map.getAnimations({ subtree: true });

@@ -142,8 +142,29 @@ try {
                 }
                 await settle();
                 const domNodes = window.map.element.querySelectorAll('*').length;
+                const viewportStates = [];
+                for (const clustering of [true, false]) {
+                  window.map.configure({ features: { clustering } });
+                  for (const view of [
+                    [0, 0, 800],
+                    [100, 100, 400],
+                    [200, 200, 200],
+                  ]) {
+                    window.map.camera.set(view);
+                    await settle();
+                    viewportStates.push({
+                      clustering,
+                      view,
+                      pins: window.map.element.querySelectorAll('[data-marker-id]').length,
+                      clusters: window.map.element.querySelectorAll('[data-cluster-ids]').length,
+                      pickerOptions: window.map.element.querySelectorAll(
+                        '.sf-explorer-feature-controls select',
+                      )[1].options.length,
+                    });
+                  }
+                }
                 window.map.destroy();
-                return { timings, panFrameMs: stats(intervals), domNodes };
+                return { timings, panFrameMs: stats(intervals), domNodes, viewportStates };
               },
               { count, samples, warmup, labels },
             );

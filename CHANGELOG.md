@@ -6,6 +6,9 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Cull offscreen pins and cluster symbols while preserving the full catalog, cached nodes, selection, and keyboard focus. Cache cluster groups during pan and skip unchanged SVG attributes.
+- Add interactive 2,000-marker desktop and phone stories, viewport count benchmarks, and a Bun 1.4.3 compatibility gate.
+
 - Add production-bundle interaction checks in Chromium, Firefox, and WebKit, plus reproducible marker benchmarks and CI performance artifacts.
 - Add a place chooser for coincident pins and clusters that cannot separate at maximum zoom, including compact embeds with hidden native pickers.
 - Give visible markers and clusters one tab stop with bracket-key navigation, preserving focus across marker reordering and recovering focus when a marker is removed.

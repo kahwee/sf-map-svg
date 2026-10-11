@@ -71,11 +71,11 @@ Call `destroy()` when removing an interactive map.
 
 Canonical geography is in [`data/`](data/README.md), with provenance in [`SOURCES.md`](SOURCES.md). The public `/data` entry exposes lookup, catalog, district maps, and source-specific neighborhood collections. These are deeply frozen; clone before editing.
 
-Install with `pnpm install --frozen-lockfile`. See the [contributing guide](CONTRIBUTING.md) for architecture and the [validation and release runbook](https://github.com/kahwee/sf-map-svg/blob/main/docs/maintenance.md) for checks, browser inspection, and publishing. If you are upgrading from v2, follow the [v3 migration guide](docs/migration-v3.md).
+Install with `pnpm install --frozen-lockfile`. Bun 1.4.3 is pinned in `.bun-version`; `pnpm test:bun` checks compiled-package imports and static rendering. Strict TypeScript 7.0.2 declarations and packed consumers remain part of the Node/pnpm checks. See the [contributing guide](CONTRIBUTING.md) for architecture and the [validation and release runbook](https://github.com/kahwee/sf-map-svg/blob/main/docs/maintenance.md) for checks, browser inspection, and publishing. If you are upgrading from v2, follow the [v3 migration guide](docs/migration-v3.md).
 
 ## Browser checks and marker performance
 
-The focused interaction suite checks a production bundle in Chromium, Firefox, and WebKit at 1440 px and 390 px. It covers overlapping-place selection, marker keyboard navigation and focus recovery, camera input, resizing, touch-mode scroll policy, reduced motion, and disposal. Phone widths check responsive layout in these engines; they do not replace physical-device gesture testing. The full Storybook and screenshot suites continue to use Chromium.
+The focused interaction suite checks a production bundle in Chromium, Firefox, and WebKit at 1440 px and 390 px. It covers 2,000-marker viewport culling and reattachment, overlapping-place selection, marker keyboard navigation and focus recovery, camera input, resizing, touch-mode scroll policy, reduced motion, and disposal. Phone widths check responsive layout in these engines; they do not replace physical-device gesture testing. The full Storybook and screenshot suites continue to use Chromium.
 
 ```sh
 pnpm exec playwright install --with-deps chromium firefox webkit
@@ -85,7 +85,7 @@ pnpm benchmark:markers --browsers=chromium,firefox,webkit
 
 The benchmark uses headless engines and a deterministic city grid with 500 and 2,000 labeled markers at 800 px and 390 px viewport widths. It loads the production bundle and fonts before timing, disables motion, and starts each operation from a consistent camera and clustering state. Each operation has three warmups and 20 measured samples. Results include mount, pan, zoom, clustering changes, retained-ID updates, replacement, and identical updates. Run benchmarks alone on an otherwise idle machine. Use `--labels=false` to compare label cost and `--output=test-results/another-run.json` to keep separate results.
 
-`test-results/marker-benchmark.json` records browser versions, machine details, and p50/p95/max timings. Synchronous times include the API call and forced layout; settled times include two animation frames and are not GPU-paint measurements. A separate 60-frame pan run records frame intervals. These measurements describe the test machine, rather than a universal performance limit or a mobile-device guarantee. CI saves a shorter 2,000-marker Chromium benchmark for comparison without timing thresholds.
+`test-results/marker-benchmark.json` records browser versions, machine details, and p50/p95/max timings. Synchronous times include the API call and forced layout; settled times include two animation frames and are not GPU-paint measurements. A separate 60-frame pan run records frame intervals. These measurements describe the test machine, rather than a universal performance limit or a mobile-device guarantee. The report also records mounted pin/cluster counts at overview and two zoom levels, with clustering on and off; the picker retains all records. CI saves a shorter 2,000-marker Chromium benchmark for comparison without timing thresholds.
 
 Measured October 10–11, 2026 against renderer commit `1d523d9`, in a Linux x64 container on an Intel Xeon Platinum 8573C with a four-CPU quota and 16 GiB memory limit, using Node 26.11.1 and Playwright 1.63.0. All 36 focused browser checks passed. The 2,000-marker results below use clustering and labels. Mount, update (retained IDs), and replacement (all new IDs) show median synchronous milliseconds; pan shows the 95th-percentile frame interval in milliseconds.
 
@@ -98,9 +98,33 @@ Measured October 10–11, 2026 against renderer commit `1d523d9`, in a Linux x64
 | WebKit 26.6 | 800 px | 468.0 | 105.0 | 896.0 | 302.0 |
 | WebKit 26.6 | 390 px | 235.0 | 107.0 | 889.0 | 118.0 |
 
-Dense marker sets need further rendering work: these frame intervals exceed the 16.7 ms budget for 60 Hz interaction. Clustering groups symbols while retaining the supplied marker nodes. Prefer smaller marker lists and stable IDs, and avoid repeatedly replacing every marker during interaction. Identical 2,000-marker updates took 0.7–2.0 ms at the median across these runs; full replacement was especially costly in WebKit. Keep camera-call timings separate from frame timings: a quick synchronous call does not imply a smooth rendered frame.
+The baseline retained all supplied pin nodes in the SVG, including clustered pins. These frame intervals exceeded the 16.7 ms budget for 60 Hz interaction. Prefer smaller marker lists and stable IDs, and avoid repeatedly replacing every marker during interaction. Identical 2,000-marker updates took 0.7–2.0 ms at the median across these runs; full replacement was especially costly in WebKit. Keep camera-call timings separate from frame timings: a quick synchronous call does not imply a smooth rendered frame.
 
-A separate 20-sample Chromium run with 2,000 markers at 800 px and `labels: false` reduced the pan frame p95 from 166.7 ms to 50.0 ms and median mount time from 147.2 ms to 115.6 ms. Disabling labels helps this workload but still does not establish 60 Hz performance. Reproduce the comparison with `pnpm benchmark:markers --counts=2000 --widths=800 --labels=false --output=test-results/marker-benchmark-no-labels.json`.
+In that baseline, a separate 20-sample Chromium run with 2,000 markers at 800 px and `labels: false` reduced the pan frame p95 from 166.7 ms to 50.0 ms and median mount time from 147.2 ms to 115.6 ms. Disabling labels helps this workload but still does not establish 60 Hz performance. Reproduce the comparison with `pnpm benchmark:markers --counts=2000 --widths=800 --labels=false --output=test-results/marker-benchmark-no-labels.json`.
+
+### Viewport renderer results
+
+The viewport renderer detaches offscreen pins and clustered members, reuses their nodes when they return, caches cluster groups during pan, and skips unchanged SVG writes. Selected and focused pins stay mounted; every supplied record remains selectable. Cluster membership uses the full catalog, so panning does not change counts at the edges.
+
+The same 20-sample, 2,000-marker benchmark was rerun October 11, 2026 on the same host, browser versions, and label settings. Columns use the same units as the baseline above.
+
+| Engine | Viewport | Mount | Update | Replace | Pan frame p95 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Chromium 153 | 800 px | 92.3 | 17.0 | 52.8 | 16.8 |
+| Chromium 153 | 390 px | 97.6 | 12.9 | 63.6 | 16.7 |
+| Firefox 155 | 800 px | 106.0 | 21.0 | 54.0 | 49.4 |
+| Firefox 155 | 390 px | 123.0 | 45.0 | 78.0 | 17.1 |
+| WebKit 26.6 | 800 px | 160.0 | 32.0 | 805.0 | 49.0 |
+| WebKit 26.6 | 390 px | 164.0 | 20.0 | 781.0 | 36.0 |
+
+Desktop pan frame p95 improved from 166.7 → 16.8 ms in Chromium, 200.3 → 49.4 ms in Firefox, and 302.0 → 49.0 ms in WebKit. Firefox and WebKit still exceed a 60 Hz frame budget in this run. Prefer stable IDs, clustering, and fewer enabled label layers for dense interactive views; full replacement still creates all new records and nodes. These headless measurements do not establish smoothness on a physical phone.
+
+With clustering off at 800 px, the mounted pin count fell from 2,000 in city view to 228 at the sampled 4× zoom; all 2,000 records stayed in the picker. **Checks / 2000 markers / Desktop** and **Phone** in Storybook show live counts and test zoom, pan, retained-ID updates, offscreen selection, and reset. The [plan and storyboard](https://github.com/kahwee/sf-map-svg/blob/main/docs/marker-performance-plan.md) describe the regression contract. [Saved baseline and updated JSON](https://github.com/kahwee/sf-map-svg/blob/main/docs/benchmarks/markers-2026-10-11.json) include all timing percentiles and viewport counts.
+
+```sh
+pnpm benchmark:markers --counts=2000 --browsers=chromium,firefox,webkit \
+  --output=test-results/marker-benchmark-viewport.json
+```
 
 ## CI maintenance
 

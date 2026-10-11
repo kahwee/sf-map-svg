@@ -8,8 +8,9 @@ export function createMarkerNavigation(svg: SVGSVGElement, signal: AbortSignal) 
       ? `cluster:${node.dataset.clusterIds}`
       : `marker:${node.dataset.markerId}`;
   function sync(next = nodes) {
-    nodes = next.filter((node) => node.style.display !== 'none');
-    const focused = nodes.find((node) => node === document.activeElement);
+    nodes = next.filter((node) => node.isConnected && node.style.display !== 'none');
+    const focusedNode = document.activeElement;
+    const focused = nodes.find((node) => node === focusedNode);
     const active =
       focused ??
       nodes.find((node) => key(node) === activeKey) ??
@@ -18,7 +19,10 @@ export function createMarkerNavigation(svg: SVGSVGElement, signal: AbortSignal) 
       activeKey = key(active);
       activeIndex = nodes.indexOf(active);
     }
-    for (const node of next) node.setAttribute('tabindex', node === active ? '0' : '-1');
+    for (const node of next) {
+      const tabindex = node === active ? '0' : '-1';
+      if (node.getAttribute('tabindex') !== tabindex) node.setAttribute('tabindex', tabindex);
+    }
   }
   svg.addEventListener(
     'focusin',
@@ -49,7 +53,9 @@ export function createMarkerNavigation(svg: SVGSVGElement, signal: AbortSignal) 
   return {
     sync,
     recover() {
-      nodes.find((node) => key(node) === activeKey)?.focus({ preventScroll: true });
+      const node = nodes.find((node) => key(node) === activeKey);
+      node?.focus({ preventScroll: true });
+      return !!node;
     },
   };
 }
