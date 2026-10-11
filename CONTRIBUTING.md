@@ -49,6 +49,10 @@ Visual regression checks compare five Storybook and Pages map states against com
 
 After `pnpm build:pages`, run `pnpm test:studio` to check delayed and failed data loading in the layers studio, including rendering selection and download controls.
 
+Run `pnpm exec playwright install --with-deps chromium firefox webkit`, then `pnpm test:browsers` for the focused production-bundle interaction suite at 1440 px and 390 px. It checks coincident selection, SVG keyboard focus, marker reconciliation, camera input, resize projection, touch-mode scroll policy, reduced motion, and disposal. Phone widths are desktop-engine layout checks, not physical-device gesture tests. This suite supplements the full Chromium Storybook and visual gates.
+
+Run `pnpm benchmark:markers` for deterministic 500- and 2,000-marker workloads at 800 px and 390 px. To compare engines, use `pnpm benchmark:markers --browsers=chromium,firefox,webkit`. Run it alone on an otherwise idle machine; browser suites and benchmarks share the generated fixture and port. The benchmark writes environment information, browser versions, and p50/p95/max timings to `test-results/marker-benchmark.json`. See the [README](README.md#browser-checks-and-marker-performance) for methodology and measured results. CI records a shorter Chromium run without hardware-dependent timing thresholds.
+
 Dependabot proposes weekly npm and GitHub Actions updates, grouping Storybook, Vitest, and GitHub Actions updates by family. Keep Storybook packages on matching versions; `pnpm check` rejects peer conflicts. `pnpm-workspace.yaml` narrowly widens the Storybook 10.6.0 Vitest addon's Vitest and browser peer ranges for the tested Vitest 5 setup. Remove those overrides when Storybook publishes matching ranges. The weekly maintenance workflow also checks peers and runs `pnpm audit --audit-level high`; run `pnpm outdated` to review available updates. React, Vitest, and Playwright are development dependencies for Storybook testing; the published package must retain zero runtime dependencies.
 
 ## Renderer and geographic data structure

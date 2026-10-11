@@ -30,6 +30,34 @@ jobs:
       - run: pnpm build-storybook
       - run: pnpm build:pages
       - run: pnpm test:package
+  browsers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6.1.0
+        with:
+          version: 12.6.0
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '26'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium firefox webkit
+      - run: pnpm test:browsers
+      # Record performance for comparison; machine-dependent timings are not a release budget.
+      - run: pnpm benchmark:markers --samples=10 --counts=2000
+      - name: Upload browser traces and marker benchmark
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: browser-checks-and-benchmark
+          path: |
+            test-results/browsers/
+            test-results/marker-benchmark.json
+          if-no-files-found: ignore
   stories:
     runs-on: ubuntu-latest
     timeout-minutes: 15

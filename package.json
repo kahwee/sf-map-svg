@@ -131,6 +131,8 @@
     "test:stories": "pnpm build && vitest run --project=storybook",
     "test:stories:coverage": "pnpm build && vitest run --project=storybook --coverage",
     "test:visual": "playwright test --config=playwright.visual.config.mjs",
+    "test:browsers": "playwright test --config=playwright.browser.config.mjs",
+    "benchmark:markers": "node scripts/benchmark-markers.mjs",
     "demo": "pnpm build && node examples/build.mjs",
     "format": "biome check --write .",
     "format:check": "biome format .",

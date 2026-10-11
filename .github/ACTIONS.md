@@ -6,7 +6,7 @@ This guide describes the checked-in workflows. Follow each linked YAML file for 
 
 | Workflow | Events | Jobs |
 | --- | --- | --- |
-| [check.yml](workflows/check.yml) | `push`, `pull_request`, `workflow_dispatch` | `check`, `stories` |
+| [check.yml](workflows/check.yml) | `push`, `pull_request`, `workflow_dispatch` | `check`, `browsers`, `stories` |
 | [maintenance.yml](workflows/maintenance.yml) | `schedule`, `workflow_dispatch` | `audit` |
 | [pages.yml](workflows/pages.yml) | `push`, `workflow_run`, `workflow_dispatch` | `package-ready`, `build`, `deploy` |
 | [publish.yml](workflows/publish.yml) | `release`, `workflow_dispatch` | `publish` |
@@ -36,6 +36,8 @@ Versions below match the current workflow and composite-action references. SHA-p
 | [pnpm/action-setup](https://github.com/pnpm/action-setup) | `v6.1.0` |
 
 ## Greenkeeping
+
+The `browsers` job checks a production bundle in Chromium, Firefox, and WebKit at desktop and phone widths. It also records a 2,000-marker Chromium benchmark as an artifact. Timings describe that runner; they do not impose a hardware-independent performance threshold. Failed browser checks retain Playwright traces.
 
 [Dependabot configuration](dependabot.yml) checks GitHub Actions weekly and groups their updates. Review the upstream release notes, runtime requirements, permissions, and changes to inputs or artifact behavior before merging. Update SHA pins to the release commit, retaining the version comment where present.
 

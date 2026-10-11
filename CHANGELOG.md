@@ -6,6 +6,7 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Add production-bundle interaction checks in Chromium, Firefox, and WebKit, plus reproducible marker benchmarks and CI performance artifacts.
 - Add a place chooser for coincident pins and clusters that cannot separate at maximum zoom, including compact embeds with hidden native pickers.
 - Give visible markers and clusters one tab stop with bracket-key navigation, preserving focus across marker reordering and recovering focus when a marker is removed.
 
