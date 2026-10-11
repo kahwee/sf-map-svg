@@ -2,7 +2,7 @@
 
 > Offline San Francisco SVG maps with explicit geographic imports, no runtime dependencies, static rendering, and a browser controller.
 
-@kahwee/sf-map-svg 4.3.1 · local working tree. Node >=24.0.0 for server rendering; browsers need a DOM and a JSON-capable bundler.
+@kahwee/sf-map-svg 4.3.2 · local working tree. Node >=24.0.0 for server rendering; browsers need a DOM and a JSON-capable bundler.
 
 These are working-tree docs. Unreleased changelog entries may describe APIs absent from npm; verify the installed version before copying them.
 
