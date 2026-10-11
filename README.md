@@ -4,6 +4,8 @@ Offline, self-contained San Francisco SVG maps. The package has no runtime depen
 
 [Getting started](docs/developer-guide.md) · [API reference](docs/API.md) · [Design playground](https://kahwee.github.io/sf-map-svg/playground.html) · [Live examples](https://kahwee.github.io/sf-map-svg/examples.html) · [Storybook source](stories/) · [Geographic sources](SOURCES.md) · [v3 migration](docs/migration-v3.md)
 
+[Map preview](https://github.com/kahwee/sf-map-svg/blob/main/docs/map-preview.png) · 2,000-marker screencasts: [desktop](https://github.com/kahwee/sf-map-svg/blob/main/docs/media/markers-2000-desktop.webm), [390 px phone](https://github.com/kahwee/sf-map-svg/blob/main/docs/media/markers-2000-phone.webm). [Screenshots and capture instructions](https://github.com/kahwee/sf-map-svg/blob/main/docs/media/README.md) show zoom, viewport culling, clustering, label updates, and selection from the complete catalog. These recordings illustrate behavior; frame timings are reported below.
+
 ## Install
 
 ```sh
