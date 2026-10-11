@@ -487,7 +487,7 @@ try {
   await cp('docs/map-preview.png', 'pages-dist/social-preview.png');
   await mkdir('pages-dist/media', { recursive: true });
   for (const view of ['desktop', 'phone']) {
-    for (const extension of ['png', 'webm', 'vtt']) {
+    for (const extension of ['png', 'webp', 'webm', 'vtt']) {
       const name = `markers-2000-${view}.${extension}`;
       await cp(join('docs/media', name), join('pages-dist/media', name));
     }

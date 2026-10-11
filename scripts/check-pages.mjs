@@ -42,6 +42,13 @@ const budgets = {
 // Pre-rendered maps and datasets, gzip KB. Full geography loads only when exporting.
 const mapBudgets = { 'maps/display': 20, 'maps/thumb': 30, 'maps/figures': 30, 'maps/plates': 60 };
 const dataBudgets = { 'data/site-map.json': 320, 'data/export-map.json': 2048 };
+// Media is already compressed; enforce raw KiB limits separately from JS/CSS gzip budgets.
+const mediaBudgets = {
+  'media/markers-2000-desktop.webp': 110,
+  'media/markers-2000-phone.webp': 50,
+  'media/markers-2000-desktop.webm': 1250,
+  'media/markers-2000-phone.webm': 520,
+};
 const types = {
   '.html': 'text/html',
   '.js': 'text/javascript',
@@ -49,6 +56,7 @@ const types = {
   '.svg': 'image/svg+xml',
   '.json': 'application/json',
   '.png': 'image/png',
+  '.webp': 'image/webp',
   '.webm': 'video/webm',
   '.vtt': 'text/vtt',
   '.xml': 'application/xml',
@@ -80,6 +88,10 @@ for (const [folder, limit] of Object.entries(mapBudgets)) {
 for (const [path, limit] of Object.entries(dataBudgets)) {
   const size = await gzipKb(path);
   if (size > limit) fail(`${path} is ${size.toFixed(1)} KB gzip (budget ${limit} KB)`);
+}
+for (const [path, limit] of Object.entries(mediaBudgets)) {
+  const size = (await stat(join(root, path))).size / 1024;
+  if (size > limit) fail(`${path} is ${size.toFixed(1)} KiB (budget ${limit} KiB)`);
 }
 
 // Assistant-readable docs must match this build and every index link must resolve locally.
@@ -173,6 +185,35 @@ async function visit(path, { width, height, colorScheme, expectStatus = 200 }) {
   if (result.overflow > 0) fail(`${label}: page scrolls sideways by ${result.overflow}px`);
   if (result.shift > 0.01) fail(`${label}: layout shift ${result.shift.toFixed(4)}`);
   if (!result.toggle) fail(`${label}: theme toggle is not visible`);
+  if (path === 'examples.html') {
+    try {
+      const videos = page.locator('#marker-recordings video');
+      if ((await videos.count()) !== 2) throw new Error('Expected desktop and phone recordings');
+      const eagerVideo = await page.evaluate(() =>
+        performance.getEntriesByType('resource').some((entry) => entry.name.endsWith('.webm')),
+      );
+      if (eagerVideo) fail(`${label}: recording downloaded before playback`);
+      for (const video of await videos.all()) {
+        await video.evaluate(async (node) => {
+          node.muted = true;
+          node.textTracks[0].mode = 'hidden';
+          await node.play();
+          node.pause();
+        });
+      }
+      await page.waitForFunction(() =>
+        [...document.querySelectorAll('#marker-recordings video')].every(
+          (video) =>
+            video.readyState >= 2 &&
+            video.videoWidth === Number(video.getAttribute('width')) &&
+            video.videoHeight === Number(video.getAttribute('height')) &&
+            video.textTracks[0]?.cues?.length > 0,
+        ),
+      );
+    } catch (error) {
+      fail(`${label}: recording playback/captions: ${error.message}`);
+    }
+  }
   await context.close();
 }
 

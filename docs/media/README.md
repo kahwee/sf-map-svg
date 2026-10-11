@@ -17,7 +17,9 @@ The storyboard starts with clustering enabled, then:
 4. Select `pin-0` from the complete picker; selection fits the marker into view.
 5. Zoom out, reset to city view, and restore clustering.
 
-Videos use VP8 WebM encoded at 30 fps, with approximately 900 ms between actions. Optional English action captions accompany each silent recording on the [Pages examples page](https://kahwee.github.io/sf-map-svg/examples.html#marker-recordings). The encoding rate is not a measured rendering frame rate. See the README benchmark results for performance measurements. These files are excluded from the npm package and do not affect runtime bundle size.
+Videos use VP9 WebM encoded at 30 fps, with approximately 900 ms between actions. Optional English action captions accompany each silent recording on the [Pages examples page](https://kahwee.github.io/sf-map-svg/examples.html#marker-recordings). The encoding rate is not a measured rendering frame rate. See the README benchmark results for performance measurements. These files are excluded from the npm package and do not affect runtime bundle size.
+
+The original PNG screenshots remain available for download. Pages uses lossless WebP posters, reducing their combined transfer from 356,105 to 145,178 bytes with identical decoded pixels. VP9 reduces the combined video size from 2,746,158 to 1,754,017 bytes while retaining dimensions, frame rate and duration. The comparison against the original VP8 captures measures full-video SSIM above 0.99; inspect small labels when refreshing the encodings. `pnpm test:pages` checks compressed-media budgets, deferred video loading, playback dimensions, and action captions.
 
 ## Refreshing the captures
 
@@ -47,6 +49,13 @@ agent-browser close
 ```
 
 Inspect the screenshot, contact sheet, and video metadata before copying approved PNG/WebM files here. Keep annotated contact sheets and other temporary captures outside git. Capture the generated-example page at `/examples/generated/index.html` after all SVG images load.
+
+Create a lossless poster and encode the original recording with FFmpeg before copying the reviewed files. Keep the original capture outside git and avoid repeatedly re-encoding an already compressed video:
+
+```sh
+ffmpeg -i /tmp/markers-2000.png -c:v libwebp -lossless 1 -compression_level 6 /tmp/markers-2000.webp
+ffmpeg -i /tmp/markers-2000.webm -c:v libvpx-vp9 -crf 30 -b:v 0 -cpu-used 4 -row-mt 1 -threads 2 -an /tmp/markers-2000-optimized.webm
+```
 
 Review visual test images before updating expectations, then verify a fresh run:
 
