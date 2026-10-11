@@ -6,6 +6,9 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Cache label candidates across camera frames, prepare neighborhood priority once per source, and measure overlays before SVG updates.
+- Extract marker catalog reconciliation and cluster rendering with explicit cache and listener ownership; add label refresh checks across catalog, appearance, layers, and source changes.
+
 - Create individual marker visuals only on first visibility or selection, keeping the full catalog and retained nodes. Defer new pin entrances and cancel pending entrances with active animations.
 - Benchmark clustered and unclustered continuous pan, rapid zoom, and resize, with separate allocation probes.
 

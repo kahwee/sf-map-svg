@@ -10,12 +10,14 @@ const options = Object.fromEntries(
 const samples = Number(options.samples ?? 20);
 const warmup = 3;
 const labels = options.labels !== 'false';
+const mode = options.mode ?? 'basemap';
 const reportPath = options.output ?? 'test-results/marker-benchmark.json';
 const counts = (options.counts ?? '500,2000').split(',').map(Number);
 const widths = (options.widths ?? '800,390').split(',').map(Number);
 const engines = { chromium, firefox, webkit };
 const browsers = (options.browsers ?? 'chromium').split(',');
 if (
+  !['basemap', 'neighborhoods'].includes(mode) ||
   !Number.isInteger(samples) ||
   samples < 5 ||
   counts.some((n) => !Number.isInteger(n) || n < 1) ||
@@ -24,7 +26,7 @@ if (
   (options.labels !== undefined && !['true', 'false'].includes(options.labels))
 )
   throw new Error(
-    'Use --samples=20 --counts=500,2000 --widths=800,390 --browsers=chromium,firefox,webkit',
+    'Use --samples=20 --counts=500,2000 --widths=800,390 --browsers=chromium,firefox,webkit --mode=basemap',
   );
 
 const report = {
@@ -38,6 +40,7 @@ const report = {
   samples,
   warmup,
   labels,
+  mode,
   methodology:
     'Production bundle; imports/fonts loaded before timing. Synthetic 50-column grid, clustering initially enabled, motion disabled. Sync measures call plus forced layout; settled includes two animation frames (not GPU paint). Six continuous scenarios: pan by ±2 screen px, zoom by reciprocal 1.2× factors, or resize host by 80 px each frame, with clustering on/off; each uses four initial frame callbacks followed by 60 measured intervals. Counts are sampled before/after, not during frame timing. No timing assertions.',
   results: [],
@@ -59,13 +62,13 @@ try {
             await page.goto(url);
             await page.waitForFunction(() => !!window.harness);
             const result = await page.evaluate(
-              async ({ count, samples, warmup, labels }) => {
+              async ({ count, samples, warmup, labels, mode }) => {
                 const { mount, grid, settle } = window.harness;
                 await document.fonts.ready;
                 const pins = grid(count);
                 const changed = grid(count, 1);
                 const replacement = pins.map((pin) => ({ ...pin, id: `new-${pin.id}` }));
-                mount({ markers: pins, labels });
+                mount({ markers: pins, labels, mode });
                 await settle();
                 const operations = {
                   mount: {
@@ -73,7 +76,7 @@ try {
                       window.map.destroy();
                       document.querySelector('#host').replaceChildren();
                     },
-                    run: () => mount({ markers: pins, labels }),
+                    run: () => mount({ markers: pins, labels, mode }),
                   },
                   pan: {
                     prepare: () => window.map.camera.set([100, 100, 400]),
@@ -207,7 +210,7 @@ try {
                         .length,
                       ...mounted(),
                     });
-                  mount({ markers: pins, labels });
+                  mount({ markers: pins, labels, mode });
                   await settle();
                   recordAllocation('clustered mount');
                   window.map.setMarkers(replacement);
@@ -229,7 +232,7 @@ try {
                   allocationStates,
                 };
               },
-              { count, samples, warmup, labels },
+              { count, samples, warmup, labels, mode },
             );
             if (errors.length) throw new Error(errors.join('\n'));
             report.results.push({

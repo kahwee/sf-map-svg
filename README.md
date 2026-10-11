@@ -161,6 +161,28 @@ pnpm benchmark:markers --counts=2000 --browsers=chromium,firefox,webkit \
   --output=test-results/marker-benchmark-lazy.json
 ```
 
+### Cached label preparation and renderer components
+
+Neighborhood priority is sorted once per source. Styled label candidates are reused until selection, catalog, source, layers, appearance, or zoom/width eligibility changes. Overlay bounds are measured before marker and cluster SVG updates; secondary-road visibility and scale furniture skip unchanged writes. Marker catalog reconciliation and cluster rendering now have separate modules, reducing the explorer controller from 2,316 to 2,151 lines. The interactive renderer is 34.6 KiB gzip, up from 34.2 KiB, within the unchanged 35 KiB limit; static rendering remains 7.9 KiB.
+
+A fresh Chromium comparison against `e774fbd` used 2,000 labeled markers, 20 operation samples, both widths, and all six frame workloads in basemap and neighborhood modes. Neighborhood-mode frame interval p95 values (milliseconds):
+
+| Workload | 800 px before | 800 px after | 390 px before | 390 px after |
+| --- | ---: | ---: | ---: | ---: |
+| clustered pan | 66.7 | 50.0 | 16.7 | 16.8 |
+| clustered rapid zoom | 66.7 | 83.4 | 33.4 | 16.8 |
+| clustered resize | 16.7 | 66.7 | 66.6 | 16.8 |
+| unclustered pan | 16.7 | 49.9 | 33.3 | 66.6 |
+| unclustered rapid zoom | 116.6 | 33.4 | 66.7 | 83.4 |
+| unclustered resize | 66.7 | 33.3 | 50.0 | 50.1 |
+
+Results are mixed rather than a consistent frame-rate gain. Basemap desktop clustered pan p95 changed from 50.0 to 16.8 ms, while phone unclustered pan changed from 16.8 to 50.0 ms. Basemap mount medians were 72.1 → 88.8 ms at 800 px and 88.3 → 89.1 ms at 390 px; neighborhood-mode mount medians were 81.5 → 73.3 ms and 93.9 → 89.0 ms. Viewport counts and allocation probes match before and after. [Saved comparisons](https://github.com/kahwee/sf-map-svg/blob/main/docs/benchmarks/markers-refactor-2026-10-11.json) include every operation and scenario; these headless runs do not establish physical-device smoothness.
+
+```sh
+pnpm benchmark:markers --counts=2000 --mode=neighborhoods \
+  --output=test-results/marker-benchmark-neighborhoods.json
+```
+
 ## CI maintenance
 
 [GitHub Actions maintenance](.github/ACTIONS.md) covers workflows, parallel checks, action versions, and weekly updates.

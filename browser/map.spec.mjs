@@ -23,6 +23,50 @@ test.afterEach(async ({ page }) => {
 
 const entry = '[data-marker-id][tabindex="0"], [data-cluster-ids][tabindex="0"]';
 
+test('prepared labels refresh after catalog, appearance, layer, and source changes', async ({
+  page,
+}) => {
+  await page.evaluate(async () => {
+    window.harness.mount({ markers: [window.harness.markers[0]] });
+    window.map.selectMarker('one');
+    await window.harness.settle();
+  });
+  const markerLabel = page.locator('[data-label-kind="selected-marker"]');
+  await expect(markerLabel).toHaveText('First place');
+  await page.evaluate(async () => {
+    window.map.camera.pan(2, 0);
+    window.map.setMarkers([{ ...window.harness.markers[0], label: 'Updated place', radius: 10 }]);
+    window.map.configure({
+      appearance: { colors: { label: '#123456' }, labelStyle: { fontWeight: 800 } },
+    });
+    await window.harness.settle();
+  });
+  await expect(markerLabel).toHaveText('Updated place');
+  await expect(markerLabel).toHaveAttribute('fill', '#123456');
+  await expect(markerLabel).toHaveAttribute('font-weight', '800');
+  await page.evaluate(async () => {
+    window.map.selectMarker(null, { fit: false });
+    window.map.setMode('neighborhoods');
+    const id = window.map.element.querySelector('[data-neighborhood-id]').dataset.neighborhoodId;
+    window.map.selectNeighborhood(id);
+    await window.harness.settle();
+  });
+  const selectedLabel = page.locator('[data-label-kind="selected"]');
+  await expect(selectedLabel).toHaveCount(1);
+  await page.evaluate(() => window.map.configure({ layers: { neighborhoodLabels: false } }));
+  await expect(selectedLabel).toHaveCount(0);
+  await page.evaluate(async () => {
+    window.map.configure({ layers: { neighborhoodLabels: true } });
+    window.map.setSource('analysis');
+    const id = window.map.element.querySelector('[data-neighborhood-id]').dataset.neighborhoodId;
+    window.map.selectNeighborhood(id);
+    await window.harness.settle();
+  });
+  await expect(selectedLabel).toHaveText(
+    await page.evaluate(() => window.map.getSelectedNeighborhood().name),
+  );
+});
+
 test('coincident chooser selects either place and Escape restores focus', async ({ page }) => {
   const cluster = page.locator('[data-cluster-ids]');
   await cluster.focus();

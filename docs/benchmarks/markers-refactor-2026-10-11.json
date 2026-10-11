@@ -1,0 +1,2103 @@
+{
+  "baselineCommit": "e774fbdf5b9ccee46ce6c8d2f9d8d2ae02866371",
+  "notes": "Sequential Chromium runs with 2000 labeled markers, 20 operation samples, 60 measured frame intervals per scenario. Basemap and neighborhoods modes both tested. Timing changes are mixed and do not establish a universal frame-rate gain. Mounted counts and allocation probes match the baseline. Basemap baseline predates the mode field; its mode is basemap.",
+  "basemap": {
+    "before": {
+      "date": "2026-10-11T02:07:43.122Z",
+      "environment": {
+        "node": "v26.11.1",
+        "os": "linux 6.18.44 x64",
+        "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+        "logicalCpus": 5
+      },
+      "samples": 20,
+      "warmup": 3,
+      "labels": true,
+      "methodology": "Production bundle; imports/fonts loaded before timing. Synthetic 50-column grid, clustering initially enabled, motion disabled. Sync measures call plus forced layout; settled includes two animation frames (not GPU paint). Six continuous scenarios: pan by \u00b12 screen px, zoom by reciprocal 1.2\u00d7 factors, or resize host by 80 px each frame, with clustering on/off; each uses four initial frame callbacks followed by 60 measured intervals. Counts are sampled before/after, not during frame timing. No timing assertions.",
+      "results": [
+        {
+          "browser": "chromium",
+          "version": "153.0.8010.12",
+          "width": 800,
+          "count": 2000,
+          "timings": {
+            "mount": {
+              "syncMs": {
+                "p50": 72.1,
+                "p95": 82.2,
+                "max": 85.8
+              },
+              "settledMs": {
+                "p50": 99.3,
+                "p95": 103.5,
+                "max": 115.4
+              }
+            },
+            "pan": {
+              "syncMs": {
+                "p50": 2.1,
+                "p95": 5.3,
+                "max": 6.8
+              },
+              "settledMs": {
+                "p50": 33.3,
+                "p95": 38.3,
+                "max": 90.1
+              }
+            },
+            "zoom": {
+              "syncMs": {
+                "p50": 2.4,
+                "p95": 4.3,
+                "max": 5.8
+              },
+              "settledMs": {
+                "p50": 39.3,
+                "p95": 69.2,
+                "max": 161.2
+              }
+            },
+            "clustering off": {
+              "syncMs": {
+                "p50": 1.7,
+                "p95": 2,
+                "max": 2.9
+              },
+              "settledMs": {
+                "p50": 53.4,
+                "p95": 140.6,
+                "max": 197.1
+              }
+            },
+            "update retained IDs": {
+              "syncMs": {
+                "p50": 18.8,
+                "p95": 42.4,
+                "max": 68.2
+              },
+              "settledMs": {
+                "p50": 34.4,
+                "p95": 84.4,
+                "max": 122
+              }
+            },
+            "replace all IDs": {
+              "syncMs": {
+                "p50": 35.1,
+                "p95": 64.3,
+                "max": 64.7
+              },
+              "settledMs": {
+                "p50": 50,
+                "p95": 83.4,
+                "max": 83.5
+              }
+            },
+            "identical update": {
+              "syncMs": {
+                "p50": 0.8,
+                "p95": 1.5,
+                "max": 1.9
+              },
+              "settledMs": {
+                "p50": 33.2,
+                "p95": 35.7,
+                "max": 50.8
+              }
+            }
+          },
+          "panFrameMs": {
+            "p50": 16.7,
+            "p95": 50,
+            "max": 133.3
+          },
+          "frameScenarios": {
+            "clustered pan": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 50,
+                "max": 133.3
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 209
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 209
+              }
+            },
+            "clustered rapid zoom": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 116.7,
+                "max": 133.4
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 209
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 209
+              }
+            },
+            "clustered resize": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 50,
+                "max": 116.6
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 209
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 209
+              }
+            },
+            "unclustered pan": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 33.4,
+                "max": 116.6
+              },
+              "start": {
+                "pins": 777,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 777,
+                "clusters": 0
+              }
+            },
+            "unclustered rapid zoom": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 66.6,
+                "max": 100.1
+              },
+              "start": {
+                "pins": 777,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 777,
+                "clusters": 0
+              }
+            },
+            "unclustered resize": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 16.7,
+                "max": 33.4
+              },
+              "start": {
+                "pins": 777,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 777,
+                "clusters": 0
+              }
+            }
+          },
+          "domNodes": 3342,
+          "viewportStates": [
+            {
+              "clustering": true,
+              "view": [0, 0, 800],
+              "pins": 0,
+              "clusters": 221,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": true,
+              "view": [100, 100, 400],
+              "pins": 0,
+              "clusters": 209,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": true,
+              "view": [200, 200, 200],
+              "pins": 228,
+              "clusters": 0,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [0, 0, 800],
+              "pins": 2000,
+              "clusters": 0,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [100, 100, 400],
+              "pins": 777,
+              "clusters": 0,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [200, 200, 200],
+              "pins": 228,
+              "clusters": 0,
+              "pickerOptions": 2001
+            }
+          ],
+          "allocationStates": [
+            {
+              "stage": "clustered mount",
+              "createdPins": 0,
+              "pins": 0,
+              "clusters": 221
+            },
+            {
+              "stage": "replace all IDs",
+              "createdPins": 0,
+              "pins": 0,
+              "clusters": 221
+            },
+            {
+              "stage": "select first pin",
+              "createdPins": 1,
+              "pins": 1,
+              "clusters": 221
+            }
+          ]
+        },
+        {
+          "browser": "chromium",
+          "version": "153.0.8010.12",
+          "width": 390,
+          "count": 2000,
+          "timings": {
+            "mount": {
+              "syncMs": {
+                "p50": 88.3,
+                "p95": 157.1,
+                "max": 165.2
+              },
+              "settledMs": {
+                "p50": 100.3,
+                "p95": 170.7,
+                "max": 185.3
+              }
+            },
+            "pan": {
+              "syncMs": {
+                "p50": 0.6,
+                "p95": 0.9,
+                "max": 2.3
+              },
+              "settledMs": {
+                "p50": 33.3,
+                "p95": 33.5,
+                "max": 34.6
+              }
+            },
+            "zoom": {
+              "syncMs": {
+                "p50": 1.2,
+                "p95": 4.3,
+                "max": 5
+              },
+              "settledMs": {
+                "p50": 33.3,
+                "p95": 49.9,
+                "max": 113.4
+              }
+            },
+            "clustering off": {
+              "syncMs": {
+                "p50": 1.4,
+                "p95": 2.2,
+                "max": 2.5
+              },
+              "settledMs": {
+                "p50": 56.3,
+                "p95": 170.4,
+                "max": 240.9
+              }
+            },
+            "update retained IDs": {
+              "syncMs": {
+                "p50": 11.7,
+                "p95": 15.4,
+                "max": 23
+              },
+              "settledMs": {
+                "p50": 33.3,
+                "p95": 33.6,
+                "max": 33.7
+              }
+            },
+            "replace all IDs": {
+              "syncMs": {
+                "p50": 56.4,
+                "p95": 158.8,
+                "max": 201.4
+              },
+              "settledMs": {
+                "p50": 66.5,
+                "p95": 167.3,
+                "max": 216.7
+              }
+            },
+            "identical update": {
+              "syncMs": {
+                "p50": 0.7,
+                "p95": 0.9,
+                "max": 0.9
+              },
+              "settledMs": {
+                "p50": 33.3,
+                "p95": 33.6,
+                "max": 34.1
+              }
+            }
+          },
+          "panFrameMs": {
+            "p50": 16.7,
+            "p95": 16.8,
+            "max": 83.3
+          },
+          "frameScenarios": {
+            "clustered pan": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 16.8,
+                "max": 83.3
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 79
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 79
+              }
+            },
+            "clustered rapid zoom": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 16.8,
+                "max": 33.3
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 79
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 79
+              }
+            },
+            "clustered resize": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 66.7,
+                "max": 100
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 79
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 79
+              }
+            },
+            "unclustered pan": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 16.8,
+                "max": 33.4
+              },
+              "start": {
+                "pins": 858,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 858,
+                "clusters": 0
+              }
+            },
+            "unclustered rapid zoom": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 16.8,
+                "max": 33.3
+              },
+              "start": {
+                "pins": 858,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 858,
+                "clusters": 0
+              }
+            },
+            "unclustered resize": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 33.3,
+                "max": 33.4
+              },
+              "start": {
+                "pins": 858,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 858,
+                "clusters": 0
+              }
+            }
+          },
+          "domNodes": 2950,
+          "viewportStates": [
+            {
+              "clustering": true,
+              "view": [0, 0, 800],
+              "pins": 0,
+              "clusters": 56,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": true,
+              "view": [100, 100, 400],
+              "pins": 0,
+              "clusters": 79,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": true,
+              "view": [200, 200, 200],
+              "pins": 0,
+              "clusters": 69,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [0, 0, 800],
+              "pins": 2000,
+              "clusters": 0,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [100, 100, 400],
+              "pins": 858,
+              "clusters": 0,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [200, 200, 200],
+              "pins": 247,
+              "clusters": 0,
+              "pickerOptions": 2001
+            }
+          ],
+          "allocationStates": [
+            {
+              "stage": "clustered mount",
+              "createdPins": 0,
+              "pins": 0,
+              "clusters": 56
+            },
+            {
+              "stage": "replace all IDs",
+              "createdPins": 0,
+              "pins": 0,
+              "clusters": 56
+            },
+            {
+              "stage": "select first pin",
+              "createdPins": 1,
+              "pins": 1,
+              "clusters": 53
+            }
+          ]
+        }
+      ]
+    },
+    "after": {
+      "date": "2026-10-11T02:13:18.978Z",
+      "environment": {
+        "node": "v26.11.1",
+        "os": "linux 6.18.44 x64",
+        "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+        "logicalCpus": 5
+      },
+      "samples": 20,
+      "warmup": 3,
+      "labels": true,
+      "mode": "basemap",
+      "methodology": "Production bundle; imports/fonts loaded before timing. Synthetic 50-column grid, clustering initially enabled, motion disabled. Sync measures call plus forced layout; settled includes two animation frames (not GPU paint). Six continuous scenarios: pan by \u00b12 screen px, zoom by reciprocal 1.2\u00d7 factors, or resize host by 80 px each frame, with clustering on/off; each uses four initial frame callbacks followed by 60 measured intervals. Counts are sampled before/after, not during frame timing. No timing assertions.",
+      "results": [
+        {
+          "browser": "chromium",
+          "version": "153.0.8010.12",
+          "width": 800,
+          "count": 2000,
+          "timings": {
+            "mount": {
+              "syncMs": {
+                "p50": 88.8,
+                "p95": 155.7,
+                "max": 185.8
+              },
+              "settledMs": {
+                "p50": 116.9,
+                "p95": 186.3,
+                "max": 226.9
+              }
+            },
+            "pan": {
+              "syncMs": {
+                "p50": 1.1,
+                "p95": 3.3,
+                "max": 6.8
+              },
+              "settledMs": {
+                "p50": 33.3,
+                "p95": 40.8,
+                "max": 97.1
+              }
+            },
+            "zoom": {
+              "syncMs": {
+                "p50": 3.2,
+                "p95": 5,
+                "max": 7.6
+              },
+              "settledMs": {
+                "p50": 37.7,
+                "p95": 59.2,
+                "max": 61.2
+              }
+            },
+            "clustering off": {
+              "syncMs": {
+                "p50": 1.8,
+                "p95": 2.8,
+                "max": 6.6
+              },
+              "settledMs": {
+                "p50": 56.3,
+                "p95": 68.8,
+                "max": 210.5
+              }
+            },
+            "update retained IDs": {
+              "syncMs": {
+                "p50": 17.1,
+                "p95": 52.3,
+                "max": 52.4
+              },
+              "settledMs": {
+                "p50": 33.4,
+                "p95": 87.8,
+                "max": 105.4
+              }
+            },
+            "replace all IDs": {
+              "syncMs": {
+                "p50": 54.1,
+                "p95": 166.7,
+                "max": 168.9
+              },
+              "settledMs": {
+                "p50": 66.5,
+                "p95": 182.8,
+                "max": 186.3
+              }
+            },
+            "identical update": {
+              "syncMs": {
+                "p50": 0.7,
+                "p95": 1.2,
+                "max": 2.8
+              },
+              "settledMs": {
+                "p50": 33.2,
+                "p95": 33.6,
+                "max": 33.7
+              }
+            }
+          },
+          "panFrameMs": {
+            "p50": 16.7,
+            "p95": 16.8,
+            "max": 49.9
+          },
+          "frameScenarios": {
+            "clustered pan": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 16.8,
+                "max": 49.9
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 209
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 209
+              }
+            },
+            "clustered rapid zoom": {
+              "frameMs": {
+                "p50": 16.8,
+                "p95": 66.6,
+                "max": 100.1
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 209
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 209
+              }
+            },
+            "clustered resize": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 16.8,
+                "max": 33.3
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 209
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 209
+              }
+            },
+            "unclustered pan": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 16.7,
+                "max": 16.8
+              },
+              "start": {
+                "pins": 777,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 777,
+                "clusters": 0
+              }
+            },
+            "unclustered rapid zoom": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 66.7,
+                "max": 133.3
+              },
+              "start": {
+                "pins": 777,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 777,
+                "clusters": 0
+              }
+            },
+            "unclustered resize": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 33.4,
+                "max": 83.3
+              },
+              "start": {
+                "pins": 777,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 777,
+                "clusters": 0
+              }
+            }
+          },
+          "domNodes": 3342,
+          "viewportStates": [
+            {
+              "clustering": true,
+              "view": [0, 0, 800],
+              "pins": 0,
+              "clusters": 221,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": true,
+              "view": [100, 100, 400],
+              "pins": 0,
+              "clusters": 209,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": true,
+              "view": [200, 200, 200],
+              "pins": 228,
+              "clusters": 0,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [0, 0, 800],
+              "pins": 2000,
+              "clusters": 0,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [100, 100, 400],
+              "pins": 777,
+              "clusters": 0,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [200, 200, 200],
+              "pins": 228,
+              "clusters": 0,
+              "pickerOptions": 2001
+            }
+          ],
+          "allocationStates": [
+            {
+              "stage": "clustered mount",
+              "createdPins": 0,
+              "pins": 0,
+              "clusters": 221
+            },
+            {
+              "stage": "replace all IDs",
+              "createdPins": 0,
+              "pins": 0,
+              "clusters": 221
+            },
+            {
+              "stage": "select first pin",
+              "createdPins": 1,
+              "pins": 1,
+              "clusters": 221
+            }
+          ]
+        },
+        {
+          "browser": "chromium",
+          "version": "153.0.8010.12",
+          "width": 390,
+          "count": 2000,
+          "timings": {
+            "mount": {
+              "syncMs": {
+                "p50": 89.1,
+                "p95": 186.4,
+                "max": 198.6
+              },
+              "settledMs": {
+                "p50": 104.8,
+                "p95": 203,
+                "max": 225.5
+              }
+            },
+            "pan": {
+              "syncMs": {
+                "p50": 0.7,
+                "p95": 1,
+                "max": 3.9
+              },
+              "settledMs": {
+                "p50": 33.3,
+                "p95": 33.6,
+                "max": 33.6
+              }
+            },
+            "zoom": {
+              "syncMs": {
+                "p50": 1.2,
+                "p95": 1.5,
+                "max": 1.9
+              },
+              "settledMs": {
+                "p50": 33.3,
+                "p95": 33.4,
+                "max": 33.4
+              }
+            },
+            "clustering off": {
+              "syncMs": {
+                "p50": 0.9,
+                "p95": 3.5,
+                "max": 5
+              },
+              "settledMs": {
+                "p50": 67.8,
+                "p95": 122,
+                "max": 198.7
+              }
+            },
+            "update retained IDs": {
+              "syncMs": {
+                "p50": 23.7,
+                "p95": 37.7,
+                "max": 38.1
+              },
+              "settledMs": {
+                "p50": 37,
+                "p95": 64.5,
+                "max": 116.7
+              }
+            },
+            "replace all IDs": {
+              "syncMs": {
+                "p50": 61.5,
+                "p95": 106.2,
+                "max": 115.1
+              },
+              "settledMs": {
+                "p50": 94.1,
+                "p95": 133.2,
+                "max": 163.1
+              }
+            },
+            "identical update": {
+              "syncMs": {
+                "p50": 0.7,
+                "p95": 0.9,
+                "max": 1.6
+              },
+              "settledMs": {
+                "p50": 33.3,
+                "p95": 33.7,
+                "max": 34.2
+              }
+            }
+          },
+          "panFrameMs": {
+            "p50": 16.7,
+            "p95": 16.8,
+            "max": 16.8
+          },
+          "frameScenarios": {
+            "clustered pan": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 16.8,
+                "max": 16.8
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 79
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 79
+              }
+            },
+            "clustered rapid zoom": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 16.8,
+                "max": 16.8
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 79
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 79
+              }
+            },
+            "clustered resize": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 33.4,
+                "max": 50.1
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 79
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 79
+              }
+            },
+            "unclustered pan": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 50,
+                "max": 100
+              },
+              "start": {
+                "pins": 858,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 858,
+                "clusters": 0
+              }
+            },
+            "unclustered rapid zoom": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 50,
+                "max": 100
+              },
+              "start": {
+                "pins": 858,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 858,
+                "clusters": 0
+              }
+            },
+            "unclustered resize": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 66.7,
+                "max": 116.7
+              },
+              "start": {
+                "pins": 858,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 858,
+                "clusters": 0
+              }
+            }
+          },
+          "domNodes": 2950,
+          "viewportStates": [
+            {
+              "clustering": true,
+              "view": [0, 0, 800],
+              "pins": 0,
+              "clusters": 56,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": true,
+              "view": [100, 100, 400],
+              "pins": 0,
+              "clusters": 79,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": true,
+              "view": [200, 200, 200],
+              "pins": 0,
+              "clusters": 69,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [0, 0, 800],
+              "pins": 2000,
+              "clusters": 0,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [100, 100, 400],
+              "pins": 858,
+              "clusters": 0,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [200, 200, 200],
+              "pins": 247,
+              "clusters": 0,
+              "pickerOptions": 2001
+            }
+          ],
+          "allocationStates": [
+            {
+              "stage": "clustered mount",
+              "createdPins": 0,
+              "pins": 0,
+              "clusters": 56
+            },
+            {
+              "stage": "replace all IDs",
+              "createdPins": 0,
+              "pins": 0,
+              "clusters": 56
+            },
+            {
+              "stage": "select first pin",
+              "createdPins": 1,
+              "pins": 1,
+              "clusters": 53
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "neighborhoods": {
+    "before": {
+      "date": "2026-10-11T02:12:19.745Z",
+      "environment": {
+        "node": "v26.11.1",
+        "os": "linux 6.18.44 x64",
+        "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+        "logicalCpus": 5
+      },
+      "samples": 20,
+      "warmup": 3,
+      "labels": true,
+      "mode": "neighborhoods",
+      "methodology": "Production bundle; imports/fonts loaded before timing. Synthetic 50-column grid, clustering initially enabled, motion disabled. Sync measures call plus forced layout; settled includes two animation frames (not GPU paint). Six continuous scenarios: pan by \u00b12 screen px, zoom by reciprocal 1.2\u00d7 factors, or resize host by 80 px each frame, with clustering on/off; each uses four initial frame callbacks followed by 60 measured intervals. Counts are sampled before/after, not during frame timing. No timing assertions.",
+      "results": [
+        {
+          "browser": "chromium",
+          "version": "153.0.8010.12",
+          "width": 800,
+          "count": 2000,
+          "timings": {
+            "mount": {
+              "syncMs": {
+                "p50": 81.5,
+                "p95": 219.5,
+                "max": 286.9
+              },
+              "settledMs": {
+                "p50": 117.3,
+                "p95": 255.2,
+                "max": 350.5
+              }
+            },
+            "pan": {
+              "syncMs": {
+                "p50": 1.3,
+                "p95": 3.4,
+                "max": 12.1
+              },
+              "settledMs": {
+                "p50": 33.2,
+                "p95": 42.6,
+                "max": 49.2
+              }
+            },
+            "zoom": {
+              "syncMs": {
+                "p50": 2.8,
+                "p95": 9.6,
+                "max": 12.7
+              },
+              "settledMs": {
+                "p50": 37.9,
+                "p95": 148,
+                "max": 150.3
+              }
+            },
+            "clustering off": {
+              "syncMs": {
+                "p50": 1.3,
+                "p95": 1.9,
+                "max": 2
+              },
+              "settledMs": {
+                "p50": 56.6,
+                "p95": 65.4,
+                "max": 73.3
+              }
+            },
+            "update retained IDs": {
+              "syncMs": {
+                "p50": 18.5,
+                "p95": 41.4,
+                "max": 124.9
+              },
+              "settledMs": {
+                "p50": 33.4,
+                "p95": 56.8,
+                "max": 132
+              }
+            },
+            "replace all IDs": {
+              "syncMs": {
+                "p50": 39.6,
+                "p95": 84.7,
+                "max": 89.6
+              },
+              "settledMs": {
+                "p50": 52.8,
+                "p95": 100.6,
+                "max": 104.7
+              }
+            },
+            "identical update": {
+              "syncMs": {
+                "p50": 0.8,
+                "p95": 1.1,
+                "max": 1.5
+              },
+              "settledMs": {
+                "p50": 31.4,
+                "p95": 83.3,
+                "max": 100
+              }
+            }
+          },
+          "panFrameMs": {
+            "p50": 16.7,
+            "p95": 66.7,
+            "max": 116.8
+          },
+          "frameScenarios": {
+            "clustered pan": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 66.7,
+                "max": 116.8
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 209
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 209
+              }
+            },
+            "clustered rapid zoom": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 66.7,
+                "max": 149.9
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 209
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 209
+              }
+            },
+            "clustered resize": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 16.7,
+                "max": 33.3
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 209
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 209
+              }
+            },
+            "unclustered pan": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 16.7,
+                "max": 66.8
+              },
+              "start": {
+                "pins": 777,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 777,
+                "clusters": 0
+              }
+            },
+            "unclustered rapid zoom": {
+              "frameMs": {
+                "p50": 33.3,
+                "p95": 116.6,
+                "max": 166.6
+              },
+              "start": {
+                "pins": 777,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 777,
+                "clusters": 0
+              }
+            },
+            "unclustered resize": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 66.7,
+                "max": 116.7
+              },
+              "start": {
+                "pins": 777,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 777,
+                "clusters": 0
+              }
+            }
+          },
+          "domNodes": 3344,
+          "viewportStates": [
+            {
+              "clustering": true,
+              "view": [0, 0, 800],
+              "pins": 0,
+              "clusters": 221,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": true,
+              "view": [100, 100, 400],
+              "pins": 0,
+              "clusters": 209,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": true,
+              "view": [200, 200, 200],
+              "pins": 228,
+              "clusters": 0,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [0, 0, 800],
+              "pins": 2000,
+              "clusters": 0,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [100, 100, 400],
+              "pins": 777,
+              "clusters": 0,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [200, 200, 200],
+              "pins": 228,
+              "clusters": 0,
+              "pickerOptions": 2001
+            }
+          ],
+          "allocationStates": [
+            {
+              "stage": "clustered mount",
+              "createdPins": 0,
+              "pins": 0,
+              "clusters": 221
+            },
+            {
+              "stage": "replace all IDs",
+              "createdPins": 0,
+              "pins": 0,
+              "clusters": 221
+            },
+            {
+              "stage": "select first pin",
+              "createdPins": 1,
+              "pins": 1,
+              "clusters": 221
+            }
+          ]
+        },
+        {
+          "browser": "chromium",
+          "version": "153.0.8010.12",
+          "width": 390,
+          "count": 2000,
+          "timings": {
+            "mount": {
+              "syncMs": {
+                "p50": 93.9,
+                "p95": 210.3,
+                "max": 214
+              },
+              "settledMs": {
+                "p50": 116.8,
+                "p95": 237.3,
+                "max": 249.6
+              }
+            },
+            "pan": {
+              "syncMs": {
+                "p50": 0.6,
+                "p95": 0.7,
+                "max": 0.8
+              },
+              "settledMs": {
+                "p50": 33.3,
+                "p95": 33.5,
+                "max": 33.5
+              }
+            },
+            "zoom": {
+              "syncMs": {
+                "p50": 1.9,
+                "p95": 11.6,
+                "max": 14.6
+              },
+              "settledMs": {
+                "p50": 33.3,
+                "p95": 86,
+                "max": 278.8
+              }
+            },
+            "clustering off": {
+              "syncMs": {
+                "p50": 1.4,
+                "p95": 1.6,
+                "max": 1.9
+              },
+              "settledMs": {
+                "p50": 67.6,
+                "p95": 188.1,
+                "max": 210.4
+              }
+            },
+            "update retained IDs": {
+              "syncMs": {
+                "p50": 15.2,
+                "p95": 44.1,
+                "max": 105.3
+              },
+              "settledMs": {
+                "p50": 33.5,
+                "p95": 54.8,
+                "max": 126.4
+              }
+            },
+            "replace all IDs": {
+              "syncMs": {
+                "p50": 47.8,
+                "p95": 148.1,
+                "max": 215.4
+              },
+              "settledMs": {
+                "p50": 58.1,
+                "p95": 150.6,
+                "max": 233.7
+              }
+            },
+            "identical update": {
+              "syncMs": {
+                "p50": 0.7,
+                "p95": 1,
+                "max": 1.1
+              },
+              "settledMs": {
+                "p50": 33.3,
+                "p95": 33.5,
+                "max": 33.5
+              }
+            }
+          },
+          "panFrameMs": {
+            "p50": 16.7,
+            "p95": 16.7,
+            "max": 16.8
+          },
+          "frameScenarios": {
+            "clustered pan": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 16.7,
+                "max": 16.8
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 79
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 79
+              }
+            },
+            "clustered rapid zoom": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 33.4,
+                "max": 66.7
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 79
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 79
+              }
+            },
+            "clustered resize": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 66.6,
+                "max": 116.7
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 79
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 79
+              }
+            },
+            "unclustered pan": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 33.3,
+                "max": 50
+              },
+              "start": {
+                "pins": 858,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 858,
+                "clusters": 0
+              }
+            },
+            "unclustered rapid zoom": {
+              "frameMs": {
+                "p50": 33.3,
+                "p95": 66.7,
+                "max": 133.3
+              },
+              "start": {
+                "pins": 858,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 858,
+                "clusters": 0
+              }
+            },
+            "unclustered resize": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 50,
+                "max": 116.6
+              },
+              "start": {
+                "pins": 858,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 858,
+                "clusters": 0
+              }
+            }
+          },
+          "domNodes": 2951,
+          "viewportStates": [
+            {
+              "clustering": true,
+              "view": [0, 0, 800],
+              "pins": 0,
+              "clusters": 56,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": true,
+              "view": [100, 100, 400],
+              "pins": 0,
+              "clusters": 79,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": true,
+              "view": [200, 200, 200],
+              "pins": 0,
+              "clusters": 69,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [0, 0, 800],
+              "pins": 2000,
+              "clusters": 0,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [100, 100, 400],
+              "pins": 858,
+              "clusters": 0,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [200, 200, 200],
+              "pins": 247,
+              "clusters": 0,
+              "pickerOptions": 2001
+            }
+          ],
+          "allocationStates": [
+            {
+              "stage": "clustered mount",
+              "createdPins": 0,
+              "pins": 0,
+              "clusters": 56
+            },
+            {
+              "stage": "replace all IDs",
+              "createdPins": 0,
+              "pins": 0,
+              "clusters": 56
+            },
+            {
+              "stage": "select first pin",
+              "createdPins": 1,
+              "pins": 1,
+              "clusters": 53
+            }
+          ]
+        }
+      ]
+    },
+    "after": {
+      "date": "2026-10-11T02:14:16.017Z",
+      "environment": {
+        "node": "v26.11.1",
+        "os": "linux 6.18.44 x64",
+        "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+        "logicalCpus": 5
+      },
+      "samples": 20,
+      "warmup": 3,
+      "labels": true,
+      "mode": "neighborhoods",
+      "methodology": "Production bundle; imports/fonts loaded before timing. Synthetic 50-column grid, clustering initially enabled, motion disabled. Sync measures call plus forced layout; settled includes two animation frames (not GPU paint). Six continuous scenarios: pan by \u00b12 screen px, zoom by reciprocal 1.2\u00d7 factors, or resize host by 80 px each frame, with clustering on/off; each uses four initial frame callbacks followed by 60 measured intervals. Counts are sampled before/after, not during frame timing. No timing assertions.",
+      "results": [
+        {
+          "browser": "chromium",
+          "version": "153.0.8010.12",
+          "width": 800,
+          "count": 2000,
+          "timings": {
+            "mount": {
+              "syncMs": {
+                "p50": 73.3,
+                "p95": 145.9,
+                "max": 157.2
+              },
+              "settledMs": {
+                "p50": 100.8,
+                "p95": 193,
+                "max": 275.1
+              }
+            },
+            "pan": {
+              "syncMs": {
+                "p50": 1.7,
+                "p95": 7.9,
+                "max": 15.7
+              },
+              "settledMs": {
+                "p50": 33.3,
+                "p95": 46.4,
+                "max": 50.4
+              }
+            },
+            "zoom": {
+              "syncMs": {
+                "p50": 3.4,
+                "p95": 6.6,
+                "max": 7.8
+              },
+              "settledMs": {
+                "p50": 51.1,
+                "p95": 136.6,
+                "max": 170.6
+              }
+            },
+            "clustering off": {
+              "syncMs": {
+                "p50": 1.8,
+                "p95": 4.8,
+                "max": 5
+              },
+              "settledMs": {
+                "p50": 73,
+                "p95": 176.2,
+                "max": 208.1
+              }
+            },
+            "update retained IDs": {
+              "syncMs": {
+                "p50": 16.3,
+                "p95": 24.3,
+                "max": 26.6
+              },
+              "settledMs": {
+                "p50": 33.3,
+                "p95": 36.2,
+                "max": 41.3
+              }
+            },
+            "replace all IDs": {
+              "syncMs": {
+                "p50": 39.5,
+                "p95": 79.9,
+                "max": 89.2
+              },
+              "settledMs": {
+                "p50": 50.5,
+                "p95": 101.6,
+                "max": 181.5
+              }
+            },
+            "identical update": {
+              "syncMs": {
+                "p50": 1.2,
+                "p95": 3.2,
+                "max": 3.9
+              },
+              "settledMs": {
+                "p50": 30.5,
+                "p95": 33.3,
+                "max": 33.4
+              }
+            }
+          },
+          "panFrameMs": {
+            "p50": 16.7,
+            "p95": 50,
+            "max": 100
+          },
+          "frameScenarios": {
+            "clustered pan": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 50,
+                "max": 100
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 209
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 209
+              }
+            },
+            "clustered rapid zoom": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 83.4,
+                "max": 116.7
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 209
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 209
+              }
+            },
+            "clustered resize": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 66.7,
+                "max": 116.8
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 209
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 209
+              }
+            },
+            "unclustered pan": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 49.9,
+                "max": 66.7
+              },
+              "start": {
+                "pins": 777,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 777,
+                "clusters": 0
+              }
+            },
+            "unclustered rapid zoom": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 33.4,
+                "max": 50
+              },
+              "start": {
+                "pins": 777,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 777,
+                "clusters": 0
+              }
+            },
+            "unclustered resize": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 33.3,
+                "max": 33.4
+              },
+              "start": {
+                "pins": 777,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 777,
+                "clusters": 0
+              }
+            }
+          },
+          "domNodes": 3344,
+          "viewportStates": [
+            {
+              "clustering": true,
+              "view": [0, 0, 800],
+              "pins": 0,
+              "clusters": 221,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": true,
+              "view": [100, 100, 400],
+              "pins": 0,
+              "clusters": 209,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": true,
+              "view": [200, 200, 200],
+              "pins": 228,
+              "clusters": 0,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [0, 0, 800],
+              "pins": 2000,
+              "clusters": 0,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [100, 100, 400],
+              "pins": 777,
+              "clusters": 0,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [200, 200, 200],
+              "pins": 228,
+              "clusters": 0,
+              "pickerOptions": 2001
+            }
+          ],
+          "allocationStates": [
+            {
+              "stage": "clustered mount",
+              "createdPins": 0,
+              "pins": 0,
+              "clusters": 221
+            },
+            {
+              "stage": "replace all IDs",
+              "createdPins": 0,
+              "pins": 0,
+              "clusters": 221
+            },
+            {
+              "stage": "select first pin",
+              "createdPins": 1,
+              "pins": 1,
+              "clusters": 221
+            }
+          ]
+        },
+        {
+          "browser": "chromium",
+          "version": "153.0.8010.12",
+          "width": 390,
+          "count": 2000,
+          "timings": {
+            "mount": {
+              "syncMs": {
+                "p50": 89,
+                "p95": 105.6,
+                "max": 134.3
+              },
+              "settledMs": {
+                "p50": 101.4,
+                "p95": 133.4,
+                "max": 166.7
+              }
+            },
+            "pan": {
+              "syncMs": {
+                "p50": 0.6,
+                "p95": 0.7,
+                "max": 4.1
+              },
+              "settledMs": {
+                "p50": 33.3,
+                "p95": 83.4,
+                "max": 100
+              }
+            },
+            "zoom": {
+              "syncMs": {
+                "p50": 1.3,
+                "p95": 4.8,
+                "max": 11.6
+              },
+              "settledMs": {
+                "p50": 33.4,
+                "p95": 67.6,
+                "max": 150
+              }
+            },
+            "clustering off": {
+              "syncMs": {
+                "p50": 0.8,
+                "p95": 1,
+                "max": 3
+              },
+              "settledMs": {
+                "p50": 59.2,
+                "p95": 119.2,
+                "max": 130.7
+              }
+            },
+            "update retained IDs": {
+              "syncMs": {
+                "p50": 12.1,
+                "p95": 21.3,
+                "max": 21.7
+              },
+              "settledMs": {
+                "p50": 33.3,
+                "p95": 34.3,
+                "max": 39.7
+              }
+            },
+            "replace all IDs": {
+              "syncMs": {
+                "p50": 103.1,
+                "p95": 166.2,
+                "max": 204.5
+              },
+              "settledMs": {
+                "p50": 116.8,
+                "p95": 183.1,
+                "max": 258.5
+              }
+            },
+            "identical update": {
+              "syncMs": {
+                "p50": 0.7,
+                "p95": 3.3,
+                "max": 9.8
+              },
+              "settledMs": {
+                "p50": 33.3,
+                "p95": 33.5,
+                "max": 34.7
+              }
+            }
+          },
+          "panFrameMs": {
+            "p50": 16.7,
+            "p95": 16.8,
+            "max": 16.8
+          },
+          "frameScenarios": {
+            "clustered pan": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 16.8,
+                "max": 16.8
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 79
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 79
+              }
+            },
+            "clustered rapid zoom": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 16.8,
+                "max": 33.4
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 79
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 79
+              }
+            },
+            "clustered resize": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 16.8,
+                "max": 16.8
+              },
+              "start": {
+                "pins": 0,
+                "clusters": 79
+              },
+              "end": {
+                "pins": 0,
+                "clusters": 79
+              }
+            },
+            "unclustered pan": {
+              "frameMs": {
+                "p50": 16.7,
+                "p95": 66.6,
+                "max": 116.7
+              },
+              "start": {
+                "pins": 858,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 858,
+                "clusters": 0
+              }
+            },
+            "unclustered rapid zoom": {
+              "frameMs": {
+                "p50": 33.2,
+                "p95": 83.4,
+                "max": 150
+              },
+              "start": {
+                "pins": 858,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 858,
+                "clusters": 0
+              }
+            },
+            "unclustered resize": {
+              "frameMs": {
+                "p50": 16.8,
+                "p95": 50.1,
+                "max": 83.4
+              },
+              "start": {
+                "pins": 858,
+                "clusters": 0
+              },
+              "end": {
+                "pins": 858,
+                "clusters": 0
+              }
+            }
+          },
+          "domNodes": 2951,
+          "viewportStates": [
+            {
+              "clustering": true,
+              "view": [0, 0, 800],
+              "pins": 0,
+              "clusters": 56,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": true,
+              "view": [100, 100, 400],
+              "pins": 0,
+              "clusters": 79,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": true,
+              "view": [200, 200, 200],
+              "pins": 0,
+              "clusters": 69,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [0, 0, 800],
+              "pins": 2000,
+              "clusters": 0,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [100, 100, 400],
+              "pins": 858,
+              "clusters": 0,
+              "pickerOptions": 2001
+            },
+            {
+              "clustering": false,
+              "view": [200, 200, 200],
+              "pins": 247,
+              "clusters": 0,
+              "pickerOptions": 2001
+            }
+          ],
+          "allocationStates": [
+            {
+              "stage": "clustered mount",
+              "createdPins": 0,
+              "pins": 0,
+              "clusters": 56
+            },
+            {
+              "stage": "replace all IDs",
+              "createdPins": 0,
+              "pins": 0,
+              "clusters": 56
+            },
+            {
+              "stage": "select first pin",
+              "createdPins": 1,
+              "pins": 1,
+              "clusters": 53
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
