@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Every SF Map SVG example: local measures, California propositions, supervisorial votes, the layers studio, one spot in three neighborhood maps, and a schematic BART journey.">
+  <meta name="description" content="SF Map SVG examples: election maps, the layers studio, neighborhood lookups, a BART journey, and desktop and phone screencasts with 2,000 markers.">
   <link rel="canonical" href="https://kahwee.github.io/sf-map-svg/examples.html">
   <title>Examples · SF Map SVG</title>
   <link rel="icon" href="data:,">
@@ -44,6 +44,34 @@
         <li><a class="link-draw" href="https://github.com/kahwee/sf-map-svg/blob/main/docs/EXAMPLES.md">Code recipes ↗</a><span>Focused snippets for common maps.</span></li>
         <li><a class="link-draw" href="https://github.com/kahwee/sf-map-svg/tree/main/stories">Storybook stories ↗</a><span>Interactive checks for every feature.</span></li>
       </ul>
+    </section>
+
+    <section class="section shell" aria-labelledby="markers-title" id="marker-recordings">
+      <div class="section-head"><div><p class="eyebrow">Part four</p><h2 id="markers-title">2,000 places, one viewport</h2></div><p>Watch zoom, pan, clustering and selection on desktop and at 390 px.</p></div>
+      <p>Each recording starts with clustered places, turns clustering off, zooms in twice and pans east. Pins outside the viewport leave the map while all 2,000 places stay in the picker. Labels update, then selecting a place brings it into view before returning to the city overview.</p>
+      <div class="recording-grid">
+        <article class="card recording-card" aria-labelledby="desktop-recording-title">
+          <h3 id="desktop-recording-title">Desktop</h3>
+          <p>1280 × 1200 · 15 seconds</p>
+          <video controls playsinline preload="none" poster="./media/markers-2000-desktop.png" width="1280" height="1200" aria-label="Desktop demonstration of 2,000 markers">
+            <source src="./media/markers-2000-desktop.webm" type="video/webm">
+            <track kind="captions" src="./media/markers-2000-desktop.vtt" srclang="en" label="English action captions">
+            <a href="./media/markers-2000-desktop.webm">Download the desktop recording</a>.
+          </video>
+          <p><a href="./media/markers-2000-desktop.png">View screenshot</a> · <a href="./media/markers-2000-desktop.webm" download>Download WebM</a></p>
+        </article>
+        <article class="card recording-card" aria-labelledby="phone-recording-title">
+          <h3 id="phone-recording-title">Phone width</h3>
+          <p>390 × 960 · 14 seconds</p>
+          <video controls playsinline preload="none" poster="./media/markers-2000-phone.png" width="390" height="960" aria-label="Phone-width demonstration of 2,000 markers">
+            <source src="./media/markers-2000-phone.webm" type="video/webm">
+            <track kind="captions" src="./media/markers-2000-phone.vtt" srclang="en" label="English action captions">
+            <a href="./media/markers-2000-phone.webm">Download the phone recording</a>.
+          </video>
+          <p><a href="./media/markers-2000-phone.png">View screenshot</a> · <a href="./media/markers-2000-phone.webm" download>Download WebM</a></p>
+        </article>
+      </div>
+      <p>Silent recordings captured October 11, 2026 from development commit <a href="https://github.com/kahwee/sf-map-svg/commit/e6ebc5b14755c2562a623f99160ee7e5804325bf"><code>e6ebc5b</code></a>. They demonstrate behavior; the 30 fps encoding rate is not a rendering benchmark. See the <a href="https://github.com/kahwee/sf-map-svg#browser-checks-and-marker-performance">measured performance results</a> and <a href="https://github.com/kahwee/sf-map-svg/blob/main/docs/media/README.md">capture instructions</a>.</p>
     </section>
   </main>
   <!--site-footer-->

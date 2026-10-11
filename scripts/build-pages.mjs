@@ -485,6 +485,13 @@ try {
   await cp('data/propositions', 'pages-dist/data/propositions', { recursive: true });
   await cp('data/candidates', 'pages-dist/data/candidates', { recursive: true });
   await cp('docs/map-preview.png', 'pages-dist/social-preview.png');
+  await mkdir('pages-dist/media', { recursive: true });
+  for (const view of ['desktop', 'phone']) {
+    for (const extension of ['png', 'webm', 'vtt']) {
+      const name = `markers-2000-${view}.${extension}`;
+      await cp(join('docs/media', name), join('pages-dist/media', name));
+    }
+  }
   await writeFile(
     'pages-dist/sitemap.xml',
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${pages

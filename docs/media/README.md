@@ -17,7 +17,7 @@ The storyboard starts with clustering enabled, then:
 4. Select `pin-0` from the complete picker; selection fits the marker into view.
 5. Zoom out, reset to city view, and restore clustering.
 
-Videos use VP8 WebM encoded at 30 fps, with approximately 900 ms between actions. The encoding rate is not a measured rendering frame rate. See the README benchmark results for performance measurements. These files are excluded from the npm package and do not affect runtime bundle size.
+Videos use VP8 WebM encoded at 30 fps, with approximately 900 ms between actions. Optional English action captions accompany each silent recording on the [Pages examples page](https://kahwee.github.io/sf-map-svg/examples.html#marker-recordings). The encoding rate is not a measured rendering frame rate. See the README benchmark results for performance measurements. These files are excluded from the npm package and do not affect runtime bundle size.
 
 ## Refreshing the captures
 
@@ -55,4 +55,4 @@ pnpm test:visual --update-snapshots
 pnpm test:visual
 ```
 
-Refresh each platform's expectations on that platform. These captures update the five Linux baselines; Darwin baselines require a macOS run.
+Refresh each platform's expectations on that platform. These captures update the five workspace Linux baselines; Darwin baselines require a macOS run. GitHub Actions uses separate `linux-github` expectations because its Ubuntu system fonts differ from this workspace. Those expectations retain the images from the last passing Pages deployment at `e6ebc5b`; keep screenshot comparisons strict in both environments.

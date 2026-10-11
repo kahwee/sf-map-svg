@@ -49,6 +49,8 @@ const types = {
   '.svg': 'image/svg+xml',
   '.json': 'application/json',
   '.png': 'image/png',
+  '.webm': 'video/webm',
+  '.vtt': 'text/vtt',
   '.xml': 'application/xml',
   '.txt': 'text/plain',
   '.md': 'text/markdown',
