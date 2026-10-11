@@ -39,7 +39,7 @@ const report = {
   warmup,
   labels,
   methodology:
-    'Production bundle; imports/fonts loaded before timing. Synthetic 50-column grid, clustering initially enabled, motion disabled. Sync measures call plus forced layout; settled includes two animation frames (not GPU paint). No timing assertions.',
+    'Production bundle; imports/fonts loaded before timing. Synthetic 50-column grid, clustering initially enabled, motion disabled. Sync measures call plus forced layout; settled includes two animation frames (not GPU paint). Six continuous scenarios: pan by ±2 screen px, zoom by reciprocal 1.2× factors, or resize host by 80 px each frame, with clustering on/off; each uses four initial frame callbacks followed by 60 measured intervals. Counts are sampled before/after, not during frame timing. No timing assertions.',
   results: [],
 };
 const { server, url } = await startBrowserFixture();
@@ -128,20 +128,47 @@ try {
                   }
                   timings[name] = { syncMs: stats(sync), settledMs: stats(settled) };
                 }
-                // Continuous pan: frame intervals include the previous frame's map work.
-                window.map.setMarkers(pins);
-                window.map.camera.set([100, 100, 400]);
-                await settle();
-                const intervals = [];
-                let previous;
-                for (let index = 0; index < 64; index++) {
-                  const now = await new Promise(requestAnimationFrame);
-                  if (index > 3) intervals.push(now - previous);
-                  previous = now;
-                  window.map.camera.pan(index % 2 ? 2 : -2, 0);
+                // Each frame interval includes the previous frame's map work.
+                // Four initial frame callbacks precede 60 measured intervals per scenario.
+                const host = document.querySelector('#host');
+                const originalWidth = host.style.width;
+                const hostWidth = host.getBoundingClientRect().width;
+                const mounted = () => ({
+                  pins: window.map.element.querySelectorAll('[data-marker-id]').length,
+                  clusters: window.map.element.querySelectorAll('[data-cluster-ids]').length,
+                });
+                const frameScenarios = {};
+                let domNodes;
+                for (const clustering of [true, false]) {
+                  for (const action of ['pan', 'rapid zoom', 'resize']) {
+                    host.style.width = originalWidth;
+                    window.map.setMarkers(pins);
+                    window.map.configure({ features: { clustering } });
+                    window.map.camera.set([100, 100, 400]);
+                    await settle();
+                    const start = mounted();
+                    const intervals = [];
+                    let previous;
+                    for (let index = 0; index < 64; index++) {
+                      const now = await new Promise(requestAnimationFrame);
+                      if (index > 3) intervals.push(now - previous);
+                      previous = now;
+                      if (action === 'pan') window.map.camera.pan(index % 2 ? 2 : -2, 0);
+                      else if (action === 'rapid zoom')
+                        window.map.camera.zoom(index % 2 ? 1 / 1.2 : 1.2);
+                      else
+                        host.style.width =
+                          index % 2 ? originalWidth : `${Math.max(100, hostWidth - 80)}px`;
+                    }
+                    await settle();
+                    const name = `${clustering ? 'clustered' : 'unclustered'} ${action}`;
+                    frameScenarios[name] = { frameMs: stats(intervals), start, end: mounted() };
+                    if (name === 'clustered pan')
+                      domNodes = window.map.element.querySelectorAll('*').length;
+                  }
                 }
+                host.style.width = originalWidth;
                 await settle();
-                const domNodes = window.map.element.querySelectorAll('*').length;
                 const viewportStates = [];
                 for (const clustering of [true, false]) {
                   window.map.configure({ features: { clustering } });
@@ -163,8 +190,44 @@ try {
                     });
                   }
                 }
+                // Separate, untimed allocation probe: include detached pin nodes.
+                const originalCreate = document.createElementNS;
+                const created = [];
+                const allocationStates = [];
+                document.createElementNS = function (...args) {
+                  const node = originalCreate.apply(this, args);
+                  if (args[1] === 'g') created.push(node);
+                  return node;
+                };
+                try {
+                  const recordAllocation = (stage) =>
+                    allocationStates.push({
+                      stage,
+                      createdPins: created.filter((node) => node.hasAttribute('data-marker-id'))
+                        .length,
+                      ...mounted(),
+                    });
+                  mount({ markers: pins, labels });
+                  await settle();
+                  recordAllocation('clustered mount');
+                  window.map.setMarkers(replacement);
+                  await settle();
+                  recordAllocation('replace all IDs');
+                  window.map.selectMarker(replacement[0].id, { fit: false });
+                  await settle();
+                  recordAllocation('select first pin');
+                } finally {
+                  document.createElementNS = originalCreate;
+                }
                 window.map.destroy();
-                return { timings, panFrameMs: stats(intervals), domNodes, viewportStates };
+                return {
+                  timings,
+                  panFrameMs: frameScenarios['clustered pan'].frameMs,
+                  frameScenarios,
+                  domNodes,
+                  viewportStates,
+                  allocationStates,
+                };
               },
               { count, samples, warmup, labels },
             );

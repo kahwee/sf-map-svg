@@ -40,3 +40,14 @@ The [README comparison](../README.md#viewport-renderer-results) and [saved JSON]
 Validation passed: 93 Node tests, 87 Storybook checks with coverage, all 42 focused browser cases across three engines and two widths, Bun 1.4.3 smoke checks, strict packed-package TypeScript consumers, generated playground examples, bundle budgets, demo/Storybook/Pages builds, and Pages/studio checks. Manual Agent Browser inspection covered the 2,000-marker stories, generated SVG examples, and interactive example at desktop/phone sizes, with no browser errors or horizontal overflow. The preview server now serves `.mjs` examples with the JavaScript MIME type.
 
 The five screenshot checks retain a pre-existing mismatch against committed expectations in this environment. Each actual screenshot is byte-identical to the unchanged `a065893` baseline checkout; no new screenshot differences were introduced and expectations were not rewritten.
+
+
+## Follow-up: lazy visuals and broader workloads
+
+Pin records now retain an optional visual that is created on first visibility, selection, or focus recovery. Updates before creation use the latest label, radius, and styles when the pin appears. Once created, the node survives viewport exit and reentry. Pending entrances cancel when motion is disabled; reentry does not restart an entrance. Browser checks cover allocation counts, current styles, focus recovery after removal, and cached node identity; the Motion story covers deferred entrances and cancellation.
+
+The benchmark now covers pan, rapid zoom, and host resize with clustering on and off. Untimed probes distinguish newly allocated groups from mounted groups. The dated lazy/control archive records all six engines/width combinations for the new implementation and a two-width Chromium control against `e41aa2b`. Mount costs improved in that control comparison; frame timings vary, and rapid zoom, resize, and full-ID replacement remain follow-up profiling targets. See the README for measured values and limits.
+
+Follow-up validation passed: 93 Node tests, 88 Storybook checks with coverage, all 48 browser cases (including the six-engine/width rerun after extending focus recovery), strict packed-package consumers, 12 generated JavaScript/TypeScript examples, Bun 1.4.3 compatibility, bundle limits, and demo/Storybook/Pages builds. Pages checks cover 11 pages at desktop/light and phone/dark widths plus 404; studio delayed/failed loading checks pass. Manual Agent Browser inspection covered both 2,000-marker stories, generated SVGs, and the interactive example at desktop/390 px, without errors or horizontal overflow. The added lifecycle code increased the two interactive Pages bundles to 46.6/52.1 KB gzip; their limits are now 46.8/52.3 KB.
+
+All five visual snapshot checks still report the pre-existing mismatch against committed expectations. Every resulting actual image is byte-identical to the unchanged `a065893` baseline; expectations remain unchanged.

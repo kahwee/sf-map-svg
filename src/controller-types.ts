@@ -141,7 +141,7 @@ export interface MapController {
   getResolvedConfiguration(): ResolvedMapConfiguration;
   getCapabilities(): MapCapabilities;
   on<K extends keyof MapEvents>(type: K, listener: (detail: MapEvents[K]) => void): () => void;
-  /** Reconcile stable IDs; preserve cached nodes, focus, and entrances. Offscreen pins detach. */
+  /** Reconcile stable IDs; preserve existing nodes and focus. Pin visuals allocate on first visibility/selection. */
   setMarkers(markers: readonly MapMarker[]): void;
   setOverlays(overlays: readonly MapOverlay[]): void;
   /** False for missing IDs or a source/year other than the current geography. */

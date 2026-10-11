@@ -324,3 +324,46 @@ export const AtomicStylesAndInterruptedFades: Story = {
     expect(map.getAnimations({ subtree: true })).toHaveLength(0);
   },
 };
+
+export const LazyMarkerEntrances: Story = {
+  play: async ({ canvasElement }) => {
+    const map = canvasElement.querySelector(
+      '.sf-explorer',
+    ) as import('../src/types.js').NeighborhoodExplorerElement;
+    const settle = () =>
+      new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      );
+    const marker = { id: 'deferred', lng: -122.4, lat: 37.77, label: 'Deferred pin' };
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    map.setFeatures({ markerEntrance: { duration: 60000, stagger: 0 } });
+    map.setViewport([0, 0, 100], { animate: false });
+    map.setMarkers([marker]);
+    await settle();
+    expect(map.querySelector('[data-marker-id="deferred"]')).toBeNull();
+    expect(map.getAnimations({ subtree: true })).toHaveLength(0);
+    map.setViewport([0, 0, 800], { animate: false });
+    await settle();
+    const pin = map.querySelector<SVGGElement>('[data-marker-id="deferred"]');
+    if (!pin) throw new Error('Deferred pin did not enter the view');
+    const entrances = pin.getAnimations({ subtree: true });
+    expect(entrances).toHaveLength(reduced ? 0 : 1);
+    map.setViewport([0, 0, 100], { animate: false });
+    await settle();
+    expect(pin.isConnected).toBe(false);
+    map.setViewport([0, 0, 800], { animate: false });
+    await settle();
+    expect(map.querySelector('[data-marker-id="deferred"]')).toBe(pin);
+    expect(pin.getAnimations({ subtree: true })).toEqual(entrances);
+    map.setViewport([0, 0, 100], { animate: false });
+    map.setMarkers([{ ...marker, id: 'cancelled' }]);
+    map.setFeatures({ markerEntrance: false });
+    map.setFeatures({ markerEntrance: true });
+    map.setViewport([0, 0, 800], { animate: false });
+    await settle();
+    expect(map.querySelector('[data-marker-id="cancelled"]')).toBeTruthy();
+    expect(map.getAnimations({ subtree: true })).toHaveLength(0);
+    map.destroy();
+    expect(entrances.every((animation) => animation.playState === 'idle')).toBe(true);
+  },
+};

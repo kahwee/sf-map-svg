@@ -85,7 +85,7 @@ pnpm benchmark:markers --browsers=chromium,firefox,webkit
 
 The benchmark uses headless engines and a deterministic city grid with 500 and 2,000 labeled markers at 800 px and 390 px viewport widths. It loads the production bundle and fonts before timing, disables motion, and starts each operation from a consistent camera and clustering state. Each operation has three warmups and 20 measured samples. Results include mount, pan, zoom, clustering changes, retained-ID updates, replacement, and identical updates. Run benchmarks alone on an otherwise idle machine. Use `--labels=false` to compare label cost and `--output=test-results/another-run.json` to keep separate results.
 
-`test-results/marker-benchmark.json` records browser versions, machine details, and p50/p95/max timings. Synchronous times include the API call and forced layout; settled times include two animation frames and are not GPU-paint measurements. A separate 60-frame pan run records frame intervals. These measurements describe the test machine, rather than a universal performance limit or a mobile-device guarantee. The report also records mounted pin/cluster counts at overview and two zoom levels, with clustering on and off; the picker retains all records. CI saves a shorter 2,000-marker Chromium benchmark for comparison without timing thresholds.
+`test-results/marker-benchmark.json` records browser versions, machine details, and p50/p95/max timings. Synchronous times include the API call and forced layout; settled times include two animation frames and are not GPU-paint measurements. Six continuous workloads record 60 frame intervals each: pan, rapid zoom, and resize with clustering on and off. Four initial frame callbacks precede the measurements. An untimed allocation probe also counts newly created pin groups, including detached nodes. These measurements describe the test machine, rather than a universal performance limit or a mobile-device guarantee. The report also records mounted pin/cluster counts at overview and two zoom levels, with clustering on and off; the picker retains all records. CI saves a shorter 2,000-marker Chromium benchmark for comparison without timing thresholds.
 
 Measured October 10–11, 2026 against renderer commit `1d523d9`, in a Linux x64 container on an Intel Xeon Platinum 8573C with a four-CPU quota and 16 GiB memory limit, using Node 26.11.1 and Playwright 1.63.0. All 36 focused browser checks passed. The 2,000-marker results below use clustering and labels. Mount, update (retained IDs), and replacement (all new IDs) show median synchronous milliseconds; pan shows the 95th-percentile frame interval in milliseconds.
 
@@ -117,13 +117,48 @@ The same 20-sample, 2,000-marker benchmark was rerun October 11, 2026 on the sam
 | WebKit 26.6 | 800 px | 160.0 | 32.0 | 805.0 | 49.0 |
 | WebKit 26.6 | 390 px | 164.0 | 20.0 | 781.0 | 36.0 |
 
-Desktop pan frame p95 improved from 166.7 → 16.8 ms in Chromium, 200.3 → 49.4 ms in Firefox, and 302.0 → 49.0 ms in WebKit. Firefox and WebKit still exceed a 60 Hz frame budget in this run. Prefer stable IDs, clustering, and fewer enabled label layers for dense interactive views; full replacement still creates all new records and nodes. These headless measurements do not establish smoothness on a physical phone.
+Desktop pan frame p95 improved from 166.7 → 16.8 ms in Chromium, 200.3 → 49.4 ms in Firefox, and 302.0 → 49.0 ms in WebKit. Firefox and WebKit still exceed a 60 Hz frame budget in this run. Prefer stable IDs, clustering, and fewer enabled label layers for dense interactive views; full replacement still creates all new records and picker options. These headless measurements do not establish smoothness on a physical phone.
 
 With clustering off at 800 px, the mounted pin count fell from 2,000 in city view to 228 at the sampled 4× zoom; all 2,000 records stayed in the picker. **Checks / 2000 markers / Desktop** and **Phone** in Storybook show live counts and test zoom, pan, retained-ID updates, offscreen selection, and reset. The [plan and storyboard](https://github.com/kahwee/sf-map-svg/blob/main/docs/marker-performance-plan.md) describe the regression contract. [Saved baseline and updated JSON](https://github.com/kahwee/sf-map-svg/blob/main/docs/benchmarks/markers-2026-10-11.json) include all timing percentiles and viewport counts.
 
 ```sh
 pnpm benchmark:markers --counts=2000 --browsers=chromium,firefox,webkit \
   --output=test-results/marker-benchmark-viewport.json
+```
+
+### Lazy pin creation and expanded workloads
+
+Individual SVG pins now allocate on first visibility or selection, then retain their nodes for reuse. With 2,000 clustered records, an untimed probe counted zero pin groups at mount, zero after replacing every ID, and one after selecting a pin. The previous renderer created 2,000 groups at mount and another 2,000 on replacement. The complete picker, selection, keyboard focus, and deferred entrance animations remain available.
+
+October 11, 2026 results with the same engines, labeled grid, and 20 operation samples (median synchronous milliseconds):
+
+| Engine | Viewport | Mount | Replace all IDs |
+| --- | ---: | ---: | ---: |
+| chromium | 800 px | 78.1 | 39.3 |
+| chromium | 390 px | 87.9 | 47.9 |
+| firefox | 800 px | 88.0 | 24.0 |
+| firefox | 390 px | 95.0 | 46.0 |
+| webkit | 800 px | 128.0 | 717.0 |
+| webkit | 390 px | 132.0 | 710.0 |
+
+A separate run of the same expanded harness against `e41aa2b` measured Chromium mount medians of 115.1/123.6 ms and replacement medians of 57.1/89.8 ms at 800/390 px, versus 78.1/87.9 ms and 39.3/47.9 ms after lazy allocation. This paired control covers Chromium only. WebKit replacement remains expensive at 717/710 ms; stable IDs remain preferable.
+
+The expanded stress cases reveal work that culling alone does not remove. Unclustered frame interval p95 values, in milliseconds:
+
+| Engine | Viewport | Pan | Rapid zoom | Resize |
+| --- | ---: | ---: | ---: | ---: |
+| chromium | 800 px | 16.7 | 133.4 | 83.3 |
+| chromium | 390 px | 33.3 | 33.4 | 50.0 |
+| firefox | 800 px | 33.8 | 34.2 | 100.2 |
+| firefox | 390 px | 34.2 | 49.4 | 50.7 |
+| webkit | 800 px | 60.0 | 106.0 | 342.0 |
+| webkit | 390 px | 114.0 | 124.0 | 192.0 |
+
+These runs do not demonstrate a consistent frame-rate gain: desktop Chromium clustered pan p95 was 50.1 ms in the control and 66.8 ms after lazy allocation, compared with 16.8 ms in the earlier run. Rapid zoom alternates reciprocal 1.2× factors; resize alternates host widths by 80 px. Each workload runs with clustering both on and off, samples counts outside the timed loop, and retains 60 measured intervals. Headless frame timings vary and do not establish physical-device smoothness. [Saved lazy and control results](https://github.com/kahwee/sf-map-svg/blob/main/docs/benchmarks/markers-lazy-2026-10-11.json) preserve every scenario and allocation count.
+
+```sh
+pnpm benchmark:markers --counts=2000 --browsers=chromium,firefox,webkit \
+  --output=test-results/marker-benchmark-lazy.json
 ```
 
 ## CI maintenance

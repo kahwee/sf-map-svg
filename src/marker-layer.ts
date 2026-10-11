@@ -2,9 +2,7 @@ import { svgElement } from './dom.js';
 import type { normalizeFeatures } from './features.js';
 import type { MapMarker } from './types.js';
 
-export interface MarkerItem {
-  marker: MapMarker;
-  point: [number, number];
+export interface MarkerVisual {
   node: SVGGElement;
   dot: SVGCircleElement;
   hit: SVGCircleElement;
@@ -12,66 +10,86 @@ export interface MarkerItem {
   title: SVGTitleElement;
 }
 
+export interface MarkerItem {
+  marker: MapMarker;
+  point: [number, number];
+  index: number;
+  enter: boolean;
+  visual: MarkerVisual | undefined;
+}
+
 /** Own marker visuals and entrances; selection/events remain with the controller. */
-export function createMarkerLayer(layer: SVGGElement) {
+export function createMarkerLayer() {
+  const records = new Set<MarkerItem>();
   const animations = new Map<SVGGElement, Animation>();
   function cancelEntrances() {
     for (const animation of animations.values()) animation.cancel();
     animations.clear();
+    for (const item of records) item.enter = false;
   }
   return {
     cancelEntrances,
-    clear() {
-      cancelEntrances();
-      layer.replaceChildren();
-    },
     remove(item: MarkerItem) {
-      animations.get(item.node)?.cancel();
-      animations.delete(item.node);
-      item.node.remove();
+      const visual = item.visual;
+      if (visual) {
+        animations.get(visual.node)?.cancel();
+        animations.delete(visual.node);
+        visual.node.remove();
+      }
+      records.delete(item);
+      item.enter = false;
     },
     update(item: MarkerItem, marker: MapMarker, point: [number, number], index: number) {
-      if (item.point[0] !== point[0] || item.point[1] !== point[1])
-        item.node.setAttribute('transform', `translate(${point[0]},${point[1]})`);
-      const label = marker.label ?? marker.id;
-      if (item.title.textContent !== label) {
-        item.title.textContent = label;
-        item.node.setAttribute('aria-label', label);
+      const visual = item.visual;
+      if (visual) {
+        if (item.point[0] !== point[0] || item.point[1] !== point[1])
+          visual.node.setAttribute('transform', `translate(${point[0]},${point[1]})`);
+        const label = marker.label ?? marker.id;
+        if (visual.title.textContent !== label) {
+          visual.title.textContent = label;
+          visual.node.setAttribute('aria-label', label);
+        }
+        if (item.index !== index) visual.node.style.setProperty('--sf-marker-index', String(index));
       }
-      if (item.node.style.getPropertyValue('--sf-marker-index') !== String(index))
-        item.node.style.setProperty('--sf-marker-index', String(index));
       item.marker = marker;
       item.point = point;
+      item.index = index;
     },
-    add(
-      marker: MapMarker,
-      point: [number, number],
-      index: number,
+    add(marker: MapMarker, point: [number, number], index: number): MarkerItem {
+      const item = { marker, point, index, enter: true, visual: undefined };
+      records.add(item);
+      return item;
+    },
+    materialize(
+      item: MarkerItem,
       {
         features,
         markerColor,
         selectedMarkerColor,
         reducedMotion,
-        enter,
+        selected,
       }: {
         features: ReturnType<typeof normalizeFeatures>;
         markerColor: string;
         selectedMarkerColor: string;
         reducedMotion: boolean;
-        enter: boolean;
+        selected: boolean;
       },
-    ): MarkerItem {
+    ): MarkerVisual {
+      if (item.visual) return item.visual;
+      const { marker, point, index, enter } = item;
+      item.enter = false;
       const node = svgElement('g', {
         transform: `translate(${point[0]},${point[1]})`,
         'data-marker-id': marker.id,
         role: 'button',
         tabindex: -1,
         'aria-label': marker.label ?? marker.id,
-        'aria-pressed': 'false',
+        'aria-pressed': String(selected),
       });
       const hit = svgElement('circle', { fill: 'transparent', 'pointer-events': 'all' });
       const dot = svgElement('circle', {
-        fill: marker.color ?? markerColor,
+        fill: selected ? selectedMarkerColor : (marker.color ?? markerColor),
         stroke: '#fff9e9',
         'stroke-width': 2,
         'vector-effect': 'non-scaling-stroke',
@@ -87,7 +105,7 @@ export function createMarkerLayer(layer: SVGGElement) {
         'stroke-width': features.selectedMarkerRing ? features.selectedMarkerRing.width : 2,
         'vector-effect': 'non-scaling-stroke',
         'pointer-events': 'none',
-        display: 'none',
+        display: selected && features.selectedMarkerRing ? 'inline' : 'none',
       });
       node.style.setProperty('--sf-marker-index', String(index));
       node.append(title, hit, ring, dot);
@@ -111,10 +129,9 @@ export function createMarkerLayer(layer: SVGGElement) {
         animation.finished.then(release, release);
       }
 
-      // Plain overview pins are immediately available before the first resize.
-      // Clustered views let the viewport renderer mount their visible symbols.
-      if (!features.clustering) layer.append(node);
-      return { marker, point, node, dot, hit, ring, title };
+      const visual = { node, dot, hit, ring, title };
+      item.visual = visual;
+      return visual;
     },
   };
 }

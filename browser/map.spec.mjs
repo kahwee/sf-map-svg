@@ -219,3 +219,100 @@ test('2000-place viewport culling retains records, nodes, and keyboard focus', a
   expect(result.shared).toBeGreaterThan(0);
   expect(result.stableClusters).toBe(true);
 });
+
+test('clustered catalog creates individual pins only on first visibility or selection', async ({
+  page,
+}) => {
+  const result = await page.evaluate(async () => {
+    const original = document.createElementNS;
+    const created = [];
+    document.createElementNS = function (...args) {
+      const node = original.apply(this, args);
+      if (args[1] === 'g') created.push(node);
+      return node;
+    };
+    try {
+      const { grid, mount, settle } = window.harness;
+      const markers = grid(2000);
+      mount({ markers });
+      await settle();
+      const allocated = () => created.filter((node) => node.hasAttribute('data-marker-id'));
+      const initial = allocated().length;
+      window.map.setMarkers(
+        markers.map((marker) => ({
+          ...marker,
+          label: `${marker.label} fresh`,
+          radius: 9,
+          color: '#a12345',
+        })),
+      );
+      window.map.configure({
+        appearance: { selectedMarkerColor: '#234567' },
+        features: { selectedMarkerRing: { color: '#345678' } },
+      });
+      await settle();
+      const afterUpdate = allocated().length;
+      window.map.selectMarker(markers[0].id, { fit: false });
+      await settle();
+      const selected = window.map.element.querySelector('[data-marker-id="pin-0"]');
+      const selectedName = selected.getAttribute('aria-label');
+      const selectedFill = selected.querySelector('circle[stroke="#fff9e9"]').getAttribute('fill');
+      const selectedRing = selected.querySelector('circle[fill="none"]').getAttribute('stroke');
+      const selectedCount = allocated().length;
+      selected.focus();
+      const fresh = markers.map((marker) => ({
+        ...marker,
+        label: `${marker.label} fresh`,
+        radius: 9,
+        color: '#a12345',
+      }));
+      window.map.setMarkers(fresh.slice(1));
+      await settle();
+      const focusRecovered = document.activeElement?.dataset.markerId === 'pin-1';
+      window.map.element.querySelector('button').focus();
+      window.map.setMarkers(fresh);
+      window.map.selectMarker(null, { fit: false });
+      window.map.camera.set([200, 200, 200]);
+      window.map.configure({ features: { clustering: false } });
+      await settle();
+      const zoomCount = allocated().length;
+      const pin = Array.from(window.map.element.querySelectorAll('[data-marker-id]')).find(
+        (node) => node.dataset.markerId !== 'pin-1',
+      );
+      const id = pin.dataset.markerId;
+      window.map.camera.set([500, 500, 200]);
+      await settle();
+      const detached = !pin.isConnected;
+      window.map.camera.set([200, 200, 200]);
+      await settle();
+      return {
+        initial,
+        afterUpdate,
+        selectedCount,
+        focusRecovered,
+        selectedName,
+        selectedFill,
+        selectedRing,
+        zoomCount,
+        detached,
+        retained: window.map.element.querySelector(`[data-marker-id="${id}"]`) === pin,
+        catalog: window.map.element.querySelectorAll('.sf-explorer-feature-controls select')[1]
+          .options.length,
+      };
+    } finally {
+      document.createElementNS = original;
+    }
+  });
+  expect(result.initial).toBe(0);
+  expect(result.afterUpdate).toBe(0);
+  expect(result.selectedCount).toBe(1);
+  expect(result.focusRecovered).toBe(true);
+  expect(result.selectedName).toContain('fresh');
+  expect(result.selectedFill).toBe('#234567');
+  expect(result.selectedRing).toBe('#345678');
+  expect(result.zoomCount).toBeGreaterThan(1);
+  expect(result.zoomCount).toBeLessThan(1000);
+  expect(result.detached).toBe(true);
+  expect(result.retained).toBe(true);
+  expect(result.catalog).toBe(2001);
+});

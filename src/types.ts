@@ -258,7 +258,7 @@ export interface NeighborhoodExplorerElement extends HTMLElement {
   fitGeometry(geometry: Geometry, padding?: number | MapPadding, options?: CameraOptions): void;
   /** Explicitly engage map touch gestures; false restores page gestures. */
   setTouchNavigation(enabled: boolean): void;
-  /** Reconcile stable IDs; preserve cached nodes, focus, and entrances. Offscreen pins detach. */
+  /** Reconcile stable IDs; preserve existing nodes and focus. Pin visuals allocate on first visibility/selection. */
   setMarkers(markers: readonly MapMarker[]): void;
   setOverlays(overlays: readonly MapOverlay[]): void;
   selectMarker(id: string | null, options?: { fit?: boolean } & CameraOptions): boolean;

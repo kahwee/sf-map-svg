@@ -6,6 +6,9 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Create individual marker visuals only on first visibility or selection, keeping the full catalog and retained nodes. Defer new pin entrances and cancel pending entrances with active animations.
+- Benchmark clustered and unclustered continuous pan, rapid zoom, and resize, with separate allocation probes.
+
 - Cull offscreen pins and cluster symbols while preserving the full catalog, cached nodes, selection, and keyboard focus. Cache cluster groups during pan and skip unchanged SVG attributes.
 - Add interactive 2,000-marker desktop and phone stories, viewport count benchmarks, and a Bun 1.4.3 compatibility gate.
 
