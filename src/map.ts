@@ -11,6 +11,7 @@ import type {
 } from './controller-types.js';
 import { createNeighborhoodExplorerCore } from './explorer-core.js';
 import type { InteractiveSFMapData } from './explorer-data.js';
+import { createMapShell } from './explorer-shell.js';
 import { controlKeys, layerKeys } from './features.js';
 import { assertOptions } from './validation.js';
 
@@ -50,6 +51,7 @@ export function createMap(data: InteractiveSFMapData, options: MapOptions = {}):
       onOverlayActivate: () => {},
     },
     data,
+    { createShell: createMapShell },
   );
   const subscriptions = new Set<() => void>();
   let configurationRevision = 0;

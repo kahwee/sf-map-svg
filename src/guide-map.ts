@@ -1,6 +1,7 @@
 import { expandMapOptions, prepareConfiguration } from './configuration.js';
 import type { MapController, MapOptions } from './controller-types.js';
 import { createNeighborhoodExplorerCore } from './explorer-core.js';
+import { createMapShell } from './explorer-shell.js';
 import { guideMapData } from './guide-data.js';
 import { createMap } from './map.js';
 import { guideOptions } from './presets.js';
@@ -89,6 +90,7 @@ export function createGuideMap(options: InteractiveSFMapOptions = {}): Interacti
       interface: 'map',
     },
     guideMapData,
+    { createShell: createMapShell },
   );
 }
 

@@ -148,3 +148,49 @@ test('static rendering accepts shared source-aware geography without changing co
   assert.equal(callbacks, 0);
   assert.throws(() => getLayerPaths(fullMapData, { source: 'invalid' }));
 });
+
+test('static entry points reject misspelled options before reading data or invoking styles', () => {
+  let callbacks = 0;
+  const data = {
+    get coast() {
+      throw new Error('Geography must not be read for invalid options');
+    },
+  };
+  for (const render of [api.renderMap, api.getLayerPaths]) {
+    for (const typo of ['distrctLabels', 'widht', 'neighborhoodSource']) {
+      assert.throws(
+        () =>
+          render(data, {
+            [typo]: undefined,
+            districtStyle: () => {
+              callbacks++;
+              return {};
+            },
+          }),
+        { name: 'TypeError', message: `Unknown static map option: ${typo}` },
+      );
+    }
+  }
+  assert.equal(callbacks, 0);
+});
+
+test('static validation retains flat options, grouped precedence and null-prototype records', async () => {
+  const { staticMapData } = await import('../dist/src/static-data.js');
+  const flat = { idPrefix: 'validated', districtLabels: false, theme: 'transit', width: 640 };
+  const grouped = {
+    ...flat,
+    districtLabels: true,
+    theme: 'districts',
+    layers: { districtLabels: false },
+    appearance: { theme: 'transit' },
+  };
+  assert.equal(api.renderMap(staticMapData, flat).svg, api.renderMap(staticMapData, grouped).svg);
+  assert.equal(
+    api.renderMap(staticMapData, Object.assign(Object.create(null), flat)).svg,
+    api.renderMap(staticMapData, flat).svg,
+  );
+  const { project: flatProject, ...flatPaths } = api.getLayerPaths(staticMapData, flat);
+  const { project: groupedProject, ...groupedPaths } = api.getLayerPaths(staticMapData, grouped);
+  assert.deepEqual(flatPaths, groupedPaths);
+  assert.deepEqual(flatProject([-122.42, 37.76]), groupedProject([-122.42, 37.76]));
+});

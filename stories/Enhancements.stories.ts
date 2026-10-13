@@ -35,9 +35,9 @@ const meta = {
       scaleBar: true,
       strings: {
         touchNavigation: 'Touch pan',
-        touchNavigationLabel: 'Enable map gestures',
+        touchNavigationLabel: 'Touch pan: Enable map gestures',
         touchNavigationDone: 'Done',
-        touchNavigationExitLabel: 'Restore page scrolling',
+        touchNavigationExitLabel: 'Done: Restore page scrolling',
       },
     });
     return map;
@@ -100,11 +100,13 @@ export const MotionAndClusters: Story = {
     map.setViewport([0, 0, 800], { animate: false });
     await new Promise((resolve) => setTimeout(resolve, 230));
     expect(map.getViewport()).toEqual([0, 0, 800]);
-    const touch = map.querySelector<HTMLButtonElement>('button[aria-label="Enable map gestures"]');
+    const touch = map.querySelector<HTMLButtonElement>(
+      'button[aria-label="Touch pan: Enable map gestures"]',
+    );
     if (!touch) throw new Error('Missing touch control');
     await userEvent.click(touch);
     expect(touch.textContent).toBe('Done');
-    expect(touch.getAttribute('aria-label')).toBe('Restore page scrolling');
+    expect(touch.getAttribute('aria-label')).toBe('Done: Restore page scrolling');
     map.setMarkers(markers.slice(0, 1));
     await waitFor(() =>
       expect(map.querySelectorAll('[data-layer="marker-clusters"] > g')).toHaveLength(0),

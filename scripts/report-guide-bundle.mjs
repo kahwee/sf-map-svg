@@ -64,7 +64,9 @@ for (const [name, entry] of [
 }
 if (
   staticOnly.modules.some((module) =>
-    /\/(explorer-core|navigation|camera|clusters)\.ts$/.test(module),
+    /\/(explorer-(core|controls|shell|sidebar)|neighborhood-layer|overlay-layer|cluster-layer|navigation|camera|clusters)\.ts$/.test(
+      module,
+    ),
   )
 )
   throw new Error('Static renderer imported interactive runtime');
@@ -74,6 +76,10 @@ if (renderer.gzip > 36 * 1024 || staticOnly.gzip > 10 * 1024)
   );
 const guide = await bundle('src/guide.ts');
 if (guide.gzip > 125 * 1024) throw new Error('Guide exceeds 125 KiB initial gzip budget');
+for (const entry of [renderer, guide]) {
+  if (entry.modules.some((module) => /\/explorer-sidebar\.ts$/.test(module)))
+    throw new Error('Map entry imported the optional explorer sidebar');
+}
 const selected = guide.modules.map((module) => module.replaceAll('\\', '/'));
 const forbidden = selected.filter((module) =>
   /data\/(districts-|neighborhoods\.json|neighborhoods-analysis\.json|catalog\.json)/.test(module),

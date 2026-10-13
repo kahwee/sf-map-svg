@@ -246,6 +246,11 @@ export const ConflictingLayersAndFailedSource: Story = {
       other.setViewport([100, 100, 400]);
       expect(other.selectNeighborhood('Inner Mission', { fit: false })).toBe(true);
       expect(other.getViewport()).toEqual([100, 100, 400]);
+      expect(other.dataset.mode).toBe('neighborhoods');
+      const unselected = other.querySelector<SVGPathElement>(
+        '[data-neighborhood-id="north-panhandle"]',
+      );
+      expect(unselected?.getAttribute('stroke-width')).toBe('.55');
       const selection = other.getSelection();
       expect(() => other.setSource('analysis')).toThrow();
       expect(other.getSelection()).toEqual(selection);
@@ -332,6 +337,116 @@ export const ReentrantOverlayReplacement: Story = {
     } finally {
       other.destroy();
       other.remove();
+    }
+  },
+};
+
+export const ReentrantNeighborhoodSelection: Story = {
+  play: async () => {
+    const seen: string[] = [];
+    map.addEventListener('neighborhoodchange', (event) => {
+      const name = (event as CustomEvent).detail.name;
+      seen.push(name);
+      if (name === 'Inner Mission') map.selectNeighborhood('North Panhandle', { fit: false });
+    });
+    const before = map.getViewport();
+    map.selectNeighborhood('Inner Mission');
+    expect(seen).toEqual(['Inner Mission', 'North Panhandle']);
+    expect(map.getSelection()?.name).toBe('North Panhandle');
+    expect(map.getViewport()).toEqual(before);
+    const selected = map.querySelector('[data-neighborhood-id="north-panhandle"]');
+    expect(selected?.getAttribute('aria-pressed')).toBe('true');
+    map.addEventListener('neighborhoodchange', () => map.destroy(), { once: true });
+    map.selectNeighborhood('Inner Mission');
+    expect(map.getViewport()).toEqual(before);
+  },
+};
+
+export const NeighborhoodSourceLifecycle: Story = {
+  play: async () => {
+    const { fullMapData } = await import('../src/full-data.js');
+    const controller = createMap(fullMapData, {
+      mode: 'neighborhoods',
+      appearance: { areaStyle: { hoverFill: '#ffcc00' } },
+    });
+    const other = controller.element as InteractiveSFMapElement;
+    map.after(other);
+    try {
+      controller.selectNeighborhood('Inner Mission', { fit: false });
+      const old = other.querySelector<SVGPathElement>('[data-neighborhood-id="north-panhandle"]');
+      if (!old) throw new Error('Missing realtor neighborhood');
+      const before = old.outerHTML;
+      const id = fullMapData.neighborhoods.analysis?.features[0].id;
+      if (!id) throw new Error('Missing analysis neighborhood');
+      controller.on('neighborhoodchange', (selection) => {
+        if (selection.id === null) {
+          controller.selectNeighborhood(id, { fit: false });
+          controller.camera.set([100, 100, 400]);
+        }
+      });
+      other.setSource('analysis');
+      expect(controller.getConfiguration().source).toBe('analysis');
+      expect(controller.getSelectedNeighborhood()?.id).toBe(id);
+      expect(controller.camera.get()).toEqual([100, 100, 400]);
+      old.dispatchEvent(new PointerEvent('pointerenter'));
+      old.dispatchEvent(new PointerEvent('pointerleave'));
+      expect(old.outerHTML).toBe(before);
+      const current = other.querySelector<SVGPathElement>('[data-neighborhood-id]');
+      if (!current) throw new Error('Missing replacement neighborhood');
+      controller.destroy();
+      const disposed = current.outerHTML;
+      current.dispatchEvent(new PointerEvent('pointerenter'));
+      current.dispatchEvent(new PointerEvent('pointerleave'));
+      expect(current.outerHTML).toBe(disposed);
+    } finally {
+      controller.destroy();
+      other.remove();
+    }
+  },
+};
+
+export const SidebarDownloadLifecycle: Story = {
+  play: async () => {
+    const { createNeighborhoodExplorerCore } = await import('../src/explorer-core.js');
+    const { createExplorerShell } = await import('../src/explorer-shell.js');
+    const { createExplorerSidebar } = await import('../src/explorer-sidebar.js');
+    const createURL = URL.createObjectURL;
+    const revokeURL = URL.revokeObjectURL;
+    const created = new Set<string>();
+    const revoked: string[] = [];
+    let other: InteractiveSFMapElement | undefined;
+    URL.createObjectURL = (blob) => {
+      const url = createURL(blob);
+      created.add(url);
+      return url;
+    };
+    URL.revokeObjectURL = (url) => {
+      revoked.push(url);
+      revokeURL(url);
+    };
+    try {
+      other = createNeighborhoodExplorerCore({}, guideMapData, {
+        createShell: createExplorerShell,
+        createSidebar: createExplorerSidebar,
+      });
+      map.after(other);
+      const initial = [...created];
+      expect(other.querySelectorAll('.sf-explorer-download')).toHaveLength(1);
+      other.selectNeighborhood('Inner Mission', { fit: false });
+      expect(new Set(revoked)).toEqual(new Set(initial));
+      const downloads = other.querySelectorAll<HTMLAnchorElement>('.sf-explorer-download');
+      expect(downloads).toHaveLength(2);
+      expect(downloads[0].download).toBe('realtor-inner-mission.geojson');
+      expect(downloads[0].href).not.toBe(initial[0]);
+      other.destroy();
+      other.destroy();
+      expect(new Set(revoked)).toEqual(created);
+      expect(revoked).toHaveLength(created.size);
+    } finally {
+      other?.destroy();
+      other?.remove();
+      URL.createObjectURL = createURL;
+      URL.revokeObjectURL = revokeURL;
     }
   },
 };

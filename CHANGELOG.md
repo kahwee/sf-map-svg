@@ -4,6 +4,13 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Separate interactive neighborhood state, controls, sidebar downloads and overlays into lifecycle-owned modules; revoke neighborhood hover listeners when replacing sources and keep optional explorer sidebar code out of normal map bundles.
+- Build the package once during `pnpm check`, while keeping standalone test and typecheck commands self-contained.
+
+## 4.4.1 — 2026-10-12
+
+- Prepare compatible development-tool updates to Vite 8.3.4 and Playwright 1.64.0. Keep Storybook/addons 10.6.1 and aligned Vitest/browser/coverage 5.0.3; their newer 10.6.2 and 5.0.4 releases remain inside pnpm's release-age window. Make the consumer examples' custom touch-button accessible names include their visible text. Remove the obsolete Storybook 10.6.0 peer overrides; retain Node 24+ and zero runtime dependencies. This version is prepared locally and has not been published.
+
 ## 4.4.0 — 2026-10-12
 
 - Add opt-in static `labelLayout: { width }` to `renderMap`, `createGuideSVG`, and `createGuideShell`. Static and interactive maps now share overview priorities, neighborhood anchors, font sizes, and collision rules; centered labels retain their anchors during enhancement.
