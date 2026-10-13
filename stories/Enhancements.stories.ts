@@ -5,6 +5,11 @@ import { createGuideShell } from '../src/guide-static.js';
 import type { NeighborhoodExplorerElement as InteractiveSFMapElement } from '../src/types.js';
 
 let map: InteractiveSFMapElement;
+function required<T extends Element>(host: Element, selector: string): T {
+  const node = host.querySelector<T>(selector);
+  if (!node) throw new Error(`Missing ${selector}`);
+  return node;
+}
 const markers = [
   { id: 'one', label: 'First Mission place', lng: -122.4269, lat: 37.7596, radius: 9 },
   { id: 'two', label: 'Second Mission place', lng: -122.4269, lat: 37.7596 },
@@ -62,6 +67,10 @@ export const MotionAndClusters: Story = {
     map.querySelector<SVGElement>('[data-layer="marker-clusters"] [role="button"]')?.focus();
     await userEvent.keyboard('{Enter}');
     expect(activatedCount).toBe(2);
+    expect(map.querySelector('[role="dialog"]')).toBeTruthy();
+    await userEvent.click(required<HTMLButtonElement>(map, '[data-marker-choice="two"]'));
+    expect(map.getSelectedMarker()?.id).toBe('two');
+    expect(map.querySelector('[role="dialog"]')).toBeNull();
     await waitFor(() => expect(map.getViewport()[2]).toBeLessThan(800));
     map.setViewport([0, 0, 800], { animate: false });
     map.selectMarker('one', { fit: false });
@@ -152,5 +161,107 @@ export const ReducedMotion: Story = {
     } finally {
       window.matchMedia = original;
     }
+  },
+};
+
+export const CoincidentPinsInCompactShell: Story = {
+  render: () => {
+    const host = document.createElement('div');
+    host.style.maxWidth = '390px';
+    host.innerHTML = createGuideShell({ markers, labels: false });
+    map = mountGuideMap(required<HTMLElement>(host, '.sf-guide-shell'), {
+      markers,
+      clustering: true,
+    });
+    return host;
+  },
+  play: async ({ userEvent }) => {
+    await waitFor(() => expect(map.querySelector('[data-cluster-ids]')).toBeTruthy());
+    expect(
+      map.querySelector('.sf-explorer-feature-controls select:last-child')?.closest('label'),
+    ).toHaveAttribute('hidden');
+    const cluster = required<SVGElement>(map, '[data-cluster-ids]');
+    cluster.focus();
+    const view = map.getViewport();
+    await userEvent.keyboard('{Enter}');
+    expect(map.getViewport()).toEqual(view);
+    expect(map.querySelectorAll('[data-marker-choice]')).toHaveLength(2);
+    await userEvent.keyboard('{Escape}');
+    expect(document.activeElement).toBe(cluster);
+    await userEvent.click(cluster);
+    await userEvent.click(required<HTMLButtonElement>(map, '[data-marker-choice="two"]'));
+    expect(map.getSelectedMarker()?.id).toBe('two');
+    expect((document.activeElement as SVGElement).dataset.markerId).toBe('two');
+    await userEvent.keyboard('{Enter}');
+    expect(map.querySelectorAll('[data-marker-choice]')).toHaveLength(2);
+    map.setMarkers([markers[2]]);
+    expect(map.querySelector('[role="dialog"]')).toBeNull();
+    map.setMarkers(markers);
+    map.selectMarker('one', { fit: false });
+    required<SVGElement>(map, '[data-marker-id="one"]').focus();
+    await userEvent.keyboard('{Enter}');
+    expect(map.querySelector('[role="dialog"]')).toBeTruthy();
+    map.destroy();
+    expect(map.querySelector('[role="dialog"]')).toBeNull();
+  },
+};
+
+export const MarkerKeyboardNavigation: Story = {
+  render: () => {
+    map = createGuideMap({
+      markers: markers.map((marker, index) => ({ ...marker, lng: marker.lng + index * 0.002 })),
+    });
+    return map;
+  },
+  play: async ({ userEvent }) => {
+    const tabbable = () =>
+      map.querySelectorAll('[data-marker-id][tabindex="0"], [data-cluster-ids][tabindex="0"]');
+    await waitFor(() => expect(tabbable()).toHaveLength(1));
+    (tabbable()[0] as SVGElement).focus();
+    await userEvent.keyboard('[BracketRight]');
+    expect((document.activeElement as SVGElement).dataset.markerId).toBe('two');
+    expect(tabbable()).toHaveLength(1);
+    await userEvent.keyboard('[BracketLeft]');
+    expect((document.activeElement as SVGElement).dataset.markerId).toBe('one');
+    await userEvent.keyboard('[BracketLeft]');
+    expect((document.activeElement as SVGElement).dataset.markerId).toBe('park');
+    await userEvent.keyboard('{Enter}');
+    expect(map.getSelectedMarker()?.id).toBe('park');
+    const retained = document.activeElement;
+    const unique = markers.map((marker, index) => ({ ...marker, lng: marker.lng + index * 0.002 }));
+    map.setMarkers([...unique].reverse());
+    expect(document.activeElement).toBe(retained);
+    map.setMarkers(unique.slice(0, 2));
+    expect(['one', 'two']).toContain((document.activeElement as SVGElement).dataset.markerId);
+    await userEvent.tab();
+    expect((document.activeElement as SVGElement).dataset.markerId).toBeUndefined();
+    map.setMarkers([]);
+    expect(tabbable()).toHaveLength(0);
+  },
+};
+
+export const CoincidentChooserOpen: Story = {
+  ...CoincidentPinsInCompactShell,
+  play: async ({ userEvent }) => {
+    await waitFor(() => expect(map.querySelector('[data-cluster-ids]')).toBeTruthy());
+    await userEvent.click(required<SVGElement>(map, '[data-cluster-ids]'));
+    expect(map.querySelector('[role="dialog"]')).toBeTruthy();
+  },
+};
+
+export const ZoomableClusters: Story = {
+  render: () => {
+    map = createGuideMap({
+      markers: [markers[0], { ...markers[1], lng: markers[1].lng + 0.003 }],
+      clustering: true,
+    });
+    return map;
+  },
+  play: async ({ userEvent }) => {
+    await waitFor(() => expect(map.querySelector('[data-cluster-ids]')).toBeTruthy());
+    await userEvent.click(required<SVGElement>(map, '[data-cluster-ids]'));
+    expect(map.querySelector('[role="dialog"]')).toBeNull();
+    expect(map.getViewport()[2]).toBeLessThan(800);
+    await waitFor(() => expect(map.querySelector('[data-cluster-ids]')).toBeNull());
   },
 };

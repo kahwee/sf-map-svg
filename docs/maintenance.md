@@ -24,6 +24,7 @@ Install with `pnpm install --frozen-lockfile`. Read `AGENTS.md` for requirements
 | Library source, public types, or dependencies | `pnpm check`, `pnpm demo`, `pnpm build-storybook`, `pnpm test:stories:coverage`, `pnpm test:package`; build Pages and run its gates for affected examples. |
 | Visual rendering or shared site styling | Build Storybook and Pages, then `pnpm test:visual`; review actual screenshots before updating any baselines. |
 | Geography or metadata | Read [data/README.md](../data/README.md); record source URLs and download dates, regenerate `pnpm data:catalog`, and run `pnpm data:check` plus renderer checks. |
+| Browser interaction harness or benchmark | `pnpm test:browsers`, `pnpm benchmark:markers`; run sequentially because they share the production fixture and port. Regenerate assistant docs when recording results in the README. |
 
 `pnpm test:package` installs the actual packed archive in a clean consumer, checks exports and zero runtime dependencies, and compiles documented browser recipes with strict types, exact optional properties, and checked indexed access. Storybook browser checks require `pnpm exec playwright install chromium` once. A passing static build alone does not verify browser behavior.
 

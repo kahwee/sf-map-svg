@@ -1,0 +1,28 @@
+WEBVTT
+
+00:00.000 --> 00:02.280
+City overview: 2,000 places grouped into clusters.
+
+00:02.280 --> 00:03.900
+Clustering off: all 2,000 individual pins appear.
+
+00:03.900 --> 00:05.100
+Zoom in: only pins in the viewport remain mounted.
+
+00:05.100 --> 00:06.400
+Zoom in again: fewer pins are visible.
+
+00:06.400 --> 00:08.700
+Pan east, then update labels without replacing marker IDs.
+
+00:08.700 --> 00:10.500
+Select Place 0 from the full picker; the map fits it into view.
+
+00:10.500 --> 00:12.650
+Zoom out from the selected place.
+
+00:12.650 --> 00:14.330
+Return to city view with all 2,000 pins.
+
+00:14.330 --> 00:15.066
+Restore clustering; the selected pin stays visible.

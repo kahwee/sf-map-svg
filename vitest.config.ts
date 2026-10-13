@@ -31,9 +31,12 @@ export default defineConfig({
           name: 'storybook',
           browser: {
             enabled: true,
-            provider: playwright({}),
             headless: true,
-            instances: [{ browser: 'chromium' }],
+            instances: (['light', 'dark'] as const).map((colorScheme) => ({
+              browser: 'chromium',
+              name: `storybook-${colorScheme}`,
+              provider: playwright({ contextOptions: { colorScheme } }),
+            })),
           },
         },
       },

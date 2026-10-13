@@ -19,13 +19,19 @@ const { svg } = renderMap(staticMapData, presentation);
 const map = createMap(fullMapData, presentation);
 ```
 
-Static `layers` supports every interactive layer switch except `neighborhoodLabels`. Static `appearance` supports `theme`, `colors`, and `districtStyle`; browser typography, area interaction styles, and screen-space marker sizing remain interactive settings. Unknown grouped keys are rejected. Supplied grouped keys override flat compatibility keys; omitted or `undefined` grouped keys preserve the flat value or renderer default. The two renderers retain their existing defaults. Marker arrays accept readonly inputs.
+Static `layers` supports every interactive layer switch. `neighborhoodLabels` applies to the opt-in `labelLayout` described below. Static `appearance` supports `theme`, `colors`, and `districtStyle`; browser typography, area interaction styles, and screen-space marker sizing remain interactive settings. Unknown keys and invalid values are rejected for both flat and grouped options. Supplied grouped keys override flat compatibility keys; omitted or `undefined` grouped keys preserve the flat value or renderer default. Undefined color tokens use the theme default instead of entering SVG attributes. The two renderers retain their existing defaults. Marker arrays accept readonly inputs.
 
-Flat compatibility options include `theme`, `width`, `height`, `padding`, `year` (2002, 2012, 2022), `districtLines`, `districtFills`, `districtStyle`, `districtLabels`, `neighborhoodLines`, `labels`, `highways`, `keyRoads`, `roadLabels`, `landmarks`, `bartStations`, `markers`, `overlays`, `title`, `idPrefix`, `colors`, and `animation`. Each optional layer is independent. User-supplied text and attributes are escaped in SVG output.
+Flat compatibility options include `theme`, `width`, `height`, `padding`, `year` (2002, 2012, 2022), `districtLines`, `districtFills`, `districtStyle`, `districtLabels`, `neighborhoodLines`, `neighborhoodLabels`, `labels`, `labelLayout`, `highways`, `keyRoads`, `roadLabels`, `landmarks`, `bartStations`, `markers`, `overlays`, `title`, `idPrefix`, `colors`, and `animation`. Each optional layer is independent. User-supplied text and attributes are escaped in SVG output.
 
 Custom district IDs must be finite numbers. An empty `labelPoints` array uses the district's primary `label` position.
 
+The SVG description names the selected neighborhood source for source-aware data and uses a generic description for compact inputs. It describes enabled layers only when their data is supplied, using actual park and station counts.
+
 `animation: true` (or `{ duration, delay }`) makes a static map draw itself with self-contained, scoped CSS: land fades in, the coast and lines draw, districts grow, then labels and points appear. It plays when the SVG is inserted into a page or loaded as an image, needs no JavaScript, and stays still under `prefers-reduced-motion`. Re-insert the markup to replay it. Default output is unchanged.
+
+Static `labelLayout: { width: 390 }` opts into shared interactive **overview** label priorities, sizes, anchors and collision rules. `width` must be a positive finite CSS canvas width; it does not alter the SVG viewBox. Set `neighborhoodLabels: true` (flat or under `layers`) to add area names in this layout. Guide SVGs and shells enable neighborhood names by default only when opting into `labelLayout`. `labels: false` remains the master switch. Default static output is unchanged.
+
+Static placement uses estimated system-font metrics without browser globals. Interactive placement measures actual fonts and includes live selection and HTML furniture, so exact glyph positions and the visible label set can differ. See the [integration recipe](consumer-integration.md#keep-overview-labels-consistent) for width and progressive-enhancement guidance.
 
 ## Interactive maps
 
@@ -37,7 +43,13 @@ The controller also supports marker, neighborhood, and district selection; distr
 
 If a district callback destroys the map or selects a newer district, the interrupted activation stops without moving keyboard focus or sending a stale event.
 
-`setMarkers()` reconciles by stable marker `id`: retained markers keep their DOM nodes, focus, and in-progress entrance animations; only new IDs animate in. Identical ordered marker updates are a visual no-op. Camera state and `viewportchange` events remain synchronous, while animated camera steps and their dependent label/marker layout commit in the same browser frame.
+`setMarkers()` reconciles by stable marker `id`: retained markers keep any previously created nodes, focus, and in-progress entrance animations. New pin entrances start when the pin first becomes visible; a cached pin does not animate again merely because it returns to the viewport. Disabling entrances, reduced-motion changes, and destruction cancel pending and active entrances. Identical ordered marker updates are a visual no-op. Camera state and `viewportchange` events remain synchronous, while animated camera steps and their dependent label/marker layout commit in the same browser frame.
+
+Interactive maps create individual pin nodes only on first visibility or selection, then cache them for reuse. Record and style updates before first visibility apply to the eventual node. They mount only pins and cluster symbols intersecting a padded viewport; clustered member pins detach. All records remain in the native picker and selectable through the API. Selected and keyboard-focused pins stay mounted, even outside the viewport, and retained nodes return when panning back. Cluster membership uses the complete catalog and stays stable during pan at the same zoom. Static SVG exports are unaffected.
+
+Visible markers and clusters share one tab stop. Use `[` and `]` to move focus, Enter or Space to activate, and Tab to leave the group. Arrow keys retain map panning. Marker replacement preserves the focused ID when available and moves focus to a surviving marker when it is removed.
+
+Activating coincident pins opens a place chooser, including when compact embeds hide the native marker picker. Clusters zoom when their members can separate at maximum zoom; otherwise they open the chooser. Escape or Close returns focus to the originating pin or cluster when it remains visible. Choosing a place selects its marker; replacing markers or destroying the map closes the chooser. `clusteractivate` still reports the activated cluster's markers.
 
 For a small guide, import `guideMapData` from `/guide/data` and pass it to `createMap`. The optional `/guide` entry also provides `createGuideMap`, `mountGuideMap`, and detailed-data loading for existing guide layouts. `/transit` provides the standalone schematic transit animation. See [examples](EXAMPLES.md) and [consumer integration](consumer-integration.md).
 
@@ -94,6 +106,6 @@ Neighborhood IDs are exact source-scoped feature IDs, rather than display names 
 
 ## Coordinates and units
 
-GeoJSON and static projection inputs use `[longitude, latitude]` in WGS84; markers use `{ lng, lat }`. Static `project` returns SVG units. `projectToScreen(lng, lat)` returns pixels relative to the mounted canvas. Camera viewports and pan deltas use the fixed 800 × 800 projected map space, independent of canvas size. Marker radius uses screen pixels in browser maps and SVG units in static output.
+GeoJSON and static projection inputs use `[longitude, latitude]` in WGS84; markers use `{ lng, lat }`. Static `project` returns SVG units. `projectToScreen(lng, lat)` returns pixels relative to the mounted canvas. Camera viewports use the fixed 800 × 800 projected map space, independent of canvas size. Pan deltas use screen pixels, converted using the mounted canvas width. Marker radius uses screen pixels in browser maps and SVG units in static output.
 
 Explore presentation options in the [live map design playground](https://kahwee.github.io/sf-map-svg/playground.html). The page identifies its package version; released builds use compatible options for that installed version.

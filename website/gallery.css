@@ -49,6 +49,28 @@
   font-size: 16px;
   color: var(--ink-2);
 }
+.recording-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 24px;
+  margin-block: 24px;
+  align-items: start;
+}
+.recording-card {
+  min-width: 0;
+  padding: 20px;
+}
+.recording-card h3 {
+  margin: 0;
+  font-size: 24px;
+}
+.recording-card video {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #fff;
+  border: 1px solid var(--rule);
+}
 @media (max-width: 1000px) {
   .gallery {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -56,7 +78,8 @@
 }
 @media (max-width: 620px) {
   .gallery,
-  .builder-list {
+  .builder-list,
+  .recording-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 }

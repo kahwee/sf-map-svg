@@ -57,6 +57,10 @@ export const OverlappingMarkersAndRoute: Story = {
     const first = map.querySelector<SVGElement>('[data-marker-id="first"]');
     first?.focus();
     await userEvent.keyboard('{Enter}');
+    await expect(map.querySelector('[role="dialog"]')).toBeTruthy();
+    const choice = map.querySelector<HTMLButtonElement>('[data-marker-choice="first"]');
+    if (!choice) throw new Error('Missing coincident place choice');
+    await userEvent.click(choice);
     await expect(map.getSelectedMarker()?.id).toBe('first');
   },
 };

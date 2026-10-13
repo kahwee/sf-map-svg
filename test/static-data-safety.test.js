@@ -36,6 +36,12 @@ test('custom district IDs cannot inject SVG attributes, label markup, or animate
     { districtFills: true, districtLines: false, districtLabels: false },
     { districtFills: false, districtLines: true, districtLabels: false },
     { districtFills: false, districtLines: false, districtLabels: true },
+    {
+      districtFills: false,
+      districtLines: false,
+      districtLabels: true,
+      labelLayout: { width: 390 },
+    },
   ];
   for (const id of invalidIds)
     for (const options of layers)

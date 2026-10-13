@@ -26,6 +26,7 @@ export const guideMapData: InteractiveSFMapData = deepFreeze({
   map: {
     coast: coast.features[0].geometry as unknown as Geometry,
     neighborhoods: neighborhoodData.features.map((feature) => ({
+      id: feature.id,
       name: feature.properties.canonicalName,
       geometry: feature.geometry,
     })),

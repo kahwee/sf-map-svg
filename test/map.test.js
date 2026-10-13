@@ -24,7 +24,7 @@ test('neighborhood layer is optional and contains every named area', () => {
   const svg = render({ neighborhoodLines: true, districtLines: false });
   assert.equal((svg.match(/data-neighborhood=/g) ?? []).length, 92);
   assert.ok(!svg.includes('data-layer="district-lines"'));
-  assert.ok(svg.includes('SFAR realtor neighborhood areas, defined in August 2010'));
+  assert.ok(svg.includes('the supplied neighborhood areas'));
   assert.ok(!svg.includes('SF Find neighborhood areas'));
 });
 test('projection places SF points inside map and matches marker coordinates', () => {

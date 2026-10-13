@@ -11,6 +11,7 @@ export function createGuideSVG(options: SFMapOptions = {}) {
     districtLines: false,
     districtLabels: false,
     neighborhoodLines: true,
+    neighborhoodLabels: options.labelLayout !== undefined,
     landmarks: true,
     highways: true,
     keyRoads: true,

@@ -181,7 +181,9 @@ export const KeyboardFocusSurvivesUpdates: Story = {
     await settled();
     expect(map.querySelector<SVGElement>('[data-marker-id="b"]')?.style.display).toBe('');
     map.setMarkers([pins[0]]);
-    await waitFor(() => expect(document.activeElement).toBe(map.querySelector('svg')));
+    await waitFor(() =>
+      expect(document.activeElement).toBe(map.querySelector('[data-marker-id="a"]')),
+    );
   },
 };
 

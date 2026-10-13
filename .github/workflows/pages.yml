@@ -44,13 +44,15 @@ jobs:
       - uses: pnpm/action-setup@v6.1.0
         with:
           version: 12.6.0
-      - uses: actions/setup-node@v7.0.0
+      - uses: actions/setup-node@v7.1.0
         with:
           node-version: '26'
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm check
-      - run: pnpm exec playwright install --with-deps chromium
+      # Browser installation is independent; validation must finish before browser tests.
+      - parallel:
+          - run: pnpm check
+          - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:stories:coverage
       - run: pnpm build-storybook
       - name: Wait for the published version
@@ -72,6 +74,13 @@ jobs:
       - run: pnpm test:visual
       - run: pnpm test:studio
       - run: pnpm test:pages
+      - name: Upload visual differences
+        if: failure()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: pages-visual-differences
+          path: test-results/visual/
+          if-no-files-found: ignore
       - uses: actions/configure-pages@v6.0.0
       - uses: actions/upload-pages-artifact@v5.0.0
         with:

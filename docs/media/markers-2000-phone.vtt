@@ -1,0 +1,25 @@
+WEBVTT
+
+00:00.000 --> 00:02.650
+Phone city overview: 2,000 places grouped into clusters.
+
+00:02.650 --> 00:04.350
+Clustering off; zoom in to show pins in the viewport.
+
+00:04.350 --> 00:05.950
+Zoom in again: fewer pins are visible.
+
+00:05.950 --> 00:08.870
+Pan east, then update labels without replacing marker IDs.
+
+00:08.870 --> 00:10.450
+Select Place 0 from the full picker; the map fits it into view.
+
+00:10.450 --> 00:11.600
+Zoom out from the selected place.
+
+00:11.600 --> 00:13.220
+Return to city view with all 2,000 pins.
+
+00:13.220 --> 00:13.933
+Restore clustering; the selected pin stays visible.

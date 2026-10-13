@@ -118,7 +118,11 @@ test('static rendering accepts shared source-aware geography without changing co
   const { fullMapData } = await import('../dist/src/full-data.js');
   const { renderMap, getLayerPaths } = api;
   const options = { layers: { neighborhoodLines: true }, idPrefix: 'shared-data' };
-  assert.equal(renderMap(fullMapData, options).svg, renderMap(fullMapData.map, options).svg);
+  const withoutDescription = (svg) => svg.replace(/<desc>.*?<\/desc>/, '');
+  assert.equal(
+    withoutDescription(renderMap(fullMapData, options).svg),
+    withoutDescription(renderMap(fullMapData.map, options).svg),
+  );
   for (const source of ['realtor', 'sf-find', 'analysis']) {
     const paths = getLayerPaths(fullMapData, { source });
     assert.equal(paths.neighborhoods.length, fullMapData.neighborhoods[source].features.length);

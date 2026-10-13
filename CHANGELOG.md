@@ -4,6 +4,38 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 4.4.0 — 2026-10-12
+
+- Add opt-in static `labelLayout: { width }` to `renderMap`, `createGuideSVG`, and `createGuideShell`. Static and interactive maps now share overview priorities, neighborhood anchors, font sizes, and collision rules; centered labels retain their anchors during enhancement.
+- Add static `neighborhoodLabels`, available flat or under `layers`, for the new layout. Guide SVGs and shells enable neighborhood names when opting in. Existing fixed-label output and interactive defaults remain unchanged; `labels: false` still hides text while preserving symbols and accessible titles.
+- Keep static layout server-safe and dependency-free. The width is a CSS canvas-width hint, not the SVG projection width; portable font estimates can produce a different visible label set from browser-measured fonts. Document matching data, markers, colors, and layers, plus responsive-width and custom-style limitations.
+- Keep server font estimation out of interactive-only imports and browser runtime code out of static imports. Refresh bundle reports and enforce bounded size budgets for the combined renderer and static-capable Pages tools.
+- Add desktop and phone enhancement stories, collision and input-validation regressions, an SVG example, and copyable integration documentation. Existing screenshot baselines remain unchanged.
+
+## 4.3.2 — 2026-10-10
+
+- Update compatible development tooling and refresh dependency security fixes.
+
+- Cache label candidates across camera frames, prepare neighborhood priority once per source, and measure overlays before SVG updates.
+- Extract marker catalog reconciliation and cluster rendering with explicit cache and listener ownership; add label refresh checks across catalog, appearance, layers, and source changes.
+
+- Create individual marker visuals only on first visibility or selection, keeping the full catalog and retained nodes. Defer new pin entrances and cancel pending entrances with active animations.
+- Benchmark clustered and unclustered continuous pan, rapid zoom, and resize, with separate allocation probes.
+
+- Cull offscreen pins and cluster symbols while preserving the full catalog, cached nodes, selection, and keyboard focus. Cache cluster groups during pan and skip unchanged SVG attributes.
+- Add interactive 2,000-marker desktop and phone stories, viewport count benchmarks, and a Bun 1.4.3 compatibility gate.
+
+- Add production-bundle interaction checks in Chromium, Firefox, and WebKit, plus reproducible marker benchmarks and CI performance artifacts.
+- Add optimized desktop and phone marker screencasts to the Pages examples, with captions and playback size checks.
+- Add a place chooser for coincident pins and clusters that cannot separate at maximum zoom, including compact embeds with hidden native pickers.
+- Give visible markers and clusters one tab stop with bracket-key navigation, preserving focus across marker reordering and recovering focus when a marker is removed.
+
+## 4.3.1 — 2026-10-04
+
+- Reject unknown flat static options and invalid values before rendering or invoking district styling callbacks, matching grouped-option validation.
+- Ignore undefined static color overrides so SVG attributes retain the selected theme's defaults; preserve grouped-option precedence.
+- Describe the actual neighborhood source, enabled and supplied layers, and park and BART station counts in static SVG descriptions. Compact geography uses a source-neutral description.
+
 ## 4.3.0 — 2026-10-02
 
 - Add `selectFeature` with typed marker, neighborhood source/ID and district year/ID references. Missing or mismatched identities preserve current geography and selection.

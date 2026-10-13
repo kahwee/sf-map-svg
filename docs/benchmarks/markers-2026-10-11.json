@@ -1,0 +1,1477 @@
+{
+  "baselineRendererCommit": "1d523d9",
+  "updatedRenderer": "Viewport culling and cluster cache (implementation in the containing commit)",
+  "hostLimits": {
+    "cpuQuota": 4,
+    "memoryGiB": 16
+  },
+  "baseline": {
+    "date": "2026-10-10T23:48:08.093Z",
+    "environment": {
+      "node": "v26.11.1",
+      "os": "linux 6.18.44 x64",
+      "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+      "logicalCpus": 5
+    },
+    "samples": 20,
+    "warmup": 3,
+    "methodology": "Production bundle; imports/fonts loaded before timing. Synthetic 50-column grid, labels enabled, clustering initially enabled, motion disabled. Sync measures call plus forced layout; settled includes two animation frames (not GPU paint). No timing assertions.",
+    "results": [
+      {
+        "browser": "chromium",
+        "version": "153.0.8010.12",
+        "width": 800,
+        "count": 2000,
+        "timings": {
+          "mount": {
+            "syncMs": {
+              "p50": 147.2,
+              "p95": 366.6,
+              "max": 642.9
+            },
+            "settledMs": {
+              "p50": 223.8,
+              "p95": 431.5,
+              "max": 704.1
+            }
+          },
+          "pan": {
+            "syncMs": {
+              "p50": 3.2,
+              "p95": 9,
+              "max": 12.2
+            },
+            "settledMs": {
+              "p50": 93.8,
+              "p95": 138,
+              "max": 142.2
+            }
+          },
+          "zoom": {
+            "syncMs": {
+              "p50": 6,
+              "p95": 10.8,
+              "max": 12
+            },
+            "settledMs": {
+              "p50": 71,
+              "p95": 210.1,
+              "max": 216.6
+            }
+          },
+          "clustering off": {
+            "syncMs": {
+              "p50": 24.4,
+              "p95": 85.2,
+              "max": 123.6
+            },
+            "settledMs": {
+              "p50": 88,
+              "p95": 235,
+              "max": 267.3
+            }
+          },
+          "update retained IDs": {
+            "syncMs": {
+              "p50": 28.3,
+              "p95": 104.2,
+              "max": 148.1
+            },
+            "settledMs": {
+              "p50": 98.1,
+              "p95": 204,
+              "max": 343.2
+            }
+          },
+          "replace all IDs": {
+            "syncMs": {
+              "p50": 92,
+              "p95": 272.5,
+              "max": 291.3
+            },
+            "settledMs": {
+              "p50": 160.8,
+              "p95": 424.9,
+              "max": 440.8
+            }
+          },
+          "identical update": {
+            "syncMs": {
+              "p50": 1.2,
+              "p95": 3.3,
+              "max": 4.1
+            },
+            "settledMs": {
+              "p50": 27.7,
+              "p95": 50.2,
+              "max": 76.3
+            }
+          }
+        },
+        "panFrameMs": {
+          "p50": 50.1,
+          "p95": 166.7,
+          "max": 183.4
+        },
+        "domNodes": 14212
+      },
+      {
+        "browser": "chromium",
+        "version": "153.0.8010.12",
+        "width": 390,
+        "count": 2000,
+        "timings": {
+          "mount": {
+            "syncMs": {
+              "p50": 180.6,
+              "p95": 354,
+              "max": 385.9
+            },
+            "settledMs": {
+              "p50": 269,
+              "p95": 433.4,
+              "max": 437.5
+            }
+          },
+          "pan": {
+            "syncMs": {
+              "p50": 1.3,
+              "p95": 7,
+              "max": 7.3
+            },
+            "settledMs": {
+              "p50": 83.2,
+              "p95": 148.3,
+              "max": 202.4
+            }
+          },
+          "zoom": {
+            "syncMs": {
+              "p50": 3.2,
+              "p95": 11.1,
+              "max": 12
+            },
+            "settledMs": {
+              "p50": 46.3,
+              "p95": 112.2,
+              "max": 117.9
+            }
+          },
+          "clustering off": {
+            "syncMs": {
+              "p50": 27.5,
+              "p95": 58,
+              "max": 69
+            },
+            "settledMs": {
+              "p50": 102.2,
+              "p95": 242.1,
+              "max": 259
+            }
+          },
+          "update retained IDs": {
+            "syncMs": {
+              "p50": 24.4,
+              "p95": 99.9,
+              "max": 106.4
+            },
+            "settledMs": {
+              "p50": 101.5,
+              "p95": 275.7,
+              "max": 287.2
+            }
+          },
+          "replace all IDs": {
+            "syncMs": {
+              "p50": 104.4,
+              "p95": 239.2,
+              "max": 416.8
+            },
+            "settledMs": {
+              "p50": 201.9,
+              "p95": 388.1,
+              "max": 475
+            }
+          },
+          "identical update": {
+            "syncMs": {
+              "p50": 0.7,
+              "p95": 1.1,
+              "max": 2.3
+            },
+            "settledMs": {
+              "p50": 32.8,
+              "p95": 98.1,
+              "max": 100.7
+            }
+          }
+        },
+        "panFrameMs": {
+          "p50": 50,
+          "p95": 183.3,
+          "max": 266.6
+        },
+        "domNodes": 13238
+      },
+      {
+        "browser": "firefox",
+        "version": "155.0",
+        "width": 800,
+        "count": 2000,
+        "timings": {
+          "mount": {
+            "syncMs": {
+              "p50": 351,
+              "p95": 510,
+              "max": 562
+            },
+            "settledMs": {
+              "p50": 573,
+              "p95": 914,
+              "max": 919
+            }
+          },
+          "pan": {
+            "syncMs": {
+              "p50": 11,
+              "p95": 24,
+              "max": 47
+            },
+            "settledMs": {
+              "p50": 166,
+              "p95": 342,
+              "max": 376
+            }
+          },
+          "zoom": {
+            "syncMs": {
+              "p50": 14,
+              "p95": 48,
+              "max": 77
+            },
+            "settledMs": {
+              "p50": 191,
+              "p95": 308,
+              "max": 320
+            }
+          },
+          "clustering off": {
+            "syncMs": {
+              "p50": 68,
+              "p95": 175,
+              "max": 249
+            },
+            "settledMs": {
+              "p50": 199,
+              "p95": 413,
+              "max": 562
+            }
+          },
+          "update retained IDs": {
+            "syncMs": {
+              "p50": 55,
+              "p95": 137,
+              "max": 142
+            },
+            "settledMs": {
+              "p50": 185,
+              "p95": 311,
+              "max": 439
+            }
+          },
+          "replace all IDs": {
+            "syncMs": {
+              "p50": 222,
+              "p95": 434,
+              "max": 471
+            },
+            "settledMs": {
+              "p50": 353,
+              "p95": 641,
+              "max": 1082
+            }
+          },
+          "identical update": {
+            "syncMs": {
+              "p50": 2,
+              "p95": 11,
+              "max": 15
+            },
+            "settledMs": {
+              "p50": 28,
+              "p95": 62,
+              "max": 103
+            }
+          }
+        },
+        "panFrameMs": {
+          "p50": 116.66,
+          "p95": 200.3,
+          "max": 950
+        },
+        "domNodes": 14212
+      },
+      {
+        "browser": "firefox",
+        "version": "155.0",
+        "width": 390,
+        "count": 2000,
+        "timings": {
+          "mount": {
+            "syncMs": {
+              "p50": 386,
+              "p95": 695,
+              "max": 781
+            },
+            "settledMs": {
+              "p50": 493,
+              "p95": 929,
+              "max": 1045
+            }
+          },
+          "pan": {
+            "syncMs": {
+              "p50": 10,
+              "p95": 49,
+              "max": 60
+            },
+            "settledMs": {
+              "p50": 110,
+              "p95": 265,
+              "max": 798
+            }
+          },
+          "zoom": {
+            "syncMs": {
+              "p50": 10,
+              "p95": 20,
+              "max": 29
+            },
+            "settledMs": {
+              "p50": 101,
+              "p95": 267,
+              "max": 303
+            }
+          },
+          "clustering off": {
+            "syncMs": {
+              "p50": 75,
+              "p95": 131,
+              "max": 143
+            },
+            "settledMs": {
+              "p50": 133,
+              "p95": 199,
+              "max": 240
+            }
+          },
+          "update retained IDs": {
+            "syncMs": {
+              "p50": 211,
+              "p95": 322,
+              "max": 413
+            },
+            "settledMs": {
+              "p50": 429,
+              "p95": 636,
+              "max": 646
+            }
+          },
+          "replace all IDs": {
+            "syncMs": {
+              "p50": 161,
+              "p95": 445,
+              "max": 511
+            },
+            "settledMs": {
+              "p50": 229,
+              "p95": 593,
+              "max": 631
+            }
+          },
+          "identical update": {
+            "syncMs": {
+              "p50": 1,
+              "p95": 5,
+              "max": 8
+            },
+            "settledMs": {
+              "p50": 30,
+              "p95": 123,
+              "max": 129
+            }
+          }
+        },
+        "panFrameMs": {
+          "p50": 49.56,
+          "p95": 116.76,
+          "max": 183.24
+        },
+        "domNodes": 13238
+      },
+      {
+        "browser": "webkit",
+        "version": "26.6",
+        "width": 800,
+        "count": 2000,
+        "timings": {
+          "mount": {
+            "syncMs": {
+              "p50": 468,
+              "p95": 603,
+              "max": 786
+            },
+            "settledMs": {
+              "p50": 866,
+              "p95": 1116,
+              "max": 1178
+            }
+          },
+          "pan": {
+            "syncMs": {
+              "p50": 39,
+              "p95": 97,
+              "max": 113
+            },
+            "settledMs": {
+              "p50": 212,
+              "p95": 446,
+              "max": 478
+            }
+          },
+          "zoom": {
+            "syncMs": {
+              "p50": 30,
+              "p95": 67,
+              "max": 117
+            },
+            "settledMs": {
+              "p50": 374,
+              "p95": 608,
+              "max": 698
+            }
+          },
+          "clustering off": {
+            "syncMs": {
+              "p50": 101,
+              "p95": 206,
+              "max": 209
+            },
+            "settledMs": {
+              "p50": 253,
+              "p95": 383,
+              "max": 461
+            }
+          },
+          "update retained IDs": {
+            "syncMs": {
+              "p50": 105,
+              "p95": 120,
+              "max": 120
+            },
+            "settledMs": {
+              "p50": 277,
+              "p95": 294,
+              "max": 307
+            }
+          },
+          "replace all IDs": {
+            "syncMs": {
+              "p50": 896,
+              "p95": 1014,
+              "max": 1025
+            },
+            "settledMs": {
+              "p50": 1057,
+              "p95": 1204,
+              "max": 1272
+            }
+          },
+          "identical update": {
+            "syncMs": {
+              "p50": 1,
+              "p95": 2,
+              "max": 4
+            },
+            "settledMs": {
+              "p50": 26,
+              "p95": 32,
+              "max": 35
+            }
+          }
+        },
+        "panFrameMs": {
+          "p50": 158,
+          "p95": 302,
+          "max": 372
+        },
+        "domNodes": 14212
+      },
+      {
+        "browser": "webkit",
+        "version": "26.6",
+        "width": 390,
+        "count": 2000,
+        "timings": {
+          "mount": {
+            "syncMs": {
+              "p50": 235,
+              "p95": 252,
+              "max": 252
+            },
+            "settledMs": {
+              "p50": 398,
+              "p95": 431,
+              "max": 535
+            }
+          },
+          "pan": {
+            "syncMs": {
+              "p50": 22,
+              "p95": 24,
+              "max": 25
+            },
+            "settledMs": {
+              "p50": 126,
+              "p95": 145,
+              "max": 145
+            }
+          },
+          "zoom": {
+            "syncMs": {
+              "p50": 17,
+              "p95": 21,
+              "max": 24
+            },
+            "settledMs": {
+              "p50": 145,
+              "p95": 152,
+              "max": 162
+            }
+          },
+          "clustering off": {
+            "syncMs": {
+              "p50": 87,
+              "p95": 100,
+              "max": 101
+            },
+            "settledMs": {
+              "p50": 213,
+              "p95": 247,
+              "max": 248
+            }
+          },
+          "update retained IDs": {
+            "syncMs": {
+              "p50": 107,
+              "p95": 117,
+              "max": 122
+            },
+            "settledMs": {
+              "p50": 276,
+              "p95": 291,
+              "max": 302
+            }
+          },
+          "replace all IDs": {
+            "syncMs": {
+              "p50": 889,
+              "p95": 1184,
+              "max": 1263
+            },
+            "settledMs": {
+              "p50": 1050,
+              "p95": 1449,
+              "max": 1482
+            }
+          },
+          "identical update": {
+            "syncMs": {
+              "p50": 1,
+              "p95": 2,
+              "max": 3
+            },
+            "settledMs": {
+              "p50": 23,
+              "p95": 32,
+              "max": 32
+            }
+          }
+        },
+        "panFrameMs": {
+          "p50": 111,
+          "p95": 118,
+          "max": 120
+        },
+        "domNodes": 13239
+      }
+    ]
+  },
+  "viewportRenderer": {
+    "date": "2026-10-11T00:52:23.768Z",
+    "environment": {
+      "node": "v26.11.1",
+      "os": "linux 6.18.44 x64",
+      "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+      "logicalCpus": 5
+    },
+    "samples": 20,
+    "warmup": 3,
+    "labels": true,
+    "methodology": "Production bundle; imports/fonts loaded before timing. Synthetic 50-column grid, clustering initially enabled, motion disabled. Sync measures call plus forced layout; settled includes two animation frames (not GPU paint). No timing assertions.",
+    "results": [
+      {
+        "browser": "chromium",
+        "version": "153.0.8010.12",
+        "width": 800,
+        "count": 2000,
+        "timings": {
+          "mount": {
+            "syncMs": {
+              "p50": 92.3,
+              "p95": 183.3,
+              "max": 199.6
+            },
+            "settledMs": {
+              "p50": 116.8,
+              "p95": 204.3,
+              "max": 229.5
+            }
+          },
+          "pan": {
+            "syncMs": {
+              "p50": 1.1,
+              "p95": 1.2,
+              "max": 1.3
+            },
+            "settledMs": {
+              "p50": 33.4,
+              "p95": 33.6,
+              "max": 41.3
+            }
+          },
+          "zoom": {
+            "syncMs": {
+              "p50": 2.4,
+              "p95": 3.3,
+              "max": 3.6
+            },
+            "settledMs": {
+              "p50": 34.1,
+              "p95": 50,
+              "max": 50
+            }
+          },
+          "clustering off": {
+            "syncMs": {
+              "p50": 1.2,
+              "p95": 1.5,
+              "max": 2.8
+            },
+            "settledMs": {
+              "p50": 55.5,
+              "p95": 59.3,
+              "max": 109.9
+            }
+          },
+          "update retained IDs": {
+            "syncMs": {
+              "p50": 17,
+              "p95": 21.2,
+              "max": 25.6
+            },
+            "settledMs": {
+              "p50": 33.3,
+              "p95": 35.7,
+              "max": 41.3
+            }
+          },
+          "replace all IDs": {
+            "syncMs": {
+              "p50": 52.8,
+              "p95": 101.6,
+              "max": 101.8
+            },
+            "settledMs": {
+              "p50": 66.5,
+              "p95": 115.7,
+              "max": 119.8
+            }
+          },
+          "identical update": {
+            "syncMs": {
+              "p50": 0.8,
+              "p95": 1.3,
+              "max": 2.1
+            },
+            "settledMs": {
+              "p50": 33.1,
+              "p95": 33.4,
+              "max": 34.2
+            }
+          }
+        },
+        "panFrameMs": {
+          "p50": 16.7,
+          "p95": 16.8,
+          "max": 16.8
+        },
+        "domNodes": 3342,
+        "viewportStates": [
+          {
+            "clustering": true,
+            "view": [0, 0, 800],
+            "pins": 0,
+            "clusters": 221,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": true,
+            "view": [100, 100, 400],
+            "pins": 0,
+            "clusters": 209,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": true,
+            "view": [200, 200, 200],
+            "pins": 228,
+            "clusters": 0,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": false,
+            "view": [0, 0, 800],
+            "pins": 2000,
+            "clusters": 0,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": false,
+            "view": [100, 100, 400],
+            "pins": 777,
+            "clusters": 0,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": false,
+            "view": [200, 200, 200],
+            "pins": 228,
+            "clusters": 0,
+            "pickerOptions": 2001
+          }
+        ]
+      },
+      {
+        "browser": "chromium",
+        "version": "153.0.8010.12",
+        "width": 390,
+        "count": 2000,
+        "timings": {
+          "mount": {
+            "syncMs": {
+              "p50": 97.6,
+              "p95": 114.9,
+              "max": 119.1
+            },
+            "settledMs": {
+              "p50": 115.8,
+              "p95": 133.5,
+              "max": 134.8
+            }
+          },
+          "pan": {
+            "syncMs": {
+              "p50": 0.6,
+              "p95": 0.8,
+              "max": 6.6
+            },
+            "settledMs": {
+              "p50": 33.5,
+              "p95": 33.6,
+              "max": 33.6
+            }
+          },
+          "zoom": {
+            "syncMs": {
+              "p50": 1.2,
+              "p95": 1.4,
+              "max": 1.8
+            },
+            "settledMs": {
+              "p50": 33.3,
+              "p95": 33.5,
+              "max": 39.1
+            }
+          },
+          "clustering off": {
+            "syncMs": {
+              "p50": 1,
+              "p95": 1.6,
+              "max": 2.2
+            },
+            "settledMs": {
+              "p50": 52,
+              "p95": 61.6,
+              "max": 78.4
+            }
+          },
+          "update retained IDs": {
+            "syncMs": {
+              "p50": 12.9,
+              "p95": 14.6,
+              "max": 15.1
+            },
+            "settledMs": {
+              "p50": 33.3,
+              "p95": 33.8,
+              "max": 38.3
+            }
+          },
+          "replace all IDs": {
+            "syncMs": {
+              "p50": 63.6,
+              "p95": 94.1,
+              "max": 102.7
+            },
+            "settledMs": {
+              "p50": 79,
+              "p95": 101.9,
+              "max": 120.4
+            }
+          },
+          "identical update": {
+            "syncMs": {
+              "p50": 0.7,
+              "p95": 0.9,
+              "max": 1.1
+            },
+            "settledMs": {
+              "p50": 33.4,
+              "p95": 33.5,
+              "max": 33.6
+            }
+          }
+        },
+        "panFrameMs": {
+          "p50": 16.7,
+          "p95": 16.7,
+          "max": 16.8
+        },
+        "domNodes": 2950,
+        "viewportStates": [
+          {
+            "clustering": true,
+            "view": [0, 0, 800],
+            "pins": 0,
+            "clusters": 56,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": true,
+            "view": [100, 100, 400],
+            "pins": 0,
+            "clusters": 79,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": true,
+            "view": [200, 200, 200],
+            "pins": 0,
+            "clusters": 69,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": false,
+            "view": [0, 0, 800],
+            "pins": 2000,
+            "clusters": 0,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": false,
+            "view": [100, 100, 400],
+            "pins": 858,
+            "clusters": 0,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": false,
+            "view": [200, 200, 200],
+            "pins": 247,
+            "clusters": 0,
+            "pickerOptions": 2001
+          }
+        ]
+      },
+      {
+        "browser": "firefox",
+        "version": "155.0",
+        "width": 800,
+        "count": 2000,
+        "timings": {
+          "mount": {
+            "syncMs": {
+              "p50": 106,
+              "p95": 112,
+              "max": 114
+            },
+            "settledMs": {
+              "p50": 135,
+              "p95": 144,
+              "max": 159
+            }
+          },
+          "pan": {
+            "syncMs": {
+              "p50": 8,
+              "p95": 9,
+              "max": 9
+            },
+            "settledMs": {
+              "p50": 45,
+              "p95": 67,
+              "max": 74
+            }
+          },
+          "zoom": {
+            "syncMs": {
+              "p50": 9,
+              "p95": 9,
+              "max": 10
+            },
+            "settledMs": {
+              "p50": 52,
+              "p95": 64,
+              "max": 65
+            }
+          },
+          "clustering off": {
+            "syncMs": {
+              "p50": 4,
+              "p95": 9,
+              "max": 10
+            },
+            "settledMs": {
+              "p50": 77,
+              "p95": 93,
+              "max": 208
+            }
+          },
+          "update retained IDs": {
+            "syncMs": {
+              "p50": 21,
+              "p95": 25,
+              "max": 25
+            },
+            "settledMs": {
+              "p50": 34,
+              "p95": 38,
+              "max": 46
+            }
+          },
+          "replace all IDs": {
+            "syncMs": {
+              "p50": 54,
+              "p95": 63,
+              "max": 65
+            },
+            "settledMs": {
+              "p50": 68,
+              "p95": 81,
+              "max": 83
+            }
+          },
+          "identical update": {
+            "syncMs": {
+              "p50": 2,
+              "p95": 3,
+              "max": 4
+            },
+            "settledMs": {
+              "p50": 31,
+              "p95": 33,
+              "max": 74
+            }
+          }
+        },
+        "panFrameMs": {
+          "p50": 17.14,
+          "p95": 49.38,
+          "max": 50.34
+        },
+        "domNodes": 3342,
+        "viewportStates": [
+          {
+            "clustering": true,
+            "view": [0, 0, 800],
+            "pins": 0,
+            "clusters": 221,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": true,
+            "view": [100, 100, 400],
+            "pins": 0,
+            "clusters": 209,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": true,
+            "view": [200, 200, 200],
+            "pins": 228,
+            "clusters": 0,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": false,
+            "view": [0, 0, 800],
+            "pins": 2000,
+            "clusters": 0,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": false,
+            "view": [100, 100, 400],
+            "pins": 777,
+            "clusters": 0,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": false,
+            "view": [200, 200, 200],
+            "pins": 228,
+            "clusters": 0,
+            "pickerOptions": 2001
+          }
+        ]
+      },
+      {
+        "browser": "firefox",
+        "version": "155.0",
+        "width": 390,
+        "count": 2000,
+        "timings": {
+          "mount": {
+            "syncMs": {
+              "p50": 123,
+              "p95": 137,
+              "max": 139
+            },
+            "settledMs": {
+              "p50": 148,
+              "p95": 169,
+              "max": 170
+            }
+          },
+          "pan": {
+            "syncMs": {
+              "p50": 5,
+              "p95": 6,
+              "max": 6
+            },
+            "settledMs": {
+              "p50": 33,
+              "p95": 35,
+              "max": 35
+            }
+          },
+          "zoom": {
+            "syncMs": {
+              "p50": 5,
+              "p95": 6,
+              "max": 6
+            },
+            "settledMs": {
+              "p50": 33,
+              "p95": 36,
+              "max": 36
+            }
+          },
+          "clustering off": {
+            "syncMs": {
+              "p50": 2,
+              "p95": 3,
+              "max": 4
+            },
+            "settledMs": {
+              "p50": 69,
+              "p95": 81,
+              "max": 82
+            }
+          },
+          "update retained IDs": {
+            "syncMs": {
+              "p50": 45,
+              "p95": 46,
+              "max": 47
+            },
+            "settledMs": {
+              "p50": 50,
+              "p95": 66,
+              "max": 101
+            }
+          },
+          "replace all IDs": {
+            "syncMs": {
+              "p50": 78,
+              "p95": 83,
+              "max": 138
+            },
+            "settledMs": {
+              "p50": 84,
+              "p95": 100,
+              "max": 151
+            }
+          },
+          "identical update": {
+            "syncMs": {
+              "p50": 1,
+              "p95": 2,
+              "max": 2
+            },
+            "settledMs": {
+              "p50": 33,
+              "p95": 34,
+              "max": 74
+            }
+          }
+        },
+        "panFrameMs": {
+          "p50": 17.08,
+          "p95": 17.14,
+          "max": 17.36
+        },
+        "domNodes": 2950,
+        "viewportStates": [
+          {
+            "clustering": true,
+            "view": [0, 0, 800],
+            "pins": 0,
+            "clusters": 56,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": true,
+            "view": [100, 100, 400],
+            "pins": 0,
+            "clusters": 79,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": true,
+            "view": [200, 200, 200],
+            "pins": 0,
+            "clusters": 69,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": false,
+            "view": [0, 0, 800],
+            "pins": 2000,
+            "clusters": 0,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": false,
+            "view": [100, 100, 400],
+            "pins": 858,
+            "clusters": 0,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": false,
+            "view": [200, 200, 200],
+            "pins": 247,
+            "clusters": 0,
+            "pickerOptions": 2001
+          }
+        ]
+      },
+      {
+        "browser": "webkit",
+        "version": "26.6",
+        "width": 800,
+        "count": 2000,
+        "timings": {
+          "mount": {
+            "syncMs": {
+              "p50": 160,
+              "p95": 163,
+              "max": 166
+            },
+            "settledMs": {
+              "p50": 254,
+              "p95": 261,
+              "max": 261
+            }
+          },
+          "pan": {
+            "syncMs": {
+              "p50": 15,
+              "p95": 17,
+              "max": 19
+            },
+            "settledMs": {
+              "p50": 50,
+              "p95": 61,
+              "max": 83
+            }
+          },
+          "zoom": {
+            "syncMs": {
+              "p50": 16,
+              "p95": 26,
+              "max": 37
+            },
+            "settledMs": {
+              "p50": 123,
+              "p95": 187,
+              "max": 204
+            }
+          },
+          "clustering off": {
+            "syncMs": {
+              "p50": 5,
+              "p95": 11,
+              "max": 12
+            },
+            "settledMs": {
+              "p50": 171,
+              "p95": 271,
+              "max": 332
+            }
+          },
+          "update retained IDs": {
+            "syncMs": {
+              "p50": 32,
+              "p95": 53,
+              "max": 60
+            },
+            "settledMs": {
+              "p50": 67,
+              "p95": 95,
+              "max": 129
+            }
+          },
+          "replace all IDs": {
+            "syncMs": {
+              "p50": 805,
+              "p95": 957,
+              "max": 999
+            },
+            "settledMs": {
+              "p50": 844,
+              "p95": 1027,
+              "max": 1047
+            }
+          },
+          "identical update": {
+            "syncMs": {
+              "p50": 2,
+              "p95": 4,
+              "max": 5
+            },
+            "settledMs": {
+              "p50": 25,
+              "p95": 29,
+              "max": 32
+            }
+          }
+        },
+        "panFrameMs": {
+          "p50": 39,
+          "p95": 49,
+          "max": 69
+        },
+        "domNodes": 3342,
+        "viewportStates": [
+          {
+            "clustering": true,
+            "view": [0, 0, 800],
+            "pins": 0,
+            "clusters": 221,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": true,
+            "view": [100, 100, 400],
+            "pins": 0,
+            "clusters": 209,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": true,
+            "view": [200, 200, 200],
+            "pins": 228,
+            "clusters": 0,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": false,
+            "view": [0, 0, 800],
+            "pins": 2000,
+            "clusters": 0,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": false,
+            "view": [100, 100, 400],
+            "pins": 777,
+            "clusters": 0,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": false,
+            "view": [200, 200, 200],
+            "pins": 228,
+            "clusters": 0,
+            "pickerOptions": 2001
+          }
+        ]
+      },
+      {
+        "browser": "webkit",
+        "version": "26.6",
+        "width": 390,
+        "count": 2000,
+        "timings": {
+          "mount": {
+            "syncMs": {
+              "p50": 164,
+              "p95": 174,
+              "max": 176
+            },
+            "settledMs": {
+              "p50": 237,
+              "p95": 254,
+              "max": 277
+            }
+          },
+          "pan": {
+            "syncMs": {
+              "p50": 10,
+              "p95": 11,
+              "max": 11
+            },
+            "settledMs": {
+              "p50": 40,
+              "p95": 61,
+              "max": 76
+            }
+          },
+          "zoom": {
+            "syncMs": {
+              "p50": 10,
+              "p95": 14,
+              "max": 30
+            },
+            "settledMs": {
+              "p50": 57,
+              "p95": 65,
+              "max": 99
+            }
+          },
+          "clustering off": {
+            "syncMs": {
+              "p50": 4,
+              "p95": 5,
+              "max": 5
+            },
+            "settledMs": {
+              "p50": 150,
+              "p95": 159,
+              "max": 164
+            }
+          },
+          "update retained IDs": {
+            "syncMs": {
+              "p50": 20,
+              "p95": 33,
+              "max": 36
+            },
+            "settledMs": {
+              "p50": 49,
+              "p95": 64,
+              "max": 68
+            }
+          },
+          "replace all IDs": {
+            "syncMs": {
+              "p50": 781,
+              "p95": 1001,
+              "max": 1195
+            },
+            "settledMs": {
+              "p50": 820,
+              "p95": 1042,
+              "max": 1235
+            }
+          },
+          "identical update": {
+            "syncMs": {
+              "p50": 1,
+              "p95": 2,
+              "max": 2
+            },
+            "settledMs": {
+              "p50": 30,
+              "p95": 32,
+              "max": 33
+            }
+          }
+        },
+        "panFrameMs": {
+          "p50": 28,
+          "p95": 36,
+          "max": 41
+        },
+        "domNodes": 2951,
+        "viewportStates": [
+          {
+            "clustering": true,
+            "view": [0, 0, 800],
+            "pins": 0,
+            "clusters": 56,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": true,
+            "view": [100, 100, 400],
+            "pins": 0,
+            "clusters": 79,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": true,
+            "view": [200, 200, 200],
+            "pins": 0,
+            "clusters": 69,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": false,
+            "view": [0, 0, 800],
+            "pins": 2000,
+            "clusters": 0,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": false,
+            "view": [100, 100, 400],
+            "pins": 858,
+            "clusters": 0,
+            "pickerOptions": 2001
+          },
+          {
+            "clustering": false,
+            "view": [200, 200, 200],
+            "pins": 247,
+            "clusters": 0,
+            "pickerOptions": 2001
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/html-vite';
-import { expect } from 'storybook/test';
+import { expect, waitFor } from 'storybook/test';
 import { createMap, type MapController } from '../src/api.ts';
 import { guideMapData } from '../src/guide-data.ts';
 import { guideOptions } from '../src/presets.ts';
@@ -121,6 +121,8 @@ map.on('markerchange', ({ marker }) => console.log(marker?.label));`,
     if (!picker || !current) return;
     await userEvent.selectOptions(picker, 'ferry');
     expect(current.getSelectedMarker()?.id).toBe('ferry');
+    current.camera.reset({ animate: false });
+    await waitFor(() => expect(map?.querySelector('[data-marker-id="dolores"]')).toBeTruthy());
     const pin = map?.querySelector<SVGElement>('[data-marker-id="dolores"]');
     pin?.focus();
     await userEvent.keyboard('{Enter}');

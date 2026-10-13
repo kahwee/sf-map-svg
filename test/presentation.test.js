@@ -53,7 +53,7 @@ test('grouped static presentation matches flat rendering and has explicit preced
   }).svg;
   assert.doesNotMatch(mixed, /data-layer="district-fills"/);
   for (const options of [
-    { layers: { neighborhoodLabels: true } },
+    { layers: { neighborhoodLabels: 1 } },
     { layers: { bartStations: 1 } },
     { appearance: { font: 'Georgia' } },
     { appearance: { colors: { ocean: 'red' } } },

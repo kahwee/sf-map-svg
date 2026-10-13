@@ -75,6 +75,10 @@ document.querySelector('#map').innerHTML = svg;`,
     const image = canvasElement.querySelector('svg');
     expect(image).toBeTruthy();
     expect(image?.querySelectorAll('path').length).toBeGreaterThan(0);
+    const description = image?.querySelector('desc')?.textContent;
+    expect(description).toContain('the supplied neighborhood areas');
+    expect(description).not.toContain('district boundaries');
+    expect(description).toContain(`BART stations: ${guideMapData.map.bartStations?.length}.`);
   },
 };
 

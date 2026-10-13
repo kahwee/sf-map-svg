@@ -47,12 +47,16 @@ export interface SFMapOptions {
   source?: NeighborhoodSource;
   districtLines?: boolean;
   neighborhoodLines?: boolean;
+  /** Neighborhood names in the opt-in collision layout. */
+  neighborhoodLabels?: boolean;
   districtFills?: boolean;
   /** Evaluated once per district at construction/style/year updates; call setDistrictStyle again when external data changes. */
   districtStyle?: (district: import('./map-core.js').DistrictRowData) => DistrictStyle;
   districtLabels?: boolean;
   /** Hide all visible text labels while retaining geographic symbols and accessible titles. */
   labels?: boolean;
+  /** Opt into interactive overview label priorities/collisions at this CSS display width. Uses estimated system-font metrics without a DOM. */
+  labelLayout?: { width: number };
   highways?: boolean;
   keyRoads?: boolean;
   roadLabels?: boolean;
@@ -89,7 +93,7 @@ export interface SFMapOptions {
 }
 
 /** Presentation supported by both the static and interactive renderers. */
-export type StaticMapLayers = Omit<InteractiveLayers, 'neighborhoodLabels'>;
+export type StaticMapLayers = InteractiveLayers;
 export type StaticMapAppearance = Pick<SFMapOptions, 'theme' | 'colors' | 'districtStyle'>;
 
 /** Serializable viewport in the interactive map's fixed 800 × 800 projected space. */
@@ -258,7 +262,7 @@ export interface NeighborhoodExplorerElement extends HTMLElement {
   fitGeometry(geometry: Geometry, padding?: number | MapPadding, options?: CameraOptions): void;
   /** Explicitly engage map touch gestures; false restores page gestures. */
   setTouchNavigation(enabled: boolean): void;
-  /** Reconcile stable IDs; retained markers preserve nodes, focus, and entrance animations. */
+  /** Reconcile stable IDs; preserve existing nodes and focus. Pin visuals allocate on first visibility/selection. */
   setMarkers(markers: readonly MapMarker[]): void;
   setOverlays(overlays: readonly MapOverlay[]): void;
   selectMarker(id: string | null, options?: { fit?: boolean } & CameraOptions): boolean;
