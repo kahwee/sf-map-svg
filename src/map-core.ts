@@ -5,7 +5,7 @@ import { validateMarkers, validateOverlays } from './validation.js';
 export type { DistrictYear, MapMarker, MapOverlay, SFMapOptions } from './types.js';
 
 import { prepareDistrictStyles } from './district-style.js';
-import { geometryPath, positions, rawProject } from './geometry.js';
+import { geometryPath, type Project, positions, rawProject } from './geometry.js';
 import * as layers from './layers.js';
 import { normalizeStaticAnimation, staticAnimationStyle } from './static-animation.js';
 import { escapeXml, stroke } from './svg.js';
@@ -13,7 +13,7 @@ import { escapeXml, stroke } from './svg.js';
 export interface SFMapData {
   coast: Geometry;
   districts?: Readonly<Partial<Record<DistrictYear, readonly DistrictRowData[]>>>;
-  neighborhoods?: readonly { name: string; geometry: Geometry }[];
+  neighborhoods?: readonly { id?: string; name: string; geometry: Geometry }[];
   highways?: readonly { route: string; geometry: Geometry }[];
   landmarks?: readonly LandmarkData[];
   keyRoads?: readonly KeyRoadData[];
@@ -170,7 +170,11 @@ export function resolveMapColors(
 let sequence = 0;
 
 /** Make an offline SVG and the matching longitude/latitude projection. */
-export function createSFMapWithData(options: SFMapOptions, data: SFMapData) {
+export function createSFMapWithData(
+  options: SFMapOptions,
+  data: SFMapData,
+  renderLabels?: (project: Project) => string,
+) {
   const {
     theme = 'districts',
     width = 800,
@@ -262,15 +266,19 @@ export function createSFMapWithData(options: SFMapOptions, data: SFMapData) {
   parts.push(
     `<path data-layer="coastline" d="${coastPath}" ${stroke(colors.district, 0.65)}${animated ? ' pathLength="1"' : ''}/>`,
   );
-  if (labels && districtLabels) parts.push(layers.districtLabels(districts, context));
-  if (labels && landmarks) parts.push(layers.landmarkLabels(landmarkData, context));
-  if (labels && roadLabels) parts.push(layers.keyRoadLabels(roadData, context));
-  if (bartStations) parts.push(layers.bartStations(stationData, context));
+  if (labels && !renderLabels && districtLabels)
+    parts.push(layers.districtLabels(districts, context));
+  if (labels && !renderLabels && landmarks)
+    parts.push(layers.landmarkLabels(landmarkData, context));
+  if (labels && !renderLabels && roadLabels) parts.push(layers.keyRoadLabels(roadData, context));
+  if (bartStations)
+    parts.push(layers.bartStations(stationData, { ...context, labels: labels && !renderLabels }));
   for (const overlay of options.overlays ?? []) {
     parts.push(
       `<path data-overlay-id="${escapeXml(overlay.id)}"${overlay.label ? ` aria-label="${escapeXml(overlay.label)}"` : ''} d="${path(overlay.geometry)}" fill="${escapeXml(overlay.fill ?? 'none')}" fill-opacity="${overlay.fillOpacity ?? 1}" stroke="${escapeXml(overlay.stroke ?? colors.road)}" stroke-width="${overlay.strokeWidth ?? 2}" vector-effect="non-scaling-stroke"${animated ? ' pathLength="1"' : ''}${overlay.visible === false ? ' display="none"' : ''}/>`,
     );
   }
+  if (labels && renderLabels) parts.push(renderLabels(project));
   parts.push(layers.markers(markers, context), '</g></svg>');
   return {
     svg: parts.join(''),

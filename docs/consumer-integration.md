@@ -15,6 +15,46 @@ const markup = createGuideShell({ title: 'Explore San Francisco' });
 
 The shell uses an 800 × 800 projection with 28 units of padding, matching the interactive map. Use `createGuideSVG()` for custom dimensions. Rendering is offline, with zero runtime dependencies.
 
+## Keep overview labels consistent
+
+Opt into the browser's overview label priorities and collision rules with a target **canvas width in CSS pixels**:
+
+```ts
+const labeledMarkup = createGuideShell({
+  title: 'Explore San Francisco',
+  labelLayout: { width: 390 },
+});
+```
+
+This keeps the 800 × 800 projection. It sizes and places text for a 390 px canvas, prioritizes major parks and primary roads, includes neighborhood names, and avoids label, marker, and BART-symbol collisions. BART names and smaller parks remain deferred until interactive zoom. Use the same geography, colors, markers and layer switches when mounting. Set `layers.neighborhoodLabels: false` on both renderers to omit neighborhood names.
+
+The width is a rendering hint, not a responsive script. Generate an appropriate variant for your known embed width; an SVG displayed at another width scales its labels with the artwork. Static layout uses conservative estimated system-font widths, while the browser measures actual fonts and recalculates on resize. Font metrics, custom browser label styles, selection, clustering and HTML overlays can therefore change the final label set or position. This reduces the transition without promising pixel-identical hydration. Existing calls without `labelLayout` keep their original fixed labels.
+
+For a fixed-width embed, use shared inputs on the server and in the browser:
+
+```ts
+// Shared inputs: coordinates, IDs, radii, colors and layer choices must match.
+const guideMarkers = [
+  { id: 'ferry', label: 'Ferry Building', lng: -122.3937, lat: 37.7955, radius: 7 },
+];
+const guideLayers = { neighborhoodLabels: true, roadLabels: true };
+const guideColors = { label: '#183e58', landmark: '#426641' };
+
+// Server: place this HTML in a canvas that is 390 CSS pixels wide.
+const labeledPlacesMarkup = createGuideShell({
+  labelLayout: { width: 390 },
+  markers: guideMarkers,
+  layers: guideLayers,
+  appearance: { colors: guideColors },
+});
+```
+
+After inserting that markup, pass `markers: guideMarkers`, `layers: guideLayers`, and `appearance: { colors: guideColors }` to `mountGuideController()` as shown below. The static-only `labelLayout` option is not a browser option: the controller measures the actual canvas and font. The shell border is outside the canvas, so a default shell with a 390 px outer width has a 388 px canvas.
+
+For responsive layouts whose canvas width is unknown at build time, choose a representative width and accept text scaling until enhancement, or serve independently rendered SVG variants through your application's responsive markup. The package does not detect a device on the server. Keep `labels: false` if your design requires no visible text change at enhancement.
+
+For `renderMap()`, also enable `neighborhoodLabels` explicitly; it defaults off outside the guide preset. `labels: false` hides all text in either layout while preserving symbols and accessible titles.
+
 ## Enhance the existing frame
 
 In your browser entry, mount the controller into that shell:
@@ -27,7 +67,9 @@ if (!shell) throw new Error('Missing guide shell');
 const guide = mountGuideController(shell, {
   attribution: 'compact',
   features: { motion: { duration: 400 }, markerEntrance: true },
-  appearance: { theme: 'transit' },
+  markers: guideMarkers,
+  layers: guideLayers,
+  appearance: { theme: 'transit', colors: guideColors },
 });
 
 // Call before your application removes the containing view.

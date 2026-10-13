@@ -15,7 +15,13 @@ import { fitBounds, interiorAnchor, projectedBounds } from './explorer-layout.js
 import { controlKeys, layerKeys, normalizeFeatures, validateSwitchPatch } from './features.js';
 import { createFrameScheduler } from './frame-scheduler.js';
 import { geometryPath } from './geometry.js';
-import { createLabelRenderer, type RenderLabel } from './label-renderer.js';
+import {
+  type LabelItem,
+  labelCandidates,
+  type RenderLabel,
+  styleLabels,
+} from './label-candidates.js';
+import { createLabelRenderer } from './label-renderer.js';
 import { createLayerTransitions } from './layer-transition.js';
 import {
   createSFMapWithData,
@@ -57,12 +63,6 @@ interface NeighborhoodItem {
   bounds: Bounds;
   point: [number, number] | undefined;
   area: number;
-}
-interface LabelItem {
-  point: [number, number];
-  name: string;
-  kind: string;
-  level?: 'primary' | 'secondary';
 }
 
 const sourceNames: Record<NeighborhoodSource, string> = {
@@ -1053,62 +1053,38 @@ export function createNeighborhoodExplorerCore(
         name: selectedItem.feature.properties.canonicalName,
         kind: 'selected',
       });
-    if (enabled('districtLabels')) candidates.push(...districtItems);
-    if (enabled('bartStations') && zoom >= 1.8) candidates.push(...stationItems);
-    candidates.push(
-      ...(enabled('landmarks') ? parkItems : []).filter(
-        (park) =>
-          zoom >= 1.8 ||
-          park.name === 'Golden Gate Park' ||
-          (width >= 550 && park.name === 'Presidio'),
-      ),
-    );
-    candidates.push(
-      ...(enabled('roadLabels') ? roadItems : []).filter(
-        (road) => road.level === 'primary' || zoom >= 1.8,
-      ),
-    );
-    if (enabled('neighborhoodLabels'))
-      candidates.push(
-        ...orderedNeighborhoods.flatMap((item) =>
-          item.feature !== selected && item.point
-            ? [
-                {
-                  point: item.point,
-                  name: item.feature.properties.canonicalName,
-                  kind: 'neighborhood',
-                },
-              ]
+    preparedLabels = styleLabels(
+      labelCandidates(
+        {
+          selected: candidates,
+          districts: enabled('districtLabels') ? districtItems : [],
+          stations: enabled('bartStations') ? stationItems : [],
+          parks: enabled('landmarks') ? parkItems : [],
+          roads: enabled('roadLabels') ? roadItems : [],
+          neighborhoods: enabled('neighborhoodLabels')
+            ? orderedNeighborhoods.flatMap((item) =>
+                item.feature !== selected && item.point
+                  ? [
+                      {
+                        point: item.point,
+                        name: item.feature.properties.canonicalName,
+                        kind: 'neighborhood',
+                      },
+                    ]
+                  : [],
+              )
             : [],
-        ),
-      );
-    preparedLabels = candidates.map((item) => {
-      const fontSize =
-        item.kind === 'road'
-          ? Math.max(minLabelSize, Math.min(11, maxLabelSize))
-          : Math.max(minLabelSize, Math.min(maxLabelSize, 12));
-      return {
-        ...item,
-        fontSize,
-        fontWeight:
-          labelStyle.fontWeight ??
-          (item.kind.startsWith('selected') || item.kind === 'district' ? 700 : 550),
-        fill:
-          colors.label ??
-          (item.kind === 'park'
-            ? (colors.landmark ?? '#426641')
-            : item.kind === 'road'
-              ? '#77736b'
-              : '#163d61'),
-        halo: labelStyle.haloColor ?? '#ffffff',
-        offset:
-          item.kind === 'selected-marker'
-            ? (marker?.marker.radius ?? markerRadius) + 9
-            : item.kind === 'bart'
-              ? 11
-              : 0,
-      };
-    });
+        },
+        width,
+        zoom,
+      ),
+      {
+        colors,
+        labelStyle,
+        labelSize: { min: minLabelSize, max: maxLabelSize },
+        markerRadius: marker?.marker.radius ?? markerRadius,
+      },
+    );
     return preparedLabels;
   }
   function drawLabels() {

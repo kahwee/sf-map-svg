@@ -14,6 +14,7 @@ test('static entry points reject typo keys and invalid flat values before stylin
     'districtLines',
     'districtLabels',
     'neighborhoodLines',
+    'neighborhoodLabels',
     'landmarks',
     'bartStations',
     'highways',
@@ -23,7 +24,6 @@ test('static entry points reject typo keys and invalid flat values before stylin
   ];
   const invalid = [
     { landmark: true },
-    { neighborhoodLabels: true },
     { theme: 'unknown' },
     { colors: null },
     { colors: { ocean: 'red' } },

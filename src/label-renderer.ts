@@ -2,16 +2,7 @@ import type { Bounds } from '../data/types.js';
 import { setAttributeIfChanged } from './dom.js';
 import { layoutLabels } from './explorer-layout.js';
 
-export interface RenderLabel {
-  point: [number, number];
-  name: string;
-  kind: string;
-  fontSize: number;
-  fontWeight: number;
-  fill: string;
-  halo: string;
-  offset: number;
-}
+import type { RenderLabel } from './label-candidates.js';
 
 /** Reuse text nodes and screen-space metrics throughout a camera animation. */
 export function createLabelRenderer(layer: SVGGElement) {

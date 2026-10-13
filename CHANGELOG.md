@@ -4,6 +4,14 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 4.4.0 — 2026-10-12
+
+- Add opt-in static `labelLayout: { width }` to `renderMap`, `createGuideSVG`, and `createGuideShell`. Static and interactive maps now share overview priorities, neighborhood anchors, font sizes, and collision rules; centered labels retain their anchors during enhancement.
+- Add static `neighborhoodLabels`, available flat or under `layers`, for the new layout. Guide SVGs and shells enable neighborhood names when opting in. Existing fixed-label output and interactive defaults remain unchanged; `labels: false` still hides text while preserving symbols and accessible titles.
+- Keep static layout server-safe and dependency-free. The width is a CSS canvas-width hint, not the SVG projection width; portable font estimates can produce a different visible label set from browser-measured fonts. Document matching data, markers, colors, and layers, plus responsive-width and custom-style limitations.
+- Keep server font estimation out of interactive-only imports and browser runtime code out of static imports. Refresh bundle reports and enforce bounded size budgets for the combined renderer and static-capable Pages tools.
+- Add desktop and phone enhancement stories, collision and input-validation regressions, an SVG example, and copyable integration documentation. Existing screenshot baselines remain unchanged.
+
 ## 4.3.2 — 2026-10-10
 
 - Update compatible development tooling and refresh dependency security fixes.

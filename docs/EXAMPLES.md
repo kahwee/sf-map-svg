@@ -7,6 +7,7 @@ Choose by task. All snippets use the public package API; browser examples need a
 | I want to… | Start here |
 | --- | --- |
 | Render an SVG on a server | [Static map](#static-svg) |
+| Show labels before JavaScript loads | [Static-to-interactive guide](consumer-integration.md#keep-overview-labels-consistent) |
 | Add a small map to a browser | [Lightweight guide](#lightweight-interactive-guide) |
 | Bundle only selected geography | [Selected data](#selected-geography) |
 | Draw a route over the city | [Route overlay](#route-overlay) |

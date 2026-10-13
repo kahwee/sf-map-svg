@@ -3,6 +3,7 @@ import type { InteractiveSFMapData } from './explorer-data.js';
 import { validateSwitchPatch } from './features.js';
 import { createSFMapWithData, getLayerPathsWithData, type SFMapData } from './map-core.js';
 import { normalizeStaticAnimation } from './static-animation.js';
+import { staticLabels } from './static-labels.js';
 import type { SFMapOptions } from './types.js';
 import { assertOptions, validateMarkers, validateOverlays } from './validation.js';
 
@@ -21,7 +22,11 @@ export type {
 export function renderMap(data: StaticMapInput, options: SFMapOptions = {}) {
   const prepared = expandStaticOptions(options);
   const { map, source } = staticInput(data, prepared);
-  return createSFMapWithData({ ...prepared, source }, map);
+  return createSFMapWithData(
+    { ...prepared, source },
+    map,
+    prepared.labelLayout ? (project) => staticLabels(map, prepared, project) : undefined,
+  );
 }
 /** Project canonical layer geometry without constructing an SVG string. */
 export function getLayerPaths(data: StaticMapInput, options: SFMapOptions = {}) {
@@ -52,8 +57,9 @@ function staticInput(data: StaticMapInput, options: SFMapOptions) {
     source,
     map: {
       ...data.map,
-      neighborhoods: collection.features.map(({ geometry, properties }) => ({
-        name: properties.sourceName,
+      neighborhoods: collection.features.map(({ id, geometry, properties }) => ({
+        id,
+        name: options.labelLayout ? properties.canonicalName : properties.sourceName,
         geometry,
       })),
     },
@@ -65,6 +71,7 @@ const staticLayerKeys = [
   'districtLines',
   'districtLabels',
   'neighborhoodLines',
+  'neighborhoodLabels',
   'landmarks',
   'bartStations',
   'highways',
@@ -87,6 +94,7 @@ function expandStaticOptions(options: SFMapOptions): SFMapOptions {
     'year',
     'source',
     'labels',
+    'labelLayout',
     'markers',
     'overlays',
     'title',
@@ -99,6 +107,11 @@ function expandStaticOptions(options: SFMapOptions): SFMapOptions {
   for (const key of ['title', 'idPrefix'] as const)
     if (options[key] !== undefined && typeof options[key] !== 'string')
       throw new TypeError(`${key} must be a string.`);
+  if (options.labelLayout !== undefined) {
+    assertOptions(options.labelLayout, 'label layout', ['width']);
+    if (!Number.isFinite(options.labelLayout.width) || options.labelLayout.width <= 0)
+      throw new RangeError('Label layout width must be positive and finite.');
+  }
   if (options.markers !== undefined) validateMarkers(options.markers);
   if (options.overlays !== undefined) validateOverlays(options.overlays);
   normalizeStaticAnimation(options.animation);

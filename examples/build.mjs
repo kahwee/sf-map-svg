@@ -22,6 +22,22 @@ const variants = [
   ['districts', 'Districts', { districtLines: true }],
   ['neighborhoods', 'Districts + neighborhoods', { neighborhoodLines: true }],
   ['outline', 'Simple outlines', { districtFills: false, neighborhoodLines: true }],
+  [
+    'overview-labels',
+    'Shared overview labels · 390 px',
+    {
+      theme: 'transit',
+      districtFills: false,
+      districtLines: false,
+      districtLabels: false,
+      neighborhoodLines: true,
+      neighborhoodLabels: true,
+      landmarks: true,
+      bartStations: true,
+      keyRoads: true,
+      labelLayout: { width: 390 },
+    },
+  ],
 ];
 for (const [name, , options] of variants)
   await writeFile(
@@ -30,7 +46,7 @@ for (const [name, , options] of variants)
   );
 await writeFile(
   new URL('index.html', target),
-  `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>San Francisco SVG maps</title><style>body{margin:0;background:#f4f7f9;color:#183e58;font:16px system-ui}header{padding:32px}h1{margin:0 0 8px;font-size:32px}p{margin:0;color:#536466}main{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;padding:0 32px 32px}article{min-width:0}article:first-child{grid-column:1/-1;width:100%;max-width:900px;margin:0 auto}h2{font-size:18px}img{width:100%;height:auto;border:1px solid #ced6d5;border-radius:12px}a{color:inherit}@media(max-width:800px){main{grid-template-columns:1fr}header,main{padding:20px}}</style><header><h1>San Francisco, in SVG.</h1><p style="margin-bottom:12px"><a href="explorer.html">Explore neighborhoods →</a> · <a href="interactive.html">Reusable interactive map →</a></p><p>2022 district boundaries · parks and landmarks · BART stations · no map tiles</p><p style="margin-top:12px">Green areas: parks &nbsp; · &nbsp; Blue rings: BART stations &nbsp; · &nbsp; Warm gray lines: highways</p></header><main>${variants.map(([name, title]) => `<article><h2>${title}</h2><a href="${name}.svg"><img src="${name}.svg" alt="${title} map of San Francisco"></a></article>`).join('')}</main></html>`,
+  `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>San Francisco SVG maps</title><style>body{margin:0;background:#f4f7f9;color:#183e58;font:16px system-ui}header{padding:32px}h1{margin:0 0 8px;font-size:32px}p{margin:0;color:#536466}main{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;padding:0 32px 32px}article{min-width:0}article:first-child{grid-column:1/-1;width:100%;max-width:900px;margin:0 auto}h2{font-size:18px}img{width:100%;height:auto;border:1px solid #ced6d5;border-radius:12px}a{color:inherit}@media(max-width:800px){main{grid-template-columns:1fr}header,main{padding:20px}}</style><header><h1>San Francisco, in SVG.</h1><p style="margin-bottom:12px"><a href="explorer.html">Explore neighborhoods →</a> · <a href="interactive.html">Reusable interactive map →</a></p><p>2022 district boundaries · parks and landmarks · BART stations · no map tiles</p><p style="margin-top:12px">Green areas: parks &nbsp; · &nbsp; Blue rings: BART stations &nbsp; · &nbsp; Warm gray lines: highways</p></header><main>${variants.map(([name, title]) => `<article${name === 'overview-labels' ? ' style="max-width:390px"' : ''}><h2>${title}</h2><a href="${name}.svg"><img src="${name}.svg" alt="${title} map of San Francisco"></a></article>`).join('')}</main></html>`,
 );
 
 await writeFile(

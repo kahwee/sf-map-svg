@@ -19,15 +19,19 @@ const { svg } = renderMap(staticMapData, presentation);
 const map = createMap(fullMapData, presentation);
 ```
 
-Static `layers` supports every interactive layer switch except `neighborhoodLabels`. Static `appearance` supports `theme`, `colors`, and `districtStyle`; browser typography, area interaction styles, and screen-space marker sizing remain interactive settings. Unknown keys and invalid values are rejected for both flat and grouped options. Supplied grouped keys override flat compatibility keys; omitted or `undefined` grouped keys preserve the flat value or renderer default. Undefined color tokens use the theme default instead of entering SVG attributes. The two renderers retain their existing defaults. Marker arrays accept readonly inputs.
+Static `layers` supports every interactive layer switch. `neighborhoodLabels` applies to the opt-in `labelLayout` described below. Static `appearance` supports `theme`, `colors`, and `districtStyle`; browser typography, area interaction styles, and screen-space marker sizing remain interactive settings. Unknown keys and invalid values are rejected for both flat and grouped options. Supplied grouped keys override flat compatibility keys; omitted or `undefined` grouped keys preserve the flat value or renderer default. Undefined color tokens use the theme default instead of entering SVG attributes. The two renderers retain their existing defaults. Marker arrays accept readonly inputs.
 
-Flat compatibility options include `theme`, `width`, `height`, `padding`, `year` (2002, 2012, 2022), `districtLines`, `districtFills`, `districtStyle`, `districtLabels`, `neighborhoodLines`, `labels`, `highways`, `keyRoads`, `roadLabels`, `landmarks`, `bartStations`, `markers`, `overlays`, `title`, `idPrefix`, `colors`, and `animation`. Each optional layer is independent. User-supplied text and attributes are escaped in SVG output.
+Flat compatibility options include `theme`, `width`, `height`, `padding`, `year` (2002, 2012, 2022), `districtLines`, `districtFills`, `districtStyle`, `districtLabels`, `neighborhoodLines`, `neighborhoodLabels`, `labels`, `labelLayout`, `highways`, `keyRoads`, `roadLabels`, `landmarks`, `bartStations`, `markers`, `overlays`, `title`, `idPrefix`, `colors`, and `animation`. Each optional layer is independent. User-supplied text and attributes are escaped in SVG output.
 
 Custom district IDs must be finite numbers. An empty `labelPoints` array uses the district's primary `label` position.
 
 The SVG description names the selected neighborhood source for source-aware data and uses a generic description for compact inputs. It describes enabled layers only when their data is supplied, using actual park and station counts.
 
 `animation: true` (or `{ duration, delay }`) makes a static map draw itself with self-contained, scoped CSS: land fades in, the coast and lines draw, districts grow, then labels and points appear. It plays when the SVG is inserted into a page or loaded as an image, needs no JavaScript, and stays still under `prefers-reduced-motion`. Re-insert the markup to replay it. Default output is unchanged.
+
+Static `labelLayout: { width: 390 }` opts into shared interactive **overview** label priorities, sizes, anchors and collision rules. `width` must be a positive finite CSS canvas width; it does not alter the SVG viewBox. Set `neighborhoodLabels: true` (flat or under `layers`) to add area names in this layout. Guide SVGs and shells enable neighborhood names by default only when opting into `labelLayout`. `labels: false` remains the master switch. Default static output is unchanged.
+
+Static placement uses estimated system-font metrics without browser globals. Interactive placement measures actual fonts and includes live selection and HTML furniture, so exact glyph positions and the visible label set can differ. See the [integration recipe](consumer-integration.md#keep-overview-labels-consistent) for width and progressive-enhancement guidance.
 
 ## Interactive maps
 

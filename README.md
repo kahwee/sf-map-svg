@@ -33,6 +33,23 @@ const { svg, project, viewBox } = renderMap(staticMapData, {
 
 See [map options and animations](docs/API.md#static-maps) for optional layers and static animation.
 
+## Labels before JavaScript loads
+
+Version 4.4 adds an opt-in overview layout for server-rendered guides:
+
+```ts
+import { createGuideShell } from '@kahwee/sf-map-svg/guide/static';
+
+const guideMarkup = createGuideShell({
+  title: 'Explore San Francisco',
+  labelLayout: { width: 390 },
+});
+```
+
+`width` is the expected canvas width in CSS pixels. The SVG keeps its 800 × 800 projection while labels share the interactive map's priorities, anchors, sizes and collision rules. Guide shells include neighborhood names in this layout; calls without `labelLayout` keep their previous output.
+
+Enhance the shell with `mountGuideController()` using the same data, colors, markers and layers. Static font widths are estimated, so browser fonts and resize can change which labels fit. See the [complete integration recipe and width guidance](docs/consumer-integration.md#keep-overview-labels-consistent). No migration is required from 4.3.
+
 ## Interactive map
 
 ```ts
@@ -165,7 +182,7 @@ pnpm benchmark:markers --counts=2000 --browsers=chromium,firefox,webkit \
 
 ### Cached label preparation and renderer components
 
-Neighborhood priority is sorted once per source. Styled label candidates are reused until selection, catalog, source, layers, appearance, or zoom/width eligibility changes. Overlay bounds are measured before marker and cluster SVG updates; secondary-road visibility and scale furniture skip unchanged writes. Marker catalog reconciliation and cluster rendering now have separate modules, reducing the explorer controller from 2,316 to 2,151 lines. The interactive renderer is 34.6 KiB gzip, up from 34.2 KiB, within the unchanged 35 KiB limit; static rendering remains 7.9 KiB.
+Neighborhood priority is sorted once per source. Styled label candidates are reused until selection, catalog, source, layers, appearance, or zoom/width eligibility changes. Overlay bounds are measured before marker and cluster SVG updates; secondary-road visibility and scale furniture skip unchanged writes. Marker catalog reconciliation and cluster rendering now have separate modules, reducing the explorer controller from 2,316 to 2,151 lines. At the 4.3.2 marker-performance baseline, the renderer was 34.6 KiB gzip and static rendering was 7.9 KiB. See the [current bundle report](docs/guide-bundle-report.md) for measurements including the opt-in static label layout.
 
 A fresh Chromium comparison against `e774fbd` used 2,000 labeled markers, 20 operation samples, both widths, and all six frame workloads in basemap and neighborhood modes. Neighborhood-mode frame interval p95 values (milliseconds):
 

@@ -52,6 +52,9 @@ async function bundle(entry) {
 
 const renderer = await bundle('src/api.ts');
 const staticOnly = await bundle('scripts/fixtures/static-consumer.ts');
+const interactiveOnly = await bundle('src/map.ts');
+if (interactiveOnly.modules.some((module) => module.endsWith('/static-labels.ts')))
+  throw new Error('Interactive-only renderer imported server label estimation');
 for (const [name, entry] of [
   ['renderer root', renderer],
   ['static renderer', staticOnly],
@@ -65,8 +68,10 @@ if (
   )
 )
   throw new Error('Static renderer imported interactive runtime');
-if (renderer.gzip > 35 * 1024 || staticOnly.gzip > 10 * 1024)
-  throw new Error('Renderer exceeds its gzip budget');
+if (renderer.gzip > 36 * 1024 || staticOnly.gzip > 10 * 1024)
+  throw new Error(
+    `Renderer exceeds its gzip budget (root: ${renderer.gzip}, static: ${staticOnly.gzip} bytes)`,
+  );
 const guide = await bundle('src/guide.ts');
 if (guide.gzip > 125 * 1024) throw new Error('Guide exceeds 125 KiB initial gzip budget');
 const selected = guide.modules.map((module) => module.replaceAll('\\', '/'));

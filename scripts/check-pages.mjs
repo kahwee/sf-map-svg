@@ -26,9 +26,9 @@ const pages = [
 ];
 // Initial JavaScript and CSS, gzip KB. Transit embeds the library's animation with its geometry.
 const budgets = {
-  index: 45.5, // Includes extracted marker components and cached label preparation (45.3 KB measured).
-  layers: 47.2, // Includes marker components and cached label preparation (47.0 KB measured).
-  playground: 52.8, // Includes marker components and cached label preparation (52.6 KB measured).
+  index: 45.9, // Shared label preparation; static font estimation stays out (45.7 KB measured).
+  layers: 48.7, // Includes opt-in static overview label layout (48.5 KB measured).
+  playground: 54.2, // Includes opt-in static overview label layout (54.0 KB measured).
   examples: 12,
   measures: 25,
   propositions: 25,
