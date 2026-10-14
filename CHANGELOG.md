@@ -4,19 +4,19 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 4.5.0 — 2026-10-14
+
 - Add the optional `/cards` entry with `bindMapCards()`: hover/focus previews a pin without changing selection or camera, native buttons select places, map selection reveals matching cards without stealing focus, and explicit cleanup restores owned DOM attributes.
 - Spread budgeted static labels across the map while favoring nearby-pin context and retaining a selected-place label when it fits. Keep collision avoidance, all pins, unbudgeted labels, and default output unchanged.
 
 - Add opt-in `mapPalettes.nightForest` and `mapPalettes.warmPaper` tokens for consistent static/interactive map colors, label halos, markers, and selection rings, with contrast checks.
 
-- Port YorkSF’s editorial map-preview pattern into static rendering: opt-in compact SVG label layouts, priority-based label budgets, and configurable halos for dark palettes. Add a build-time field-guide example and light/dark Storybook preview without runtime dependencies or changes to default output.
+- Port YorkSF’s editorial map-preview pattern into static rendering: opt-in compact SVG label layouts, spatial label budgets, and configurable halos for dark palettes. Add a build-time field-guide example and light/dark Storybook preview without runtime dependencies or changes to default output.
 
 - Separate interactive neighborhood state, controls, sidebar downloads and overlays into lifecycle-owned modules; revoke neighborhood hover listeners when replacing sources and keep optional explorer sidebar code out of normal map bundles.
 - Build the package once during `pnpm check`, while keeping standalone test and typecheck commands self-contained.
 
-## 4.4.1 — 2026-10-12
-
-- Prepare compatible development-tool updates to Vite 8.3.4 and Playwright 1.64.0. Keep Storybook/addons 10.6.1 and aligned Vitest/browser/coverage 5.0.3; their newer 10.6.2 and 5.0.4 releases remain inside pnpm's release-age window. Make the consumer examples' custom touch-button accessible names include their visible text. Remove the obsolete Storybook 10.6.0 peer overrides; retain Node 24+ and zero runtime dependencies. This version is prepared locally and has not been published.
+- Include compatible development-tool updates to Vite 8.3.4 and Playwright 1.64.0. Keep Storybook/addons 10.6.1 and aligned Vitest/browser/coverage 5.0.3; their newer 10.6.2 and 5.0.4 releases remain inside pnpm's release-age window. Make the consumer examples' custom touch-button accessible names include their visible text. Remove the obsolete Storybook 10.6.0 peer overrides; retain Node 24+ and zero runtime dependencies. These tooling changes were previously prepared as 4.4.1 but not published separately.
 
 ## 4.4.0 — 2026-10-12
 
