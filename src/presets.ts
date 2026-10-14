@@ -16,3 +16,5 @@ export const guideOptions: Readonly<MapOptions> = deepFreeze({
     roadLabels: true,
   },
 });
+
+export { type MapPalette, mapPalettes } from './palettes.js';

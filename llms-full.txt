@@ -419,6 +419,12 @@ See the [field-guide preview recipe](https://github.com/kahwee/sf-map-svg/blob/m
 
 Static placement uses estimated system-font metrics without browser globals. Interactive placement measures actual fonts and includes live selection and HTML furniture, so exact glyph positions and the visible label set can differ. See the [integration recipe](https://github.com/kahwee/sf-map-svg/blob/main/docs/consumer-integration.md#keep-overview-labels-consistent) for width and progressive-enhancement guidance.
 
+## Editorial palettes
+
+Import `mapPalettes` from `@kahwee/sf-map-svg/presets`. `nightForest` and `warmPaper` are deeply frozen, opt-in token sets. Each supplies `colors`, `haloColor`, `markerColor`, `selectedMarkerColor`, and `selectedMarkerRingColor`. They work with any supplied geography and do not change the existing themes. Text clears 4.5:1 and pins/rings clear 3:1 against the palette's land, park, and water surfaces; consumers must check their own overrides and surrounding UI.
+
+For static maps pass `colors: palette.colors`, `labelLayout: { width: 800, haloColor: palette.haloColor }`, and the marker color on each marker. For interactive maps pass `appearance: { colors: palette.colors, labelStyle: { haloColor: palette.haloColor }, markerColor: palette.markerColor, selectedMarkerColor: palette.selectedMarkerColor }` and `features: { selectedMarkerRing: { color: palette.selectedMarkerRingColor } }`. Choose the palette in the consuming application; these tokens do not read system preferences or install global CSS.
+
 ## Interactive maps
 
 `createMap` defaults to `mode: 'basemap'` and `appearance.theme: 'transit'`. Set the mode explicitly for neighborhood or district exploration. District and neighborhood layer defaults follow the mode; other supplied layers default on. The [developer guide](https://github.com/kahwee/sf-map-svg/blob/main/docs/developer-guide.md) compares static and interactive defaults and explains configuration resets, coordinates, and cleanup.
@@ -947,6 +953,8 @@ display geometry, and no precinct polygons or raw workbook data are shipped.
 User-visible changes are recorded here. Unreleased entries describe changes on `main` that are not part of a tagged package release.
 
 ## Unreleased
+
+- Add opt-in `mapPalettes.nightForest` and `mapPalettes.warmPaper` tokens for consistent static/interactive map colors, label halos, markers, and selection rings, with contrast checks.
 
 - Port YorkSF’s editorial map-preview pattern into static rendering: opt-in compact SVG label layouts, priority-based label budgets, and configurable halos for dark palettes. Add a build-time field-guide example and light/dark Storybook preview without runtime dependencies or changes to default output.
 
@@ -2325,4 +2333,58 @@ export declare function createGuideShell(options?: SFMapOptions): string;
 import type { MapOptions } from './controller-types.js';
 /** Configuration only: pair with guide/data or a compatible caller-supplied dataset. */
 export declare const guideOptions: Readonly<MapOptions>;
+export { type MapPalette, mapPalettes } from './palettes.js';
+```
+
+### dist/src/palettes.d.ts
+
+```ts
+import type { SFMapOptions } from './types.js';
+/** Shared tokens for static SVGs, interactive maps, and consumer-owned place cards. */
+export interface MapPalette {
+    readonly colors: NonNullable<SFMapOptions['colors']>;
+    readonly haloColor: string;
+    readonly markerColor: string;
+    readonly selectedMarkerColor: string;
+    readonly selectedMarkerRingColor: string;
+}
+/** Opt-in editorial palettes inspired by YorkSF. Existing renderer themes stay unchanged. */
+export declare const mapPalettes: {
+    nightForest: {
+        colors: {
+            water: string;
+            land: string;
+            park: string;
+            neighborhood: string;
+            district: string;
+            road: string;
+            highway: string;
+            landmark: string;
+            bart: string;
+            label: string;
+        };
+        haloColor: string;
+        markerColor: string;
+        selectedMarkerColor: string;
+        selectedMarkerRingColor: string;
+    };
+    warmPaper: {
+        colors: {
+            water: string;
+            land: string;
+            park: string;
+            neighborhood: string;
+            district: string;
+            road: string;
+            highway: string;
+            landmark: string;
+            bart: string;
+            label: string;
+        };
+        haloColor: string;
+        markerColor: string;
+        selectedMarkerColor: string;
+        selectedMarkerRingColor: string;
+    };
+};
 ```

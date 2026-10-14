@@ -4,6 +4,8 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Add opt-in `mapPalettes.nightForest` and `mapPalettes.warmPaper` tokens for consistent static/interactive map colors, label halos, markers, and selection rings, with contrast checks.
+
 - Port YorkSF’s editorial map-preview pattern into static rendering: opt-in compact SVG label layouts, priority-based label budgets, and configurable halos for dark palettes. Add a build-time field-guide example and light/dark Storybook preview without runtime dependencies or changes to default output.
 
 - Separate interactive neighborhood state, controls, sidebar downloads and overlays into lifecycle-owned modules; revoke neighborhood hover listeners when replacing sources and keep optional explorer sidebar code out of normal map bundles.

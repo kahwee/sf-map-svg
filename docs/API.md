@@ -51,6 +51,12 @@ See the [field-guide preview recipe](consumer-integration.md#editorial-map-previ
 
 Static placement uses estimated system-font metrics without browser globals. Interactive placement measures actual fonts and includes live selection and HTML furniture, so exact glyph positions and the visible label set can differ. See the [integration recipe](consumer-integration.md#keep-overview-labels-consistent) for width and progressive-enhancement guidance.
 
+## Editorial palettes
+
+Import `mapPalettes` from `@kahwee/sf-map-svg/presets`. `nightForest` and `warmPaper` are deeply frozen, opt-in token sets. Each supplies `colors`, `haloColor`, `markerColor`, `selectedMarkerColor`, and `selectedMarkerRingColor`. They work with any supplied geography and do not change the existing themes. Text clears 4.5:1 and pins/rings clear 3:1 against the palette's land, park, and water surfaces; consumers must check their own overrides and surrounding UI.
+
+For static maps pass `colors: palette.colors`, `labelLayout: { width: 800, haloColor: palette.haloColor }`, and the marker color on each marker. For interactive maps pass `appearance: { colors: palette.colors, labelStyle: { haloColor: palette.haloColor }, markerColor: palette.markerColor, selectedMarkerColor: palette.selectedMarkerColor }` and `features: { selectedMarkerRing: { color: palette.selectedMarkerRingColor } }`. Choose the palette in the consuming application; these tokens do not read system preferences or install global CSS.
+
 ## Interactive maps
 
 `createMap` defaults to `mode: 'basemap'` and `appearance.theme: 'transit'`. Set the mode explicitly for neighborhood or district exploration. District and neighborhood layer defaults follow the mode; other supplied layers default on. The [developer guide](developer-guide.md) compares static and interactive defaults and explains configuration resets, coordinates, and cleanup.

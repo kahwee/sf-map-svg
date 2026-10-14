@@ -1,6 +1,7 @@
 import { writeFile } from 'node:fs/promises';
 import { guideMapData } from '../dist/src/guide-data.js';
 import { createGuideSVG } from '../dist/src/guide-static.js';
+import { mapPalettes } from '../dist/src/presets.js';
 import { escapeXml } from '../dist/src/svg.js';
 
 // Use the existing geographic catalog, not copied consumer coordinates or content.
@@ -11,19 +12,10 @@ const places = guideMapData.map.landmarks
     label: place.name,
     lng: place.label[0],
     lat: place.label[1],
-    color: '#ff905f',
+    color: mapPalettes.nightForest.markerColor,
     radius: 5,
   }));
-const colors = {
-  water: '#0a1412',
-  land: '#1b2c28',
-  park: '#1f3d33',
-  road: '#2f4943',
-  highway: '#5a4d40',
-  label: '#d5e3e8',
-  neighborhood: '#3b554e',
-  landmark: '#244c3d',
-};
+const colors = mapPalettes.nightForest.colors;
 const base = { colors, districtLabels: false, roadLabels: false, bartStations: false };
 const target = new URL('./generated/', import.meta.url);
 await writeFile(
