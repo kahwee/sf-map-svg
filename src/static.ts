@@ -108,9 +108,30 @@ function expandStaticOptions(options: SFMapOptions): SFMapOptions {
     if (options[key] !== undefined && typeof options[key] !== 'string')
       throw new TypeError(`${key} must be a string.`);
   if (options.labelLayout !== undefined) {
-    assertOptions(options.labelLayout, 'label layout', ['width']);
+    assertOptions(options.labelLayout, 'label layout', [
+      'width',
+      'maxLabels',
+      'haloColor',
+      'compact',
+    ]);
     if (!Number.isFinite(options.labelLayout.width) || options.labelLayout.width <= 0)
-      throw new RangeError('Label layout width must be positive and finite.');
+      throw new RangeError('Invalid label layout width.');
+    const { maxLabels, haloColor, compact } = options.labelLayout;
+    if (maxLabels !== undefined && (!Number.isSafeInteger(maxLabels) || maxLabels < 0))
+      throw new RangeError('Invalid maxLabels.');
+    if (haloColor !== undefined && typeof haloColor !== 'string')
+      throw new TypeError('haloColor must be a string.');
+    if (compact !== undefined) {
+      assertOptions(compact, 'compact label layout', ['width', 'maxLabels']);
+      if (
+        !Number.isFinite(compact.width) ||
+        compact.width <= 0 ||
+        compact.width >= options.labelLayout.width
+      )
+        throw new RangeError('Invalid compact width.');
+      if (!Number.isSafeInteger(compact.maxLabels) || compact.maxLabels < 0)
+        throw new RangeError('Invalid maxLabels.');
+    }
   }
   if (options.markers !== undefined) validateMarkers(options.markers);
   if (options.overlays !== undefined) validateOverlays(options.overlays);

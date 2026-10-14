@@ -56,7 +56,15 @@ export interface SFMapOptions {
   /** Hide all visible text labels while retaining geographic symbols and accessible titles. */
   labels?: boolean;
   /** Opt into interactive overview label priorities/collisions at this CSS display width. Uses estimated system-font metrics without a DOM. */
-  labelLayout?: { width: number };
+  labelLayout?: {
+    width: number;
+    /** Maximum placed labels, in overview priority order; zero hides text only. */
+    maxLabels?: number;
+    /** Label outline color, for example the land color on a dark map. */
+    haloColor?: string;
+    /** Alternate layout below this SVG viewport width, without browser JavaScript. */
+    compact?: { width: number; maxLabels: number };
+  };
   highways?: boolean;
   keyRoads?: boolean;
   roadLabels?: boolean;

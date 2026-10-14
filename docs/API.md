@@ -31,6 +31,24 @@ The SVG description names the selected neighborhood source for source-aware data
 
 Static `labelLayout: { width: 390 }` opts into shared interactive **overview** label priorities, sizes, anchors and collision rules. `width` must be a positive finite CSS canvas width; it does not alter the SVG viewBox. Set `neighborhoodLabels: true` (flat or under `layers`) to add area names in this layout. Guide SVGs and shells enable neighborhood names by default only when opting into `labelLayout`. `labels: false` remains the master switch. Default static output is unchanged.
 
+For editorial previews, `labelLayout` also accepts `maxLabels` (a nonnegative safe integer), `haloColor` (an SVG color string), and `compact: { width, maxLabels }`. The compact width must be positive, finite, and smaller than the main layout width. Each layout places labels around pins independently, then keeps up to its budget in overview priority order (selected marker first when it fits). A zero budget hides text, never pins. The default halo remains white; use the land color for a quieter dark map.
+
+Compact mode embeds two label groups and a media query in the same SVG. At or below the compact width it shows the compact group; above it shows the main group. In an `<img>` or standalone SVG, the breakpoint follows the SVG viewport. In inline SVG it follows the document viewport, so use `<img>` for cards whose width differs from the page. No JavaScript, duplicated geometry, external fonts, or extra image requests are needed. The compact width is also its font-layout hint; very narrow images still scale the text. The interactive renderer continues to use its live collision layout after enhancement.
+
+```js
+createGuideSVG({
+  labelLayout: {
+    width: 800,
+    haloColor: '#1b2c28',
+    compact: { width: 480, maxLabels: 4 },
+  },
+  colors: { water: '#0a1412', land: '#1b2c28', label: '#d5e3e8' },
+  markers: places,
+});
+```
+
+See the [field-guide preview recipe](consumer-integration.md#editorial-map-previews) for a complete build-time example.
+
 Static placement uses estimated system-font metrics without browser globals. Interactive placement measures actual fonts and includes live selection and HTML furniture, so exact glyph positions and the visible label set can differ. See the [integration recipe](consumer-integration.md#keep-overview-labels-consistent) for width and progressive-enhancement guidance.
 
 ## Interactive maps

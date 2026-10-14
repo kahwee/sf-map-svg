@@ -106,3 +106,64 @@ test('static layout escapes names and validates before user callbacks', () => {
     assert.equal(called, false);
   }
 });
+
+test('compact layouts budget labels independently and preserve geometry and pins', () => {
+  const options = {
+    idPrefix: 'compact-test',
+    markers: [
+      { id: 'selected', label: 'A selected place', lng: -122.45, lat: 37.76, selected: true },
+    ],
+    labelLayout: {
+      width: 800,
+      maxLabels: 8,
+      haloColor: '#102921',
+      compact: { width: 480, maxLabels: 4 },
+    },
+  };
+  const svg = createGuideSVG(options).svg;
+  const doc = new DOMParser().parseFromString(svg, 'image/svg+xml');
+  const groups = Array.from(doc.getElementsByTagName('g')).filter((n) =>
+    n.hasAttribute('data-label-layout'),
+  );
+  assert.equal(groups.length, 2);
+  assert.deepEqual(
+    groups.map((g) => g.getElementsByTagName('text').length),
+    [8, 4],
+  );
+  for (const group of groups) {
+    const texts = Array.from(group.getElementsByTagName('text'));
+    assert.equal(texts[0].textContent, 'A selected place');
+    assert.ok(texts.every((n) => n.getAttribute('stroke') === '#102921'));
+  }
+  const withoutLabels = (text) =>
+    text
+      .replace(/<style>\[data-label-layout[\s\S]*?<\/style>/, '')
+      .replace(
+        /<g data-label-layout="[^"]+"><g data-layer="overview-labels"[\s\S]*?<\/g><\/g>/g,
+        '',
+      );
+  assert.equal(withoutLabels(svg), createGuideSVG({ ...options, labels: false }).svg);
+  assert.equal(labels(createGuideSVG({ labelLayout: { width: 390, maxLabels: 0 } }).svg).length, 0);
+});
+
+test('compact label options reject invalid budgets, widths and halo values', () => {
+  for (const patch of [
+    { maxLabels: -1 },
+    { maxLabels: 1.5 },
+    { maxLabels: NaN },
+    { maxLabels: '4' },
+    { haloColor: 123 },
+    { compact: null },
+    { compact: {} },
+    { compact: { width: 800, maxLabels: 4 } },
+    { compact: { width: 0, maxLabels: 4 } },
+    { compact: { width: Infinity, maxLabels: 4 } },
+    { compact: { width: 390, maxLabels: -1 } },
+    { compact: { width: 390, maxLabels: 4, extra: true } },
+  ])
+    assert.throws(() => createGuideSVG({ labelLayout: { width: 800, ...patch } }));
+  const haloColor = '"/><script>alert(1)</script>';
+  const svg = createGuideSVG({ labelLayout: { width: 800, haloColor } }).svg;
+  assert.ok(!svg.includes('<script>'));
+  assert.ok(labels(svg).every((n) => n.getAttribute('stroke') === haloColor));
+});

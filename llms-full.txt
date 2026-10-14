@@ -399,6 +399,24 @@ The SVG description names the selected neighborhood source for source-aware data
 
 Static `labelLayout: { width: 390 }` opts into shared interactive **overview** label priorities, sizes, anchors and collision rules. `width` must be a positive finite CSS canvas width; it does not alter the SVG viewBox. Set `neighborhoodLabels: true` (flat or under `layers`) to add area names in this layout. Guide SVGs and shells enable neighborhood names by default only when opting into `labelLayout`. `labels: false` remains the master switch. Default static output is unchanged.
 
+For editorial previews, `labelLayout` also accepts `maxLabels` (a nonnegative safe integer), `haloColor` (an SVG color string), and `compact: { width, maxLabels }`. The compact width must be positive, finite, and smaller than the main layout width. Each layout places labels around pins independently, then keeps up to its budget in overview priority order (selected marker first when it fits). A zero budget hides text, never pins. The default halo remains white; use the land color for a quieter dark map.
+
+Compact mode embeds two label groups and a media query in the same SVG. At or below the compact width it shows the compact group; above it shows the main group. In an `<img>` or standalone SVG, the breakpoint follows the SVG viewport. In inline SVG it follows the document viewport, so use `<img>` for cards whose width differs from the page. No JavaScript, duplicated geometry, external fonts, or extra image requests are needed. The compact width is also its font-layout hint; very narrow images still scale the text. The interactive renderer continues to use its live collision layout after enhancement.
+
+```js
+createGuideSVG({
+  labelLayout: {
+    width: 800,
+    haloColor: '#1b2c28',
+    compact: { width: 480, maxLabels: 4 },
+  },
+  colors: { water: '#0a1412', land: '#1b2c28', label: '#d5e3e8' },
+  markers: places,
+});
+```
+
+See the [field-guide preview recipe](https://github.com/kahwee/sf-map-svg/blob/main/docs/consumer-integration.md#editorial-map-previews) for a complete build-time example.
+
 Static placement uses estimated system-font metrics without browser globals. Interactive placement measures actual fonts and includes live selection and HTML furniture, so exact glyph positions and the visible label set can differ. See the [integration recipe](https://github.com/kahwee/sf-map-svg/blob/main/docs/consumer-integration.md#keep-overview-labels-consistent) for width and progressive-enhancement guidance.
 
 ## Interactive maps
@@ -647,7 +665,7 @@ const labeledPlacesMarkup = createGuideShell({
 
 After inserting that markup, pass `markers: guideMarkers`, `layers: guideLayers`, and `appearance: { colors: guideColors }` to `mountGuideController()` as shown below. The static-only `labelLayout` option is not a browser option: the controller measures the actual canvas and font. The shell border is outside the canvas, so a default shell with a 390 px outer width has a 388 px canvas.
 
-For responsive layouts whose canvas width is unknown at build time, choose a representative width and accept text scaling until enhancement, or serve independently rendered SVG variants through your application's responsive markup. The package does not detect a device on the server. Keep `labels: false` if your design requires no visible text change at enhancement.
+For responsive layouts whose canvas width is unknown at build time, use `labelLayout.compact` for an embedded image with two static label layouts (see [editorial previews](#editorial-map-previews)), choose a representative width and accept text scaling until enhancement, or serve independently rendered SVG variants through your application's responsive markup. The package does not detect a device on the server. Keep `labels: false` if your design requires no visible text change at enhancement.
 
 For `renderMap()`, also enable `neighborhoodLabels` explicitly; it defaults off outside the guide preset. `labels: false` hides all text in either layout while preserving symbols and accessible titles.
 
@@ -683,6 +701,17 @@ For a new browser-only guide, use `createGuideController()` and mount its `.elem
 `createMap(guideMapData, guideOptions)` remains available through `/guide/data` and `/presets`. For server rendering, pass `guideMapData.map` or `/data/static` to `renderMap()`. Use `/data/full` when interactive lookup collections are needed. The guide's detailed geography loads only on an explicit `loadGuideDetailedData()` call; enabling a layer does not download it.
 
 See the [exact API contract](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md), [worked examples](https://github.com/kahwee/sf-map-svg/blob/main/docs/EXAMPLES.md), and [bundle measurements](https://github.com/kahwee/sf-map-svg/blob/main/docs/guide-bundle-report.md).
+
+
+## Editorial map previews
+
+YorkSF uses one city overview to connect its field notes and compact locator maps to orient individual articles. These patterns work for any local guide: keep the place catalog in the consuming application, generate SVG images at build time, and link each preview to the application's map or article route.
+
+Run `pnpm demo` and open `examples/generated/field-guide.html` for a self-contained light/dark example. Its overview uses `labelLayout.compact` to limit mobile text without removing pins, and `haloColor` to match the night palette. The locator cards share those colors but omit labels at small sizes. Images reserve their aspect ratio and load lazily; the links work without JavaScript. The example derives its sample park coordinates from the package's existing landmark data rather than maintaining another geographic dataset.
+
+Use stable marker IDs for deep links. Keep addresses, visit dates, historical-status caveats, and editorial descriptions in your own content model. The package supplies map graphics; it does not imply that a place is currently open or that an author visited it. Keep a visible list beside the overview so the image is not the only way to find a place. SVG alt text should describe its purpose; link text should name the destination.
+
+For an image card, `compact.width` follows the image's rendered viewport. For inline SVG it follows the outer document viewport; do not assume it behaves like a container query. Avoid embedding scripts in exported images. Interactive maps remain a separate progressive enhancement.
 
 ---
 
@@ -918,6 +947,8 @@ display geometry, and no precinct polygons or raw workbook data are shipped.
 User-visible changes are recorded here. Unreleased entries describe changes on `main` that are not part of a tagged package release.
 
 ## Unreleased
+
+- Port YorkSF’s editorial map-preview pattern into static rendering: opt-in compact SVG label layouts, priority-based label budgets, and configurable halos for dark palettes. Add a build-time field-guide example and light/dark Storybook preview without runtime dependencies or changes to default output.
 
 - Separate interactive neighborhood state, controls, sidebar downloads and overlays into lifecycle-owned modules; revoke neighborhood hover listeners when replacing sources and keep optional explorer sidebar code out of normal map bundles.
 - Build the package once during `pnpm check`, while keeping standalone test and typecheck commands self-contained.
@@ -1698,6 +1729,15 @@ export interface SFMapOptions {
     /** Opt into interactive overview label priorities/collisions at this CSS display width. Uses estimated system-font metrics without a DOM. */
     labelLayout?: {
         width: number;
+        /** Maximum placed labels, in overview priority order; zero hides text only. */
+        maxLabels?: number;
+        /** Label outline color, for example the land color on a dark map. */
+        haloColor?: string;
+        /** Alternate layout below this SVG viewport width, without browser JavaScript. */
+        compact?: {
+            width: number;
+            maxLabels: number;
+        };
     };
     highways?: boolean;
     keyRoads?: boolean;

@@ -28,7 +28,19 @@ export function estimateLabelWidth(text: string, fontSize: number) {
 }
 
 /** Interactive overview rules, expressed entirely in screen pixels before serialization. */
-export function staticLabels(data: SFMapData, options: SFMapOptions, project: Project) {
+export function staticLabels(data: SFMapData, options: SFMapOptions, project: Project): string {
+  if (options.labelLayout?.compact) {
+    const { compact, ...layout } = options.labelLayout;
+    const wide = staticLabels(data, { ...options, labelLayout: layout }, project);
+    const narrow = staticLabels(
+      data,
+      { ...options, labelLayout: { ...layout, ...compact } },
+      project,
+    );
+    // Width-specific selectors prevent different breakpoints in inline maps interfering.
+    const key = compact.width;
+    return `<style>[data-label-layout="compact-${key}"]{display:none}@media(max-width:${key}px){[data-label-layout="wide-${key}"]{display:none}[data-label-layout="compact-${key}"]{display:inline}}</style><g data-label-layout="wide-${key}">${wide}</g><g data-label-layout="compact-${key}">${narrow}</g>`;
+  }
   const width = options.labelLayout?.width ?? options.width ?? 800;
   const unit = (options.width ?? 800) / width;
   const height = (options.height ?? 800) / unit;
@@ -98,7 +110,11 @@ export function staticLabels(data: SFMapData, options: SFMapOptions, project: Pr
       width,
       1,
     ),
-    { colors: options.colors, markerRadius: marker?.radius ?? 6 },
+    {
+      colors: options.colors,
+      markerRadius: marker?.radius ?? 6,
+      labelStyle: { haloColor: options.labelLayout?.haloColor },
+    },
   );
   const obstacles: Bounds[] = [
     ...(options.bartStations
@@ -127,5 +143,11 @@ export function staticLabels(data: SFMapData, options: SFMapOptions, project: Pr
     height,
     obstacles,
   );
-  return `<g data-layer="overview-labels" font-family="system-ui,sans-serif">${placed.map((item) => `<text data-label-kind="${escapeXml(item.kind)}" text-anchor="middle" x="${number((item.left + item.textWidth / 2) * unit)}" y="${number((item.top + item.fontSize) * unit)}" font-size="${number(item.fontSize * unit)}" font-weight="${item.fontWeight}" fill="${escapeXml(item.fill)}" stroke="${escapeXml(item.halo)}" stroke-width="${number(3 * unit)}" stroke-linejoin="round" paint-order="stroke">${escapeXml(item.name)}</text>`).join('')}</g>`;
+  return `<g data-layer="overview-labels" font-family="system-ui,sans-serif">${placed
+    .slice(0, options.labelLayout?.maxLabels)
+    .map(
+      (item) =>
+        `<text data-label-kind="${escapeXml(item.kind)}" text-anchor="middle" x="${number((item.left + item.textWidth / 2) * unit)}" y="${number((item.top + item.fontSize) * unit)}" font-size="${number(item.fontSize * unit)}" font-weight="${item.fontWeight}" fill="${escapeXml(item.fill)}" stroke="${escapeXml(item.halo)}" stroke-width="${number(3 * unit)}" stroke-linejoin="round" paint-order="stroke">${escapeXml(item.name)}</text>`,
+    )
+    .join('')}</g>`;
 }
