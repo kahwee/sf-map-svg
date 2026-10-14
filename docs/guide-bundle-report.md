@@ -4,8 +4,8 @@ Generated 2026-10-14 by `pnpm report:guide` with Vite production minification an
 
 | Entry | Initial JS, raw | Initial JS, gzip | Explicit detail JS, gzip |
 | --- | ---: | ---: | ---: |
-| Renderer root (explicit data) | 122.2 KB | 36.0 KB | — |
-| Static renderer | 32.5 KB | 10.0 KB | — |
+| Renderer root (explicit data) | 122.8 KB | 36.3 KB | — |
+| Static renderer | 33.2 KB | 10.2 KB | — |
 | Guide preset | 507.0 KB | 122.1 KB | 467.0 KB |
 
 **500 KB target:** met.

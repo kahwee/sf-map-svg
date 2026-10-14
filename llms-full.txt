@@ -399,7 +399,7 @@ The SVG description names the selected neighborhood source for source-aware data
 
 Static `labelLayout: { width: 390 }` opts into shared interactive **overview** label priorities, sizes, anchors and collision rules. `width` must be a positive finite CSS canvas width; it does not alter the SVG viewBox. Set `neighborhoodLabels: true` (flat or under `layers`) to add area names in this layout. Guide SVGs and shells enable neighborhood names by default only when opting into `labelLayout`. `labels: false` remains the master switch. Default static output is unchanged.
 
-For editorial previews, `labelLayout` also accepts `maxLabels` (a nonnegative safe integer), `haloColor` (an SVG color string), and `compact: { width, maxLabels }`. The compact width must be positive, finite, and smaller than the main layout width. Each layout places labels around pins independently, then keeps up to its budget in overview priority order (selected marker first when it fits). A zero budget hides text, never pins. The default halo remains white; use the land color for a quieter dark map.
+For editorial previews, `labelLayout` also accepts `maxLabels` (a nonnegative safe integer), `haloColor` (an SVG color string), and `compact: { width, maxLabels }`. The compact width must be positive, finite, and smaller than the main layout width. Each layout places labels around pins independently, then chooses up to its budget for spatial coverage and nearby-pin context (selected marker first when it fits). Without a budget the existing overview order is unchanged. Equal spatial scores retain the original priority order. A zero budget hides text, never pins. The default halo remains white; use the land color for a quieter dark map.
 
 Compact mode embeds two label groups and a media query in the same SVG. At or below the compact width it shows the compact group; above it shows the main group. In an `<img>` or standalone SVG, the breakpoint follows the SVG viewport. In inline SVG it follows the document viewport, so use `<img>` for cards whose width differs from the page. No JavaScript, duplicated geometry, external fonts, or extra image requests are needed. The compact width is also its font-layout hint; very narrow images still scale the text. The interactive renderer continues to use its live collision layout after enhancement.
 
@@ -501,6 +501,14 @@ Neighborhood IDs are exact source-scoped feature IDs, rather than display names 
 GeoJSON and static projection inputs use `[longitude, latitude]` in WGS84; markers use `{ lng, lat }`. Static `project` returns SVG units. `projectToScreen(lng, lat)` returns pixels relative to the mounted canvas. Camera viewports use the fixed 800 × 800 projected map space, independent of canvas size. Pan deltas use screen pixels, converted using the mounted canvas width. Marker radius uses screen pixels in browser maps and SVG units in static output.
 
 Explore presentation options in the [live map design playground](https://kahwee.github.io/sf-map-svg/playground.html). The page identifies its package version; released builds use compatible options for that installed version.
+
+## Linked place cards
+
+`bindMapCards(map, root, options)` from `@kahwee/sf-map-svg/cards` connects consumer-owned cards to a `MapController`. Each card uses `data-map-marker="stable-marker-id"`; native `<button type="button" data-map-select>` controls select that place without panning. Article links keep their ordinary navigation. `options.markers` is the same catalog supplied to the map; `highlightColor` optionally changes the preview ring and `scrollOnSelect: false` disables automatic card reveal.
+
+Pointer hover and keyboard focus draw a temporary ring through `projectToScreen()`. They do not call `selectMarker`, change the camera, or emit selection events. Focused cards take precedence over hovered cards. Offscreen points do not draw a ring. Touch users use the selection button. Selected cards receive `data-map-selected` and their buttons receive `aria-pressed`; style the card attribute in your own CSS. Selecting a pin reveals its card with immediate native scrolling, without moving focus. Filtering/reordering/removing cards is safe; IDs are compared directly, not inserted into CSS selectors.
+
+Call `binding.setMarkers(next)` after `map.setMarkers(next)` when the catalog changes. Call `binding.destroy()` before `map.destroy()` on unmount; cleanup is idempotent and restores attributes that the binding owned. The module does not create cards, fetch data, change URLs, install global CSS, or import geography. See the [linked-card recipe](https://github.com/kahwee/sf-map-svg/blob/main/docs/consumer-integration.md#link-place-cards-to-pins).
 
 ---
 
@@ -718,6 +726,33 @@ Run `pnpm demo` and open `examples/generated/field-guide.html` for a self-contai
 Use stable marker IDs for deep links. Keep addresses, visit dates, historical-status caveats, and editorial descriptions in your own content model. The package supplies map graphics; it does not imply that a place is currently open or that an author visited it. Keep a visible list beside the overview so the image is not the only way to find a place. SVG alt text should describe its purpose; link text should name the destination.
 
 For an image card, `compact.width` follows the image's rendered viewport. For inline SVG it follows the outer document viewport; do not assume it behaves like a container query. Avoid embedding scripts in exported images. Interactive maps remain a separate progressive enhancement.
+
+## Link place cards to pins
+
+Keep ordinary article links and add a separate map-selection button. Native buttons give keyboard and touch users the same action as pointer users:
+
+```html
+<article data-map-marker="park">
+  <h2><a href="/places/park/">A place in the park</a></h2>
+  <button type="button" data-map-select>Show on map</button>
+</article>
+```
+
+```js
+import { bindMapCards } from '@kahwee/sf-map-svg/cards';
+import { mapPalettes } from '@kahwee/sf-map-svg/presets';
+
+const binding = bindMapCards(map, document.querySelector('#place-cards'), {
+  markers: places,
+  highlightColor: mapPalettes.nightForest.selectedMarkerRingColor,
+});
+// On catalog change: map.setMarkers(next); binding.setMarkers(next);
+// On unmount: binding.destroy(); map.destroy();
+```
+
+Style `[data-map-selected]` with an outline or background change that remains legible in both themes. Use a visible focus outline on card buttons and links. Hover/focus only previews the location: it preserves selection and camera. Map selection reveals the card without shifting keyboard focus; set `scrollOnSelect: false` if your application owns scrolling. Match cards and markers by stable IDs, and keep hidden/filtered places out of both catalogs when that is your intended filter behavior.
+
+Run `pnpm demo` and open `examples/generated/linked-cards.html` for the complete pattern. Storybook **Maps / Linked place cards** checks hover, keyboard selection, card reveal, both palettes, and disposal.
 
 ---
 
@@ -953,6 +988,9 @@ display geometry, and no precinct polygons or raw workbook data are shipped.
 User-visible changes are recorded here. Unreleased entries describe changes on `main` that are not part of a tagged package release.
 
 ## Unreleased
+
+- Add the optional `/cards` entry with `bindMapCards()`: hover/focus previews a pin without changing selection or camera, native buttons select places, map selection reveals matching cards without stealing focus, and explicit cleanup restores owned DOM attributes.
+- Spread budgeted static labels across the map while favoring nearby-pin context and retaining a selected-place label when it fits. Keep collision avoidance, all pins, unbudgeted labels, and default output unchanged.
 
 - Add opt-in `mapPalettes.nightForest` and `mapPalettes.warmPaper` tokens for consistent static/interactive map colors, label halos, markers, and selection rings, with contrast checks.
 
@@ -1338,6 +1376,7 @@ consistent home, and makes animation and subscription ownership predictable.
 | @kahwee/sf-map-svg/map | ./dist/src/map.d.ts |
 | @kahwee/sf-map-svg/static | ./dist/src/static.d.ts |
 | @kahwee/sf-map-svg/presets | ./dist/src/presets.d.ts |
+| @kahwee/sf-map-svg/cards | ./dist/src/cards.d.ts |
 
 ### ./dist/src/api.d.ts
 
@@ -1737,7 +1776,7 @@ export interface SFMapOptions {
     /** Opt into interactive overview label priorities/collisions at this CSS display width. Uses estimated system-font metrics without a DOM. */
     labelLayout?: {
         width: number;
-        /** Maximum placed labels, in overview priority order; zero hides text only. */
+        /** Maximum placed labels, spread across the map with nearby-pin context; zero hides text only. */
         maxLabels?: number;
         /** Label outline color, for example the land color on a dark map. */
         haloColor?: string;
@@ -2386,5 +2425,25 @@ export declare const mapPalettes: {
         selectedMarkerColor: string;
         selectedMarkerRingColor: string;
     };
+};
+```
+
+### ./dist/src/cards.d.ts
+
+```ts
+import type { MapController } from './controller-types.js';
+import type { MapMarker } from './types.js';
+export interface MapCardsOptions {
+    markers: readonly MapMarker[];
+    highlightColor?: string;
+    /** Reveal selected cards with native scrolling, without moving keyboard focus. Default true. */
+    scrollOnSelect?: boolean;
+}
+/** Connect consumer-owned [data-map-marker] cards and [data-map-select] buttons to a map. */
+export declare function bindMapCards(map: MapController, root: HTMLElement, options: MapCardsOptions): {
+    /** Call after map.setMarkers() when your place catalog changes. */
+    setMarkers(next: readonly MapMarker[]): void;
+    /** Remove owned listeners/decoration and restore card attributes. Call before map.destroy(). */
+    destroy(): void;
 };
 ```

@@ -2,6 +2,7 @@ import type { Bounds } from '../data/types.js';
 import { interiorAnchor, layoutLabels, projectedBounds } from './explorer-layout.js';
 import type { Project } from './geometry.js';
 import { labelCandidates, styleLabels } from './label-candidates.js';
+import { spreadLabels } from './label-spread.js';
 import type { SFMapData } from './map-core.js';
 import { escapeXml, number } from './svg.js';
 import type { SFMapOptions } from './types.js';
@@ -143,8 +144,13 @@ export function staticLabels(data: SFMapData, options: SFMapOptions, project: Pr
     height,
     obstacles,
   );
-  return `<g data-layer="overview-labels" font-family="system-ui,sans-serif">${placed
-    .slice(0, options.labelLayout?.maxLabels)
+  return `<g data-layer="overview-labels" font-family="system-ui,sans-serif">${spreadLabels(
+    placed,
+    options.labelLayout?.maxLabels,
+    markers.map((marker) => point([marker.lng, marker.lat])),
+    width,
+    height,
+  )
     .map(
       (item) =>
         `<text data-label-kind="${escapeXml(item.kind)}" text-anchor="middle" x="${number((item.left + item.textWidth / 2) * unit)}" y="${number((item.top + item.fontSize) * unit)}" font-size="${number(item.fontSize * unit)}" font-weight="${item.fontWeight}" fill="${escapeXml(item.fill)}" stroke="${escapeXml(item.halo)}" stroke-width="${number(3 * unit)}" stroke-linejoin="round" paint-order="stroke">${escapeXml(item.name)}</text>`,

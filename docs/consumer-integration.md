@@ -98,3 +98,30 @@ Run `pnpm demo` and open `examples/generated/field-guide.html` for a self-contai
 Use stable marker IDs for deep links. Keep addresses, visit dates, historical-status caveats, and editorial descriptions in your own content model. The package supplies map graphics; it does not imply that a place is currently open or that an author visited it. Keep a visible list beside the overview so the image is not the only way to find a place. SVG alt text should describe its purpose; link text should name the destination.
 
 For an image card, `compact.width` follows the image's rendered viewport. For inline SVG it follows the outer document viewport; do not assume it behaves like a container query. Avoid embedding scripts in exported images. Interactive maps remain a separate progressive enhancement.
+
+## Link place cards to pins
+
+Keep ordinary article links and add a separate map-selection button. Native buttons give keyboard and touch users the same action as pointer users:
+
+```html
+<article data-map-marker="park">
+  <h2><a href="/places/park/">A place in the park</a></h2>
+  <button type="button" data-map-select>Show on map</button>
+</article>
+```
+
+```js
+import { bindMapCards } from '@kahwee/sf-map-svg/cards';
+import { mapPalettes } from '@kahwee/sf-map-svg/presets';
+
+const binding = bindMapCards(map, document.querySelector('#place-cards'), {
+  markers: places,
+  highlightColor: mapPalettes.nightForest.selectedMarkerRingColor,
+});
+// On catalog change: map.setMarkers(next); binding.setMarkers(next);
+// On unmount: binding.destroy(); map.destroy();
+```
+
+Style `[data-map-selected]` with an outline or background change that remains legible in both themes. Use a visible focus outline on card buttons and links. Hover/focus only previews the location: it preserves selection and camera. Map selection reveals the card without shifting keyboard focus; set `scrollOnSelect: false` if your application owns scrolling. Match cards and markers by stable IDs, and keep hidden/filtered places out of both catalogs when that is your intended filter behavior.
+
+Run `pnpm demo` and open `examples/generated/linked-cards.html` for the complete pattern. Storybook **Maps / Linked place cards** checks hover, keyboard selection, card reveal, both palettes, and disposal.

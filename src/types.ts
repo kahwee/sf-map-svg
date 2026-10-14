@@ -58,7 +58,7 @@ export interface SFMapOptions {
   /** Opt into interactive overview label priorities/collisions at this CSS display width. Uses estimated system-font metrics without a DOM. */
   labelLayout?: {
     width: number;
-    /** Maximum placed labels, in overview priority order; zero hides text only. */
+    /** Maximum placed labels, spread across the map with nearby-pin context; zero hides text only. */
     maxLabels?: number;
     /** Label outline color, for example the land color on a dark map. */
     haloColor?: string;

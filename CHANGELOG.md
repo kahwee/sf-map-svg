@@ -4,6 +4,9 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Add the optional `/cards` entry with `bindMapCards()`: hover/focus previews a pin without changing selection or camera, native buttons select places, map selection reveals matching cards without stealing focus, and explicit cleanup restores owned DOM attributes.
+- Spread budgeted static labels across the map while favoring nearby-pin context and retaining a selected-place label when it fits. Keep collision avoidance, all pins, unbudgeted labels, and default output unchanged.
+
 - Add opt-in `mapPalettes.nightForest` and `mapPalettes.warmPaper` tokens for consistent static/interactive map colors, label halos, markers, and selection rings, with contrast checks.
 
 - Port YorkSF’s editorial map-preview pattern into static rendering: opt-in compact SVG label layouts, priority-based label budgets, and configurable halos for dark palettes. Add a build-time field-guide example and light/dark Storybook preview without runtime dependencies or changes to default output.

@@ -94,11 +94,15 @@ import { fullMapData } from '@kahwee/sf-map-svg/data/full';
 import { staticMapData } from '@kahwee/sf-map-svg/data/static';
 import { neighborhoods, getNeighborhood } from '@kahwee/sf-map-svg/data';
 import * as geometry from '@kahwee/sf-map-svg/geometry';
+import { bindMapCards } from '@kahwee/sf-map-svg/cards';
+import { mapPalettes } from '@kahwee/sf-map-svg/presets';
 import { createGuideMap, createGuideController, mountGuideController, guideMapData, loadGuideDetailedData } from '@kahwee/sf-map-svg/guide';
 import { createGuideSVG, createGuideShell } from '@kahwee/sf-map-svg/guide/static';
 import realtor from '@kahwee/sf-map-svg/data/neighborhoods-realtor.json' with { type: 'json' };
 import candidates from '@kahwee/sf-map-svg/data/candidates/2024-11-05.json' with { type: 'json' };
 assert.equal(typeof createMap, 'function');
+assert.equal(typeof bindMapCards, 'function');
+assert.ok(Object.isFrozen(mapPalettes.nightForest.colors));
 assert.match(renderMap(fullMapData.map, { landmarks: true, bartStations: true }).svg, /<svg/);
 assert.equal(
   renderMap(staticMapData, { idPrefix: 'smoke-static' }).svg,
@@ -129,8 +133,15 @@ import { staticMapData } from '@kahwee/sf-map-svg/data/static';
 import { getNeighborhood, type NeighborhoodSource } from '@kahwee/sf-map-svg/data';
 import { createGuideMap, createGuideController, mountGuideController, guideMapData, loadGuideDetailedData } from '@kahwee/sf-map-svg/guide';
 import * as geometry from '@kahwee/sf-map-svg/geometry';
+import { bindMapCards } from '@kahwee/sf-map-svg/cards';
+import { mapPalettes } from '@kahwee/sf-map-svg/presets';
 const options: MapOptions = { features: { motion: true }, appearance: { colors: { water: '#fff' } } };
 const controller = () => createMap(fullMapData, options);
+const cardsContract = (root: HTMLElement) => {
+  const binding = bindMapCards(controller(), root, { markers: [], highlightColor: mapPalettes.warmPaper.markerColor });
+  binding.setMarkers([]);
+  binding.destroy();
+};
 const guideController = () => createGuideController(options);
 const liveContract = () => {
   const map = controller();
@@ -149,7 +160,7 @@ const svg: string = renderMap(fullMapData.map, staticOptions).svg;
 const staticSvg: string = renderMap(staticMapData).svg;
 const source: NeighborhoodSource = 'realtor';
 const name: string | undefined = getNeighborhood('NoPa', { source })?.properties.canonicalName;
-void [controller, liveContract, svg, staticSvg, name, geometry, createGuideMap, loadGuideDetailedData, guideMapData];
+void [cardsContract, controller, liveContract, svg, staticSvg, name, geometry, createGuideMap, loadGuideDetailedData, guideMapData];
 `,
   );
   execFileSync(

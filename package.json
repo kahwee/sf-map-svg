@@ -107,6 +107,10 @@
     "./presets": {
       "types": "./dist/src/presets.d.ts",
       "import": "./dist/src/presets.js"
+    },
+    "./cards": {
+      "types": "./dist/src/cards.d.ts",
+      "import": "./dist/src/cards.js"
     }
   },
   "files": [

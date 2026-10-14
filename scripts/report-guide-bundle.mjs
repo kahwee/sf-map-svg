@@ -70,7 +70,8 @@ if (
   )
 )
   throw new Error('Static renderer imported interactive runtime');
-if (renderer.gzip > 36 * 1024 || staticOnly.gzip > 10 * 1024)
+// 4.5 adds bounded spatial selection to static previews; cards stay an opt-in entry.
+if (renderer.gzip > 37 * 1024 || staticOnly.gzip > 11 * 1024)
   throw new Error(
     `Renderer exceeds its gzip budget (root: ${renderer.gzip}, static: ${staticOnly.gzip} bytes)`,
   );
