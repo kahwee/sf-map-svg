@@ -7,7 +7,7 @@ import { validateMarkers } from './validation.js';
 export function createMarkerCatalog(
   renderer: ReturnType<typeof createMarkerLayer>,
   picker: HTMLSelectElement,
-  project: (point: [number, number]) => [number, number],
+  project: (point: import('../data/types.js').Position) => [number, number],
 ) {
   let items: MarkerItem[] = [];
   return {
@@ -22,22 +22,31 @@ export function createMarkerCatalog(
         ids.add(marker.id);
         const previous = existing.get(marker.id);
         const point =
-          previous?.marker.lng === marker.lng && previous.marker.lat === marker.lat
+          previous?.marker.position[0] === marker.position[0] &&
+          previous.marker.position[1] === marker.position[1]
             ? previous.point
-            : project([marker.lng, marker.lat]);
-        return { marker: { ...marker }, point };
+            : project(marker.position);
+        return {
+          marker: { ...marker, position: [...marker.position] as typeof marker.position },
+          point,
+        };
       });
       const selection =
         selected && ids.has(selected)
           ? selected
           : (markers.find((marker) => marker.selected)?.id ?? null);
-      const keys = ['id', 'lng', 'lat', 'label', 'selected', 'color', 'radius'] as const;
+      const keys = ['id', 'label', 'selected', 'color', 'radius'] as const;
       if (
         picker.options.length > 0 &&
         selection === selected &&
         next.length === items.length &&
-        next.every(({ marker }, index) =>
-          keys.every((key) => marker[key] === items[index].marker[key]),
+        next.every(
+          ({ marker }, index) =>
+            marker.position.length === items[index].marker.position.length &&
+            marker.position.every(
+              (value, offset) => value === items[index].marker.position[offset],
+            ) &&
+            keys.every((key) => marker[key] === items[index].marker[key]),
         )
       )
         return undefined;

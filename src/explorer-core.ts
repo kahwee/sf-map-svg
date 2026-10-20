@@ -272,8 +272,9 @@ export function createNeighborhoodExplorerCore(
     arrow.hidden = !features.northArrow;
   }
   syncFurniture();
-  function projectToScreen(...coordinates: [position: Position] | [lng: number, lat: number]) {
-    const position = coordinates.length === 1 ? coordinates[0] : coordinates;
+  function projectToScreen(position: Position) {
+    if (!Array.isArray(position) || position.length < 2)
+      throw new RangeError('Expected a [longitude, latitude] position.');
     const [x, y] = map.project(position);
     const width = canvas.getBoundingClientRect().width;
     if (!width) throw new Error('Mount the map before projecting to screen.');
@@ -667,7 +668,10 @@ export function createNeighborhoodExplorerCore(
     materializeMarker,
     (group, node, signal) => {
       if (destroyed || signal.aborted) return;
-      const markers = group.map((item) => ({ ...item.marker }));
+      const markers = group.map((item) => ({
+        ...item.marker,
+        position: [...item.marker.position] as Position,
+      }));
       const minimumUnit = 800 / 12 / Math.max(1, canvas.getBoundingClientRect().width);
       if (
         clusterPoints(group, minimumUnit, features.clustering ? features.clustering.radius : 36)
@@ -677,7 +681,7 @@ export function createNeighborhoodExplorerCore(
       else
         fitGeometry({
           type: 'MultiPoint',
-          coordinates: markers.map((marker) => [marker.lng, marker.lat]),
+          coordinates: markers.map((marker) => marker.position),
         });
       if (!destroyed && !signal.aborted)
         root.dispatchEvent(
@@ -1047,7 +1051,7 @@ export function createNeighborhoodExplorerCore(
   }
   function getSelectedMarker() {
     const marker = markerCatalog.items.find((item) => item.marker.id === selectedMarker)?.marker;
-    return marker ? { ...marker } : null;
+    return marker ? { ...marker, position: [...marker.position] as Position } : null;
   }
   function selectMarker(id: string | null, options: { fit?: boolean } & CameraOptions = {}) {
     if (destroyed) return false;

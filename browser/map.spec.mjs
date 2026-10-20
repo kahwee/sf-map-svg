@@ -23,21 +23,89 @@ test.afterEach(async ({ page }) => {
 
 const entry = '[data-marker-id][tabindex="0"], [data-cluster-ids][tabindex="0"]';
 
-test('tuple and numeric screen projection agree across camera and canvas changes', async ({
-  page,
-}) => {
+test('v5 controller configuration, identity, and marker input contracts', async ({ page }) => {
+  const result = await page.evaluate(() => {
+    const map = window.map;
+    map.camera.set([100, 100, 400], { animate: false });
+    map.configure({
+      features: { motion: { duration: 80 } },
+      appearance: { colors: { water: '#123456' } },
+    });
+    map.configure({ features: { motion: { duration: undefined } }, appearance: undefined });
+    const retained = map.getConfiguration();
+    map.setMode('neighborhoods');
+    map.setSource('realtor');
+    const camera = map.camera.get();
+    const aliasRejected = map.selectNeighborhood('Inner Mission', { fit: false }) === false;
+    const selected = map.selectFeature(
+      { kind: 'neighborhood', source: 'realtor', id: 'inner-mission' },
+      { fit: false },
+    );
+    const snapshot = map.getConfiguration();
+    let invalidResetRejected = false;
+    try {
+      map.resetConfiguration(['bogus']);
+    } catch {
+      invalidResetRejected = true;
+    }
+    const unchanged = JSON.stringify(snapshot) === JSON.stringify(map.getConfiguration());
+    map.resetConfiguration(['appearance', 'features']);
+    const reset = map.getConfiguration();
+    const input = { id: 'clone', position: [-122.42, 37.76] };
+    map.setMarkers([input]);
+    input.position[0] = -122;
+    map.selectMarker('clone', { fit: false });
+    const marker = map.getSelectedMarker();
+    marker.position[0] = -121;
+    map.setMarkers([{ id: 'clone', position: [-122.42, 37.76, 20] }]);
+    map.setMarkers([{ id: 'clone', position: [-122.42, 37.76, 30] }]);
+    let legacyRejected = false;
+    try {
+      map.setMarkers([{ id: 'legacy', lng: -122.4, lat: 37.7 }]);
+    } catch {
+      legacyRejected = true;
+    }
+    return {
+      retained,
+      camera,
+      aliasRejected,
+      selected,
+      invalidResetRejected,
+      unchanged,
+      reset,
+      resetCamera: map.camera.get(),
+      marker: map.getSelectedMarker(),
+      legacyRejected,
+    };
+  });
+  expect(result.retained.features.motion.duration).toBe(80);
+  expect(result.retained.appearance.colors.water).toBe('#123456');
+  expect(result.camera).toEqual([100, 100, 400]);
+  expect(result.aliasRejected).toBe(true);
+  expect(result.selected).toBe(true);
+  expect(result.invalidResetRejected && result.unchanged).toBe(true);
+  expect(result.reset.appearance).toEqual({});
+  expect(result.reset.features.motion).toBe(false);
+  expect(result.reset.mode).toBe('neighborhoods');
+  expect(result.reset.source).toBe('realtor');
+  expect(result.resetCamera).toEqual([100, 100, 400]);
+  expect(result.marker.position).toEqual([-122.42, 37.76, 30]);
+  expect(result.legacyRejected).toBe(true);
+});
+
+test('tuple screen projection remains valid across camera and canvas changes', async ({ page }) => {
   const check = async () => {
     const result = await page.evaluate(() => {
       const map = window.map;
-      const { lng, lat } = window.harness.markers[0];
+      const [lng, lat] = window.harness.markers[0].position;
       return {
-        numeric: map.projectToScreen(lng, lat),
+        original: map.projectToScreen(window.harness.markers[0].position),
         tuple: map.projectToScreen([lng, lat]),
         altitude: map.projectToScreen([lng, lat, 50]),
       };
     });
-    expect(result.tuple).toEqual(result.numeric);
-    expect(result.altitude).toEqual(result.numeric);
+    expect(result.tuple).toEqual(result.original);
+    expect(result.altitude).toEqual(result.original);
     expect(Number.isFinite(result.tuple.x)).toBe(true);
     expect(Number.isFinite(result.tuple.y)).toBe(true);
   };
@@ -159,7 +227,9 @@ test('one marker tab stop survives reordering and removal', async ({ page }) => 
 test('separable cluster zooms instead of opening the chooser', async ({ page }) => {
   await page.evaluate(async () => {
     const [one, two] = window.harness.markers;
-    window.harness.mount({ markers: [one, { ...two, lng: two.lng + 0.003 }] });
+    window.harness.mount({
+      markers: [one, { ...two, position: [two.position[0] + 0.003, two.position[1]] }],
+    });
     await window.harness.settle();
   });
   await page.locator('[data-cluster-ids]').click();
@@ -201,7 +271,7 @@ test('resize keeps projection aligned and touch mode restores page scrolling', a
   await expect(canvas).toHaveCSS('touch-action', 'none');
   const error = await page.evaluate(() => {
     const marker = window.harness.markers[2];
-    const point = window.map.projectToScreen(marker.lng, marker.lat);
+    const point = window.map.projectToScreen(marker.position);
     const node = document.querySelector('[data-marker-id="park"]');
     const matrix = node.getScreenCTM();
     const box = window.map.overlayElement.getBoundingClientRect();

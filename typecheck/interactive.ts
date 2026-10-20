@@ -25,12 +25,13 @@ const enhanced = createMap(fullMapData, {
     labelStyle: { fontFamily: 'DM Sans', haloColor: '#223344' },
   },
   features: { motion: { duration: 300 }, markerEntrance: true, clustering: { radius: 40 } },
-  markers: [{ id: 'place', lng: -122.4, lat: 37.7, radius: 8 }],
+  markers: [{ id: 'place', position: [-122.4, 37.7] as const, radius: 8 }],
   legend: { hidden: ['road'], items: [{ label: 'Place', color: '#123456' }] },
 });
 enhanced.camera.set([0, 0, 800], { animate: false });
 enhanced.selectMarker('place', { duration: 250 });
-enhanced.projectToScreen(-122.4, 37.7).visible satisfies boolean;
+// @ts-expect-error Numeric coordinate arguments were removed in v5.
+enhanced.projectToScreen(-122.4, 37.7);
 enhanced.projectToScreen([-122.4, 37.7] as const) satisfies ScreenPoint;
 enhanced.projectToScreen([-122.4, 37.7, 20] as const) satisfies ScreenPoint;
 // @ts-expect-error A latitude is required in the numeric form.

@@ -9,8 +9,8 @@ import type {
 } from '../src/types.js';
 
 const pins = [
-  { id: 'a', lng: -122.4269, lat: 37.7596, label: 'First place' },
-  { id: 'b', lng: -122.4269, lat: 37.7596, label: 'Second place' },
+  { id: 'a', position: [-122.4269, 37.7596] as const, label: 'First place' },
+  { id: 'b', position: [-122.4269, 37.7596] as const, label: 'Second place' },
 ];
 let map: InteractiveSFMapElement;
 const meta = {
@@ -111,7 +111,9 @@ export const FailedUpdatesAreAtomic: Story = {
     expect(map.querySelector<SVGElement>('[data-layer="landmarks"]')?.style.display).toBe('none');
     expect(() => map.selectMarker('b', { duration: -1 })).toThrow();
     expect(map.getSelectedMarker()?.id).toBe('a');
-    expect(() => map.setMarkers([pins[0], { ...pins[1], lat: NaN }])).toThrow();
+    expect(() =>
+      map.setMarkers([pins[0], { ...pins[1], position: [pins[1].position[0], NaN] as const }]),
+    ).toThrow();
     expect(map.querySelectorAll('[data-marker-id]')).toHaveLength(2);
     expect(map.getViewport()).toEqual(before);
     const input: MapFeatures = { motion: { duration: 40 } };
@@ -372,7 +374,7 @@ export const NeighborhoodSourceLifecycle: Story = {
     const other = controller.element as InteractiveSFMapElement;
     map.after(other);
     try {
-      controller.selectNeighborhood('Inner Mission', { fit: false });
+      controller.selectNeighborhood('inner-mission', { fit: false });
       const old = other.querySelector<SVGPathElement>('[data-neighborhood-id="north-panhandle"]');
       if (!old) throw new Error('Missing realtor neighborhood');
       const before = old.outerHTML;

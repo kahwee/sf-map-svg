@@ -11,9 +11,9 @@ function required<T extends Element>(host: Element, selector: string): T {
   return node;
 }
 const markers = [
-  { id: 'one', label: 'First Mission place', lng: -122.4269, lat: 37.7596, radius: 9 },
-  { id: 'two', label: 'Second Mission place', lng: -122.4269, lat: 37.7596 },
-  { id: 'park', label: 'Park', lng: -122.4687, lat: 37.7704 },
+  { id: 'one', label: 'First Mission place', position: [-122.4269, 37.7596] as const, radius: 9 },
+  { id: 'two', label: 'Second Mission place', position: [-122.4269, 37.7596] as const },
+  { id: 'park', label: 'Park', position: [-122.4687, 37.7704] as const },
 ];
 const meta = {
   title: 'Checks/Consumer API',
@@ -82,8 +82,8 @@ export const MotionAndClusters: Story = {
     map.setViewport([200, 200, 300]);
     expect(map.getViewport()).toEqual(start);
     await waitFor(() => expect(map.getViewport()).toEqual([200, 200, 300]));
-    const point = map.projectToScreen(markers[0].lng, markers[0].lat);
-    expect(map.projectToScreen([markers[0].lng, markers[0].lat])).toEqual(point);
+    const point = map.projectToScreen(markers[0].position);
+    expect(map.projectToScreen(markers[0].position)).toEqual(point);
     expect(Number.isFinite(point.x)).toBe(true);
     const pin = map.querySelector<SVGGElement>('[data-marker-id="one"]');
     const canvasBox = map.overlayElement.getBoundingClientRect();
@@ -212,7 +212,10 @@ export const CoincidentPinsInCompactShell: Story = {
 export const MarkerKeyboardNavigation: Story = {
   render: () => {
     map = createGuideMap({
-      markers: markers.map((marker, index) => ({ ...marker, lng: marker.lng + index * 0.002 })),
+      markers: markers.map((marker, index) => ({
+        ...marker,
+        position: [marker.position[0] + index * 0.002, marker.position[1]] as const,
+      })),
     });
     return map;
   },
@@ -231,7 +234,10 @@ export const MarkerKeyboardNavigation: Story = {
     await userEvent.keyboard('{Enter}');
     expect(map.getSelectedMarker()?.id).toBe('park');
     const retained = document.activeElement;
-    const unique = markers.map((marker, index) => ({ ...marker, lng: marker.lng + index * 0.002 }));
+    const unique = markers.map((marker, index) => ({
+      ...marker,
+      position: [marker.position[0] + index * 0.002, marker.position[1]] as const,
+    }));
     map.setMarkers([...unique].reverse());
     expect(document.activeElement).toBe(retained);
     map.setMarkers(unique.slice(0, 2));
@@ -255,7 +261,13 @@ export const CoincidentChooserOpen: Story = {
 export const ZoomableClusters: Story = {
   render: () => {
     map = createGuideMap({
-      markers: [markers[0], { ...markers[1], lng: markers[1].lng + 0.003 }],
+      markers: [
+        markers[0],
+        {
+          ...markers[1],
+          position: [markers[1].position[0] + 0.003, markers[1].position[1]] as const,
+        },
+      ],
       clustering: true,
     });
     return map;

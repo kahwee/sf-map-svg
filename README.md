@@ -6,6 +6,11 @@ Offline, self-contained San Francisco SVG maps. The package has no runtime depen
 
 [Map preview](https://github.com/kahwee/sf-map-svg/blob/main/docs/map-preview.png) · 2,000-marker screencasts: [desktop](https://github.com/kahwee/sf-map-svg/blob/main/docs/media/markers-2000-desktop.webm), [390 px phone](https://github.com/kahwee/sf-map-svg/blob/main/docs/media/markers-2000-phone.webm). [Screenshots and capture instructions](https://github.com/kahwee/sf-map-svg/blob/main/docs/media/README.md) show zoom, viewport culling, clustering, label updates, and selection from the complete catalog. These recordings illustrate behavior; frame timings are reported below.
 
+## Upgrading to v5
+
+Version 5.0.0 standardizes coordinate tuples and controller reset behavior.
+Read the [migration guide](docs/migration-v5.md) before upgrading from v4.
+
 ## Install
 
 ```sh
@@ -81,6 +86,33 @@ function disposeMap() {
 See [controller options, events, and lifecycle](docs/API.md#interactive-maps),
 [examples](docs/EXAMPLES.md), and [consumer integration](docs/consumer-integration.md).
 Call `destroy()` when removing an interactive map.
+
+## Geographic queries and screen coordinates
+
+New in v5. See the [v5 migration guide](docs/migration-v5.md) for breaking changes.
+
+Use the data-free `/geometry` entry to calculate geographic bounds or test which
+polygons contain a location, without constructing a map or requiring a browser:
+
+```ts
+import { geometryBounds, geometryContainsPoint } from '@kahwee/sf-map-svg/geometry';
+import { neighborhoods } from '@kahwee/sf-map-svg/data/realtor';
+
+const location = [-122.42, 37.76] as const;
+const matches = neighborhoods.features.filter(({ geometry }) =>
+  geometryContainsPoint(geometry, location),
+);
+const bounds = matches[0] ? geometryBounds(matches[0].geometry) : null;
+```
+
+Polygon holes are respected; shared boundaries can match multiple areas.
+Bounds are `[west, south, east, north]` in degrees, not camera coordinates.
+The [query contract](docs/API.md#geographic-queries) covers empty geometry,
+validation, and geographic limitations.
+
+For mounted browser maps, `map.projectToScreen(location)` returns canvas-relative
+CSS pixels and viewport visibility. All coordinate inputs now use GeoJSON tuples. See the [overlay recipe](docs/consumer-integration.md#position-html-overlays)
+and [coordinate units](docs/API.md#coordinates-and-units).
 
 ## Documentation for coding assistants
 

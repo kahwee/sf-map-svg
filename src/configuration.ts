@@ -56,6 +56,42 @@ type PresentationSnapshot = Pick<
   'features' | 'layers' | 'controls' | 'appearance'
 >;
 
+/** Public v5 patches consistently ignore undefined at every record depth. */
+export function configurationPatch(
+  patch: MapConfiguration,
+  current: Partial<MapConfiguration> = {},
+): MapConfiguration {
+  assertOptions(patch, 'configuration', [
+    'features',
+    'layers',
+    'controls',
+    'appearance',
+    'mode',
+    'source',
+    'year',
+    'labels',
+  ]);
+  const clean = (value: unknown, previous: unknown, depth: number): unknown => {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return value;
+    const prior =
+      previous && typeof previous === 'object' && !Array.isArray(previous)
+        ? (previous as Record<string, unknown>)
+        : {};
+    return {
+      ...(depth >= 2 ? prior : {}),
+      ...Object.fromEntries(
+        Object.entries(value)
+          .filter(([, entry]) => entry !== undefined || depth > 0)
+          .map(([key, entry]) => [
+            key,
+            clean(entry === undefined ? prior[key] : entry, prior[key], depth + 1),
+          ]),
+      ),
+    };
+  };
+  return clean(patch, current, 0) as MapConfiguration;
+}
+
 /** Prepare the entire configuration before any DOM mutation. */
 export function prepareConfiguration(
   current: PresentationSnapshot,

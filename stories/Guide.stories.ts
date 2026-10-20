@@ -13,8 +13,8 @@ import { expect } from 'storybook/test';
 import { createGuideController, type MapController } from '../src/guide.ts';
 
 const markerSet = [
-  { id: 'de-young', label: 'de Young Museum', lng: -122.4687, lat: 37.7704 },
-  { id: 'conservatory', label: 'Conservatory of Flowers', lng: -122.4608, lat: 37.7729 },
+  { id: 'de-young', label: 'de Young Museum', position: [-122.4687, 37.7704] as const },
+  { id: 'conservatory', label: 'Conservatory of Flowers', position: [-122.4608, 37.7729] as const },
 ];
 const route = {
   id: 'sample-park-route',

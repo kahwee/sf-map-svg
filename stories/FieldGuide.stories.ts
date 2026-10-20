@@ -30,8 +30,7 @@ export const ResponsiveNightAtlas: Story = {
         {
           id: 'park',
           label: 'Golden Gate Park',
-          lng: -122.4687,
-          lat: 37.7704,
+          position: [-122.4687, 37.7704] as const,
           color: palette.markerColor,
         },
       ],

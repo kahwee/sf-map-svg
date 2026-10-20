@@ -50,7 +50,7 @@ export function bindMapCards(map: MapController, root: HTMLElement, options: Map
     const marker =
       card && root.contains(card) ? markers.get(card.dataset.mapMarker ?? '') : undefined;
     if (!marker) return;
-    const point = map.projectToScreen(marker.lng, marker.lat);
+    const point = map.projectToScreen(marker.position);
     if (!point.visible) return;
     ring.style.left = `${point.x}px`;
     ring.style.top = `${point.y}px`;

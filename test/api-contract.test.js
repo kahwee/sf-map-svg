@@ -52,11 +52,11 @@ test('static and interactive overlay contract excludes point geometry and ambigu
     assert.throws(() => createGuideSVG({ overlays }));
   for (const markers of [
     [
-      { id: 'same', lng: -122.4, lat: 37.7 },
-      { id: 'same', lng: -122.4, lat: 37.7 },
+      { id: 'same', position: [-122.4, 37.7] },
+      { id: 'same', position: [-122.4, 37.7] },
     ],
     new Array(2),
-    [{ id: 'x', lng: -122.4, lat: 37.7, selected: 'yes' }],
+    [{ id: 'x', position: [-122.4, 37.7], selected: 'yes' }],
   ])
     assert.throws(() => createGuideSVG({ markers }));
 });

@@ -8,8 +8,7 @@ const places = guideMapData.map.landmarks
   .map((place, index) => ({
     id: `park-${index}`,
     label: place.name,
-    lng: place.label[0],
-    lat: place.label[1],
+    position: [place.label[0], place.label[1]],
   }));
 const map = createGuideController({
   mode: 'basemap',

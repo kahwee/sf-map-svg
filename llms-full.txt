@@ -2,13 +2,13 @@
 
 > Offline San Francisco SVG maps with explicit geographic imports, no runtime dependencies, static rendering, and a browser controller.
 
-@kahwee/sf-map-svg 4.5.0 · local working tree. Node >=24.0.0 for server rendering; browsers need a DOM and a JSON-capable bundler.
+@kahwee/sf-map-svg 5.0.0 · local working tree. Node >=24.0.0 for server rendering; browsers need a DOM and a JSON-capable bundler.
 
 These are working-tree docs. Unreleased changelog entries may describe APIs absent from npm; verify the installed version before copying them.
 
 Use renderMap(data, options) for SVG strings; createMap(data, options) returns a controller. Mount map.element and destroy it on unmount. Choose mode explicitly: createMap defaults to basemap. Geography is separate; staticMapData and fullMapData have different shapes.
 
-<!-- Generated from README.md; @kahwee/sf-map-svg 4.5.0 · local working tree. -->
+<!-- Generated from README.md; @kahwee/sf-map-svg 5.0.0 · local working tree. -->
 
 # SF Map SVG
 
@@ -17,6 +17,11 @@ Offline, self-contained San Francisco SVG maps. The package has no runtime depen
 [Getting started](https://github.com/kahwee/sf-map-svg/blob/main/docs/developer-guide.md) · [API reference](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md) · [Design playground](https://kahwee.github.io/sf-map-svg/playground.html) · [Live examples](https://kahwee.github.io/sf-map-svg/examples.html) · [Storybook source](https://github.com/kahwee/sf-map-svg/blob/main/stories/) · [Geographic sources](https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md) · [v3 migration](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v3.md)
 
 [Map preview](https://github.com/kahwee/sf-map-svg/blob/main/docs/map-preview.png) · 2,000-marker screencasts: [desktop](https://github.com/kahwee/sf-map-svg/blob/main/docs/media/markers-2000-desktop.webm), [390 px phone](https://github.com/kahwee/sf-map-svg/blob/main/docs/media/markers-2000-phone.webm). [Screenshots and capture instructions](https://github.com/kahwee/sf-map-svg/blob/main/docs/media/README.md) show zoom, viewport culling, clustering, label updates, and selection from the complete catalog. These recordings illustrate behavior; frame timings are reported below.
+
+## Upgrading to v5
+
+Version 5.0.0 standardizes coordinate tuples and controller reset behavior.
+Read the [migration guide](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v5.md) before upgrading from v4.
 
 ## Install
 
@@ -93,6 +98,33 @@ function disposeMap() {
 See [controller options, events, and lifecycle](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md#interactive-maps),
 [examples](https://github.com/kahwee/sf-map-svg/blob/main/docs/EXAMPLES.md), and [consumer integration](https://github.com/kahwee/sf-map-svg/blob/main/docs/consumer-integration.md).
 Call `destroy()` when removing an interactive map.
+
+## Geographic queries and screen coordinates
+
+New in v5. See the [v5 migration guide](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v5.md) for breaking changes.
+
+Use the data-free `/geometry` entry to calculate geographic bounds or test which
+polygons contain a location, without constructing a map or requiring a browser:
+
+```ts
+import { geometryBounds, geometryContainsPoint } from '@kahwee/sf-map-svg/geometry';
+import { neighborhoods } from '@kahwee/sf-map-svg/data/realtor';
+
+const location = [-122.42, 37.76] as const;
+const matches = neighborhoods.features.filter(({ geometry }) =>
+  geometryContainsPoint(geometry, location),
+);
+const bounds = matches[0] ? geometryBounds(matches[0].geometry) : null;
+```
+
+Polygon holes are respected; shared boundaries can match multiple areas.
+Bounds are `[west, south, east, north]` in degrees, not camera coordinates.
+The [query contract](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md#geographic-queries) covers empty geometry,
+validation, and geographic limitations.
+
+For mounted browser maps, `map.projectToScreen(location)` returns canvas-relative
+CSS pixels and viewport visibility. All coordinate inputs now use GeoJSON tuples. See the [overlay recipe](https://github.com/kahwee/sf-map-svg/blob/main/docs/consumer-integration.md#position-html-overlays)
+and [coordinate units](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md#coordinates-and-units).
 
 ## Documentation for coding assistants
 
@@ -220,7 +252,7 @@ pnpm benchmark:markers --counts=2000 --mode=neighborhoods \
 
 ---
 
-<!-- Generated from docs/developer-guide.md; @kahwee/sf-map-svg 4.5.0 · local working tree. -->
+<!-- Generated from docs/developer-guide.md; @kahwee/sf-map-svg 5.0.0 · local working tree. -->
 
 # Developer guide
 
@@ -234,6 +266,7 @@ Choose the renderer and geography separately. `renderMap` produces a string with
 | Explore districts or several neighborhood definitions | `/map`: `createMap` | `/data/full`: `fullMapData` |
 | Embed a smaller neighborhood guide | `/guide/map`: `createGuideController` | Included lightweight guide geography |
 | Use the guide data with the general controller | `/map`: `createMap` | `/guide/data`: `guideMapData` |
+| Query bounds or polygon containment without a DOM | `/geometry` | Caller-supplied geometry or explicit dataset imports |
 | Look up names without mounting a map | `/data/lookup` | Source-aware lookup helpers |
 
 Imports starting with `/` in this table are package suffixes, such as `@kahwee/sf-map-svg/static`. Node 24+ is required for server rendering. Browser examples need a DOM and a bundler that supports JSON modules. This is an ESM package.
@@ -320,22 +353,43 @@ SFAR realtor neighborhoods are the default when supplied. If only an alternative
 | Camera | `map.camera.set/pan/zoom/fit/reset(...)` |
 | Palette, typography, control styling | `map.configure({ appearance })`; retains camera, selection and focus |
 
-Appearance token objects merge by key; `undefined` removes an override and `appearance: undefined` resets the group. Static maps accept grouped `layers` and the shared `appearance` keys (`theme`, `colors`, `districtStyle`) too. See [the API contract](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md#live-configuration-and-inspection) and [the design playground](https://kahwee.github.io/sf-map-svg/playground.html).
-
-`configure` merges supplied keys; omitted keys keep their existing values. Set a layer or control key to `undefined` to remove its override. Set a whole group to `undefined` to reset that group. Set a feature to `false` to disable it. Explicit layer overrides keep winning after mode changes.
+Controller patches merge nested token and feature records. Omitted and `undefined`
+values retain existing values. Use `false` to disable a boolean switch and
+`resetConfiguration()` to clear presentation overrides explicitly:
 
 ```ts
 map.configure({ layers: { neighborhoodLabels: false } });
-map.configure({ layers: { neighborhoodLabels: undefined } }); // follow mode again
 map.configure({ features: { motion: false } });
-map.configure({ layers: undefined }); // clear all explicit layer overrides
+map.resetConfiguration(['layers']); // follow mode-derived defaults again
+map.resetConfiguration(['appearance']); // built-in palette and typography
 ```
 
-`getConfiguration()` returns current mode/source/year/labels and a detached snapshot of the presentation groups, including explicit layer and appearance overrides. Camera and selection remain separate runtime state. Use `getResolvedConfiguration()` for current mode/source/year/labels and effective layer switches, and `getCapabilities()` for supplied geography. Invalid configuration patches leave the current map unchanged. Convenience methods use the same atomic update path: pass `map.setMode(mode, { resetView: false })` or `map.setSource(source, { resetView: false })` to keep the camera. Their default still resets the view.
+Reset groups are `features`, `layers`, `controls`, and `appearance`; omitting
+the argument resets all four. Resets preserve geographic choices and camera,
+and do not restore constructor overrides. Static maps accept grouped layers and
+the shared appearance keys (`theme`, `colors`, `districtStyle`) at construction.
+See [the API contract](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md#live-configuration-and-inspection).
+
+`getConfiguration()` returns a detached snapshot of geographic choices and
+presentation overrides. Use `getResolvedConfiguration()` for effective layers
+and `getCapabilities()` for supplied geography. Invalid patches preserve state.
+`setMode`, `setSource`, and `configure` all preserve the camera; request movement
+with `camera.reset()` or `camera.fit(geometry)`. See the
+[v5 migration guide](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v5.md) for changed call forms.
+
+## Geographic queries
+
+The v5 `/geometry` helpers `geometryBounds(geometry)` and
+`geometryContainsPoint(geometry, position)` work without a DOM or bundled
+geography. Import `Bounds`, `Geometry`, and `Position` types from the same entry.
+Use containment for area lookup and bounds for geographic extents; pass the
+original geometry to `camera.fit`, rather than geographic bounds to `camera.set`.
+See the [worked example](https://github.com/kahwee/sf-map-svg/blob/main/docs/EXAMPLES.md#find-areas-containing-a-location) and
+[full query semantics](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md#geographic-queries).
 
 ## Markers, routes and camera coordinates
 
-Marker positions are `{ lng, lat }`. GeoJSON coordinates and the static projection use `[longitude, latitude]`, in WGS84. Camera viewports use `[x, y, size]` in the fixed 800 × 800 projected map space; they are not geographic bounds. `camera.pan` uses projected units. `projectToScreen(lng, lat)` returns pixels relative to the map canvas, plus visibility.
+Markers use `position: [longitude, latitude]`. GeoJSON coordinates and the static projection use `[longitude, latitude]`, in WGS84. Camera viewports use `[x, y, size]` in the fixed 800 × 800 projected map space; they are not geographic bounds. `camera.pan` takes deltas in CSS pixels and converts them using the mounted canvas width. `projectToScreen([lng, lat])` returns CSS pixels relative to the map canvas, plus viewport visibility. The former two-number call is removed in v5.
 
 Marker and overlay IDs must be unique. Keep marker IDs stable across updates so retained markers preserve DOM nodes, focus and entrance animations. Use `null` to clear a selection; selection methods return a boolean. Selection events can contain null values. `map.on()` returns an unsubscribe function.
 
@@ -364,7 +418,7 @@ See [API options](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md), [
 
 ---
 
-<!-- Generated from docs/API.md; @kahwee/sf-map-svg 4.5.0 · local working tree. -->
+<!-- Generated from docs/API.md; @kahwee/sf-map-svg 5.0.0 · local working tree. -->
 
 # Map options and lifecycle
 
@@ -373,6 +427,8 @@ and event types are exported by [src/api.ts](https://github.com/kahwee/sf-map-sv
 [src/types.ts](https://github.com/kahwee/sf-map-svg/blob/main/src/types.ts) and [src/controller-types.ts](https://github.com/kahwee/sf-map-svg/blob/main/src/controller-types.ts).
 
 ## Geographic queries
+
+New in v5. See the [migration guide](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v5.md) for upgrade steps.
 
 The data-free `@kahwee/sf-map-svg/geometry` entry exports `geometryBounds(geometry)`
 and `geometryContainsPoint(geometry, [longitude, latitude])`. They work offline
@@ -486,16 +542,16 @@ District style callbacks are evaluated once per district at construction and on 
 
 ## Live configuration and inspection
 
-`map.configure({ appearance, mode, source, year, labels, layers, features, controls })` updates an existing map. Appearance updates preserve the camera, selections, retained marker nodes, and keyboard focus. Mode/source changes through `configure` preserve the camera; the `setMode(mode, { resetView: false })` and `setSource(source, { resetView: false })` convenience methods use the same atomic update path and preserve the camera. Omit the second argument to retain their existing reset behavior. Invalid view-update options fail before changing configuration. Switching neighborhood source clears the neighborhood selection. Changing district year retains a selected district when it exists in the new year. Unsupported datasets, invalid appearance values, and invalid district-style callback results fail during preparation before commit. A reentrant styling callback can supersede the pending patch.
+`map.configure({ appearance, mode, source, year, labels, layers, features, controls })` updates an existing map. Appearance updates preserve the camera, selections, retained marker nodes, and keyboard focus. Mode/source changes through `configure`, `setMode(mode)`, and `setSource(source)` preserve the camera. Use `map.camera.reset()` or `map.camera.fit(geometry)` when movement is intended. The former `{ resetView }` setter argument is removed in v5. Switching neighborhood source clears the neighborhood selection. Changing district year retains a selected district when it exists in the new year. Unsupported datasets, invalid appearance values, and invalid district-style callback results fail during preparation before commit. A reentrant styling callback can supersede the pending patch.
 
-Appearance token objects (`colors`, `style`, `labelStyle`, `labelSize`, `areaStyle`) merge supplied keys; other appearance properties replace. Omitted keys retain their value, an explicit `undefined` property removes that override, and `appearance: undefined` resets the whole appearance group. Feature objects retain their existing replacement semantics. Mode/source/year/labels ignore `undefined`; reset them with an explicit value. Patch types explicitly permit these resets with TypeScript’s `exactOptionalPropertyTypes` enabled.
+Controller patches merge nested token and feature records. Omitted and `undefined` values retain current values at every depth; `false` disables boolean switches. Use `resetConfiguration(groups?)` to remove presentation overrides explicitly. The supported groups are `features`, `layers`, `controls`, and `appearance`; omitting the argument resets all four. Resets restore built-in defaults, preserve mode/source/year/labels and camera, and do not restore constructor overrides. Unknown groups fail before changing state. Static construction options and low-level element methods retain their separately documented contracts.
 
 ```ts
 map.configure({
   appearance: { colors: { water: '#142d45' }, labelStyle: { fontFamily: 'Georgia,serif' } },
   layers: { bartStations: false },
 });
-map.configure({ appearance: undefined }); // restore construction defaults, not initial overrides
+map.resetConfiguration(['appearance']); // restore built-in defaults
 
 const overrides = map.getConfiguration();
 const effective = map.getResolvedConfiguration();
@@ -527,11 +583,14 @@ map.selectFeature({ kind: 'neighborhood', source: 'realtor', id: 'inner-mission'
 map.selectFeature({ kind: 'district', year: 2022, id: 3 });
 ```
 
-Neighborhood IDs are exact source-scoped feature IDs, rather than display names or aliases. District identity includes the boundary year. This operation returns `false` for a missing feature or a source/year other than the map's current supplied geography; it never silently switches definitions or years. Choose geography through `configure` first. An `id` of `null` clears that kind in the referenced current geography. Malformed references throw. Existing `selectMarker`, `selectNeighborhood`, and `selectDistrict` shortcuts remain supported.
+Neighborhood IDs are exact source-scoped feature IDs, rather than display names or aliases. District identity includes the boundary year. This operation returns `false` for a missing feature or a source/year other than the map's current supplied geography; it never silently switches definitions or years. Choose geography through `configure` first. An `id` of `null` clears that kind in the referenced current geography. Malformed references throw. The `selectMarker`, `selectNeighborhood`, and `selectDistrict` shortcuts select exact IDs in the current geography. Controller `selectNeighborhood` no longer resolves display names or aliases; resolve those with a source-specific data lookup first.
 
 ## Coordinates and units
 
-GeoJSON and static projection inputs use `[longitude, latitude]` in WGS84; markers use `{ lng, lat }`. Static `project` returns SVG units. `projectToScreen([longitude, latitude])` accepts the same readonly GeoJSON position as static `project`; the existing `projectToScreen(lng, lat)` form remains supported. Both return `ScreenPoint` (`{ x, y, visible }`) in CSS pixels relative to the mounted canvas. Altitude is ignored. Mount the map before calling; invalid Mercator coordinates throw, and calls after controller destruction throw. `visible` indicates viewport inclusion, not whether another element covers the point. Camera viewports use the fixed 800 × 800 projected map space, independent of canvas size. Pan deltas use screen pixels, converted using the mounted canvas width. Marker radius uses screen pixels in browser maps and SVG units in static output.
+Version 5 uses tuple inputs and exports the named `ScreenPoint` /
+`ProjectToScreen` types. The former two-number call is removed.
+
+GeoJSON and static projection inputs use `[longitude, latitude]` in WGS84; markers use `{ position: [longitude, latitude] }`. Static `project` returns SVG units. `projectToScreen([longitude, latitude])` accepts the same readonly GeoJSON position as static `project` and returns `ScreenPoint` (`{ x, y, visible }`) in CSS pixels relative to the mounted canvas. Altitude is ignored. Mount the map before calling; invalid Mercator coordinates throw, and calls after controller destruction throw. `visible` indicates viewport inclusion, not whether another element covers the point. Camera viewports use the fixed 800 × 800 projected map space, independent of canvas size. Pan deltas use screen pixels, converted using the mounted canvas width. Marker radius uses screen pixels in browser maps and SVG units in static output.
 
 Explore presentation options in the [live map design playground](https://kahwee.github.io/sf-map-svg/playground.html). The page identifies its package version; released builds use compatible options for that installed version.
 
@@ -545,7 +604,7 @@ Call `binding.setMarkers(next)` after `map.setMarkers(next)` when the catalog ch
 
 ---
 
-<!-- Generated from docs/EXAMPLES.md; @kahwee/sf-map-svg 4.5.0 · local working tree. -->
+<!-- Generated from docs/EXAMPLES.md; @kahwee/sf-map-svg 5.0.0 · local working tree. -->
 
 # Examples
 
@@ -655,9 +714,38 @@ See [consumer integration](https://github.com/kahwee/sf-map-svg/blob/main/docs/c
 
 For the controller and explicit data imports, see [the v3 migration guide](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v3.md).
 
+## Find areas containing a location
+
+New in v5. This example runs in
+Node or a browser without mounting a map and imports only the SFAR definition:
+
+```ts
+import { geometryBounds, geometryContainsPoint } from '@kahwee/sf-map-svg/geometry';
+import { neighborhoods } from '@kahwee/sf-map-svg/data/realtor';
+
+const location = [-122.42, 37.76] as const;
+const matches = neighborhoods.features.filter((feature) =>
+  geometryContainsPoint(feature.geometry, location),
+);
+for (const feature of matches) {
+  console.log(feature.id, feature.properties.canonicalName, geometryBounds(feature.geometry));
+}
+```
+
+Keep all matches when the location lies on a shared boundary. An empty result
+means no supplied polygon contains the location; it does not trigger a switch
+to another neighborhood definition. For an existing map using the same realtor
+source, pass a chosen match to
+`map.selectFeature({ kind: 'neighborhood', source: 'realtor', id: feature.id })`.
+To fit it, use `map.camera.fit(feature.geometry)`. Geographic bounds cannot be
+passed directly to `camera.set`, which takes projected `[x, y, size]`.
+
+See [query semantics and limitations](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md#geographic-queries) and the
+[HTML overlay recipe](https://github.com/kahwee/sf-map-svg/blob/main/docs/consumer-integration.md#position-html-overlays).
+
 ---
 
-<!-- Generated from docs/consumer-integration.md; @kahwee/sf-map-svg 4.5.0 · local working tree. -->
+<!-- Generated from docs/consumer-integration.md; @kahwee/sf-map-svg 5.0.0 · local working tree. -->
 
 # Embedding and progressive enhancement
 
@@ -696,7 +784,7 @@ For a fixed-width embed, use shared inputs on the server and in the browser:
 ```ts
 // Shared inputs: coordinates, IDs, radii, colors and layer choices must match.
 const guideMarkers = [
-  { id: 'ferry', label: 'Ferry Building', lng: -122.3937, lat: 37.7955, radius: 7 },
+  { id: 'ferry', label: 'Ferry Building', position: [-122.3937, 37.7955] as const, radius: 7 },
 ];
 const guideLayers = { neighborhoodLabels: true, roadLabels: true };
 const guideColors = { label: '#183e58', landmark: '#426641' };
@@ -787,9 +875,160 @@ Style `[data-map-selected]` with an outline or background change that remains le
 
 Run `pnpm demo` and open `examples/generated/linked-cards.html` for the complete pattern. Storybook **Maps / Linked place cards** checks hover, keyboard selection, card reveal, both palettes, and disposal.
 
+## Position HTML overlays
+
+In v5, pass the same readonly `[longitude, latitude]` position used by static
+projection. The former two-number call is removed; see the
+[migration guide](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v5.md).
+
+Call this helper after mounting the map in a container with nonzero width:
+
+```ts
+import type { MapController } from '@kahwee/sf-map-svg';
+import type { Position } from '@kahwee/sf-map-svg/geometry';
+
+function attachCallout(map: MapController, location: Position, label: string) {
+  const callout = document.createElement('span');
+  callout.textContent = label;
+  callout.style.cssText = 'position:absolute;pointer-events:none;transform:translate(-50%,-100%)';
+  const update = () => {
+    const point = map.projectToScreen(location);
+    callout.hidden = !point.visible;
+    callout.style.left = `${point.x}px`;
+    callout.style.top = `${point.y}px`;
+  };
+  update();
+  map.overlayElement.append(callout);
+  const stopViewport = map.on('viewportchange', update);
+  const stopResize = map.on('mapresize', update);
+  return () => {
+    stopViewport();
+    stopResize();
+    callout.remove();
+  };
+}
+```
+
+Use `const detach = attachCallout(map, [-122.3937, 37.7955], 'Ferry Building')`
+with your mounted controller. Call `detach()` before `map.destroy()` on unmount.
+Keep the container visible while projecting; an unmounted or zero-width canvas
+throws. Controller calls after destruction also throw. Camera moves and resize
+both require repositioning; a one-time projection becomes stale.
+
+`x` and `y` are CSS pixels relative to `overlayElement`, not page coordinates or
+SVG units. `visible` tests inclusion in the map viewport; it does not account
+for occlusion by other content. This noninteractive label uses `textContent`
+and leaves pointer input to the map. Interactive callouts need their own
+keyboard, focus, and dismissal behavior. See [coordinates and units](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md#coordinates-and-units).
+
 ---
 
-<!-- Generated from docs/migration-v3.md; @kahwee/sf-map-svg 4.5.0 · local working tree. -->
+<!-- Generated from docs/migration-v5.md; @kahwee/sf-map-svg 5.0.0 · local working tree. -->
+
+# Migrating to v5
+
+Version 5.0.0 makes coordinate inputs, controller updates, and reset behavior
+consistent. It requires Node 24+ and retains offline rendering, explicit data
+imports, zero runtime dependencies, and the existing default map appearance.
+The version bump prepares the next release; it does not publish the package.
+
+## Coordinates use GeoJSON positions
+
+Markers now require `position: [longitude, latitude]`. The old `lng` and `lat`
+properties are rejected. `projectToScreen` takes one readonly position; its
+old two-number form is removed. Altitude is accepted and ignored by projection.
+
+```ts
+// v4
+const oldMarker = { id: 'ferry', lng: -122.3937, lat: 37.7955 };
+// v5
+const marker = { id: 'ferry', position: [-122.3937, 37.7955] as const };
+map.setMarkers([marker]);
+const point = map.projectToScreen(marker.position);
+```
+
+Use `Position` from `/geometry` for reusable positions and `ScreenPoint` or
+`ProjectToScreen` from the root or `/map` for screen-projection contracts.
+`x` and `y` remain canvas-relative CSS pixels; `visible` means inside the
+viewport, not unobscured. Mount the map in a nonzero-width container first.
+Camera viewports still use projected `[x, y, size]`; camera pan deltas are CSS
+pixels. Geographic bounds are not camera viewports.
+
+## Controller updates preserve the camera
+
+`configure`, `setMode`, and `setSource` preserve the camera. The second
+`{ resetView }` argument to the controller convenience setters is removed.
+To reproduce an old automatic reset, request it explicitly:
+
+```ts
+map.setMode('neighborhoods');
+map.camera.reset({ animate: false });
+```
+
+Selection still fits by default. Use `{ fit: false }` to change selection
+without moving the camera, or `camera.fit(geometry)` for an explicit fit.
+
+## Reset presentation explicitly
+
+In controller `configure` patches, omitted and `undefined` values are no-ops at
+every record depth. Nested token and feature records merge; an explicit boolean
+replaces a feature record and `false` disables a boolean switch.
+
+```ts
+map.configure({ appearance: { colors: { water: '#142d45' } } });
+map.configure({ appearance: undefined }); // keeps the current appearance
+map.resetConfiguration(['appearance']); // restores built-in appearance defaults
+map.resetConfiguration(['layers', 'controls']); // removes explicit overrides
+map.resetConfiguration(); // resets all four presentation groups
+```
+
+The reset groups are `features`, `layers`, `controls`, and `appearance`.
+Resetting a group does not restore initial constructor overrides, change the
+camera, or change mode/source/year/labels. It restores built-in defaults and
+mode-derived layer choices. Supply geographic choices explicitly through
+`configure`. To remove a single token while retaining other overrides, build
+the desired group, reset that group, then configure the retained values.
+Each call commits atomically; the two calls are separate updates.
+
+These rules describe `MapController` from `createMap`, `createGuideController`,
+and `mountGuideController`. Low-level element factories retain their separate
+`setFeatures` / `setLayers` APIs; use controllers for the grouped update contract.
+
+## Select neighborhoods by exact identity
+
+Controller `selectNeighborhood(id)` accepts an exact ID in the current source,
+rather than a display name or alias. Unknown IDs return `false` without changing
+selection. Resolve a human-entered name using the source-specific lookup first.
+For integrations, prefer the source-qualified identity:
+
+```ts
+import { getRealtorNeighborhood } from '@kahwee/sf-map-svg/data/realtor';
+
+const feature = getRealtorNeighborhood('Inner Mission');
+if (feature) {
+  map.selectFeature({ kind: 'neighborhood', source: 'realtor', id: feature.id }, { fit: false });
+}
+```
+
+`selectFeature` requires the current supplied source/year and never switches
+geography implicitly. Marker IDs and numeric district IDs remain unchanged.
+The construction-time `neighborhood` option and low-level element lookup APIs
+continue to resolve names; the stricter ID contract applies to controller
+selection methods. Existing selection event names remain available alongside
+`selectionchange`.
+
+## Offline geometry queries
+
+`geometryBounds(geometry)` and `geometryContainsPoint(geometry, position)` are
+new in v5. They accept readonly GeoJSON without a DOM or geographic imports.
+Bounds are `[west, south, east, north]` or `null` for empty geometry. Containment
+respects holes, includes polygon boundaries, and supports islands and nested
+collections. Shared edges can match more than one feature. See the
+[query contract](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md#geographic-queries) for validation and planar limitations.
+
+---
+
+<!-- Generated from docs/migration-v3.md; @kahwee/sf-map-svg 5.0.0 · local working tree. -->
 
 # Migrate to version 3
 
@@ -830,7 +1069,7 @@ District styles are now prepared once per district on construction and style/yea
 
 ---
 
-<!-- Generated from SOURCES.md; @kahwee/sf-map-svg 4.5.0 · local working tree. -->
+<!-- Generated from SOURCES.md; @kahwee/sf-map-svg 5.0.0 · local working tree. -->
 
 # Geometry and provenance
 
@@ -1014,13 +1253,24 @@ display geometry, and no precinct polygons or raw workbook data are shipped.
 
 ---
 
-<!-- Generated from CHANGELOG.md; @kahwee/sf-map-svg 4.5.0 · local working tree. -->
+<!-- Generated from CHANGELOG.md; @kahwee/sf-map-svg 5.0.0 · local working tree. -->
 
 # Changelog
 
 User-visible changes are recorded here. Unreleased entries describe changes on `main` that are not part of a tagged package release.
 
 ## Unreleased
+
+## 5.0.0 — 2026-10-19
+
+- Breaking: controller `setMode` and `setSource` preserve the camera; remove their `{ resetView }` argument. Call `camera.reset()` or `camera.fit()` explicitly.
+- Breaking: controller `configure` treats all omitted and undefined values as no-ops and merges nested feature records. Add `resetConfiguration(groups?)` to clear presentation overrides explicitly.
+- Breaking: controller `selectNeighborhood` selects exact IDs in the current source; resolve names through source-specific data lookup or use source/year-qualified `selectFeature`.
+- Include a [v5 migration guide](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v5.md), migrated consumer examples, and regression checks. Retain Node 24+, offline rendering, zero runtime dependencies, geographic data, and default appearance.
+
+- Add offline `geometryBounds()` and `geometryContainsPoint()` helpers to `/geometry`, with readonly inputs, polygon holes and islands, nested collections, explicit boundary semantics, and coordinate validation. Export `Bounds`, `Geometry`, and `Position` from the same entry.
+- Breaking: markers now require `position: [longitude, latitude]`; remove the numeric `projectToScreen(lng, lat)` form in favor of one readonly GeoJSON position. Export shared `ScreenPoint` and `ProjectToScreen` types and cover camera changes, resizing, invalid coordinates, and controller disposal in browser regressions.
+- Document geographic queries, screen-coordinate integration, and API consistency follow-ups. Correct the developer guide: camera pan deltas are CSS pixels, not projected map units.
 
 ## 4.5.0 — 2026-10-14
 
@@ -1380,7 +1630,7 @@ consistent home, and makes animation and subscription ownership predictable.
 
 # Published type contracts
 
-@kahwee/sf-map-svg 4.5.0 · local working tree. These declarations are generated by TypeScript. Use package export paths, not the internal filenames below. Imported relative contracts are included for context, not as additional public entry points.
+@kahwee/sf-map-svg 5.0.0 · local working tree. These declarations are generated by TypeScript. Use package export paths, not the internal filenames below. Imported relative contracts are included for context, not as additional public entry points.
 
 | Public import | Declaration |
 | --- | --- |
@@ -1436,7 +1686,7 @@ export declare function createMap(data: InteractiveSFMapData, options?: MapOptio
 ```ts
 import type { Geometry, NeighborhoodSource } from '../data/types.js';
 import type { CameraOptions, DistrictSelection, DistrictStyle, DistrictYear, InteractiveLayers, MapFeatures, MapMarker, MapOverlay, MapPadding, MapViewport, NeighborhoodExplorerOptions, NeighborhoodSelection, ProjectToScreen } from './types.js';
-/** Patch properties can explicitly remove overrides, including with exactOptionalPropertyTypes. */
+/** Explicit undefined is accepted as a no-op, including with exactOptionalPropertyTypes. */
 type Resettable<T> = {
     [K in keyof T]?: T[K] | undefined;
 };
@@ -1445,7 +1695,7 @@ export type MapAppearance = {
     [K in keyof AppearanceOptions]?: K extends 'colors' | 'style' | 'labelStyle' | 'labelSize' | 'areaStyle' ? Resettable<NonNullable<AppearanceOptions[K]>> | undefined : AppearanceOptions[K] | undefined;
 };
 export type MapControls = NonNullable<NeighborhoodExplorerOptions['controls']>;
-/** Omitted keys retain values. Undefined presentation groups reset; undefined mode/source/year/labels retain their current value. */
+/** Omitted and undefined values retain current values. Use resetConfiguration to clear overrides. */
 export interface MapConfiguration {
     features?: Resettable<MapFeatures> | undefined;
     layers?: Resettable<InteractiveLayers> | undefined;
@@ -1551,10 +1801,7 @@ export interface MapEvents {
     };
     mapresize: undefined;
 }
-/** Convenience setters retain their historic reset default; false preserves the camera. */
-export interface MapViewUpdateOptions {
-    resetView?: boolean;
-}
+export type MapConfigurationGroup = 'features' | 'layers' | 'controls' | 'appearance';
 export interface MapCamera {
     /** Fixed 800 × 800 projected space, not longitude/latitude. */
     get(): MapViewport;
@@ -1575,6 +1822,8 @@ export interface MapController {
     readonly camera: MapCamera;
     readonly destroyed: boolean;
     configure(patch: MapConfiguration): void;
+    /** Clear presentation overrides to built-in defaults, preserving camera and geographic choices. */
+    resetConfiguration(groups?: readonly MapConfigurationGroup[]): void;
     getConfiguration(): MapConfigurationSnapshot;
     getResolvedConfiguration(): ResolvedMapConfiguration;
     getCapabilities(): MapCapabilities;
@@ -1590,7 +1839,7 @@ export interface MapController {
         fit?: boolean;
     }): boolean;
     getSelectedMarker(): MapMarker | null;
-    selectNeighborhood(name: string | null, options?: CameraOptions & {
+    selectNeighborhood(id: string | null, options?: CameraOptions & {
         fit?: boolean;
     }): boolean;
     getSelectedNeighborhood(): NeighborhoodSelection | null;
@@ -1600,11 +1849,11 @@ export interface MapController {
     getSelectedDistrict(): DistrictSelection | null;
     setDistrictYear(year: DistrictYear, options?: CameraOptions): void;
     setDistrictStyle(style: ((district: DistrictSelection['district']) => DistrictStyle) | undefined): void;
-    setSource(source: NeighborhoodSource, options?: MapViewUpdateOptions): void;
-    setMode(mode: NonNullable<MapOptions['mode']>, options?: MapViewUpdateOptions): void;
+    setSource(source: NeighborhoodSource): void;
+    setMode(mode: NonNullable<MapOptions['mode']>): void;
     setLabels(visible: boolean): void;
     setTouchNavigation(enabled: boolean): void;
-    /** Accepts a GeoJSON position or longitude and latitude; returns canvas-relative CSS pixels. */
+    /** Accepts a GeoJSON position; returns canvas-relative CSS pixels. */
     projectToScreen: ProjectToScreen;
     /** Idempotent; stops work and managed subscriptions. Does not remove host-owned DOM. */
     destroy(): void;
@@ -1756,7 +2005,7 @@ export interface ScreenPoint {
     visible: boolean;
 }
 /** WGS84 longitude/latitude; altitude, if supplied in a position, is ignored. */
-export type ProjectToScreen = (...coordinates: [position: Position] | [lng: number, lat: number]) => ScreenPoint;
+export type ProjectToScreen = (position: Position) => ScreenPoint;
 export type DistrictYear = 2002 | 2012 | 2022;
 export interface DistrictSelection {
     id: number;
@@ -1770,8 +2019,7 @@ export interface DistrictStyle {
 }
 export interface MapMarker {
     id: string;
-    lng: number;
-    lat: number;
+    position: Position;
     label?: string;
     selected?: boolean;
     color?: string;
@@ -2022,7 +2270,7 @@ export interface NeighborhoodExplorerElement extends HTMLElement {
 export interface TransitAnimationElement extends HTMLElement {
     destroy(): void;
 }
-export type { MapAppearance, MapCamera, MapCapabilities, MapConfiguration, MapConfigurationSnapshot, MapController, MapControls, MapEvents, MapFeatureReference, MapOptions, MapSelectionChange, MapViewUpdateOptions, ResolvedMapConfiguration, } from './controller-types.js';
+export type { MapAppearance, MapCamera, MapCapabilities, MapConfiguration, MapConfigurationGroup, MapConfigurationSnapshot, MapController, MapControls, MapEvents, MapFeatureReference, MapOptions, MapSelectionChange, ResolvedMapConfiguration, } from './controller-types.js';
 ```
 
 ### dist/src/explorer-data.d.ts

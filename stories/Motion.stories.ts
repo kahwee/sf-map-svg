@@ -6,8 +6,8 @@ import { createStoryLifecycle } from './lifecycle.js';
 
 const lifecycle = createStoryLifecycle();
 const pins = [
-  { id: 'park', label: 'Golden Gate Park', lng: -122.47, lat: 37.77 },
-  { id: 'mission', label: 'Mission Dolores', lng: -122.4269, lat: 37.7596 },
+  { id: 'park', label: 'Golden Gate Park', position: [-122.47, 37.77] as const },
+  { id: 'mission', label: 'Mission Dolores', position: [-122.4269, 37.7596] as const },
 ];
 const meta = {
   title: 'Checks/Motion lifecycle',
@@ -59,7 +59,7 @@ export const InvalidUpdatesPreserveAnimations: Story = {
     expect(() => map.setDistrictYear(2020 as never)).toThrow();
     expect(() => map.setDistrictYear(2022, { duration: NaN })).toThrow();
     expect(() => map.setDistrictStyle(() => ({ opacity: Infinity }))).toThrow();
-    expect(() => map.setMarkers([{ id: 'invalid', lng: NaN, lat: 37.7 }])).toThrow();
+    expect(() => map.setMarkers([{ id: 'invalid', position: [NaN, 37.7] as const }])).toThrow();
     expect([...map.querySelectorAll('[data-district-transition]')]).toEqual(fades);
     expect([...map.querySelectorAll('[data-layer="markers"] [data-marker-id]')]).toEqual(markers);
     expect(map.dataset.year).toBe('2012');
@@ -90,12 +90,12 @@ export const CameraAndEntranceOwnership: Story = {
     // Entrances are observed on mounted pins; offscreen pins are now culled.
     map.setViewport([0, 0, 800], { animate: false });
     map.setFeatures({ markerEntrance: { duration: 1000, stagger: 20 } });
-    map.setMarkers([{ id: 'new', lng: -122.4, lat: 37.77 }]);
+    map.setMarkers([{ id: 'new', position: [-122.4, 37.77] as const }]);
     const animations = map.getAnimations({ subtree: true });
     expect(animations).toHaveLength(reduced ? 0 : 1);
-    map.setMarkers([{ id: 'new', lng: -122.41, lat: 37.77 }]);
+    map.setMarkers([{ id: 'new', position: [-122.41, 37.77] as const }]);
     expect(map.getAnimations({ subtree: true })).toEqual(animations);
-    map.setMarkers([{ id: 'another', lng: -122.4, lat: 37.77 }]);
+    map.setMarkers([{ id: 'another', position: [-122.4, 37.77] as const }]);
     expect(animations.every((animation) => animation.playState === 'idle')).toBe(true);
     map.setViewport([0, 0, 800], { animate: true, duration: 1000 });
     map.destroy();
@@ -112,8 +112,8 @@ export const KeyedMarkerUpdates: Story = {
       '.sf-explorer',
     ) as import('../src/types.js').NeighborhoodExplorerElement;
     map.setFeatures({ markerEntrance: { duration: 60000, stagger: 0 } });
-    const a = { id: 'a', lng: -122.43, lat: 37.77, label: 'First' };
-    const b = { id: 'b', lng: -122.42, lat: 37.76, label: 'Second' };
+    const a = { id: 'a', position: [-122.43, 37.77] as const, label: 'First' };
+    const b = { id: 'b', position: [-122.42, 37.76] as const, label: 'Second' };
     map.setMarkers([a, b]);
     const node = (id: string) => {
       const found = map.querySelector<SVGGElement>(`[data-marker-id="${id}"]`);
@@ -138,7 +138,16 @@ export const KeyedMarkerUpdates: Story = {
     expect(node('a')).toBe(first);
     expect(document.activeElement).toBe(first);
     expect(map.getAnimations({ subtree: true })).toEqual(animations);
-    map.setMarkers([b, { ...a, lng: -122.44, label: '<Updated>', color: '#abcdef', radius: 9 }]);
+    map.setMarkers([
+      b,
+      {
+        ...a,
+        position: [-122.44, a.position[1]] as const,
+        label: '<Updated>',
+        color: '#abcdef',
+        radius: 9,
+      },
+    ]);
     expect(node('a')).toBe(first);
     expect(node('b')).toBe(second);
     expect(map.querySelector('option[value="a"]')).toBe(option);
@@ -150,7 +159,7 @@ export const KeyedMarkerUpdates: Story = {
     const dot = first.lastElementChild;
     if (!dot) throw new Error('Missing marker dot');
     expect(dot.getAttribute('fill')).toBe('#abcdef');
-    const c = { id: 'c', lng: -122.41, lat: 37.75 };
+    const c = { id: 'c', position: [-122.41, 37.75] as const };
     map.setMarkers([b, c]);
     expect(first.isConnected).toBe(false);
     expect(firstAnimation?.playState ?? 'idle').toBe('idle');
@@ -334,7 +343,7 @@ export const LazyMarkerEntrances: Story = {
       new Promise<void>((resolve) =>
         requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
       );
-    const marker = { id: 'deferred', lng: -122.4, lat: 37.77, label: 'Deferred pin' };
+    const marker = { id: 'deferred', position: [-122.4, 37.77] as const, label: 'Deferred pin' };
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
     map.setFeatures({ markerEntrance: { duration: 60000, stagger: 0 } });
     map.setViewport([0, 0, 100], { animate: false });

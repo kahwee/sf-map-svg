@@ -1,7 +1,43 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import * as api from '../dist/src/api.js';
-import { expandMapOptions, prepareConfiguration } from '../dist/src/configuration.js';
+import {
+  configurationPatch,
+  expandMapOptions,
+  prepareConfiguration,
+} from '../dist/src/configuration.js';
+
+test('v5 public patches ignore undefined and merge nested feature values', () => {
+  const current = prepareConfiguration(
+    { features: {}, layers: {}, controls: {}, appearance: {} },
+    {
+      features: { motion: { duration: 80 } },
+      appearance: { colors: { water: '#123456' } },
+    },
+  );
+  const patch = configurationPatch(
+    {
+      features: { motion: { duration: undefined } },
+      appearance: { colors: { water: undefined } },
+      layers: undefined,
+      mode: undefined,
+    },
+    current,
+  );
+  const next = prepareConfiguration(current, patch);
+  assert.deepEqual(next, current);
+  assert.equal('layers' in patch, false);
+  assert.equal('mode' in patch, false);
+  assert.throws(() => configurationPatch({ typo: undefined }, current));
+  assert.throws(() =>
+    prepareConfiguration(current, configurationPatch({ appearance: { typo: undefined } }, current)),
+  );
+  assert.deepEqual(
+    prepareConfiguration(current, configurationPatch({ features: { motion: false } }, current))
+      .features.motion,
+    false,
+  );
+});
 
 test('v2 root is server-safe and requires explicit geography', () => {
   assert.deepEqual(Object.keys(api).sort(), ['createMap', 'getLayerPaths', 'renderMap']);

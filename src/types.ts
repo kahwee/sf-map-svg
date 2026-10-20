@@ -7,9 +7,7 @@ export interface ScreenPoint {
   visible: boolean;
 }
 /** WGS84 longitude/latitude; altitude, if supplied in a position, is ignored. */
-export type ProjectToScreen = (
-  ...coordinates: [position: Position] | [lng: number, lat: number]
-) => ScreenPoint;
+export type ProjectToScreen = (position: Position) => ScreenPoint;
 
 export type DistrictYear = 2002 | 2012 | 2022;
 export interface DistrictSelection {
@@ -24,8 +22,7 @@ export interface DistrictStyle {
 }
 export interface MapMarker {
   id: string;
-  lng: number;
-  lat: number;
+  position: Position;
   label?: string;
   selected?: boolean;
   color?: string;
@@ -299,6 +296,7 @@ export type {
   MapCamera,
   MapCapabilities,
   MapConfiguration,
+  MapConfigurationGroup,
   MapConfigurationSnapshot,
   MapController,
   MapControls,
@@ -306,6 +304,5 @@ export type {
   MapFeatureReference,
   MapOptions,
   MapSelectionChange,
-  MapViewUpdateOptions,
   ResolvedMapConfiguration,
 } from './controller-types.js';

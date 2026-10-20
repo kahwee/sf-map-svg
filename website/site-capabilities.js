@@ -4,7 +4,7 @@ export const mapCapabilities = {
   sourceAwareStatic: true,
   featureSelection: true,
   completeConfiguration: true,
-  viewUpdateOptions: true,
+  viewUpdateOptions: false,
   staticPresentation: true,
   animation: true,
   layerTransitions: true,

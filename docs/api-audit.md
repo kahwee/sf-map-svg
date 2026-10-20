@@ -20,8 +20,8 @@ unbounded geographic data can never fail.
 | Viewport marker rendering | Individual pin visuals allocate on first visibility or selection; offscreen pins and cluster symbols detach with screen-space overscan. Uncreated records receive current labels/styles on first materialization. Full catalog/picker and cached node identities remain available; selected/focused pins stay mounted. Pan reuses global cluster membership and nodes until zoom, data, selection, focus, or clustering changes. |
 | Marker entrance and reduced motion | Entrances begin on first visibility, are independent of camera motion, and cancel on preference changes or disposal, including pending entrances. Cached pins do not restart entrances on reentry. Stable IDs avoid repeated entrances on filtering. |
 | Hiding touch control while gestures are enabled | Returns touch scrolling to the page. Other toolbar controls remain independent. |
-| Convenience mode/source setters | Share the atomic configuration path. `{ resetView: false }` preserves the camera; omitted options retain the historic reset. Invalid options and unavailable geography leave state unchanged. |
-| Runtime patch omitted/false/undefined | Omitted retains; false disables boolean switches; undefined removes group/key overrides. Top-level mode/source/year/labels set to undefined retain their current values. Nested feature objects replace, rather than deep-merge. |
+| Convenience mode/source setters | Share the atomic configuration path. Setters preserve the camera; explicit camera methods move it. Unavailable geography leaves state unchanged. |
+| Runtime patch omitted/false/undefined | Controller patches ignore omitted/undefined values at every record depth; false disables boolean switches. Nested feature records merge. Explicit resetConfiguration clears presentation groups. Low-level element setters retain their separate contract. |
 | Compact shell and full attribution | Rejected before replacement. Use `createGuideController` for full attribution. Control overrides are honored and may deliberately alter layout. |
 | District style callbacks | Prepare and copy every style before committing. Hover/selection reuse the results; call `setDistrictStyle()` to refresh changed external data. Reentrant updates or destruction supersede pending work. |
 | Rapid district year changes | Both outgoing layers are tracked, inert, and removed on interruption, completion, reduced-motion changes, or destruction. Zero duration creates no transition copies. |
@@ -58,42 +58,31 @@ exceptions are not transactional validation errors and do not roll back an alrea
 committed change. Direct mutation of the returned DOM can invalidate invariants;
 use the public methods and `overlayElement` extension point.
 
-Static grouped layers and appearance reject unknown keys, while flat compatibility options retain their existing surface; strict
-interactive option-key validation is not a claim that all static options share the
-same schema. Host layout, delayed images, fonts, and application cards need their
+Static flat and grouped options reject unknown keys and invalid values before
+rendering. Grouped options take precedence over flat compatibility options;
+static and interactive schemas retain their documented differences. Host layout, delayed images, fonts, and application cards need their
 own CLS tests. The scale bar is an approximate local Mercator scale, not survey
 instrumentation. Coincident locations use a place chooser rather than spiderfying. Geographic
 source correctness remains governed by SOURCES.md and existing topology tests.
 
 ## Extending the contract
 
-### Consistency follow-up
+### V5 consistency contract
 
-The geometry entry now exports its `Geometry`, `Position`, and `Bounds` input
-and result types alongside its functions. New geometry helpers use geometry-first
-arguments, accept readonly inputs, and preserve absent-geometry conventions:
-empty bounds are `null`, containment is `false`, and paths remain empty strings.
-
-The following existing differences should be addressed additively before any
-breaking cleanup:
-
-- Coordinates: geometry and static projection use `[longitude, latitude]`,
-  markers use `{ lng, lat }`, and `projectToScreen` accepts either a tuple or two numbers. The tuple form
-  now aligns static and screen projection without removing numeric calls. Keep geographic degrees,
-  projected SVG units, and screen pixels explicit in names and documentation.
-- Camera policy: `configure({ mode, source })` preserves the camera, while
-  `setMode` and `setSource` reset by default. A future shared view-update option
-  should make this explicit without changing existing defaults.
-- Reset policy: omitted patch keys retain values, but `undefined` resets some
-  groups and is ignored for mode/source/year/labels. Prefer an explicit reset
-  operation for future additions; do not silently reinterpret existing patches.
-- Selection identity: prefer source/year-qualified `selectFeature` for new
-  integrations. Keep name-based neighborhood selection as a convenience and
-  preserve the existing event payloads alongside the common selection event.
-
-These are design recommendations, not implemented behavioral changes. Any
-follow-up needs runtime, declaration, and documentation checks for both old and
-new call forms.
+- Geometry helpers export their input/result types alongside functions and use
+  geometry-first arguments with readonly GeoJSON positions.
+- Marker positions, static projection, and screen projection all use
+  `[longitude, latitude]`. Screen projection returns CSS pixels; camera viewports
+  remain projected map units and pan deltas remain CSS pixels.
+- Controller `configure`, `setMode`, and `setSource` preserve the camera. Camera
+  movement is explicit through camera methods or selection's `fit` option.
+- Controller patches ignore omitted/undefined values at every depth and merge
+  nested records. `resetConfiguration` clears named presentation groups to
+  built-in defaults without changing geographic choices or camera.
+- Controller neighborhood selection requires exact IDs. Prefer source/year-qualified
+  `selectFeature`; name lookup belongs in source-specific dataset helpers.
+- Construction-time neighborhood lookup and low-level element APIs retain their
+  separately documented contracts. See [v5 migration](migration-v5.md).
 
 For every new option, define its default, disable/reset semantics, precedence,
 validation boundary, cleanup owner, and effect on keyboard focus and selection.

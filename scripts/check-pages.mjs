@@ -28,7 +28,7 @@ const pages = [
 const budgets = {
   index: 45.9, // Shared label preparation; static font estimation stays out (45.7 KB measured).
   layers: 48.7, // Includes opt-in static overview label layout (48.5 KB measured).
-  playground: 54.2, // Includes opt-in static overview label layout (54.0 KB measured).
+  playground: 54.4, // V5 tuple coordinates and explicit reset API (54.22 KiB measured).
   examples: 12,
   measures: 25,
   propositions: 25,
@@ -75,7 +75,7 @@ for (const [name, limit] of Object.entries(budgets)) {
   for (const [, path] of html.matchAll(/(?:src|href)="\.\/(assets\/[^"]+\.(?:js|css))"/g))
     total += await gzipKb(path);
   if (total > limit)
-    fail(`${name}.html loads ${total.toFixed(1)} KB gzip JS/CSS (budget ${limit} KB)`);
+    fail(`${name}.html loads ${total.toFixed(2)} KB gzip JS/CSS (budget ${limit} KB)`);
 }
 for (const [folder, limit] of Object.entries(mapBudgets)) {
   const files = (await readdir(join(root, folder))).filter((name) => name.endsWith('.svg'));

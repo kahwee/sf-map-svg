@@ -17,8 +17,8 @@ map.on('click', () => {});
 createMap(guideMapData, { motion: true });
 // @ts-expect-error Controller is not a DOM node.
 document.body.append(map);
-map.setMode('basemap', { resetView: false });
-map.setSource('realtor', { resetView: false });
+map.setMode('basemap');
+map.setSource('realtor');
 map.selectFeature({ kind: 'neighborhood', source: 'realtor', id: 'inner-mission' });
 map.selectFeature({ kind: 'district', year: 2022, id: 1 });
 // @ts-expect-error Neighborhood identity requires its source.

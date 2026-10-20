@@ -103,7 +103,7 @@ export function markers(items: readonly MapMarker[], { project, colors, animated
     .map((marker, index) => {
       if (marker.radius !== undefined && (!Number.isFinite(marker.radius) || marker.radius <= 0))
         throw new RangeError('Marker radius must be positive and finite.');
-      const [x, y] = project([marker.lng, marker.lat]).map(number);
+      const [x, y] = project(marker.position).map(number);
       return `<circle data-marker-id="${escapeXml(marker.id)}" cx="${x}" cy="${y}" r="${marker.radius ?? (marker.selected ? 8 : 5)}" fill="${escapeXml(marker.color ?? (marker.selected ? colors.selected : colors.marker))}" stroke="#fff9e9" stroke-width="2" vector-effect="non-scaling-stroke"${order(animated, index)}><title>${escapeXml(marker.label ?? marker.id)}</title></circle>`;
     })
     .join('')}</g>`;

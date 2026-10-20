@@ -68,7 +68,7 @@ test('static overview and shell are server-safe, escaped and use guide geography
   const options = {
     idPrefix: 'overview',
     labels: false,
-    markers: [{ id: 'x', lng: -122.43, lat: 37.76, radius: 9, label: '<script>bad</script>' }],
+    markers: [{ id: 'x', position: [-122.43, 37.76], radius: 9, label: '<script>bad</script>' }],
   };
   const svg = createGuideSVG(options).svg;
   assert.ok(svg.includes('&lt;script&gt;'));
@@ -79,7 +79,7 @@ test('static overview and shell are server-safe, escaped and use guide geography
   );
   assert.ok(createGuideShell(options).includes(svg));
   assert.throws(
-    () => createGuideSVG({ markers: [{ id: 'x', lng: 0, lat: 0, radius: NaN }] }),
+    () => createGuideSVG({ markers: [{ id: 'x', position: [0, 0], radius: NaN }] }),
     /radius/,
   );
 });

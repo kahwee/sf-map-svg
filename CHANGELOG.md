@@ -4,6 +4,17 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 5.0.0 — 2026-10-19
+
+- Breaking: controller `setMode` and `setSource` preserve the camera; remove their `{ resetView }` argument. Call `camera.reset()` or `camera.fit()` explicitly.
+- Breaking: controller `configure` treats all omitted and undefined values as no-ops and merges nested feature records. Add `resetConfiguration(groups?)` to clear presentation overrides explicitly.
+- Breaking: controller `selectNeighborhood` selects exact IDs in the current source; resolve names through source-specific data lookup or use source/year-qualified `selectFeature`.
+- Include a [v5 migration guide](docs/migration-v5.md), migrated consumer examples, and regression checks. Retain Node 24+, offline rendering, zero runtime dependencies, geographic data, and default appearance.
+
+- Add offline `geometryBounds()` and `geometryContainsPoint()` helpers to `/geometry`, with readonly inputs, polygon holes and islands, nested collections, explicit boundary semantics, and coordinate validation. Export `Bounds`, `Geometry`, and `Position` from the same entry.
+- Breaking: markers now require `position: [longitude, latitude]`; remove the numeric `projectToScreen(lng, lat)` form in favor of one readonly GeoJSON position. Export shared `ScreenPoint` and `ProjectToScreen` types and cover camera changes, resizing, invalid coordinates, and controller disposal in browser regressions.
+- Document geographic queries, screen-coordinate integration, and API consistency follow-ups. Correct the developer guide: camera pan deltas are CSS pixels, not projected map units.
+
 ## 4.5.0 — 2026-10-14
 
 - Add the optional `/cards` entry with `bindMapCards()`: hover/focus previews a pin without changing selection or camera, native buttons select places, map selection reveals matching cards without stealing focus, and explicit cleanup restores owned DOM attributes.

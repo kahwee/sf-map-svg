@@ -110,6 +110,13 @@ const pathData = geometryPath(mission.geometry, map.project);
 // Use pathData as an SVG <path d="..."> over map.svg.
 ```
 
+The v5 `/geometry` helpers `geometryBounds(geometry)` and
+`geometryContainsPoint(geometry, position)` also work with these readonly dataset
+features. They import no geography themselves. Containment respects holes and
+includes shared boundaries, so keep all matches when querying a source. See the
+[area-lookup example](../docs/EXAMPLES.md#find-areas-containing-a-location) and
+[query contract](../docs/API.md#geographic-queries). These additions are available in v5.
+
 `geometryPath` handles Polygon, MultiPolygon, LineString, MultiLineString, and GeometryCollection; points use `map.project` and a marker element. Storybook's **Data / Neighborhood explorer** demonstrates the complete overlay and offers JSON downloads.
 
 ## District display metadata

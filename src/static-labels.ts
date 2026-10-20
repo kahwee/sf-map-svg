@@ -73,7 +73,7 @@ export function staticLabels(data: SFMapData, options: SFMapOptions, project: Pr
         selected: marker
           ? [
               {
-                point: point([marker.lng, marker.lat]),
+                point: point(marker.position),
                 name: marker.label ?? marker.id,
                 kind: 'selected-marker',
               },
@@ -125,7 +125,7 @@ export function staticLabels(data: SFMapData, options: SFMapOptions, project: Pr
         })
       : []),
     ...markers.map((item): Bounds => {
-      const [x, y] = point([item.lng, item.lat]);
+      const [x, y] = point(item.position);
       // Also cover the legacy SVG marker when it is larger than its interactive counterpart.
       const radius =
         Math.max(item.radius ?? 6, (item.radius ?? (item.selected ? 8 : 5)) / unit) + 3;
@@ -147,7 +147,7 @@ export function staticLabels(data: SFMapData, options: SFMapOptions, project: Pr
   return `<g data-layer="overview-labels" font-family="system-ui,sans-serif">${spreadLabels(
     placed,
     options.labelLayout?.maxLabels,
-    markers.map((marker) => point([marker.lng, marker.lat])),
+    markers.map((marker) => point(marker.position)),
     width,
     height,
   )

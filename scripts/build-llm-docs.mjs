@@ -9,6 +9,7 @@ const documents = [
   ['docs/API.md', 'api-options.md', 'API options and lifecycle'],
   ['docs/EXAMPLES.md', 'examples.md', 'Worked examples'],
   ['docs/consumer-integration.md', 'consumer-integration.md', 'Consumer integration'],
+  ['docs/migration-v5.md', 'migration-v5.md', 'Migration to v5'],
   ['docs/migration-v3.md', 'migration-v3.md', 'Migration from removed APIs'],
   ['SOURCES.md', 'sources.md', 'Geographic sources'],
   ['CHANGELOG.md', 'changelog.md', 'Changelog'],

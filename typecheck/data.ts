@@ -50,7 +50,7 @@ const count: number = catalog.neighborhoods.length;
 void [name, count];
 
 const explorer = createMap(fullMapData, { source: 'realtor', neighborhood: 'NoPa' });
-explorer.selectNeighborhood('Outer Mission');
+explorer.selectNeighborhood('outer-mission');
 explorer.setSource('analysis');
 explorer.setMode('districts');
 explorer.setLabels(false);

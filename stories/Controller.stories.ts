@@ -15,7 +15,7 @@ const meta = {
     map = createMap(guideMapData, {
       mode: 'neighborhoods',
       features: { motion: { duration: 200 }, clustering: true },
-      markers: [{ id: 'one', lng: -122.42, lat: 37.76 }],
+      markers: [{ id: 'one', position: [-122.42, 37.76] as const }],
       attribution: 'compact',
     });
     return map.element;
@@ -27,7 +27,7 @@ export const GuideController: Story = {
   render: () => {
     map = createGuideController({
       features: { motion: { duration: 200 }, markerEntrance: true },
-      markers: [{ id: 'one', label: 'A place', lng: -122.42, lat: 37.76 }],
+      markers: [{ id: 'one', label: 'A place', position: [-122.42, 37.76] as const }],
     });
     return map.element;
   },
@@ -87,7 +87,7 @@ export const ConfigurationAndCamera: Story = {
     map.camera.pan(10, 10, { animate: false });
     map.camera.reset({ animate: false });
     expect(map.camera.get()).toEqual([0, 0, 800]);
-    map.configure({ features: undefined, controls: undefined });
+    map.resetConfiguration(['features', 'controls']);
     expect(map.getConfiguration().features.motion).toBe(false);
     map.camera.set([100, 100, 400], { animate: false });
     map.element
@@ -127,7 +127,7 @@ export const CoastOnly: Story = {
     map = createMap(
       { map: { coast: guideMapData.map.coast }, neighborhoods: {} },
       {
-        markers: [{ id: 'pin', lng: -122.42, lat: 37.76 }],
+        markers: [{ id: 'pin', position: [-122.42, 37.76] as const }],
       },
     );
     return map.element;
@@ -215,7 +215,7 @@ export const DistrictUpdatesAreAtomic: Story = {
 export const LivePresentation: Story = {
   play: async () => {
     map.selectMarker('one', { fit: false });
-    map.selectNeighborhood('Inner Mission', { fit: false });
+    map.selectNeighborhood('inner-mission', { fit: false });
     map.camera.set([100, 100, 400], { animate: false });
     const marker = map.element.querySelector<SVGElement>('[data-marker-id="one"]');
     marker?.focus();
@@ -247,7 +247,8 @@ export const LivePresentation: Story = {
       expect(map.getConfiguration()).toEqual(before);
       expect(map.element.querySelector('svg rect')?.getAttribute('fill')).toBe('#112233');
     }
-    map.configure({ appearance: undefined, mode: 'basemap', labels: false });
+    map.resetConfiguration(['appearance']);
+    map.configure({ mode: 'basemap', labels: false });
     expect(map.getConfiguration().appearance).toEqual({});
     expect(map.getResolvedConfiguration().layers.neighborhoodLabels).toBe(false);
     expect(map.getResolvedConfiguration().mode).toBe('basemap');
@@ -268,7 +269,7 @@ export const SelectionEnvelope: Story = {
     expect(changes[0]).toMatchObject({ kind: 'marker', previous: null, current: { id: 'one' } });
     expect(changes[1]).toMatchObject({ kind: 'marker', previous: { id: 'one' }, current: null });
     if (changes[1].kind === 'marker') expect(changes[1].previous?.label).toBeUndefined();
-    map.selectNeighborhood('Inner Mission', { fit: false });
+    map.selectNeighborhood('inner-mission', { fit: false });
     map.selectNeighborhood(null, { fit: false });
     expect(changes[2]).toMatchObject({
       kind: 'neighborhood',
@@ -390,9 +391,9 @@ export const AppearanceSupersedesYearCallback: Story = {
 export const PredictableViewUpdates: Story = {
   play: async () => {
     map.camera.set([100, 100, 400], { animate: false });
-    map.setMode('basemap', { resetView: false });
+    map.setMode('basemap');
     expect(map.camera.get()).toEqual([100, 100, 400]);
-    map.setSource('realtor', { resetView: false });
+    map.setSource('realtor');
     expect(map.camera.get()).toEqual([100, 100, 400]);
     expect(map.getConfiguration()).toMatchObject({
       mode: 'basemap',
@@ -401,10 +402,12 @@ export const PredictableViewUpdates: Story = {
       labels: true,
     });
     const before = map.getConfiguration();
-    expect(() => map.setMode('neighborhoods', { resetView: 'no' } as never)).toThrow();
+    expect(() => map.resetConfiguration(['unknown'] as never)).toThrow();
     expect(map.getConfiguration()).toEqual(before);
     expect(map.camera.get()).toEqual([100, 100, 400]);
     map.setMode('neighborhoods');
+    expect(map.camera.get()).toEqual([100, 100, 400]);
+    map.camera.reset();
     await waitFor(() => expect(map.camera.get()).toEqual([0, 0, 800]));
     map.setLabels(false);
     expect(map.getConfiguration().labels).toBe(false);

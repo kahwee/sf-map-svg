@@ -18,10 +18,10 @@ const badge = document.getElementById('stage-badge');
 const steps = [...document.querySelectorAll('.step')];
 const years = [2002, 2012, 2022];
 const pins = [
-  { id: 'ferry', label: 'Ferry Building', lng: -122.3937, lat: 37.7955 },
-  { id: 'dolores', label: 'Dolores Park', lng: -122.4269, lat: 37.7596 },
-  { id: 'twin-peaks', label: 'Twin Peaks', lng: -122.4476, lat: 37.7518 },
-  { id: 'ocean-beach', label: 'Ocean Beach', lng: -122.5104, lat: 37.7598 },
+  { id: 'ferry', label: 'Ferry Building', position: [-122.3937, 37.7955] },
+  { id: 'dolores', label: 'Dolores Park', position: [-122.4269, 37.7596] },
+  { id: 'twin-peaks', label: 'Twin Peaks', position: [-122.4476, 37.7518] },
+  { id: 'ocean-beach', label: 'Ocean Beach', position: [-122.5104, 37.7598] },
 ];
 const quiet = {
   landmarks: false,
@@ -80,7 +80,7 @@ function focusOn(id, size = 260) {
   const width = canvas?.getBoundingClientRect().width;
   if (!pin || !width) return;
   const [x, y, span] = map.camera.get();
-  const screen = map.projectToScreen(pin.lng, pin.lat);
+  const screen = map.projectToScreen(pin.position);
   const px = x + (screen.x * span) / width;
   const py = y + (screen.y * span) / width;
   map.selectMarker(id);

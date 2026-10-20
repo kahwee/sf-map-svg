@@ -10,6 +10,7 @@ Choose the renderer and geography separately. `renderMap` produces a string with
 | Explore districts or several neighborhood definitions | `/map`: `createMap` | `/data/full`: `fullMapData` |
 | Embed a smaller neighborhood guide | `/guide/map`: `createGuideController` | Included lightweight guide geography |
 | Use the guide data with the general controller | `/map`: `createMap` | `/guide/data`: `guideMapData` |
+| Query bounds or polygon containment without a DOM | `/geometry` | Caller-supplied geometry or explicit dataset imports |
 | Look up names without mounting a map | `/data/lookup` | Source-aware lookup helpers |
 
 Imports starting with `/` in this table are package suffixes, such as `@kahwee/sf-map-svg/static`. Node 24+ is required for server rendering. Browser examples need a DOM and a bundler that supports JSON modules. This is an ESM package.
@@ -96,22 +97,43 @@ SFAR realtor neighborhoods are the default when supplied. If only an alternative
 | Camera | `map.camera.set/pan/zoom/fit/reset(...)` |
 | Palette, typography, control styling | `map.configure({ appearance })`; retains camera, selection and focus |
 
-Appearance token objects merge by key; `undefined` removes an override and `appearance: undefined` resets the group. Static maps accept grouped `layers` and the shared `appearance` keys (`theme`, `colors`, `districtStyle`) too. See [the API contract](API.md#live-configuration-and-inspection) and [the design playground](https://kahwee.github.io/sf-map-svg/playground.html).
-
-`configure` merges supplied keys; omitted keys keep their existing values. Set a layer or control key to `undefined` to remove its override. Set a whole group to `undefined` to reset that group. Set a feature to `false` to disable it. Explicit layer overrides keep winning after mode changes.
+Controller patches merge nested token and feature records. Omitted and `undefined`
+values retain existing values. Use `false` to disable a boolean switch and
+`resetConfiguration()` to clear presentation overrides explicitly:
 
 ```ts
 map.configure({ layers: { neighborhoodLabels: false } });
-map.configure({ layers: { neighborhoodLabels: undefined } }); // follow mode again
 map.configure({ features: { motion: false } });
-map.configure({ layers: undefined }); // clear all explicit layer overrides
+map.resetConfiguration(['layers']); // follow mode-derived defaults again
+map.resetConfiguration(['appearance']); // built-in palette and typography
 ```
 
-`getConfiguration()` returns current mode/source/year/labels and a detached snapshot of the presentation groups, including explicit layer and appearance overrides. Camera and selection remain separate runtime state. Use `getResolvedConfiguration()` for current mode/source/year/labels and effective layer switches, and `getCapabilities()` for supplied geography. Invalid configuration patches leave the current map unchanged. Convenience methods use the same atomic update path: pass `map.setMode(mode, { resetView: false })` or `map.setSource(source, { resetView: false })` to keep the camera. Their default still resets the view.
+Reset groups are `features`, `layers`, `controls`, and `appearance`; omitting
+the argument resets all four. Resets preserve geographic choices and camera,
+and do not restore constructor overrides. Static maps accept grouped layers and
+the shared appearance keys (`theme`, `colors`, `districtStyle`) at construction.
+See [the API contract](API.md#live-configuration-and-inspection).
+
+`getConfiguration()` returns a detached snapshot of geographic choices and
+presentation overrides. Use `getResolvedConfiguration()` for effective layers
+and `getCapabilities()` for supplied geography. Invalid patches preserve state.
+`setMode`, `setSource`, and `configure` all preserve the camera; request movement
+with `camera.reset()` or `camera.fit(geometry)`. See the
+[v5 migration guide](migration-v5.md) for changed call forms.
+
+## Geographic queries
+
+The v5 `/geometry` helpers `geometryBounds(geometry)` and
+`geometryContainsPoint(geometry, position)` work without a DOM or bundled
+geography. Import `Bounds`, `Geometry`, and `Position` types from the same entry.
+Use containment for area lookup and bounds for geographic extents; pass the
+original geometry to `camera.fit`, rather than geographic bounds to `camera.set`.
+See the [worked example](EXAMPLES.md#find-areas-containing-a-location) and
+[full query semantics](API.md#geographic-queries).
 
 ## Markers, routes and camera coordinates
 
-Marker positions are `{ lng, lat }`. GeoJSON coordinates and the static projection use `[longitude, latitude]`, in WGS84. Camera viewports use `[x, y, size]` in the fixed 800 × 800 projected map space; they are not geographic bounds. `camera.pan` uses projected units. `projectToScreen(lng, lat)` returns pixels relative to the map canvas, plus visibility.
+Markers use `position: [longitude, latitude]`. GeoJSON coordinates and the static projection use `[longitude, latitude]`, in WGS84. Camera viewports use `[x, y, size]` in the fixed 800 × 800 projected map space; they are not geographic bounds. `camera.pan` takes deltas in CSS pixels and converts them using the mounted canvas width. `projectToScreen([lng, lat])` returns CSS pixels relative to the map canvas, plus viewport visibility. The former two-number call is removed in v5.
 
 Marker and overlay IDs must be unique. Keep marker IDs stable across updates so retained markers preserve DOM nodes, focus and entrance animations. Use `null` to clear a selection; selection methods return a boolean. Selection events can contain null values. `map.on()` returns an unsubscribe function.
 

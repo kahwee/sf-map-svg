@@ -12,8 +12,8 @@ const meta = {
   render: () => {
     currentMap = createGuideMap({
       markers: [
-        { id: 'first', label: 'First place', lng: -122.4269, lat: 37.7596 },
-        { id: 'second', label: 'Second place', lng: -122.4269, lat: 37.7596 },
+        { id: 'first', label: 'First place', position: [-122.4269, 37.7596] as const },
+        { id: 'second', label: 'Second place', position: [-122.4269, 37.7596] as const },
       ],
       overlays: [
         {

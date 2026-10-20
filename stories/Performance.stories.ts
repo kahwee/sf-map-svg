@@ -7,8 +7,7 @@ import { createStoryLifecycle } from './lifecycle.js';
 const markers: readonly MapMarker[] = Array.from({ length: 2000 }, (_, index) => ({
   id: `pin-${index}`,
   label: `Place ${index}`,
-  lng: -122.505 + (index % 50) * 0.0024,
-  lat: 37.715 + Math.floor(index / 50) * 0.002,
+  position: [-122.505 + (index % 50) * 0.0024, 37.715 + Math.floor(index / 50) * 0.002] as const,
 }));
 const controllers = new WeakMap<HTMLElement, MapController>();
 const lifecycle = createStoryLifecycle();
@@ -140,7 +139,7 @@ const exercise: Story['play'] = async ({ canvasElement, userEvent }) => {
   await settle();
   expect(map.element.querySelector(`[data-marker-id="${offscreen.id}"]`)).toBeTruthy();
   expect(map.getSelectedMarker()?.id).toBe(offscreen.id);
-  expect(map.projectToScreen(offscreen.lng, offscreen.lat).visible).toBe(true);
+  expect(map.projectToScreen(offscreen.position).visible).toBe(true);
   map.selectMarker(null, { fit: false });
   await userEvent.click(button('City view'));
   await settle();

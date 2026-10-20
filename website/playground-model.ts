@@ -198,11 +198,11 @@ export const palettes: {
   },
 ];
 export const sampleMarkers = [
-  { id: 'ferry', label: 'Ferry Building', lng: -122.3937, lat: 37.7955 },
-  { id: 'dolores', label: 'Dolores Park', lng: -122.4269, lat: 37.7596 },
-  { id: 'conservatory', label: 'Conservatory of Flowers', lng: -122.4601, lat: 37.7726 },
-  { id: 'twin-peaks', label: 'Twin Peaks', lng: -122.4476, lat: 37.7544 },
-  { id: 'coit', label: 'Coit Tower', lng: -122.4058, lat: 37.8024 },
+  { id: 'ferry', label: 'Ferry Building', position: [-122.3937, 37.7955] as const },
+  { id: 'dolores', label: 'Dolores Park', position: [-122.4269, 37.7596] as const },
+  { id: 'conservatory', label: 'Conservatory of Flowers', position: [-122.4601, 37.7726] as const },
+  { id: 'twin-peaks', label: 'Twin Peaks', position: [-122.4476, 37.7544] as const },
+  { id: 'coit', label: 'Coit Tower', position: [-122.4058, 37.8024] as const },
 ];
 export const sampleOverlays: MapOverlay[] = [
   {

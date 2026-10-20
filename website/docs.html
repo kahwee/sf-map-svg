@@ -219,8 +219,8 @@ map.setDistrictYear(2022, { animate: false }); // instant</code></pre></div>
           <h2>Markers and overlays</h2>
           <p>Markers are points with stable ids; overlays are lines or polygons you supply as GeoJSON geometry. Both work in static and interactive maps.</p>
           <div class="code"><div class="code-label">Markers <button class="copy" type="button">Copy</button></div><pre><code>map.setMarkers([
-  { id: 'ferry', label: 'Ferry Building', lng: -122.3937, lat: 37.7955 },
-  { id: 'dolores', label: 'Dolores Park', lng: -122.4269, lat: 37.7596, color: '#b4432a' },
+  { id: 'ferry', label: 'Ferry Building', position: [-122.3937, 37.7955 ]},
+  { id: 'dolores', label: 'Dolores Park', position: [-122.4269, 37.7596], color: '#b4432a' },
 ]);
 map.selectMarker('ferry', { fit: true });
 map.on('markerchange', ({ id }) =&gt; console.log(id));</code></pre></div>

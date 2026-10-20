@@ -6,6 +6,8 @@ and event types are exported by [src/api.ts](../src/api.ts) and defined in
 
 ## Geographic queries
 
+New in v5. See the [migration guide](migration-v5.md) for upgrade steps.
+
 The data-free `@kahwee/sf-map-svg/geometry` entry exports `geometryBounds(geometry)`
 and `geometryContainsPoint(geometry, [longitude, latitude])`. They work offline
 with the same readonly GeoJSON geometries used by the renderer, without a DOM.
@@ -118,16 +120,16 @@ District style callbacks are evaluated once per district at construction and on 
 
 ## Live configuration and inspection
 
-`map.configure({ appearance, mode, source, year, labels, layers, features, controls })` updates an existing map. Appearance updates preserve the camera, selections, retained marker nodes, and keyboard focus. Mode/source changes through `configure` preserve the camera; the `setMode(mode, { resetView: false })` and `setSource(source, { resetView: false })` convenience methods use the same atomic update path and preserve the camera. Omit the second argument to retain their existing reset behavior. Invalid view-update options fail before changing configuration. Switching neighborhood source clears the neighborhood selection. Changing district year retains a selected district when it exists in the new year. Unsupported datasets, invalid appearance values, and invalid district-style callback results fail during preparation before commit. A reentrant styling callback can supersede the pending patch.
+`map.configure({ appearance, mode, source, year, labels, layers, features, controls })` updates an existing map. Appearance updates preserve the camera, selections, retained marker nodes, and keyboard focus. Mode/source changes through `configure`, `setMode(mode)`, and `setSource(source)` preserve the camera. Use `map.camera.reset()` or `map.camera.fit(geometry)` when movement is intended. The former `{ resetView }` setter argument is removed in v5. Switching neighborhood source clears the neighborhood selection. Changing district year retains a selected district when it exists in the new year. Unsupported datasets, invalid appearance values, and invalid district-style callback results fail during preparation before commit. A reentrant styling callback can supersede the pending patch.
 
-Appearance token objects (`colors`, `style`, `labelStyle`, `labelSize`, `areaStyle`) merge supplied keys; other appearance properties replace. Omitted keys retain their value, an explicit `undefined` property removes that override, and `appearance: undefined` resets the whole appearance group. Feature objects retain their existing replacement semantics. Mode/source/year/labels ignore `undefined`; reset them with an explicit value. Patch types explicitly permit these resets with TypeScript’s `exactOptionalPropertyTypes` enabled.
+Controller patches merge nested token and feature records. Omitted and `undefined` values retain current values at every depth; `false` disables boolean switches. Use `resetConfiguration(groups?)` to remove presentation overrides explicitly. The supported groups are `features`, `layers`, `controls`, and `appearance`; omitting the argument resets all four. Resets restore built-in defaults, preserve mode/source/year/labels and camera, and do not restore constructor overrides. Unknown groups fail before changing state. Static construction options and low-level element methods retain their separately documented contracts.
 
 ```ts
 map.configure({
   appearance: { colors: { water: '#142d45' }, labelStyle: { fontFamily: 'Georgia,serif' } },
   layers: { bartStations: false },
 });
-map.configure({ appearance: undefined }); // restore construction defaults, not initial overrides
+map.resetConfiguration(['appearance']); // restore built-in defaults
 
 const overrides = map.getConfiguration();
 const effective = map.getResolvedConfiguration();
@@ -159,11 +161,14 @@ map.selectFeature({ kind: 'neighborhood', source: 'realtor', id: 'inner-mission'
 map.selectFeature({ kind: 'district', year: 2022, id: 3 });
 ```
 
-Neighborhood IDs are exact source-scoped feature IDs, rather than display names or aliases. District identity includes the boundary year. This operation returns `false` for a missing feature or a source/year other than the map's current supplied geography; it never silently switches definitions or years. Choose geography through `configure` first. An `id` of `null` clears that kind in the referenced current geography. Malformed references throw. Existing `selectMarker`, `selectNeighborhood`, and `selectDistrict` shortcuts remain supported.
+Neighborhood IDs are exact source-scoped feature IDs, rather than display names or aliases. District identity includes the boundary year. This operation returns `false` for a missing feature or a source/year other than the map's current supplied geography; it never silently switches definitions or years. Choose geography through `configure` first. An `id` of `null` clears that kind in the referenced current geography. Malformed references throw. The `selectMarker`, `selectNeighborhood`, and `selectDistrict` shortcuts select exact IDs in the current geography. Controller `selectNeighborhood` no longer resolves display names or aliases; resolve those with a source-specific data lookup first.
 
 ## Coordinates and units
 
-GeoJSON and static projection inputs use `[longitude, latitude]` in WGS84; markers use `{ lng, lat }`. Static `project` returns SVG units. `projectToScreen([longitude, latitude])` accepts the same readonly GeoJSON position as static `project`; the existing `projectToScreen(lng, lat)` form remains supported. Both return `ScreenPoint` (`{ x, y, visible }`) in CSS pixels relative to the mounted canvas. Altitude is ignored. Mount the map before calling; invalid Mercator coordinates throw, and calls after controller destruction throw. `visible` indicates viewport inclusion, not whether another element covers the point. Camera viewports use the fixed 800 × 800 projected map space, independent of canvas size. Pan deltas use screen pixels, converted using the mounted canvas width. Marker radius uses screen pixels in browser maps and SVG units in static output.
+Version 5 uses tuple inputs and exports the named `ScreenPoint` /
+`ProjectToScreen` types. The former two-number call is removed.
+
+GeoJSON and static projection inputs use `[longitude, latitude]` in WGS84; markers use `{ position: [longitude, latitude] }`. Static `project` returns SVG units. `projectToScreen([longitude, latitude])` accepts the same readonly GeoJSON position as static `project` and returns `ScreenPoint` (`{ x, y, visible }`) in CSS pixels relative to the mounted canvas. Altitude is ignored. Mount the map before calling; invalid Mercator coordinates throw, and calls after controller destruction throw. `visible` indicates viewport inclusion, not whether another element covers the point. Camera viewports use the fixed 800 × 800 projected map space, independent of canvas size. Pan deltas use screen pixels, converted using the mounted canvas width. Marker radius uses screen pixels in browser maps and SVG units in static output.
 
 Explore presentation options in the [live map design playground](https://kahwee.github.io/sf-map-svg/playground.html). The page identifies its package version; released builds use compatible options for that installed version.
 

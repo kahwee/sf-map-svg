@@ -1,6 +1,6 @@
 import { copyAppearance } from './appearance.js';
 import { validateCameraOptions } from './camera.js';
-import { expandMapOptions, prepareConfiguration } from './configuration.js';
+import { configurationPatch, expandMapOptions, prepareConfiguration } from './configuration.js';
 import type {
   MapCapabilities,
   MapController,
@@ -198,15 +198,6 @@ export function createMap(data: InteractiveSFMapData, options: MapOptions = {}):
     );
     return committed && !destroyed && revision === configurationRevision;
   }
-  function updateView(
-    patch: import('./controller-types.js').MapConfiguration,
-    options: import('./controller-types.js').MapViewUpdateOptions = {},
-  ) {
-    assertOptions(options, 'view update', ['resetView']);
-    if (options.resetView !== undefined && typeof options.resetView !== 'boolean')
-      throw new TypeError('resetView must be a boolean.');
-    if (configure(patch) && options.resetView !== false) element.resetView();
-  }
   return Object.freeze({
     element,
     overlayElement: element.overlayElement,
@@ -215,7 +206,15 @@ export function createMap(data: InteractiveSFMapData, options: MapOptions = {}):
       return destroyed;
     },
     configure: use((patch) => {
-      configure(patch);
+      configure(configurationPatch(patch, config));
+    }),
+    resetConfiguration: use((groups = ['features', 'layers', 'controls', 'appearance']) => {
+      if (
+        !Array.isArray(groups) ||
+        groups.some((key) => !['features', 'layers', 'controls', 'appearance'].includes(key))
+      )
+        throw new TypeError('Unknown configuration reset group.');
+      configure(Object.fromEntries(groups.map((key) => [key, undefined])));
     }),
     getConfiguration: use(snapshot),
     getResolvedConfiguration: use(resolved),
@@ -298,7 +297,14 @@ export function createMap(data: InteractiveSFMapData, options: MapOptions = {}):
     }),
     selectMarker: use(element.selectMarker),
     getSelectedMarker: use(element.getSelectedMarker),
-    selectNeighborhood: use(element.selectNeighborhood),
+    selectNeighborhood: use((id, options) => {
+      const source = element.getMapState().source;
+      if (id !== null && (typeof id !== 'string' || !id))
+        throw new TypeError('Neighborhood IDs must be nonempty strings or null.');
+      if (id !== null && !data.neighborhoods[source]?.features.some((feature) => feature.id === id))
+        return false;
+      return element.selectNeighborhood(id, options);
+    }),
     getSelectedNeighborhood: use(element.getSelection),
     selectDistrict: use(element.selectDistrict),
     getSelectedDistrict: use(element.getSelectedDistrict),
@@ -309,8 +315,12 @@ export function createMap(data: InteractiveSFMapData, options: MapOptions = {}):
     setDistrictStyle: use((style) => {
       configure({ appearance: { districtStyle: style } });
     }),
-    setSource: use((source, options) => updateView({ source }, options)),
-    setMode: use((mode, options) => updateView({ mode }, options)),
+    setSource: use((source) => {
+      configure({ source });
+    }),
+    setMode: use((mode) => {
+      configure({ mode });
+    }),
     setLabels: use((labels) => {
       configure({ labels });
     }),

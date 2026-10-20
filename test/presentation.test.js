@@ -62,7 +62,7 @@ test('grouped static presentation matches flat rendering and has explicit preced
   assert.match(
     renderMap(staticMapData, {
       title: '<hello & "world">',
-      markers: Object.freeze([{ id: 'one', lng: -122.4, lat: 37.76 }]),
+      markers: Object.freeze([{ id: 'one', position: [-122.4, 37.76] }]),
     }).svg,
     /&lt;hello &amp; &quot;world&quot;&gt;/,
   );

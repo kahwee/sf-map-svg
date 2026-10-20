@@ -12,9 +12,9 @@ function required<T extends Element>(host: Element, selector: string): T {
   return node;
 }
 const places = [
-  { id: 'park', label: 'Golden Gate Park', lng: -122.482, lat: 37.7694 },
-  { id: 'presidio', label: 'Presidio', lng: -122.466, lat: 37.799 },
-  { id: 'mclaren', label: 'McLaren Park', lng: -122.419, lat: 37.7181 },
+  { id: 'park', label: 'Golden Gate Park', position: [-122.482, 37.7694] as const },
+  { id: 'presidio', label: 'Presidio', position: [-122.466, 37.799] as const },
+  { id: 'mclaren', label: 'McLaren Park', position: [-122.419, 37.7181] as const },
 ];
 const meta = {
   title: 'Maps/Linked place cards',

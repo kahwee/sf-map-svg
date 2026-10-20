@@ -106,8 +106,8 @@ map.setSource('sf-find'); // 'realtor' | 'sf-find' | 'analysis'</code></pre></di
             <h3>Put your data on top.</h3>
             <p>Markers keep their identity across updates, enter with a gentle stagger, and the camera eases to a selection. Motion always yields to the reader’s reduced-motion setting.</p>
             <div class="code"><pre><code>map.setMarkers([
-  { id: 'ferry', label: 'Ferry Building', lng: -122.3937, lat: 37.7955 },
-  { id: 'dolores', label: 'Dolores Park', lng: -122.4269, lat: 37.7596 },
+  { id: 'ferry', label: 'Ferry Building', position: [-122.3937, 37.7955 ]},
+  { id: 'dolores', label: 'Dolores Park', position: [-122.4269, 37.7596 ]},
 ]);
 map.selectMarker('ferry');</code></pre></div>
           </li>

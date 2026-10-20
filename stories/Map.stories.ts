@@ -8,8 +8,8 @@ import { createStoryLifecycle } from './lifecycle.ts';
 type DemoArgs = { theme: 'districts' | 'transit'; showMarkers: boolean; showRoads: boolean };
 
 const places = [
-  { id: 'dolores', label: 'Dolores Park', lng: -122.4269, lat: 37.7596 },
-  { id: 'ferry', label: 'Ferry Building', lng: -122.3937, lat: 37.7955 },
+  { id: 'dolores', label: 'Dolores Park', position: [-122.4269, 37.7596] as const },
+  { id: 'ferry', label: 'Ferry Building', position: [-122.3937, 37.7955] as const },
 ];
 const controllers = new WeakMap<HTMLElement, MapController>();
 const lifecycle = createStoryLifecycle();
@@ -103,8 +103,8 @@ export const ConsumerMarkers: Story = {
         code: `const map = createMap(guideMapData, {
   ...guideOptions,
   markers: [
-    { id: 'dolores', label: 'Dolores Park', lng: -122.4269, lat: 37.7596 },
-    { id: 'ferry', label: 'Ferry Building', lng: -122.3937, lat: 37.7955 },
+    { id: 'dolores', label: 'Dolores Park', position: [-122.4269, 37.7596 ] as const},
+    { id: 'ferry', label: 'Ferry Building', position: [-122.3937, 37.7955 ] as const},
   ],
 });
 map.on('markerchange', ({ marker }) => console.log(marker?.label));`,

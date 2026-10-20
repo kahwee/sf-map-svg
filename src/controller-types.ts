@@ -15,7 +15,7 @@ import type {
   ProjectToScreen,
 } from './types.js';
 
-/** Patch properties can explicitly remove overrides, including with exactOptionalPropertyTypes. */
+/** Explicit undefined is accepted as a no-op, including with exactOptionalPropertyTypes. */
 type Resettable<T> = { [K in keyof T]?: T[K] | undefined };
 type AppearanceOptions = Pick<
   NeighborhoodExplorerOptions,
@@ -42,7 +42,7 @@ export type MapAppearance = {
     : AppearanceOptions[K] | undefined;
 };
 export type MapControls = NonNullable<NeighborhoodExplorerOptions['controls']>;
-/** Omitted keys retain values. Undefined presentation groups reset; undefined mode/source/year/labels retain their current value. */
+/** Omitted and undefined values retain current values. Use resetConfiguration to clear overrides. */
 export interface MapConfiguration {
   features?: Resettable<MapFeatures> | undefined;
   layers?: Resettable<InteractiveLayers> | undefined;
@@ -116,10 +116,7 @@ export interface MapEvents {
   viewportchange: { viewport: MapViewport };
   mapresize: undefined;
 }
-/** Convenience setters retain their historic reset default; false preserves the camera. */
-export interface MapViewUpdateOptions {
-  resetView?: boolean;
-}
+export type MapConfigurationGroup = 'features' | 'layers' | 'controls' | 'appearance';
 export interface MapCamera {
   /** Fixed 800 × 800 projected space, not longitude/latitude. */
   get(): MapViewport;
@@ -138,6 +135,8 @@ export interface MapController {
   readonly camera: MapCamera;
   readonly destroyed: boolean;
   configure(patch: MapConfiguration): void;
+  /** Clear presentation overrides to built-in defaults, preserving camera and geographic choices. */
+  resetConfiguration(groups?: readonly MapConfigurationGroup[]): void;
   getConfiguration(): MapConfigurationSnapshot;
   getResolvedConfiguration(): ResolvedMapConfiguration;
   getCapabilities(): MapCapabilities;
@@ -152,7 +151,7 @@ export interface MapController {
   ): boolean;
   selectMarker(id: string | null, options?: CameraOptions & { fit?: boolean }): boolean;
   getSelectedMarker(): MapMarker | null;
-  selectNeighborhood(name: string | null, options?: CameraOptions & { fit?: boolean }): boolean;
+  selectNeighborhood(id: string | null, options?: CameraOptions & { fit?: boolean }): boolean;
   getSelectedNeighborhood(): NeighborhoodSelection | null;
   selectDistrict(id: number | null, options?: CameraOptions & { fit?: boolean }): boolean;
   getSelectedDistrict(): DistrictSelection | null;
@@ -160,11 +159,11 @@ export interface MapController {
   setDistrictStyle(
     style: ((district: DistrictSelection['district']) => DistrictStyle) | undefined,
   ): void;
-  setSource(source: NeighborhoodSource, options?: MapViewUpdateOptions): void;
-  setMode(mode: NonNullable<MapOptions['mode']>, options?: MapViewUpdateOptions): void;
+  setSource(source: NeighborhoodSource): void;
+  setMode(mode: NonNullable<MapOptions['mode']>): void;
   setLabels(visible: boolean): void;
   setTouchNavigation(enabled: boolean): void;
-  /** Accepts a GeoJSON position or longitude and latitude; returns canvas-relative CSS pixels. */
+  /** Accepts a GeoJSON position; returns canvas-relative CSS pixels. */
   projectToScreen: ProjectToScreen;
   /** Idempotent; stops work and managed subscriptions. Does not remove host-owned DOM. */
   destroy(): void;

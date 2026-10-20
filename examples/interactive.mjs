@@ -5,8 +5,7 @@ import { guideOptions } from '../dist/src/presets.js';
 const markers = Array.from({ length: 36 }, (_, i) => ({
   id: `sample-${i + 1}`,
   label: `Sample marker ${i + 1}`,
-  lng: -122.4269 + (i % 3) * 0.002,
-  lat: 37.7596 + (i % 2) * 0.002,
+  position: [-122.4269 + (i % 3) * 0.002, 37.7596 + (i % 2) * 0.002],
 }));
 const map = createMap(guideMapData, {
   features: {
@@ -39,7 +38,7 @@ document.querySelector('#fit').addEventListener('click', () =>
   map.camera.fit(
     {
       type: 'MultiPoint',
-      coordinates: markers.map((marker) => [marker.lng, marker.lat]),
+      coordinates: markers.map((marker) => marker.position),
     },
     { padding: { top: 36, right: 24, bottom: 70, left: 24 } },
   ),

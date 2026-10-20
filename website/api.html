@@ -61,7 +61,7 @@
               <tr><td><code>/data/full</code></td><td>fullMapData</td><td>Complete geography for interactive maps.</td></tr>
               <tr><td><code>/data</code></td><td>coast, districtMaps, neighborhoodCollections, neighborhoodSources, getNeighborhood, searchNeighborhoods, catalog, …</td><td>Datasets and lookup helpers.</td></tr>
               <tr><td><code>/data/coast</code>, <code>/data/districts</code>, <code>/data/realtor</code>, <code>/data/sf-find</code>, <code>/data/analysis</code>, <code>/data/landmarks</code>, <code>/data/highways</code>, <code>/data/roads</code>, <code>/data/stations</code>, <code>/data/lookup</code>, <code>/data/catalog</code></td><td>one dataset each</td><td>Compose your own geography.</td></tr>
-              <tr><td><code>/geometry</code></td><td>rawProject, geometryPath, positions</td><td>Projection and path helpers.</td></tr>
+              <tr><td><code>/geometry</code></td><td>rawProject, geometryPath, positions; geometryBounds, geometryContainsPoint</td><td>DOM-free projection, paths, and geographic queries. Includes Bounds, Geometry, and Position types in v5.</td></tr>
               <tr><td><code>/guide</code>, <code>/guide/map</code>, <code>/guide/data</code>, <code>/guide/static</code>, <code>/guide/detailed</code></td><td>createGuideController, mountGuideController, createGuideMap, mountGuideMap, guideMapData, createGuideSVG, createGuideShell, loadGuideDetailedData</td><td>Lightweight guide presets.</td></tr>
               <tr><td><code>/presets</code></td><td>guideOptions</td><td>Guide configuration without data.</td></tr>
               <tr><td><code>/transit</code></td><td>createTransitAnimation</td><td>The schematic BART animation.</td></tr>
@@ -205,21 +205,22 @@
               <tr><td><code>overlayElement</code></td><td>HTMLDivElement</td><td>Positioned layer for your own HTML.</td></tr>
               <tr><td><code>camera</code></td><td>MapCamera</td><td>See <a href="#camera">MapCamera</a>.</td></tr>
               <tr><td><code>destroyed</code></td><td>boolean</td><td>True after <code>destroy()</code>.</td></tr>
-              <tr><td><code>configure</code></td><td>(patch: { %CONFIGURATION_KEYS% })</td><td>Atomic runtime change; invalid patches change nothing. Omitted keys retain values; undefined groups reset.</td></tr>
+              <tr><td><code>configure</code></td><td>(patch: { %CONFIGURATION_KEYS% })</td><td>Atomic runtime change; invalid patches change nothing. Omitted and undefined values retain current values. Use resetConfiguration for presentation resets.</td></tr>
               <tr><td><code>getConfiguration</code></td><td>() → snapshot</td><td>%CONFIGURATION_SNAPSHOT%</td></tr>
               <!--configuration-inspection-->
               <!--feature-selection-->
               <tr><td><code>on</code></td><td>(type, listener) → unsubscribe</td><td>Typed events; see <a href="#events">Events</a>.</td></tr>
-              <tr><td><code>setMode</code></td><td>(mode%VIEW_UPDATE_ARGUMENT%)</td><td>Switch mode; by default reset the camera. %VIEW_UPDATE_HELP%</td></tr>
-              <tr><td><code>setSource</code></td><td>(source%VIEW_UPDATE_ARGUMENT%)</td><td>Switch neighborhood definition; by default reset the camera. %VIEW_UPDATE_HELP%</td></tr>
+              <tr><td><code>setMode</code></td><td>(mode%VIEW_UPDATE_ARGUMENT%)</td><td>Switch mode while preserving the camera. %VIEW_UPDATE_HELP%</td></tr>
+              <tr><td><code>setSource</code></td><td>(source%VIEW_UPDATE_ARGUMENT%)</td><td>Switch neighborhood definition while preserving the camera. %VIEW_UPDATE_HELP%</td></tr>
               <tr><td><code>setDistrictYear</code></td><td>(year, { animate?, duration? })</td><td>Switch district map; morphs with <code>districtMorph</code>.</td></tr>
               <tr><td><code>setDistrictStyle</code></td><td>(style | undefined)</td><td>Restyle districts.</td></tr>
               <tr><td><code>setLabels</code></td><td>(visible: boolean)</td><td>Show or hide labels.</td></tr>
               <tr><td><code>setMarkers</code>, <code>setOverlays</code></td><td>(items)</td><td>Replace items; markers reconcile by stable id.</td></tr>
-              <tr><td><code>selectMarker</code>, <code>selectNeighborhood</code>, <code>selectDistrict</code></td><td>(id | name | null, { fit?, animate?, duration? }) → boolean</td><td>Select, optionally fitting the camera.</td></tr>
+              <tr><td><code>selectMarker</code>, <code>selectNeighborhood</code>, <code>selectDistrict</code></td><td>(id | null, { fit?, animate?, duration? }) → boolean</td><td>Select, optionally fitting the camera.</td></tr>
               <tr><td><code>getSelectedMarker</code>, <code>getSelectedNeighborhood</code>, <code>getSelectedDistrict</code></td><td>() → selection | null</td><td>Detached copies of the current selection.</td></tr>
               <tr><td><code>setTouchNavigation</code></td><td>(enabled: boolean)</td><td>Engage map touch gestures.</td></tr>
-              <tr><td><code>projectToScreen</code></td><td>(lng, lat) → { x, y, visible }</td><td>Screen position of a point.</td></tr>
+              <tr><td><code>projectToScreen</code></td><td>([lng, lat]) → ScreenPoint</td><td>Canvas-relative CSS pixels and viewport inclusion. Mount first. Tuple coordinates and shared ScreenPoint / ProjectToScreen types are the v5 contract.</td></tr>
+              <tr><td><code>resetConfiguration</code></td><td>(groups?: (features | layers | controls | appearance)[])</td><td>Clear named presentation overrides, or all four groups when omitted. Preserve geography and camera.</td></tr>
               <tr><td><code>destroy</code></td><td>()</td><td>Idempotent; releases observers, listeners and animations. Does not remove host-owned DOM; other calls after destruction throw.</td></tr>
             </tbody>
           </table></div>
@@ -269,8 +270,7 @@
           <h2>Types</h2>
           <div class="code"><div class="code-label">TypeScript <button class="copy" type="button">Copy</button></div><pre><code>interface MapMarker {
   id: string;
-  lng: number;
-  lat: number;
+  position: readonly [number, number, ...number[]];
   label?: string;
   selected?: boolean;
   color?: string;

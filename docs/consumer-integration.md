@@ -35,7 +35,7 @@ For a fixed-width embed, use shared inputs on the server and in the browser:
 ```ts
 // Shared inputs: coordinates, IDs, radii, colors and layer choices must match.
 const guideMarkers = [
-  { id: 'ferry', label: 'Ferry Building', lng: -122.3937, lat: 37.7955, radius: 7 },
+  { id: 'ferry', label: 'Ferry Building', position: [-122.3937, 37.7955] as const, radius: 7 },
 ];
 const guideLayers = { neighborhoodLabels: true, roadLabels: true };
 const guideColors = { label: '#183e58', landmark: '#426641' };
@@ -125,3 +125,49 @@ const binding = bindMapCards(map, document.querySelector('#place-cards'), {
 Style `[data-map-selected]` with an outline or background change that remains legible in both themes. Use a visible focus outline on card buttons and links. Hover/focus only previews the location: it preserves selection and camera. Map selection reveals the card without shifting keyboard focus; set `scrollOnSelect: false` if your application owns scrolling. Match cards and markers by stable IDs, and keep hidden/filtered places out of both catalogs when that is your intended filter behavior.
 
 Run `pnpm demo` and open `examples/generated/linked-cards.html` for the complete pattern. Storybook **Maps / Linked place cards** checks hover, keyboard selection, card reveal, both palettes, and disposal.
+
+## Position HTML overlays
+
+In v5, pass the same readonly `[longitude, latitude]` position used by static
+projection. The former two-number call is removed; see the
+[migration guide](migration-v5.md).
+
+Call this helper after mounting the map in a container with nonzero width:
+
+```ts
+import type { MapController } from '@kahwee/sf-map-svg';
+import type { Position } from '@kahwee/sf-map-svg/geometry';
+
+function attachCallout(map: MapController, location: Position, label: string) {
+  const callout = document.createElement('span');
+  callout.textContent = label;
+  callout.style.cssText = 'position:absolute;pointer-events:none;transform:translate(-50%,-100%)';
+  const update = () => {
+    const point = map.projectToScreen(location);
+    callout.hidden = !point.visible;
+    callout.style.left = `${point.x}px`;
+    callout.style.top = `${point.y}px`;
+  };
+  update();
+  map.overlayElement.append(callout);
+  const stopViewport = map.on('viewportchange', update);
+  const stopResize = map.on('mapresize', update);
+  return () => {
+    stopViewport();
+    stopResize();
+    callout.remove();
+  };
+}
+```
+
+Use `const detach = attachCallout(map, [-122.3937, 37.7955], 'Ferry Building')`
+with your mounted controller. Call `detach()` before `map.destroy()` on unmount.
+Keep the container visible while projecting; an unmounted or zero-width canvas
+throws. Controller calls after destruction also throw. Camera moves and resize
+both require repositioning; a one-time projection becomes stale.
+
+`x` and `y` are CSS pixels relative to `overlayElement`, not page coordinates or
+SVG units. `visible` tests inclusion in the map viewport; it does not account
+for occlusion by other content. This noninteractive label uses `textContent`
+and leaves pointer input to the map. Interactive callouts need their own
+keyboard, focus, and dismissal behavior. See [coordinates and units](API.md#coordinates-and-units).

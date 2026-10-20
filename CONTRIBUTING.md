@@ -16,7 +16,7 @@ Install with `pnpm install --frozen-lockfile`. The [validation and release runbo
 | `src/cluster-layer.ts`, `src/overlay-layer.ts` | Cluster and overlay nodes with replaceable event scopes |
 | `src/full-data.ts` | Explicit complete geographic preset (`/data/full`) |
 | `src/static-data.ts` | Explicit static geographic preset (`/data/static`) |
-| `src/geometry.ts` | Mercator projection and GeoJSON path conversion         |
+| `src/geometry.ts` | Mercator projection, GeoJSON paths, bounds, and polygon queries         |
 | `src/district-style.ts`, `src/district-layer.ts`, `src/district-transition.ts` | Prepared district styles, interaction appearance, and cancellable year fades |
 | `src/label-renderer.ts`, `src/marker-layer.ts` | Reusable label nodes/metrics and marker visual/entrance ownership |
 | `src/marker-catalog.ts`, `src/cluster-renderer.ts` | Prepared marker/picker reconciliation and cluster cache, viewport mounting, listener ownership |
@@ -33,6 +33,21 @@ Use `pnpm format` for Biome formatting, import organization, and safe lint fixes
 For rendering changes, inspect the example page on desktop and at 390 px. Run `pnpm check` and inspect `pnpm pack` contents before releasing. Never include credentials, node_modules, or source extraction credentials in the repository or archive.
 
 For camera or animation changes, exercise **Checks / Motion lifecycle** in Storybook with normal and reduced motion. Verify interruption, rapid year switches, marker replacement, destruction during callbacks, and font-load invalidation. Label metrics are cached in screen pixels; preserve collision rules and invalidate them when fonts change. District style preparation must finish before mutating state, and reentrant callbacks must not overwrite a newer update.
+
+## Geographic helper contracts
+
+Keep `/geometry` free of dataset imports and DOM requirements. Export public
+input/result types beside their helpers. Use readonly GeoJSON positions in
+longitude/latitude order, with geometry-first query arguments. Bounds are in
+degrees; screen projection results and camera pan deltas are CSS pixels.
+
+Containment includes polygon boundaries and excludes hole interiors. Shared
+boundaries can match several features. Preserve coordinate validation and test
+holes, winding, implicit closure, islands, nested collections, and empty input
+when changing queries. These helpers assume valid local planar topology; they
+are not antimeridian-aware geometry repair tools. See the
+[API audit](docs/api-audit.md#v5-consistency-contract) before changing existing
+coordinate, selection, or reset conventions.
 
 ## Assistant-readable documentation
 

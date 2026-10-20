@@ -16,7 +16,7 @@ const overlaps = (a, b) => a[0] < b[2] && a[2] > b[0] && a[1] < b[3] && a[3] > b
 
 for (const width of [800, 390]) {
   test(`guide labels avoid one another and map pins at ${width}px without a DOM`, () => {
-    const markers = [{ id: 'mission', lng: -122.4194, lat: 37.76, radius: 9 }];
+    const markers = [{ id: 'mission', position: [-122.4194, 37.76], radius: 9 }];
     const result = createGuideSVG({ labelLayout: { width }, markers });
     const texts = labels(result.svg);
     assert.ok(texts.length > 5);
@@ -45,7 +45,7 @@ for (const width of [800, 390]) {
         return [x - 6, y - 6, x + 6, y + 6];
       }),
       ...markers.map((marker) => {
-        const [x, y] = result.project([marker.lng, marker.lat]).map((value) => value / unit);
+        const [x, y] = result.project(marker.position).map((value) => value / unit);
         return [x - 12, y - 12, x + 12, y + 12];
       }),
     ];
@@ -78,7 +78,12 @@ test('overview priorities respond to width and layer switches', () => {
 });
 
 test('static layout escapes names and validates before user callbacks', () => {
-  const marker = { id: 'selected', label: '<script>&"', lng: -122.45, lat: 37.76, selected: true };
+  const marker = {
+    id: 'selected',
+    label: '<script>&"',
+    position: [-122.45, 37.76],
+    selected: true,
+  };
   const result = createGuideSVG({ markers: [marker], labelLayout: { width: 800 } });
   assert.ok(result.svg.includes('&lt;script&gt;'));
   assert.equal(labels(result.svg)[0].textContent, marker.label);
@@ -111,7 +116,7 @@ test('compact layouts budget labels independently and preserve geometry and pins
   const options = {
     idPrefix: 'compact-test',
     markers: [
-      { id: 'selected', label: 'A selected place', lng: -122.45, lat: 37.76, selected: true },
+      { id: 'selected', label: 'A selected place', position: [-122.45, 37.76], selected: true },
     ],
     labelLayout: {
       width: 800,

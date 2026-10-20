@@ -160,15 +160,17 @@ export function validateMarkers(markers: readonly MapMarker[]) {
   if (!Array.isArray(markers)) throw new TypeError('Markers must be an array.');
   const ids = new Set<string>();
   for (const marker of markers) {
-    assertOptions(marker, 'marker');
+    assertOptions(marker, 'marker', ['id', 'position', 'label', 'selected', 'color', 'radius']);
     if (typeof marker.id !== 'string' || !marker.id || ids.has(marker.id))
       throw new RangeError('Markers require unique nonempty IDs.');
     ids.add(marker.id);
     if (
-      !Number.isFinite(marker.lng) ||
-      Math.abs(marker.lng) > 180 ||
-      !Number.isFinite(marker.lat) ||
-      Math.abs(marker.lat) >= 90
+      !Array.isArray(marker.position) ||
+      marker.position.length < 2 ||
+      !Number.isFinite(marker.position[0]) ||
+      Math.abs(marker.position[0]) > 180 ||
+      !Number.isFinite(marker.position[1]) ||
+      Math.abs(marker.position[1]) >= 90
     )
       throw new RangeError(
         'Marker coordinates require finite longitude from -180 to 180 and latitude strictly between -90 and 90.',

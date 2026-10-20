@@ -28,7 +28,7 @@ test('neighborhood layer is optional and contains every named area', () => {
   assert.ok(!svg.includes('SF Find neighborhood areas'));
 });
 test('projection places SF points inside map and matches marker coordinates', () => {
-  const map = create({ markers: [{ id: 'park', lng: -122.4269, lat: 37.7596 }] });
+  const map = create({ markers: [{ id: 'park', position: [-122.4269, 37.7596] }] });
   const [x, y] = map.project([-122.4269, 37.7596]);
   assert.ok(x > 28 && x < 772 && y > 28 && y < 772);
   assert.ok(map.svg.includes(`cx="${Number(x.toFixed(2))}" cy="${Number(y.toFixed(2))}"`));
@@ -112,7 +112,7 @@ test('combined layers produce valid XML with resolvable clip paths for every dis
         landmarks: true,
         bartStations: true,
         title: 'Park\u0000 & <city>',
-        markers: [{ id: 'a"<&', lng: -122.4, lat: 37.77, label: '<hello> & friends' }],
+        markers: [{ id: 'a"<&', position: [-122.4, 37.77], label: '<hello> & friends' }],
       });
       const document = new DOMParser({
         onError: (level, message) => errors.push({ level, message }),
@@ -160,7 +160,7 @@ test('rejects overflowing and out-of-range longitude before writing SVG coordina
   const map = create();
   for (const lng of [1e308, -1e308, 181, -181, Infinity, NaN]) {
     assert.throws(() => map.project([lng, 37.77]), RangeError);
-    assert.throws(() => render({ markers: [{ id: 'bad', lng, lat: 37.77 }] }), RangeError);
+    assert.throws(() => render({ markers: [{ id: 'bad', position: [lng, 37.77] }] }), RangeError);
   }
 });
 
@@ -169,7 +169,7 @@ test('rejects invalid marker coordinates before running renderer callbacks', () 
   assert.throws(
     () =>
       render({
-        markers: [{ id: 'bad', lng: -122.4, lat: 90 }],
+        markers: [{ id: 'bad', position: [-122.4, 90] }],
         districtStyle: () => {
           styleCalls++;
           return {};
@@ -179,7 +179,7 @@ test('rejects invalid marker coordinates before running renderer callbacks', () 
   );
   assert.equal(styleCalls, 0);
   assert.throws(
-    () => render({ markers: [{ id: 'bad', lng: '-122.4', lat: 37.77 }] }),
+    () => render({ markers: [{ id: 'bad', position: ['-122.4', 37.77] }] }),
     /Marker coordinates/,
   );
 });
@@ -320,7 +320,7 @@ test('static animation is opt-in, scoped, and leaves default output unchanged', 
     highways: true,
     keyRoads: true,
     bartStations: true,
-    markers: [{ id: 'pin', lng: -122.42, lat: 37.76 }],
+    markers: [{ id: 'pin', position: [-122.42, 37.76] }],
   });
   assert.ok(svg.includes('data-sf-animate="intro"'));
   assert.equal((svg.match(/<style>/g) ?? []).length, 1);

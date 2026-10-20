@@ -105,3 +105,32 @@ API** includes executable motion, reduced-motion, and progressive-shell checks.
 See [consumer integration](consumer-integration.md) for server and browser recipes.
 
 For the controller and explicit data imports, see [the v3 migration guide](migration-v3.md).
+
+## Find areas containing a location
+
+New in v5. This example runs in
+Node or a browser without mounting a map and imports only the SFAR definition:
+
+```ts
+import { geometryBounds, geometryContainsPoint } from '@kahwee/sf-map-svg/geometry';
+import { neighborhoods } from '@kahwee/sf-map-svg/data/realtor';
+
+const location = [-122.42, 37.76] as const;
+const matches = neighborhoods.features.filter((feature) =>
+  geometryContainsPoint(feature.geometry, location),
+);
+for (const feature of matches) {
+  console.log(feature.id, feature.properties.canonicalName, geometryBounds(feature.geometry));
+}
+```
+
+Keep all matches when the location lies on a shared boundary. An empty result
+means no supplied polygon contains the location; it does not trigger a switch
+to another neighborhood definition. For an existing map using the same realtor
+source, pass a chosen match to
+`map.selectFeature({ kind: 'neighborhood', source: 'realtor', id: feature.id })`.
+To fit it, use `map.camera.fit(feature.geometry)`. Geographic bounds cannot be
+passed directly to `camera.set`, which takes projected `[x, y, size]`.
+
+See [query semantics and limitations](API.md#geographic-queries) and the
+[HTML overlay recipe](consumer-integration.md#position-html-overlays).

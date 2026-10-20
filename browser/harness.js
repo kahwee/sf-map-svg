@@ -3,9 +3,9 @@ import { createMap } from '../src/map.ts';
 
 const host = document.querySelector('#host');
 const markers = [
-  { id: 'one', label: 'First place', lng: -122.4269, lat: 37.7596 },
-  { id: 'two', label: 'Second place', lng: -122.4269, lat: 37.7596 },
-  { id: 'park', label: 'Park', lng: -122.4687, lat: 37.7704 },
+  { id: 'one', label: 'First place', position: [-122.4269, 37.7596] },
+  { id: 'two', label: 'Second place', position: [-122.4269, 37.7596] },
+  { id: 'park', label: 'Park', position: [-122.4687, 37.7704] },
 ];
 const settle = () =>
   new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
@@ -15,8 +15,7 @@ function grid(count, revision = 0) {
   return Array.from({ length: count }, (_, index) => ({
     id: `pin-${index}`,
     label: `Place ${index} revision ${revision}`,
-    lng: -122.505 + (index % 50) * 0.0024,
-    lat: 37.715 + Math.floor(index / 50) * 0.002,
+    position: [-122.505 + (index % 50) * 0.0024, 37.715 + Math.floor(index / 50) * 0.002],
   }));
 }
 

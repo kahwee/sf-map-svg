@@ -298,7 +298,7 @@ try {
             .replaceAll(
               '%APPEARANCE_HELP%',
               capabilities.runtimeAppearance
-                ? 'Update with <code>map.configure({ appearance })</code> while preserving camera, selection and focus. Token objects merge by key; <code>appearance: undefined</code> resets the group.'
+                ? 'Update with <code>map.configure({ appearance })</code> while preserving camera, selection and focus. Token objects merge by key; use <code>map.resetConfiguration([&quot;appearance&quot;])</code> to reset the group.'
                 : 'Appearance is set at construction. Recreate the map to change its palette and typography.',
             )
             .replaceAll(
@@ -323,7 +323,7 @@ try {
               '%VIEW_UPDATE_HELP%',
               capabilities.viewUpdateOptions
                 ? 'Pass <code>{ resetView: false }</code> to preserve the camera. Setters share the atomic configuration path.'
-                : 'Use <code>configure()</code> to retain the camera.',
+                : 'Use <code>camera.reset()</code> or <code>camera.fit()</code> for explicit movement.',
             )
             .replaceAll(
               '%RUNTIME_HELP%',
