@@ -67,6 +67,34 @@ source correctness remains governed by SOURCES.md and existing topology tests.
 
 ## Extending the contract
 
+### Consistency follow-up
+
+The geometry entry now exports its `Geometry`, `Position`, and `Bounds` input
+and result types alongside its functions. New geometry helpers use geometry-first
+arguments, accept readonly inputs, and preserve absent-geometry conventions:
+empty bounds are `null`, containment is `false`, and paths remain empty strings.
+
+The following existing differences should be addressed additively before any
+breaking cleanup:
+
+- Coordinates: geometry and static projection use `[longitude, latitude]`,
+  markers use `{ lng, lat }`, and `projectToScreen` takes two numbers. Add a
+  tuple overload before considering deprecation. Keep geographic degrees,
+  projected SVG units, and screen pixels explicit in names and documentation.
+- Camera policy: `configure({ mode, source })` preserves the camera, while
+  `setMode` and `setSource` reset by default. A future shared view-update option
+  should make this explicit without changing existing defaults.
+- Reset policy: omitted patch keys retain values, but `undefined` resets some
+  groups and is ignored for mode/source/year/labels. Prefer an explicit reset
+  operation for future additions; do not silently reinterpret existing patches.
+- Selection identity: prefer source/year-qualified `selectFeature` for new
+  integrations. Keep name-based neighborhood selection as a convenience and
+  preserve the existing event payloads alongside the common selection event.
+
+These are design recommendations, not implemented behavioral changes. Any
+follow-up needs runtime, declaration, and documentation checks for both old and
+new call forms.
+
 For every new option, define its default, disable/reset semantics, precedence,
 validation boundary, cleanup owner, and effect on keyboard focus and selection.
 Test invalid updates against an existing live map, not only clean construction.

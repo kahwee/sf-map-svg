@@ -372,6 +372,39 @@ Start with the [static and interactive examples](https://github.com/kahwee/sf-ma
 and event types are exported by [src/api.ts](https://github.com/kahwee/sf-map-svg/blob/main/src/api.ts) and defined in
 [src/types.ts](https://github.com/kahwee/sf-map-svg/blob/main/src/types.ts) and [src/controller-types.ts](https://github.com/kahwee/sf-map-svg/blob/main/src/controller-types.ts).
 
+## Geographic queries
+
+The data-free `@kahwee/sf-map-svg/geometry` entry exports `geometryBounds(geometry)`
+and `geometryContainsPoint(geometry, [longitude, latitude])`. They work offline
+with the same readonly GeoJSON geometries used by the renderer, without a DOM.
+The same entry exports the `Geometry`, `Position`, and `Bounds` types, so geometry
+consumers need no second import path for their function input and result types.
+
+```ts
+import { geometryBounds, geometryContainsPoint } from '@kahwee/sf-map-svg/geometry';
+import { neighborhoods } from '@kahwee/sf-map-svg/data/realtor';
+
+const location = [-122.42, 37.76] as const;
+const matches = neighborhoods.features.filter((feature) =>
+  geometryContainsPoint(feature.geometry, location),
+);
+const bounds = matches[0] ? geometryBounds(matches[0].geometry) : null;
+```
+
+Bounds are `[west, south, east, north]` in degrees, computed from coordinates,
+not cached feature metadata. Empty or absent geometry returns `null`.
+Hit testing includes Polygon, MultiPolygon, and polygon members of nested
+GeometryCollections. Hole interiors are excluded; outer and hole boundaries
+are included, so a shared boundary may match multiple features. Ring winding
+does not matter; open rings are closed implicitly. Other geometry types do
+not produce polygon hits. Empty or absent geometry returns `false`.
+
+Both helpers reject nonfinite or out-of-range longitude/latitude with
+`RangeError`; altitude is ignored. They assume valid planar GeoJSON topology
+and straight segments in longitude/latitude, suitable for these SF datasets.
+They do not repair polygons, apply a boundary tolerance, or unwrap antimeridian
+crossings. A bounds match alone does not establish polygon containment.
+
 ## Static maps
 
 Static maps accept compact `StaticMapData` or the same source-aware `MapData` as interactive maps. With `MapData`, `source` selects a supplied neighborhood definition; SFAR realtor is preferred by default, followed by SF Find and analysis when available. A requested unavailable source throws before styling callbacks run. Compact `StaticMapData` already chooses its neighborhoods, so it rejects a `source` option. Both data shapes retain the static renderer defaults.
@@ -2117,11 +2150,16 @@ export declare function createSFMapWithData(options: SFMapOptions, data: SFMapDa
 ### dist/src/geometry.d.ts
 
 ```ts
-import type { Geometry, Position } from '../data/types.js';
+import type { Bounds, Geometry, Position } from '../data/types.js';
+export type { Bounds, Geometry, Position } from '../data/types.js';
 export type Project = (position: Position) => [number, number];
 export declare function rawProject([longitude, latitude]: Position): [number, number];
 export declare function positions(geometry: Geometry | null | undefined): Position[];
 export declare function geometryPath(geometry: Geometry | null | undefined, project: Project): string;
+/** Geographic [west, south, east, north], or null for empty geometry. */
+export declare function geometryBounds(geometry: Geometry | null | undefined): Bounds | null;
+/** Polygon hit testing in longitude/latitude; boundaries (including hole edges) count as hits. */
+export declare function geometryContainsPoint(geometry: Geometry | null | undefined, point: Position): boolean;
 ```
 
 ### dist/src/static.d.ts
@@ -2137,14 +2175,14 @@ export type { DistrictStyle, DistrictYear, SFMapOptions as StaticMapOptions, Sta
 /** Server-safe SVG rendering with explicit data; returns SVG plus projection helpers. */
 export declare function renderMap(data: StaticMapInput, options?: SFMapOptions): {
     svg: string;
-    project: (coordinates: import("../data/types.js").Position) => [number, number];
+    project: (coordinates: import("./geometry.js").Position) => [number, number];
     viewBox: [number, number, number, number];
 };
 /** Project canonical layer geometry without constructing an SVG string. */
 export declare function getLayerPaths(data: StaticMapInput, options?: SFMapOptions): {
     year: import("./types.js").DistrictYear;
     viewBox: [number, number, number, number];
-    project: (coordinates: import("../data/types.js").Position) => [number, number];
+    project: (coordinates: import("./geometry.js").Position) => [number, number];
     coast: string;
     districts: {
         id: number;
@@ -2359,7 +2397,7 @@ import type { SFMapOptions } from './types.js';
 /** Server-safe overview using exactly the guide browser geography. */
 export declare function createGuideSVG(options?: SFMapOptions): {
     svg: string;
-    project: (coordinates: import("../data/types.js").Position) => [number, number];
+    project: (coordinates: import("./geometry.js").Position) => [number, number];
     viewBox: [number, number, number, number];
 };
 /** Stable compact frame, progressively enhanced with mountGuideMap(). No browser globals. */

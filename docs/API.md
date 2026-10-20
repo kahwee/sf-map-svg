@@ -4,6 +4,39 @@ Start with the [static and interactive examples](../README.md). Exact option
 and event types are exported by [src/api.ts](../src/api.ts) and defined in
 [src/types.ts](../src/types.ts) and [src/controller-types.ts](../src/controller-types.ts).
 
+## Geographic queries
+
+The data-free `@kahwee/sf-map-svg/geometry` entry exports `geometryBounds(geometry)`
+and `geometryContainsPoint(geometry, [longitude, latitude])`. They work offline
+with the same readonly GeoJSON geometries used by the renderer, without a DOM.
+The same entry exports the `Geometry`, `Position`, and `Bounds` types, so geometry
+consumers need no second import path for their function input and result types.
+
+```ts
+import { geometryBounds, geometryContainsPoint } from '@kahwee/sf-map-svg/geometry';
+import { neighborhoods } from '@kahwee/sf-map-svg/data/realtor';
+
+const location = [-122.42, 37.76] as const;
+const matches = neighborhoods.features.filter((feature) =>
+  geometryContainsPoint(feature.geometry, location),
+);
+const bounds = matches[0] ? geometryBounds(matches[0].geometry) : null;
+```
+
+Bounds are `[west, south, east, north]` in degrees, computed from coordinates,
+not cached feature metadata. Empty or absent geometry returns `null`.
+Hit testing includes Polygon, MultiPolygon, and polygon members of nested
+GeometryCollections. Hole interiors are excluded; outer and hole boundaries
+are included, so a shared boundary may match multiple features. Ring winding
+does not matter; open rings are closed implicitly. Other geometry types do
+not produce polygon hits. Empty or absent geometry returns `false`.
+
+Both helpers reject nonfinite or out-of-range longitude/latitude with
+`RangeError`; altitude is ignored. They assume valid planar GeoJSON topology
+and straight segments in longitude/latitude, suitable for these SF datasets.
+They do not repair polygons, apply a boundary tolerance, or unwrap antimeridian
+crossings. A bounds match alone does not establish polygon containment.
+
 ## Static maps
 
 Static maps accept compact `StaticMapData` or the same source-aware `MapData` as interactive maps. With `MapData`, `source` selects a supplied neighborhood definition; SFAR realtor is preferred by default, followed by SF Find and analysis when available. A requested unavailable source throws before styling callbacks run. Compact `StaticMapData` already chooses its neighborhoods, so it rejects a `source` option. Both data shapes retain the static renderer defaults.

@@ -10,7 +10,14 @@ import { fullMapData } from '@kahwee/sf-map-svg/data/full';
 import rawNeighborhoods from '@kahwee/sf-map-svg/data/neighborhoods-realtor.json' with {
   type: 'json',
 };
-import { geometryPath } from '@kahwee/sf-map-svg/geometry';
+import {
+  type Bounds,
+  type Geometry,
+  geometryBounds,
+  geometryContainsPoint,
+  geometryPath,
+  type Position,
+} from '@kahwee/sf-map-svg/geometry';
 
 const source: NeighborhoodSource = 'realtor';
 const mission = getNeighborhood('Inner Mission', { source });
@@ -20,6 +27,11 @@ const map = renderMap(fullMapData, {
 });
 if (mission) {
   geometryPath(mission.geometry, map.project);
+  const geometry: Geometry = mission.geometry;
+  const location: Position = [-122.42, 37.76];
+  const bounds: Bounds | null = geometryBounds(geometry);
+  geometryContainsPoint(geometry, location);
+  void bounds;
   // @ts-expect-error Public helper geometry is readonly.
   mission.properties.canonicalName = 'New name';
 }
