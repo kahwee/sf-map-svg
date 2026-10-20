@@ -1,4 +1,4 @@
-import type { Bounds, NeighborhoodSource } from '../data/types.js';
+import type { Bounds, NeighborhoodSource, Position } from '../data/types.js';
 import { copyAppearance } from './appearance.js';
 import { createCamera, validateCameraOptions } from './camera.js';
 import { createClusterLayer } from './cluster-layer.js';
@@ -272,8 +272,9 @@ export function createNeighborhoodExplorerCore(
     arrow.hidden = !features.northArrow;
   }
   syncFurniture();
-  function projectToScreen(lng: number, lat: number) {
-    const [x, y] = map.project([lng, lat]);
+  function projectToScreen(...coordinates: [position: Position] | [lng: number, lat: number]) {
+    const position = coordinates.length === 1 ? coordinates[0] : coordinates;
+    const [x, y] = map.project(position);
     const width = canvas.getBoundingClientRect().width;
     if (!width) throw new Error('Mount the map before projecting to screen.');
     const px = ((x - view[0]) * width) / view[2],

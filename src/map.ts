@@ -29,6 +29,8 @@ export type {
   MapPadding,
   MapViewport,
   NeighborhoodSelection,
+  ProjectToScreen,
+  ScreenPoint,
 } from './types.js';
 
 /** No geography is imported. Supply a preset or your own immutable data. */

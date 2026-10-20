@@ -12,6 +12,7 @@ import type {
   MapViewport,
   NeighborhoodExplorerOptions,
   NeighborhoodSelection,
+  ProjectToScreen,
 } from './types.js';
 
 /** Patch properties can explicitly remove overrides, including with exactOptionalPropertyTypes. */
@@ -163,7 +164,8 @@ export interface MapController {
   setMode(mode: NonNullable<MapOptions['mode']>, options?: MapViewUpdateOptions): void;
   setLabels(visible: boolean): void;
   setTouchNavigation(enabled: boolean): void;
-  projectToScreen(lng: number, lat: number): { x: number; y: number; visible: boolean };
+  /** Accepts a GeoJSON position or longitude and latitude; returns canvas-relative CSS pixels. */
+  projectToScreen: ProjectToScreen;
   /** Idempotent; stops work and managed subscriptions. Does not remove host-owned DOM. */
   destroy(): void;
 }

@@ -78,8 +78,8 @@ The following existing differences should be addressed additively before any
 breaking cleanup:
 
 - Coordinates: geometry and static projection use `[longitude, latitude]`,
-  markers use `{ lng, lat }`, and `projectToScreen` takes two numbers. Add a
-  tuple overload before considering deprecation. Keep geographic degrees,
+  markers use `{ lng, lat }`, and `projectToScreen` accepts either a tuple or two numbers. The tuple form
+  now aligns static and screen projection without removing numeric calls. Keep geographic degrees,
   projected SVG units, and screen pixels explicit in names and documentation.
 - Camera policy: `configure({ mode, source })` preserves the camera, while
   `setMode` and `setSource` reset by default. A future shared view-update option

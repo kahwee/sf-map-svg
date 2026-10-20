@@ -83,6 +83,7 @@ export const MotionAndClusters: Story = {
     expect(map.getViewport()).toEqual(start);
     await waitFor(() => expect(map.getViewport()).toEqual([200, 200, 300]));
     const point = map.projectToScreen(markers[0].lng, markers[0].lat);
+    expect(map.projectToScreen([markers[0].lng, markers[0].lat])).toEqual(point);
     expect(Number.isFinite(point.x)).toBe(true);
     const pin = map.querySelector<SVGGElement>('[data-marker-id="one"]');
     const canvasBox = map.overlayElement.getBoundingClientRect();

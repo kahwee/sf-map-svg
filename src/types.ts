@@ -1,4 +1,15 @@
-import type { Geometry, NeighborhoodFeature, NeighborhoodSource } from '../data/types.js';
+import type { Geometry, NeighborhoodFeature, NeighborhoodSource, Position } from '../data/types.js';
+
+/** Canvas-relative CSS pixels; visibility means inside the current square map viewport. */
+export interface ScreenPoint {
+  x: number;
+  y: number;
+  visible: boolean;
+}
+/** WGS84 longitude/latitude; altitude, if supplied in a position, is ignored. */
+export type ProjectToScreen = (
+  ...coordinates: [position: Position] | [lng: number, lat: number]
+) => ScreenPoint;
 
 export type DistrictYear = 2002 | 2012 | 2022;
 export interface DistrictSelection {
@@ -243,7 +254,7 @@ export interface CameraOptions {
 export interface NeighborhoodExplorerElement extends HTMLElement {
   /** Append positioned HTML children here; coordinates are relative to this layer. */
   readonly overlayElement: HTMLDivElement;
-  projectToScreen(lng: number, lat: number): { x: number; y: number; visible: boolean };
+  projectToScreen: ProjectToScreen;
   stopAnimation(): void;
   /** Atomic patch; false disables, undefined resets a feature to its default. */
   setFeatures(patch: MapFeatures): void;

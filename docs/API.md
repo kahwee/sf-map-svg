@@ -163,7 +163,7 @@ Neighborhood IDs are exact source-scoped feature IDs, rather than display names 
 
 ## Coordinates and units
 
-GeoJSON and static projection inputs use `[longitude, latitude]` in WGS84; markers use `{ lng, lat }`. Static `project` returns SVG units. `projectToScreen(lng, lat)` returns pixels relative to the mounted canvas. Camera viewports use the fixed 800 × 800 projected map space, independent of canvas size. Pan deltas use screen pixels, converted using the mounted canvas width. Marker radius uses screen pixels in browser maps and SVG units in static output.
+GeoJSON and static projection inputs use `[longitude, latitude]` in WGS84; markers use `{ lng, lat }`. Static `project` returns SVG units. `projectToScreen([longitude, latitude])` accepts the same readonly GeoJSON position as static `project`; the existing `projectToScreen(lng, lat)` form remains supported. Both return `ScreenPoint` (`{ x, y, visible }`) in CSS pixels relative to the mounted canvas. Altitude is ignored. Mount the map before calling; invalid Mercator coordinates throw, and calls after controller destruction throw. `visible` indicates viewport inclusion, not whether another element covers the point. Camera viewports use the fixed 800 × 800 projected map space, independent of canvas size. Pan deltas use screen pixels, converted using the mounted canvas width. Marker radius uses screen pixels in browser maps and SVG units in static output.
 
 Explore presentation options in the [live map design playground](https://kahwee.github.io/sf-map-svg/playground.html). The page identifies its package version; released builds use compatible options for that installed version.
 

@@ -23,6 +23,53 @@ test.afterEach(async ({ page }) => {
 
 const entry = '[data-marker-id][tabindex="0"], [data-cluster-ids][tabindex="0"]';
 
+test('tuple and numeric screen projection agree across camera and canvas changes', async ({
+  page,
+}) => {
+  const check = async () => {
+    const result = await page.evaluate(() => {
+      const map = window.map;
+      const { lng, lat } = window.harness.markers[0];
+      return {
+        numeric: map.projectToScreen(lng, lat),
+        tuple: map.projectToScreen([lng, lat]),
+        altitude: map.projectToScreen([lng, lat, 50]),
+      };
+    });
+    expect(result.tuple).toEqual(result.numeric);
+    expect(result.altitude).toEqual(result.numeric);
+    expect(Number.isFinite(result.tuple.x)).toBe(true);
+    expect(Number.isFinite(result.tuple.y)).toBe(true);
+  };
+  await check();
+  await page.evaluate(async () => {
+    window.map.camera.set([200, 200, 300], { animate: false });
+    await window.harness.settle();
+  });
+  await check();
+  await page.setViewportSize({ width: 600, height: 900 });
+  await page.evaluate(() => window.harness.settle());
+  await check();
+  const rejects = await page.evaluate(() => {
+    const before = window.map.camera.get();
+    let failures = 0;
+    for (const args of [[[NaN, 37]], [[-122, 90]], [[-181, 37]], [new Array(2)], [NaN, 37]]) {
+      try {
+        window.map.projectToScreen(...args);
+      } catch {
+        failures++;
+      }
+    }
+    return { failures, before, after: window.map.camera.get() };
+  });
+  expect(rejects.failures).toBe(5);
+  expect(rejects.after).toEqual(rejects.before);
+  await page.evaluate(() => window.map.destroy());
+  await expect(page.evaluate(() => window.map.projectToScreen([-122.4, 37.7]))).rejects.toThrow(
+    /destroyed/,
+  );
+});
+
 test('prepared labels refresh after catalog, appearance, layer, and source changes', async ({
   page,
 }) => {

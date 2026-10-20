@@ -1,4 +1,4 @@
-import { createMap, type MapViewport } from '@kahwee/sf-map-svg';
+import { createMap, type MapViewport, type ScreenPoint } from '@kahwee/sf-map-svg';
 import { fullMapData } from '@kahwee/sf-map-svg/data/full';
 
 const map = createMap(fullMapData, {
@@ -31,6 +31,14 @@ const enhanced = createMap(fullMapData, {
 enhanced.camera.set([0, 0, 800], { animate: false });
 enhanced.selectMarker('place', { duration: 250 });
 enhanced.projectToScreen(-122.4, 37.7).visible satisfies boolean;
+enhanced.projectToScreen([-122.4, 37.7] as const) satisfies ScreenPoint;
+enhanced.projectToScreen([-122.4, 37.7, 20] as const) satisfies ScreenPoint;
+// @ts-expect-error A latitude is required in the numeric form.
+enhanced.projectToScreen(-122.4);
+// @ts-expect-error A position needs both longitude and latitude.
+enhanced.projectToScreen([-122.4]);
+// @ts-expect-error Do not mix tuple and numeric forms.
+enhanced.projectToScreen([-122.4, 37.7], 37.7);
 enhanced.overlayElement satisfies HTMLDivElement;
 enhanced.camera.stop();
 enhanced.configure({ features: { motion: false, clustering: true, selectedMarkerRing: false } });
