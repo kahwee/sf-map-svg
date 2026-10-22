@@ -23,18 +23,19 @@ Steps after a group wait for it to finish. Keep prerequisites before the group a
 
 ## Action versions
 
-Versions below match the current workflow and composite-action references. SHA-pinned actions remain pinned; compare their commit with the upstream stable release when updating.
+Verified against upstream stable releases on 2026-10-22. Workflow, composite-action,
+and release-proposal references use immutable commit pins with version comments.
 
-| Action | Reference |
-| --- | --- |
-| [actions/checkout](https://github.com/actions/checkout) | `v7.0.1` |
-| [actions/configure-pages](https://github.com/actions/configure-pages) | `v6.0.0` |
-| [actions/deploy-pages](https://github.com/actions/deploy-pages) | `v5.0.1` |
-| [actions/setup-node](https://github.com/actions/setup-node) | `v7.1.0` |
-| [actions/upload-artifact](https://github.com/actions/upload-artifact) | `v7.0.2` |
-| [actions/upload-pages-artifact](https://github.com/actions/upload-pages-artifact) | `v5.0.0` |
-| [oven-sh/setup-bun](https://github.com/oven-sh/setup-bun) | `0c5077e51419868618aeaa5fe8019c62421857d6` (`v2.2.0`) |
-| [pnpm/action-setup](https://github.com/pnpm/action-setup) | `v6.1.0` |
+| Action | Stable release | Commit |
+| --- | --- | --- |
+| [actions/checkout](https://github.com/actions/checkout) | `v7.0.1` | `3d3c42e5aac5ba805825da76410c181273ba90b1` |
+| [actions/configure-pages](https://github.com/actions/configure-pages) | `v6.0.0` | `45bfe0192ca1faeb007ade9deae92b16b8254a0d` |
+| [actions/deploy-pages](https://github.com/actions/deploy-pages) | `v5.0.1` | `368f82528645a54fb793d4d04e342629a3f51346` |
+| [actions/setup-node](https://github.com/actions/setup-node) | `v7.1.0` | `949feb2413d6458794dcd2491c4babbbce0c15c1` |
+| [actions/upload-artifact](https://github.com/actions/upload-artifact) | `v7.0.2` | `cf430e030ddbb5b0abf93d22962f4752f3646cd9` |
+| [actions/upload-pages-artifact](https://github.com/actions/upload-pages-artifact) | `v5.0.0` | `fc324d3547104276b827a68afc52ff2a11cc49c9` |
+| [oven-sh/setup-bun](https://github.com/oven-sh/setup-bun) | `v2.2.0` | `0c5077e51419868618aeaa5fe8019c62421857d6` |
+| [pnpm/action-setup](https://github.com/pnpm/action-setup) | `v6.1.0` | `ea17c68df8912ef543352723c149a84f56e3d413` |
 
 ## Greenkeeping
 
@@ -51,3 +52,5 @@ The `browsers` job checks a production bundle in Chromium, Firefox, and WebKit a
 5. Refresh this guide when workflows, action references, or parallel groups change.
 
 Use workflow concurrency to cancel superseded check runs where appropriate. Deployment and release cancellation have different consequences: preserve the workflow’s existing policy rather than copying check-run settings blindly. Repository permissions and job-level overrides are defined in the linked YAML files.
+
+Biome remains the Node/pnpm formatting, lint, and import-organization gate. Bun compatibility stays a separate check; using the package does not require Bun.
