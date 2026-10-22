@@ -26,9 +26,9 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm check:node
-      - run: pnpm demo
-      - run: pnpm build-storybook
-      - run: pnpm build:pages
+      - run: pnpm demo:built
+      - run: pnpm build-storybook:built
+      - run: pnpm build:pages:built
       - run: pnpm test:package
   bun:
     runs-on: ubuntu-latest
@@ -98,8 +98,8 @@ jobs:
       - parallel:
           - run: pnpm exec playwright install --with-deps chromium
           - run: pnpm build-storybook
-      - run: pnpm test:stories:coverage
-      - run: pnpm build:pages
+      - run: pnpm test:stories:coverage:built
+      - run: pnpm build:pages:built
       - run: pnpm test:visual
       - run: pnpm test:studio
       - run: pnpm test:pages

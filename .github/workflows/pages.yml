@@ -56,8 +56,8 @@ jobs:
       - parallel:
           - run: pnpm check
           - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm test:stories:coverage
-      - run: pnpm build-storybook
+      - run: pnpm test:stories:coverage:built
+      - run: pnpm build-storybook:built
       - name: Wait for the published version
         if: github.event_name == 'workflow_run'
         env:
@@ -73,7 +73,7 @@ jobs:
           done
           echo "npm has not exposed $version yet; rerun this workflow after registry processing."
           exit 1
-      - run: pnpm build:pages --released
+      - run: pnpm build:pages:built --released
       - run: pnpm test:visual
       - run: pnpm test:studio
       - run: pnpm test:pages

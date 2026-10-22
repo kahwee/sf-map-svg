@@ -68,10 +68,10 @@ jobs:
       # Browser installation is independent; validation must finish before browser tests.
       - parallel:
           - name: Validate and build package, demo and Storybook
-            run: pnpm check && pnpm demo && pnpm build-storybook
+            run: pnpm check && pnpm demo:built && pnpm build-storybook:built
           - name: Install browser
             run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm test:stories:coverage
+      - run: pnpm test:stories:coverage:built
       - name: Pack and test the exact archive to publish
         run: |
           mkdir -p "$RUNNER_TEMP/package"

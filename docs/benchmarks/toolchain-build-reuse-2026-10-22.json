@@ -1,0 +1,54 @@
+{
+  "scope": "Library compilation only; excludes unchanged demos, Storybook, Pages, and archive prepack",
+  "platform": "linux 6.18.55 x64",
+  "node": "v26.11.1",
+  "bun": "1.4.4",
+  "pnpm": "12.6.0",
+  "base_commit": "a02175a8ed07f807d51a6e5e906c0cbc94abfcce",
+  "working_tree_modified": true,
+  "command": "pnpm build",
+  "samples": [
+    {
+      "sample": 1,
+      "case": "repeated_builds",
+      "library_build_invocations": 4,
+      "seconds": 18.386,
+      "outputs_identical": true
+    },
+    {
+      "sample": 1,
+      "case": "reused_build",
+      "library_build_invocations": 1,
+      "seconds": 4.537,
+      "outputs_identical": true
+    },
+    {
+      "sample": 2,
+      "case": "reused_build",
+      "library_build_invocations": 1,
+      "seconds": 3.655,
+      "outputs_identical": true
+    },
+    {
+      "sample": 2,
+      "case": "repeated_builds",
+      "library_build_invocations": 4,
+      "seconds": 15.715,
+      "outputs_identical": true
+    },
+    {
+      "sample": 3,
+      "case": "repeated_builds",
+      "library_build_invocations": 4,
+      "seconds": 13.49,
+      "outputs_identical": true
+    },
+    {
+      "sample": 3,
+      "case": "reused_build",
+      "library_build_invocations": 1,
+      "seconds": 3.399,
+      "outputs_identical": true
+    }
+  ]
+}

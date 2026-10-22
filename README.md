@@ -248,3 +248,7 @@ On the session’s Linux executor, three-run median project checks measured
 0.402/0.688/0.209 seconds with Bun for consumers/stories/website, versus
 3.156/4.110/2.496 seconds with `pnpm exec tsc -p <project>`. These include command
 startup; they do not predict hosted CI duration.
+
+CI reuses completed library output for demos, Storybook, and Pages. Standalone
+commands still build from a clean checkout. See the [toolchain benchmark report](docs/toolchain-benchmarks.md)
+for raw samples, output-equivalence checks, and reproducible commands.

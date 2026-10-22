@@ -63,3 +63,14 @@ project checks use Bun’s native checker in parallel. `pnpm check` combines bot
 gates for local, Pages, and publishing verification. Pages and publishing install
 the Bun version from `.bun-version`. TypeScript declaration emission and packed
 consumer checks remain in place.
+
+## Reuse completed library builds
+
+The Node matrix calls `check:node` once, then uses the built demo, Storybook, and
+Pages commands. The stories job builds through `build-storybook`, then uses
+`test:stories:coverage:built` and `build:pages:built`. Pages and publishing first
+finish `pnpm check` before using the built commands. Keep that order: built
+variants require current `dist` output and must not race a library build.
+Standalone commands and archive prepack retain fresh builds. The measured
+[compilation-phase benchmark](../docs/toolchain-benchmarks.md) is separate from
+end-to-end CI timing.

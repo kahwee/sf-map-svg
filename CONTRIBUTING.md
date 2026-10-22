@@ -28,7 +28,7 @@ Install with `pnpm install --frozen-lockfile`. The [validation and release runbo
 
 Keep runtime dependencies at zero. Library source is strict TypeScript 7. `pnpm build` emits JavaScript, declarations, and imported JSON to `dist/`; package exports point at that build. Do not maintain parallel handwritten declarations. Tests exercise the compiled output; Storybook imports TypeScript source for live reload.
 
-Use `pnpm format` for Biome formatting, import organization, and safe lint fixes; `pnpm check` checks dependency peers, formatting, data, types, and tests. The aggregate check builds once, then uses the `:built` checks against that output. Standalone `test`, `check:docs`, `typecheck`, and `typecheck:website` still build first; use their `:built` variants only when the build is current. Canonical geographic JSON and generated output are excluded. Biome does not format Markdown or GitHub workflow YAML. Changes to the API need matching declarations and documentation. Geometry changes need dated source records in `SOURCES.md`.
+Use `pnpm format` for Biome formatting, import organization, and safe lint fixes; `pnpm check` checks dependency peers, formatting, data, types, and tests. The aggregate check builds once, then uses the `:built` checks against that output. Standalone tests, demos, Storybook, Pages, documentation checks, and type checks build first. CI uses `:built` variants only after the same job has built the current source; these commands do not establish freshness themselves. Canonical geographic JSON and generated output are excluded. Biome does not format Markdown or GitHub workflow YAML. Changes to the API need matching declarations and documentation. Geometry changes need dated source records in `SOURCES.md`.
 
 For rendering changes, inspect the example page on desktop and at 390 px. Run `pnpm check` and inspect `pnpm pack` contents before releasing. Never include credentials, node_modules, or source extraction credentials in the repository or archive.
 
@@ -109,3 +109,9 @@ Use `pnpm check:types:built` after a current build to run the three Bun project
 checks in parallel. `pnpm check:node` covers Node/package checks; it is only one
 part of `pnpm check`. Node 24/26 CI jobs use that part; the Bun CI job owns the
 project type checks. Pages and publishing also install the pinned Bun runtime.
+
+The CI Node job builds the library in `check:node`, then uses `demo:built`,
+`build-storybook:built`, and `build:pages:built` against that output. The stories
+job builds through `build-storybook` before using the built coverage/Pages commands.
+Archive prepack still performs its own fresh build. See [toolchain benchmarks](docs/toolchain-benchmarks.md)
+for scope, raw samples, and reproduction commands.

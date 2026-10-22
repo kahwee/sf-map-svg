@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Reuse completed library builds in CI demo, Storybook, coverage, and Pages steps; retain fresh builds for standalone commands and archive packing.
+- Add a reproducible compilation-phase benchmark that checks emitted-output equivalence.
+
 - Use Bun for consumer, Storybook, and website project checks; run them once in the Bun CI job instead of repeating them in the Node matrix.
 
 User-visible changes are recorded here. Unreleased entries describe changes on `main` that are not part of a tagged package release.
