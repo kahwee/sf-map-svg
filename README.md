@@ -122,7 +122,7 @@ and [coordinate units](docs/API.md#coordinates-and-units).
 
 Canonical geography is in [`data/`](data/README.md), with provenance in [`SOURCES.md`](SOURCES.md). The public `/data` entry exposes lookup, catalog, district maps, and source-specific neighborhood collections. These are deeply frozen; clone before editing.
 
-Install with `pnpm install --frozen-lockfile`. Bun 1.4.4 is pinned in `.bun-version`; `pnpm test:bun` checks compiled-package imports and static rendering. Strict TypeScript 7.0.2 declarations and packed consumers remain part of the Node/pnpm checks. See the [contributing guide](CONTRIBUTING.md) for architecture and the [validation and release runbook](https://github.com/kahwee/sf-map-svg/blob/main/docs/maintenance.md) for checks, browser inspection, and publishing. If you are upgrading from v2, follow the [v3 migration guide](docs/migration-v3.md).
+Install with `pnpm install --frozen-lockfile`. Bun 1.4.4 is pinned in `.bun-version` for development type checks; `pnpm test:bun` also checks compiled-package imports and static rendering. Strict TypeScript 7.0.2 declarations and packed consumers remain part of the Node/pnpm checks. See the [contributing guide](CONTRIBUTING.md) for architecture and the [validation and release runbook](https://github.com/kahwee/sf-map-svg/blob/main/docs/maintenance.md) for checks, browser inspection, and publishing. If you are upgrading from v2, follow the [v3 migration guide](docs/migration-v3.md).
 
 ## Browser checks and marker performance
 
@@ -237,3 +237,14 @@ pnpm benchmark:markers --counts=2000 --mode=neighborhoods \
 ## CI maintenance
 
 [GitHub Actions maintenance](.github/ACTIONS.md) covers workflows, parallel checks, action versions, and weekly updates.
+
+Project type checks use Bun: `pnpm check:types:built` checks compiled-package
+consumers, Storybook, and the website in parallel after a build. `pnpm check` runs
+the full gate. CI runs `check:node` on Node 24/26 and these Bun checks once in the
+Bun job. TypeScript remains responsible for declaration emission and packed-package
+consumer compatibility tests. Published consumers do not need Bun.
+
+On the session’s Linux executor, three-run median project checks measured
+0.402/0.688/0.209 seconds with Bun for consumers/stories/website, versus
+3.156/4.110/2.496 seconds with `pnpm exec tsc -p <project>`. These include command
+startup; they do not predict hosted CI duration.

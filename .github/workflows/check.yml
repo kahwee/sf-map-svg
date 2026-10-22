@@ -25,7 +25,7 @@ jobs:
           node-version: ${{ matrix.node }}
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm check
+      - run: pnpm check:node
       - run: pnpm demo
       - run: pnpm build-storybook
       - run: pnpm build:pages
@@ -49,6 +49,8 @@ jobs:
           bun-version-file: .bun-version
       - run: pnpm install --frozen-lockfile
       - run: pnpm test:bun
+      - name: Bun check for consumers, stories, and website
+        run: pnpm check:types:built
   browsers:
     runs-on: ubuntu-latest
     timeout-minutes: 15

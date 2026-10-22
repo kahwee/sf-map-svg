@@ -143,7 +143,7 @@
     "demo": "pnpm build && node examples/build.mjs",
     "format": "biome check --write .",
     "format:check": "biome format .",
-    "check": "pnpm peers check && pnpm lint && pnpm build && pnpm check:docs:built && pnpm data:check && pnpm typecheck:built && pnpm typecheck:stories && pnpm typecheck:website:built && pnpm test:built && pnpm test:bundle",
+    "check": "pnpm check:node && pnpm check:types:built",
     "check:docs": "pnpm build && pnpm check:docs:built",
     "check:docs:built": "node scripts/check-docs.mjs && node scripts/build-llm-docs.mjs --check",
     "prepublishOnly": "pnpm check",
@@ -152,10 +152,10 @@
     "data:catalog": "node scripts/build-data-catalog.mjs",
     "data:check": "node scripts/build-data-catalog.mjs --check",
     "typecheck": "pnpm build && pnpm typecheck:built",
-    "typecheck:built": "tsc -p tsconfig.json",
+    "typecheck:built": "bun --check --tsconfig-override=tsconfig.json",
     "typecheck:website": "pnpm build && pnpm typecheck:website:built",
-    "typecheck:website:built": "tsc -p tsconfig.website.json",
-    "typecheck:stories": "tsc -p tsconfig.stories.json",
+    "typecheck:website:built": "bun --check --tsconfig-override=tsconfig.website.json",
+    "typecheck:stories": "bun --check --tsconfig-override=tsconfig.stories.json",
     "data:normalize-realtor": "node scripts/normalize-realtor.mjs",
     "data:guide": "node scripts/build-guide-data.mjs",
     "report:guide": "node scripts/report-guide-bundle.mjs",
@@ -169,7 +169,9 @@
     "test:pages": "node scripts/check-pages.mjs",
     "test:studio": "node visual/studio-loading.browser.mjs",
     "release:notes": "node scripts/release-notes.mjs",
-    "docs:llms": "pnpm build && node scripts/build-llm-docs.mjs"
+    "docs:llms": "pnpm build && node scripts/build-llm-docs.mjs",
+    "check:node": "pnpm peers check && pnpm lint && pnpm build && pnpm check:docs:built && pnpm data:check && pnpm test:built && pnpm test:bundle",
+    "check:types:built": "bun run --parallel typecheck:built typecheck:stories typecheck:website:built"
   },
   "repository": {
     "type": "git",

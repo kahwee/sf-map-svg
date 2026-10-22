@@ -53,4 +53,13 @@ The `browsers` job checks a production bundle in Chromium, Firefox, and WebKit a
 
 Use workflow concurrency to cancel superseded check runs where appropriate. Deployment and release cancellation have different consequences: preserve the workflow’s existing policy rather than copying check-run settings blindly. Repository permissions and job-level overrides are defined in the linked YAML files.
 
-Biome remains the Node/pnpm formatting, lint, and import-organization gate. Bun compatibility stays a separate check; using the package does not require Bun.
+Biome remains the formatting, lint, and import-organization gate. Bun checks development projects; published consumers do not require Bun.
+
+## Native project checking
+
+The Node 24/26 matrix runs `pnpm check:node`; the `bun` job builds the package,
+runs the runtime smoke test, then runs `pnpm check:types:built` once. Those three
+project checks use Bun’s native checker in parallel. `pnpm check` combines both
+gates for local, Pages, and publishing verification. Pages and publishing install
+the Bun version from `.bun-version`. TypeScript declaration emission and packed
+consumer checks remain in place.

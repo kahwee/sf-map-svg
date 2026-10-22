@@ -75,7 +75,7 @@ Run `pnpm benchmark:markers` for deterministic 500- and 2,000-marker workloads a
 
 The **Checks / 2000 markers** desktop and phone stories exercise zoom, pan, clustering, retained-ID updates, and offscreen selection. They display mounted pin/cluster counts alongside the complete catalog. The lazy-marker browser check counts pin allocations, exercises first selection and focus recovery, and checks updated styles on first visibility. **Checks / Motion lifecycle / Lazy Marker Entrances** checks first visibility, reentry, and cancellation. The benchmark also records counts at overview and two zoom levels, with clustering enabled and disabled. See the [implementation plan](docs/marker-performance-plan.md) for the rendering contract.
 
-Optional Bun compatibility: install the version pinned in `.bun-version` (currently 1.4.4), then run `pnpm test:bun`. This checks compiled ESM/JSON imports and static rendering; browser interaction checks remain in Playwright. TypeScript 7.0.2 is the current stable compiler, and packed-package smoke tests compile strict consumers against generated declarations.
+Development type checks and Bun compatibility: install the version pinned in `.bun-version` (currently 1.4.4), then run `pnpm test:bun`. This checks compiled ESM/JSON imports and static rendering; browser interaction checks remain in Playwright. TypeScript 7.0.2 is the current stable compiler, and packed-package smoke tests compile strict consumers against generated declarations.
 
 Dependabot proposes weekly npm and GitHub Actions updates, grouping Storybook, Vitest, and GitHub Actions updates by family. Keep Storybook packages on matching versions; `pnpm check` rejects peer conflicts. Storybook 10.6.1 declares compatible Vitest 5 and Playwright browser-adapter peer ranges, so no peer overrides are required. The weekly maintenance workflow also checks peers and runs `pnpm audit --audit-level high`; run `pnpm outdated` to review available updates. React, Vitest, and Playwright are development dependencies for Storybook testing; the published package must retain zero runtime dependencies.
 
@@ -104,3 +104,8 @@ The site in `website/` shares one design system (`site.css`, with motion tokens,
 Canonical data in `data/` and the full-precision SVGs in `maps/` stay unchanged. Pages built with `--released` use the published package, so a site feature that needs an unreleased library feature must degrade gracefully until the next release. After `pnpm build:pages`, run `pnpm test:pages` to check every page in Chromium for script errors, failed requests, sideways scrolling, layout shift, and compressed size budgets; CI runs it before each deploy. For visual changes, still inspect pages at desktop and 390 px in both themes.
 
 Pages deploys on `main` updates and after a successful npm publishing workflow. Release-triggered builds wait up to five minutes for npm to expose the exact published version. If processing takes longer, rerun the failed Pages workflow.
+
+Use `pnpm check:types:built` after a current build to run the three Bun project
+checks in parallel. `pnpm check:node` covers Node/package checks; it is only one
+part of `pnpm check`. Node 24/26 CI jobs use that part; the Bun CI job owns the
+project type checks. Pages and publishing also install the pinned Bun runtime.
