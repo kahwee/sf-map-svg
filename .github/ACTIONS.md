@@ -38,7 +38,7 @@ Versions below match the current workflow and composite-action references. SHA-p
 
 ## Greenkeeping
 
-The `bun` job reads Bun 1.4.3 from `.bun-version` and checks compiled ESM/JSON imports, static rendering, and projection. The build and full test workflows continue to use Node and pnpm.
+The `bun` job reads Bun 1.4.4 from `.bun-version` and checks compiled ESM/JSON imports, static rendering, and projection. The build and full test workflows continue to use Node and pnpm.
 
 The `browsers` job checks a production bundle in Chromium, Firefox, and WebKit at desktop and phone widths. It also records a 2,000-marker Chromium benchmark as an artifact. Timings describe that runner; they do not impose a hardware-independent performance threshold. Failed browser checks retain Playwright traces.
 
