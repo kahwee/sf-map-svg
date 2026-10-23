@@ -1,6 +1,6 @@
 # Working on SF Map SVG
 
-Use pnpm 12 (declared in `package.json`) and Node 24 or newer.
+Use pnpm 12 (declared in `package.json`), Node 24 or newer, and Bun from `.bun-version`.
 
 Install with `pnpm install --frozen-lockfile`. The [validation and release runbook](docs/maintenance.md) is the canonical checklist for docs, site, library, geography, and publication changes.
 
@@ -26,7 +26,7 @@ Install with `pnpm install --frozen-lockfile`. The [validation and release runbo
 | `test/`           | Rendering, XML, projection and input validation         |
 | `examples/`       | Reproducible SVG comparison page                        |
 
-Keep runtime dependencies at zero. Library source is strict TypeScript 7. `pnpm build` emits JavaScript, declarations, and imported JSON to `dist/`; package exports point at that build. Do not maintain parallel handwritten declarations. Tests exercise the compiled output; Storybook imports TypeScript source for live reload.
+Keep runtime dependencies at zero. Library source is strict TypeScript 7. `pnpm build` checks library source with Bun before replacing output, then uses TypeScript `--noCheck` to emit JavaScript, declarations, and imported JSON to `dist/`; package exports point at that build. Do not maintain parallel handwritten declarations. Tests exercise the compiled output; Storybook imports TypeScript source for live reload.
 
 Use `pnpm format` for Biome formatting, import organization, and safe lint fixes; `pnpm check` checks dependency peers, formatting, data, types, and tests. The aggregate check builds once, then uses the `:built` checks against that output. Standalone tests, demos, Storybook, Pages, documentation checks, and type checks build first. CI uses `:built` variants only after the same job has built the current source; these commands do not establish freshness themselves. Canonical geographic JSON and generated output are excluded. Biome does not format Markdown or GitHub workflow YAML. Changes to the API need matching declarations and documentation. Geometry changes need dated source records in `SOURCES.md`.
 
@@ -75,9 +75,9 @@ Run `pnpm benchmark:markers` for deterministic 500- and 2,000-marker workloads a
 
 The **Checks / 2000 markers** desktop and phone stories exercise zoom, pan, clustering, retained-ID updates, and offscreen selection. They display mounted pin/cluster counts alongside the complete catalog. The lazy-marker browser check counts pin allocations, exercises first selection and focus recovery, and checks updated styles on first visibility. **Checks / Motion lifecycle / Lazy Marker Entrances** checks first visibility, reentry, and cancellation. The benchmark also records counts at overview and two zoom levels, with clustering enabled and disabled. See the [implementation plan](docs/marker-performance-plan.md) for the rendering contract.
 
-Development type checks and Bun compatibility: install the version pinned in `.bun-version` (currently 1.4.4), then run `pnpm test:bun`. This checks compiled ESM/JSON imports and static rendering; browser interaction checks remain in Playwright. TypeScript 7.0.2 is the current stable compiler, and packed-package smoke tests compile strict consumers against generated declarations.
+Development builds, type checks, and Bun compatibility: install the version pinned in `.bun-version` (currently 1.4.4), then run `pnpm test:bun`. This checks compiled ESM/JSON imports and static rendering; browser interaction checks remain in Playwright. TypeScript 7.0.2 is the current stable compiler, and packed-package smoke tests compile strict consumers against generated declarations.
 
-Dependabot proposes weekly npm and GitHub Actions updates, grouping Storybook, Vitest, and GitHub Actions updates by family. Keep Storybook packages on matching versions; `pnpm check` rejects peer conflicts. Storybook 10.6.1 declares compatible Vitest 5 and Playwright browser-adapter peer ranges, so no peer overrides are required. The weekly maintenance workflow also checks peers and runs `pnpm audit --audit-level high`; run `pnpm outdated` to review available updates. React, Vitest, and Playwright are development dependencies for Storybook testing; the published package must retain zero runtime dependencies.
+Dependabot proposes weekly npm and GitHub Actions updates, grouping Storybook, Vitest, and GitHub Actions updates by family. Keep Storybook packages on matching versions; `pnpm check` rejects peer conflicts. Storybook 10.6.3 declares compatible Vitest 5 and Playwright browser-adapter peer ranges, so no peer overrides are required. The weekly maintenance workflow also checks peers and runs `pnpm audit --audit-level high`; run `pnpm outdated` to review available updates. React, Vitest, and Playwright are development dependencies for Storybook testing; the published package must retain zero runtime dependencies.
 
 ## Renderer and geographic data structure
 

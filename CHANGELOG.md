@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Gate library output replacement on Bun source checking, then emit JavaScript, declarations, and JSON with TypeScript `--noCheck`; install pinned Bun in every build job.
+- Align Storybook on 10.6.3 and Vitest/browser/coverage tooling on 5.0.5, with compatible dependency updates for current security fixes.
+- Record identical-output library build benchmarks alongside the earlier build-reuse measurements.
+
 - Reuse completed library builds in CI demo, Storybook, coverage, and Pages steps; retain fresh builds for standalone commands and archive packing.
 - Add a reproducible compilation-phase benchmark that checks emitted-output equivalence.
 

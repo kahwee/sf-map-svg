@@ -39,7 +39,7 @@ and release-proposal references use immutable commit pins with version comments.
 
 ## Greenkeeping
 
-The `bun` job reads Bun 1.4.4 from `.bun-version` and checks compiled ESM/JSON imports, static rendering, and projection. The build and full test workflows continue to use Node and pnpm.
+The `bun` job reads Bun 1.4.4 from `.bun-version` and checks compiled ESM/JSON imports, static rendering, and projection. Node and pnpm still orchestrate the workflows; all build jobs install pinned Bun for source checking before TypeScript emission.
 
 The `browsers` job checks a production bundle in Chromium, Firefox, and WebKit at desktop and phone widths. It also records a 2,000-marker Chromium benchmark as an artifact. Timings describe that runner; they do not impose a hardware-independent performance threshold. Failed browser checks retain Playwright traces.
 
@@ -74,3 +74,8 @@ variants require current `dist` output and must not race a library build.
 Standalone commands and archive prepack retain fresh builds. The measured
 [compilation-phase benchmark](../docs/toolchain-benchmarks.md) is separate from
 end-to-end CI timing.
+
+All library builds now require pinned Bun, including Node matrix, browser, and
+Storybook jobs. Source checking completes before `dist` is replaced; TypeScript
+emits with `--noCheck`. Consumer type checks and the Node 24/26 compatibility
+matrix remain enabled.

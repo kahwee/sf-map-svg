@@ -134,7 +134,7 @@ and [coordinate units](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.m
 
 Canonical geography is in [`data/`](https://github.com/kahwee/sf-map-svg/blob/main/data/README.md), with provenance in [`SOURCES.md`](https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md). The public `/data` entry exposes lookup, catalog, district maps, and source-specific neighborhood collections. These are deeply frozen; clone before editing.
 
-Install with `pnpm install --frozen-lockfile`. Bun 1.4.4 is pinned in `.bun-version` for development type checks; `pnpm test:bun` also checks compiled-package imports and static rendering. Strict TypeScript 7.0.2 declarations and packed consumers remain part of the Node/pnpm checks. See the [contributing guide](https://github.com/kahwee/sf-map-svg/blob/main/CONTRIBUTING.md) for architecture and the [validation and release runbook](https://github.com/kahwee/sf-map-svg/blob/main/docs/maintenance.md) for checks, browser inspection, and publishing. If you are upgrading from v2, follow the [v3 migration guide](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v3.md).
+Install with `pnpm install --frozen-lockfile`. Bun 1.4.4 is pinned in `.bun-version` for development builds and type checks; `pnpm test:bun` also checks compiled-package imports and static rendering. Strict TypeScript 7.0.2 declarations and packed consumers remain part of the Node/pnpm checks. See the [contributing guide](https://github.com/kahwee/sf-map-svg/blob/main/CONTRIBUTING.md) for architecture and the [validation and release runbook](https://github.com/kahwee/sf-map-svg/blob/main/docs/maintenance.md) for checks, browser inspection, and publishing. If you are upgrading from v2, follow the [v3 migration guide](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v3.md).
 
 ## Browser checks and marker performance
 
@@ -1273,6 +1273,10 @@ display geometry, and no precinct polygons or raw workbook data are shipped.
 # Changelog
 
 ## Unreleased
+
+- Gate library output replacement on Bun source checking, then emit JavaScript, declarations, and JSON with TypeScript `--noCheck`; install pinned Bun in every build job.
+- Align Storybook on 10.6.3 and Vitest/browser/coverage tooling on 5.0.5, with compatible dependency updates for current security fixes.
+- Record identical-output library build benchmarks alongside the earlier build-reuse measurements.
 
 - Reuse completed library builds in CI demo, Storybook, coverage, and Pages steps; retain fresh builds for standalone commands and archive packing.
 - Add a reproducible compilation-phase benchmark that checks emitted-output equivalence.

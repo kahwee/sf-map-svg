@@ -1,0 +1,62 @@
+{
+  "repo": "sf-map-svg",
+  "bun": "1.4.4",
+  "node": "v26.11.1",
+  "scope": "Source check plus JS, declarations and data emission; three alternating samples after one warmup per case",
+  "baseline_source": "import { execFileSync } from 'node:child_process';\nimport { copyFileSync, cpSync, rmSync } from 'node:fs';\nimport { fileURLToPath } from 'node:url';\n\nconst root = fileURLToPath(new URL('../', import.meta.url));\nrmSync(new URL('../dist/', import.meta.url), { recursive: true, force: true });\nexecFileSync('pnpm', ['exec', 'tsc', '-p', 'tsconfig.build.json'], { cwd: root, stdio: 'inherit' });\ncopyFileSync(\n  new URL('../data/README.md', import.meta.url),\n  new URL('../dist/data/README.md', import.meta.url),\n);\ncpSync(\n  new URL('../data/candidates/', import.meta.url),\n  new URL('../dist/data/candidates/', import.meta.url),\n  { recursive: true },\n);\n",
+  "optimized_source": "import { execFileSync } from 'node:child_process';\nimport { copyFileSync, cpSync, rmSync } from 'node:fs';\nimport { fileURLToPath } from 'node:url';\n\nconst root = fileURLToPath(new URL('../', import.meta.url));\nexecFileSync('bun', ['--check', '--tsconfig-override=tsconfig.build.json'], { cwd: root, stdio: 'inherit' });\nrmSync(new URL('../dist/', import.meta.url), { recursive: true, force: true });\nexecFileSync('bun', ['--bun', fileURLToPath(new URL('../node_modules/typescript/bin/tsc', import.meta.url)), '--noCheck', '-p', 'tsconfig.build.json'], { cwd: root, stdio: 'inherit' });\ncopyFileSync(\n  new URL('../data/README.md', import.meta.url),\n  new URL('../dist/data/README.md', import.meta.url),\n);\ncpSync(\n  new URL('../data/candidates/', import.meta.url),\n  new URL('../dist/data/candidates/', import.meta.url),\n  { recursive: true },\n);\n",
+  "samples": [
+    {
+      "round": 1,
+      "case": "native_check",
+      "seconds": 5.2637,
+      "output_sha256": "e12cff9c1425dc48e74b02c623f8876ddddc148a0668b8915e897f17b03614b9",
+      "files": 172
+    },
+    {
+      "round": 1,
+      "case": "baseline",
+      "seconds": 4.6826,
+      "output_sha256": "e12cff9c1425dc48e74b02c623f8876ddddc148a0668b8915e897f17b03614b9",
+      "files": 172
+    },
+    {
+      "round": 2,
+      "case": "baseline",
+      "seconds": 4.6804,
+      "output_sha256": "e12cff9c1425dc48e74b02c623f8876ddddc148a0668b8915e897f17b03614b9",
+      "files": 172
+    },
+    {
+      "round": 2,
+      "case": "native_check",
+      "seconds": 3.3807,
+      "output_sha256": "e12cff9c1425dc48e74b02c623f8876ddddc148a0668b8915e897f17b03614b9",
+      "files": 172
+    },
+    {
+      "round": 3,
+      "case": "native_check",
+      "seconds": 4.3444,
+      "output_sha256": "e12cff9c1425dc48e74b02c623f8876ddddc148a0668b8915e897f17b03614b9",
+      "files": 172
+    },
+    {
+      "round": 3,
+      "case": "baseline",
+      "seconds": 4.1314,
+      "output_sha256": "e12cff9c1425dc48e74b02c623f8876ddddc148a0668b8915e897f17b03614b9",
+      "files": 172
+    }
+  ],
+  "median_seconds": {
+    "baseline": 4.6804,
+    "native_check": 4.3444
+  },
+  "base_commit": "cb58b4ad44ee1f25d29aeb45f3fffda3c4227ef6",
+  "pnpm": "12.6.0",
+  "platform": "Linux 6.18.55 x64",
+  "working_tree_modified": true,
+  "measurement_date": "2026-10-22",
+  "outputs_identical": true
+}

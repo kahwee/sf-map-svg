@@ -1,6 +1,6 @@
 # Validation and release runbook
 
-This is the maintained workflow for the library, its documentation, and GitHub Pages. Start with [CONTRIBUTING.md](../CONTRIBUTING.md) for architecture and [SOURCES.md](../SOURCES.md) for geographic constraints. Use Node 24+ and the pnpm 12 version declared in `package.json`.
+This is the maintained workflow for the library, its documentation, and GitHub Pages. Start with [CONTRIBUTING.md](../CONTRIBUTING.md) for architecture and [SOURCES.md](../SOURCES.md) for geographic constraints. Use Node 24+, the pnpm 12 version declared in `package.json`, and Bun from `.bun-version` for builds and development checks.
 
 ## Choose the scope
 
