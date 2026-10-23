@@ -32,10 +32,12 @@
   position: relative;
   display: grid;
   grid-template-columns: 34px minmax(0, 1fr) auto;
+  /* biome-ignore-start lint/correctness/noInvalidGridAreas: Valid three-column rectangles verified in Chromium; Biome 2.6.2 reports a false positive. */
   grid-template-areas:
     "letter name name"
     "letter share verdict"
     "bar bar bar";
+  /* biome-ignore-end lint/correctness/noInvalidGridAreas: Preserve the valid grid. */
   align-items: start;
   gap: 6px 12px;
   width: 100%;
