@@ -68,12 +68,12 @@ If publishing fails, inspect the cause before retrying the existing tag through 
 Report the commit and remote state, checks, package version, publishing workflow, registry state, Pages deployment and live browser result as applicable. Distinguish prepared, pushed, published and deployed. A green package check or successful push is not publication evidence. Later site-only commits may legitimately put `main` ahead of the latest release tag; compare a release tag to its reviewed release commit, not to every subsequent site update.
 
 
-The development package manager and Actions use pnpm 12.15.0. Biome 2.6.2 retains
+The development package manager and Actions use pnpm 12.15.0. Biome 2.6.3 retains
 the existing JavaScript/TypeScript/JSON checks; its newly supported Markdown and
 YAML formatters are disabled to preserve the established documentation and
 workflow formatting. Historical benchmark tool versions remain unchanged.
 
 The measures card retains its browser-validated three-column grid. A declaration-
-scoped suppression handles Biome 2.6.2's false positive for repeated grid area
+scoped suppression handles Biome's false positive for repeated grid area
 names; other grid declarations remain checked. Revisit this workaround when the
 upstream rule accepts the valid layout.

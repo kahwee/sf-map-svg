@@ -1274,6 +1274,8 @@ display geometry, and no precinct polygons or raw workbook data are shipped.
 
 ## Unreleased
 
+- Update Biome to 2.6.3 and the aligned Storybook packages to 10.6.4.
+
 - Gate library output replacement on Bun source checking, then emit JavaScript, declarations, and JSON with TypeScript `--noCheck`; install pinned Bun in every build job.
 - Align Storybook on 10.6.3 and Vitest/browser/coverage tooling on 5.0.5, with compatible dependency updates for current security fixes.
 - Record identical-output library build benchmarks alongside the earlier build-reuse measurements.
