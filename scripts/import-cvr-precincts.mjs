@@ -52,6 +52,7 @@ const candidates = new Map(read('CandidateManifest.json').List.map((c) => [c.Id,
 const portions = new Map(read('PrecinctPortionManifest.json').List.map((p) => [p.Id, p]));
 const election = read('ElectionEventManifest.json').List[0];
 const contestById = new Map(contests.map((c) => [c.Id, c]));
+const contestIndex = new Map(contests.map((c, i) => [c.Id, i]));
 
 // Option order per contest is the manifest order, so each precinct stores a plain count array.
 const optionsByContest = new Map();
@@ -78,30 +79,27 @@ for (const file of fs.readdirSync(dir).filter((f) => f.startsWith('CvrExport_'))
     turnout[id] = (turnout[id] ?? 0) + 1;
     for (const card of record.Cards)
       for (const contest of card.Contests) {
-        const manifest = contestById.get(contest.Id);
+        const index = contestIndex.get(contest.Id);
         const options = optionsByContest.get(contest.Id) ?? [];
         precincts[id] ??= {};
-        precincts[id][manifest.Description] ??= {
-          votes: options.map(() => 0),
-          under: 0,
-          over: 0,
-        };
-        const cell = precincts[id][manifest.Description];
-        cell.under += contest.Undervotes;
-        cell.over += contest.Overvotes;
+        // Compact cell: [undervotes, overvotes, ...votes in the contest's option order].
+        precincts[id][index] ??= [0, 0, ...options.map(() => 0)];
+        const cell = precincts[id][index];
+        cell[0] += contest.Undervotes;
+        cell[1] += contest.Overvotes;
         const marks = contest.Marks.filter((m) => m.IsVote);
-        if (manifest.NumOfRanks > 0) {
+        if (contestById.get(contest.Id).NumOfRanks > 0) {
           // Ranked choice: only a single mark at rank 1 is a first-round vote; an overvote at
           // rank 1 counts for no candidate and a skipped rank 1 is not promoted.
           const top = marks.filter((m) => m.Rank === 1);
-          if (top.length === 1) cell.votes[optionIndex.get(top[0].CandidateId)]++;
-        } else for (const mark of marks) cell.votes[optionIndex.get(mark.CandidateId)]++;
+          if (top.length === 1) cell[2 + optionIndex.get(top[0].CandidateId)]++;
+        } else for (const mark of marks) cell[2 + optionIndex.get(mark.CandidateId)]++;
       }
   }
 }
 
 const result = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   electionDate: '2026-11-03',
   source: {
     name: 'San Francisco Department of Elections cast vote record export',
@@ -133,7 +131,7 @@ const result = {
   precincts: Object.fromEntries(
     Object.entries(precincts)
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(([id, byContest]) => [id, { cards: turnout[id], contests: byContest }]),
+      .map(([id, byContest]) => [id, { cards: turnout[id], c: byContest }]),
   ),
 };
 fs.writeFileSync(out, `${JSON.stringify(result)}\n`);

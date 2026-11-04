@@ -173,9 +173,15 @@
     min-height: 340px;
   }
   .contest-summary {
-    font-size: 0.9rem;
-    line-height: 1.45;
-    margin-bottom: 12px;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+  #contests h2 {
+    margin-bottom: 8px;
+  }
+  .vote-list {
+    margin: 8px 0;
   }
 }
 .batch-history {

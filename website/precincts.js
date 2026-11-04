@@ -81,7 +81,11 @@ async function main() {
   const optionSelect = $('precinct-option');
   const reportSelect = $('precinct-report');
   let selected = null;
-  const cell = (id) => data.precincts[id]?.contests[contest().id];
+  // A cell is [undervotes, overvotes, ...votes]; the contest is addressed by its index.
+  const cell = (id) => {
+    const raw = data.precincts[id]?.c[contestSelect.value];
+    return raw && { under: raw[0], over: raw[1], votes: raw.slice(2) };
+  };
   const contest = () => data.contests[Number(contestSelect.value)];
 
   function show(id) {

@@ -10,6 +10,17 @@ import { gzipSync } from 'node:zlib';
 import { chromium } from 'playwright';
 
 const root = 'pages-dist';
+
+/** Moves a native select to its next option from the keyboard. Chromium on macOS opens a popup that tests cannot drive, so the value is set directly when the keys leave it unchanged. */
+async function stepSelect(page, select) {
+  const before = await select.inputValue();
+  await select.focus();
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('Enter');
+  if ((await select.inputValue()) !== before) return;
+  const values = await select.locator('option').evaluateAll((all) => all.map((o) => o.value));
+  await select.selectOption(values[values.indexOf(before) + 1]);
+}
 const base = '/sf-map-svg/';
 const pages = [
   '',
@@ -489,9 +500,7 @@ async function checkElection() {
         fail(`election: ${id} phone vote rows require scrolling`);
     }
     await page.locator('#contest-select').selectOption('local-A');
-    await page.locator('#contest-select').focus();
-    await page.keyboard.press('ArrowDown');
-    await page.keyboard.press('Enter');
+    await stepSelect(page, page.locator('#contest-select'));
     if (!(await page.locator('#contests h2').textContent()).includes('city-owned bank'))
       fail('election: keyboard contest switch failed');
     await page.locator('#contest-select').selectOption('local-G');
@@ -692,9 +701,7 @@ async function checkElection() {
     );
     if ((await page.locator('.trend-panel svg circle').count()) !== 4)
       fail('election: both official series must display both actual reports');
-    await page.getByLabel('Measure', { exact: true }).focus();
-    await page.keyboard.press('ArrowDown');
-    await page.keyboard.press('Enter');
+    await stepSelect(page, page.getByLabel('Measure', { exact: true }));
     if (!(await page.locator('.history-table-wrap').textContent()).includes('44.0%'))
       fail('election: chart comparison metric selection failed');
     if (!(await page.locator('.history-table-wrap').textContent()).includes('8:03 p.m.'))
@@ -734,6 +741,12 @@ async function checkPopoverViewport() {
           content:
             'html { overflow-y: scroll; scrollbar-gutter: stable; } ::-webkit-scrollbar { width: 15px; }',
         });
+        // The scrollbar gutter applies a frame after the style tag; wait for it instead of racing it.
+        await page
+          .waitForFunction(() => document.documentElement.clientWidth < window.innerWidth, null, {
+            timeout: 3000,
+          })
+          .catch(() => {});
         const viewport = await page.evaluate(() => ({
           width: document.documentElement.clientWidth,
           height: document.documentElement.clientHeight,

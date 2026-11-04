@@ -7,10 +7,7 @@ const json = async (path) => JSON.parse(await readFile(new URL(path, import.meta
 const index = await json('../data/elections/precincts-index.json');
 const aggregate = await json(`../data/elections/${index.latest}`);
 const boundaries = await json('../data/precincts-2022.json');
-const summary = await readFile(
-  new URL('./fixtures/sfelections/summary-report-4.xml', import.meta.url),
-  'utf8',
-);
+const summary = await json('./fixtures/sfelections/summary-report-4.json');
 
 test('the index lists every snapshot in time order and latest is the newest', async () => {
   const stamps = index.snapshots.map((s) => s.reportStamp);
@@ -43,28 +40,17 @@ test('every aggregated precinct has a 2022 boundary and no ballot-level fields',
 });
 
 test('precinct sums reconcile with the official summary report for every contest', () => {
-  const decode = (name) => name.replaceAll('&quot;', '"').trim().toUpperCase();
-  const blocks = summary.split('<ContestIdGroup contestId="').slice(1);
-  assert.equal(blocks.length, aggregate.contests.length);
-  for (const block of blocks) {
-    const name = block.slice(0, block.indexOf('"')).trim();
-    const contest = aggregate.contests.find((c) => c.id.trim() === name);
-    assert.ok(contest, name);
-    const official = new Map(
-      [
-        ...block.matchAll(
-          /candidateNameTextBox4="([^"]*)"[^>]*>(?:(?!<candidateNameTextBox4).)*?vot8="(\d+)"/gs,
-        ),
-      ].map((m) => [decode(m[1]), Number(m[2])]),
-    );
+  const names = Object.keys(summary.contests);
+  assert.equal(names.length, aggregate.contests.length);
+  for (const [index, contest] of aggregate.contests.entries()) {
+    const official = summary.contests[contest.id.trim()];
+    assert.ok(official, contest.id);
     contest.options.forEach((option, i) => {
       const total = Object.values(aggregate.precincts).reduce(
-        (n, p) => n + (p.contests[contest.id]?.votes[i] ?? 0),
+        (n, p) => n + (p.c[index]?.[2 + i] ?? 0),
         0,
       );
-      if (official.has(option.toUpperCase()))
-        assert.equal(total, official.get(option.toUpperCase()), `${name} / ${option}`);
-      else assert.equal(total, 0, `${name} / ${option} is absent from the summary`);
+      assert.equal(total, official[option.toUpperCase()] ?? 0, `${contest.id} / ${option}`);
     });
   }
 });
