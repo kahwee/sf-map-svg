@@ -4,6 +4,10 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 5.1.2 — 2026-11-05
+
+- Separate marker selection, activation and focus recovery into an internal controller; separate label candidate caching, screen-space collision layout and metrics invalidation into a label coordinator. Preserve the public API and shared animation frame scheduling.
+
 ## 5.1.1 — 2026-11-05
 
 - Reserve precinct report controls and status space during loading to prevent phone layout shifts when multiple reports are available.

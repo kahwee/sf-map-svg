@@ -39,9 +39,9 @@ const pages = [
 ];
 // Initial JavaScript and CSS, gzip KB. Transit embeds the library's animation with its geometry.
 const budgets = {
-  index: 45.9, // Shared label preparation; static font estimation stays out (45.7 KB measured).
-  layers: 49.2, // District controller boundary: 49.01 KB gzip measured.
-  playground: 54.8, // District controller boundary: 54.55 KB gzip measured.
+  index: 46.7, // Marker/label ownership boundaries: 46.49 KiB gzip measured.
+  layers: 50, // Marker/label ownership boundaries: 49.74 KiB gzip measured.
+  playground: 55.5, // Marker/label ownership boundaries: 55.28 KiB gzip measured.
   // TanStack Charts 1.2.1 adds typed scales, axes and accessible SVG (37.78 KB measured).
   election: 40,
   examples: 12,
