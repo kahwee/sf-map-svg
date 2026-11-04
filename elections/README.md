@@ -65,3 +65,15 @@ The public deployed feed is the last-good history store. Every update must load 
 Recovery checks the public GitHub Actions metadata for the most recent completed Pages run with a successful `deploy` job, including failed overall runs whose deploy succeeded. It requires the public JSON's build SHA and check/generation window to match that deployment (from its build-job start through deploy completion, not the possibly earlier queue time). During a new workflow run, the metadata must also include the preceding workflow run number; metadata lag, incomplete jobs, API failure/rate limits, or an older CDN snapshot abort publication. API reads are public and add no credentials or permission grants.
 
 This protects routine serialized refreshes from silently rolling history back to an older CDN response. The Pages snapshot is **not an immutable archive or independent backup**: durability still depends on retained public data and trustworthy GitHub deployment metadata. Manual rollbacks, deletion/corruption, or another publisher can require recovery outside this feed. The guard favors leaving the current deployment intact over publishing when freshness cannot be proved.
+
+### Separately attributed newsroom updates
+
+Local A–J may carry optional `mediaUpdate: {observedAt, sourceUpdatedAt, sourceName,
+sourceUrl, options: [{id,label,votes}], projection?}`. The optional projection is
+`{outcome,sourceName,sourceUrl,publishedAt}`. These are KQED preliminary tallies;
+G separately records the Chronicle's rejection projection. Neither timestamp is an
+official source report time. The UI labels the projection “Not certified.” Official
+`options`, `call`, root status and `resultHistory` remain unchanged. Media totals
+never enter official batch trends or district coloring. `observedAt` records the
+verification observation, not every automated fetch; these news updates are not
+an independently polled feed. Newer newsroom metadata survives snapshot recovery.

@@ -1,4 +1,5 @@
 import { validateResultHistory } from './election-history.js';
+import { latestMediaUpdate, validateMediaUpdate } from './election-media.js';
 export const ELECTION_DATE = '2026-11-03';
 export function validateSnapshot(data) {
   if (data?.schemaVersion !== 1 || data.electionDate !== ELECTION_DATE)
@@ -53,6 +54,7 @@ export function validateSnapshot(data) {
         throw new Error('Invalid measure explanation provenance');
     }
     validateResultHistory(contest);
+    validateMediaUpdate(contest);
     ids.add(contest.id);
     const optionIds = new Set();
     for (const option of contest.options) {
@@ -121,7 +123,15 @@ export function chooseSnapshotSeed(seed, deployed) {
   // Pending snapshots carry no results to preserve. New verified ballot corrections win.
   // Preserve actual last-good results wholesale until a verified results adapter can
   // reconcile changed roster IDs; never discard real counts just to refresh metadata.
-  if (deployed.status === 'pending') return seed;
+  if (deployed.status === 'pending') {
+    const pending = structuredClone(seed);
+    for (const contest of pending.contests) {
+      const previous = deployed.contests.find((c) => c.id === contest.id);
+      const media = latestMediaUpdate(contest.mediaUpdate, previous?.mediaUpdate);
+      if (media) contest.mediaUpdate = structuredClone(media);
+    }
+    return validateSnapshot(pending);
+  }
   const metadata = new Map(seed.contests.map((c) => [c.id, c]));
   const merged = structuredClone(deployed);
   for (const contest of merged.contests) {
@@ -137,6 +147,8 @@ export function chooseSnapshotSeed(seed, deployed) {
       )
     )
       continue;
+    const media = latestMediaUpdate(current.mediaUpdate, contest.mediaUpdate);
+    if (media) contest.mediaUpdate = structuredClone(media);
     for (const key of ['shortTitle', 'summary', 'summarySource']) {
       if (current[key] !== undefined) contest[key] = structuredClone(current[key]);
     }

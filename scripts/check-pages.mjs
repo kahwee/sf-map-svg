@@ -488,6 +488,16 @@ async function checkElection() {
     await page.locator('#contest-select').selectOption('local-G');
     if (!(await page.locator('.contest-summary').textContent()).includes('Monday'))
       fail('election: summary did not change');
+    if (!(await page.locator('[data-media-projection]').textContent()).includes('Not certified'))
+      fail('election: media projection lacks certification distinction');
+    if (
+      !(await page.locator('[data-media-tally]').textContent()).includes('KQED preliminary tally')
+    )
+      fail('election: media tally lacks attribution');
+    if (!(await page.locator('.vote-list').textContent()).includes('91,246'))
+      fail('election: verified media tally missing');
+    if ((await page.locator('.trend-chart circle').count()) !== 0)
+      fail('election: media tally leaked into official trend');
     await page.locator('#ballot-search').fill('zzzz-no-match');
     if (!(await page.locator('#contests').textContent()).includes('No matching'))
       fail('election: no-match state failed');

@@ -58,7 +58,25 @@
         "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
         "pages": "64"
       },
-      "resultHistory": []
+      "resultHistory": [],
+      "mediaUpdate": {
+        "observedAt": "2026-11-04T05:12:50Z",
+        "sourceUpdatedAt": "2026-11-04T04:55:00Z",
+        "sourceName": "KQED",
+        "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+        "options": [
+          {
+            "id": "0",
+            "label": "Yes",
+            "votes": 105243
+          },
+          {
+            "id": "1",
+            "label": "No",
+            "votes": 39873
+          }
+        ]
+      }
     },
     {
       "id": "local-B",
@@ -86,7 +104,25 @@
         "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
         "pages": "70–71"
       },
-      "resultHistory": []
+      "resultHistory": [],
+      "mediaUpdate": {
+        "observedAt": "2026-11-04T05:12:50Z",
+        "sourceUpdatedAt": "2026-11-04T04:55:00Z",
+        "sourceName": "KQED",
+        "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+        "options": [
+          {
+            "id": "0",
+            "label": "Yes",
+            "votes": 69434
+          },
+          {
+            "id": "1",
+            "label": "No",
+            "votes": 73858
+          }
+        ]
+      }
     },
     {
       "id": "local-C",
@@ -114,7 +150,25 @@
         "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
         "pages": "78–79"
       },
-      "resultHistory": []
+      "resultHistory": [],
+      "mediaUpdate": {
+        "observedAt": "2026-11-04T05:12:50Z",
+        "sourceUpdatedAt": "2026-11-04T04:55:00Z",
+        "sourceName": "KQED",
+        "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+        "options": [
+          {
+            "id": "0",
+            "label": "Yes",
+            "votes": 115901
+          },
+          {
+            "id": "1",
+            "label": "No",
+            "votes": 28976
+          }
+        ]
+      }
     },
     {
       "id": "local-D",
@@ -142,7 +196,25 @@
         "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
         "pages": "84"
       },
-      "resultHistory": []
+      "resultHistory": [],
+      "mediaUpdate": {
+        "observedAt": "2026-11-04T05:12:50Z",
+        "sourceUpdatedAt": "2026-11-04T04:55:00Z",
+        "sourceName": "KQED",
+        "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+        "options": [
+          {
+            "id": "0",
+            "label": "Yes",
+            "votes": 87684
+          },
+          {
+            "id": "1",
+            "label": "No",
+            "votes": 58951
+          }
+        ]
+      }
     },
     {
       "id": "local-E",
@@ -170,7 +242,25 @@
         "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
         "pages": "94–95"
       },
-      "resultHistory": []
+      "resultHistory": [],
+      "mediaUpdate": {
+        "observedAt": "2026-11-04T05:12:50Z",
+        "sourceUpdatedAt": "2026-11-04T04:56:00Z",
+        "sourceName": "KQED",
+        "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+        "options": [
+          {
+            "id": "0",
+            "label": "Yes",
+            "votes": 99749
+          },
+          {
+            "id": "1",
+            "label": "No",
+            "votes": 45553
+          }
+        ]
+      }
     },
     {
       "id": "local-F",
@@ -198,7 +288,25 @@
         "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
         "pages": "100–101"
       },
-      "resultHistory": []
+      "resultHistory": [],
+      "mediaUpdate": {
+        "observedAt": "2026-11-04T05:12:50Z",
+        "sourceUpdatedAt": "2026-11-04T04:55:00Z",
+        "sourceName": "KQED",
+        "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+        "options": [
+          {
+            "id": "0",
+            "label": "Yes",
+            "votes": 94121
+          },
+          {
+            "id": "1",
+            "label": "No",
+            "votes": 51543
+          }
+        ]
+      }
     },
     {
       "id": "local-G",
@@ -226,7 +334,31 @@
         "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
         "pages": "108"
       },
-      "resultHistory": []
+      "resultHistory": [],
+      "mediaUpdate": {
+        "observedAt": "2026-11-04T05:12:50Z",
+        "sourceUpdatedAt": "2026-11-04T04:55:00Z",
+        "sourceName": "KQED",
+        "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco/proposition-g",
+        "options": [
+          {
+            "id": "0",
+            "label": "Yes",
+            "votes": 54391
+          },
+          {
+            "id": "1",
+            "label": "No",
+            "votes": 91246
+          }
+        ],
+        "projection": {
+          "outcome": "rejected",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/election/article/california-polls-prop-40-governor-live-updates-22499351.php#a-victory-for-sunset-dunes-park-as-upper-great-highway-ballot-measure-is-voted-down-045404",
+          "publishedAt": "2026-11-04T04:54:04Z"
+        }
+      }
     },
     {
       "id": "local-H",
@@ -254,7 +386,25 @@
         "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
         "pages": "124–125"
       },
-      "resultHistory": []
+      "resultHistory": [],
+      "mediaUpdate": {
+        "observedAt": "2026-11-04T05:12:50Z",
+        "sourceUpdatedAt": "2026-11-04T04:55:00Z",
+        "sourceName": "KQED",
+        "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+        "options": [
+          {
+            "id": "0",
+            "label": "Yes",
+            "votes": 105363
+          },
+          {
+            "id": "1",
+            "label": "No",
+            "votes": 40360
+          }
+        ]
+      }
     },
     {
       "id": "local-I",
@@ -282,7 +432,25 @@
         "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
         "pages": "132–133"
       },
-      "resultHistory": []
+      "resultHistory": [],
+      "mediaUpdate": {
+        "observedAt": "2026-11-04T05:12:50Z",
+        "sourceUpdatedAt": "2026-11-04T04:55:00Z",
+        "sourceName": "KQED",
+        "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+        "options": [
+          {
+            "id": "0",
+            "label": "Yes",
+            "votes": 62215
+          },
+          {
+            "id": "1",
+            "label": "No",
+            "votes": 80937
+          }
+        ]
+      }
     },
     {
       "id": "local-J",
@@ -310,7 +478,25 @@
         "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
         "pages": "144"
       },
-      "resultHistory": []
+      "resultHistory": [],
+      "mediaUpdate": {
+        "observedAt": "2026-11-04T05:12:50Z",
+        "sourceUpdatedAt": "2026-11-04T04:55:00Z",
+        "sourceName": "KQED",
+        "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+        "options": [
+          {
+            "id": "0",
+            "label": "Yes",
+            "votes": 113935
+          },
+          {
+            "id": "1",
+            "label": "No",
+            "votes": 29241
+          }
+        ]
+      }
     },
     {
       "id": "RTM",

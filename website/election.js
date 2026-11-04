@@ -30,7 +30,7 @@ for (let id = 1; id <= 11; id++) $('region').add(new Option(`District ${id}`, St
 function renderStatus() {
   const state = freshness(snapshot);
   $('status-title').textContent =
-    snapshot.status === 'pending' ? 'Awaiting results' : 'Unofficial · uncalled';
+    snapshot.status === 'pending' ? 'Awaiting official results' : 'Unofficial · uncalled';
   $('check-status').textContent =
     `${state === 'stale' ? 'Stale check · ' : ''}${snapshot.checkedAt ? `Checked ${time(snapshot.checkedAt)}` : 'Not checked yet'} · ${snapshot.checkStatus === 'not-checked' ? 'Source check pending' : snapshot.checkStatus === 'partial' || snapshot.checkStatus === 'error' ? 'Local source unavailable' : 'Official sources'}`;
   $('report-time').textContent = `Local SF report: ${time(snapshot.sourceReportTimestamp)}.`;
@@ -58,7 +58,7 @@ function renderContest(c) {
   article.dataset.contestId = c.id;
   const meta = Object.assign(document.createElement('p'), {
     className: 'contest-meta',
-    textContent: `${c.kind === 'measure' ? (c.id === 'RTM' ? 'Regional measure' : `Proposition ${c.id.split('-').at(-1)}`) : 'Ballot contest'} · ${scopeName(c)} · Uncalled`,
+    textContent: `${c.kind === 'measure' ? (c.id === 'RTM' ? 'Regional measure' : `Proposition ${c.id.split('-').at(-1)}`) : 'Ballot contest'} · ${scopeName(c)} · Official result uncalled`,
   });
   const title = Object.assign(document.createElement('h2'), {
     textContent: c.shortTitle || c.title,
@@ -71,9 +71,26 @@ function renderContest(c) {
         textContent: c.summary,
       }),
     );
+  const reported = c.options.some((o) => o.votes !== null);
+  const media = c.mediaUpdate;
+  if (media?.projection) {
+    const update = document.createElement('p');
+    update.className = 'result-note';
+    update.dataset.mediaProjection = 'true';
+    const projection = Object.assign(document.createElement('a'), {
+      href: media.projection.sourceUrl,
+      textContent: 'Chronicle projects: rejected. Not certified.',
+    });
+    update.append(projection);
+    article.append(update);
+  }
   const list = document.createElement('ul');
   list.className = 'vote-list';
-  for (const option of c.options) {
+  list.setAttribute(
+    'aria-label',
+    !reported && media ? 'KQED preliminary vote totals' : 'Official vote totals',
+  );
+  for (const option of !reported && media ? media.options : c.options) {
     const row = document.createElement('li');
     const name = Object.assign(document.createElement('span'), { textContent: option.label });
     const votes = Object.assign(document.createElement('span'), {
@@ -91,10 +108,24 @@ function renderContest(c) {
       }),
     );
   article.append(list);
-  const reported = c.options.some((o) => o.votes !== null);
+  if (!reported && media) {
+    const attribution = document.createElement('p');
+    attribution.className = 'result-note';
+    attribution.dataset.mediaTally = 'true';
+    attribution.append(
+      Object.assign(document.createElement('a'), {
+        href: media.sourceUrl,
+        textContent: `${media.sourceName} preliminary tally`,
+      }),
+      ` · Updated ${time(media.sourceUpdatedAt)}. Media update time, not an official report timestamp.`,
+    );
+    article.append(attribution);
+  }
   const note = c.resultStatus
     ? `SF county votes only · ${reported ? 'Unofficial' : 'Awaiting votes; source has a zero/pre-election report'}.`
-    : 'Local results unavailable. Pending means unknown, not zero.';
+    : media
+      ? 'Official local feed unavailable. Newsroom totals shown above.'
+      : 'Local results unavailable. Pending means unknown, not zero.';
   article.append(
     Object.assign(document.createElement('p'), {
       className: 'result-note',

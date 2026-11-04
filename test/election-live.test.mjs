@@ -126,6 +126,7 @@ test('new descriptions merge into unofficial snapshots without changing counts o
   assert.deepEqual(merged.contests[0].options, previous.contests[0].options);
   assert.equal(merged.sourceReportTimestamp, previous.sourceReportTimestamp);
   assert.equal(previous.contests[0].summary, undefined);
+  delete previous.contests[0].mediaUpdate;
   previous.contests[0].options[0].id = 'different-option';
   assert.equal(chooseSnapshotSeed(seed, previous).contests[0].summary, undefined);
 });
@@ -141,4 +142,53 @@ test('reviewed summaries retain material conditions without endorsements', () =>
   assert.match(summary('state-40'), /administering the tax/);
   assert.match(summary('state-43'), /increases and extensions/);
   assert.match(summary('state-45'), /choose new/);
+});
+
+test('news tallies stay separate from official results and history', () => {
+  const updates = seed.contests.filter((c) => c.mediaUpdate);
+  assert.equal(updates.length, 10);
+  assert.equal(seed.status, 'pending');
+  for (const c of updates) {
+    assert.equal(c.call, 'uncalled');
+    assert.ok(c.options.every((o) => o.votes === null));
+    assert.deepEqual(c.resultHistory, []);
+  }
+  const g = updates.find((c) => c.id === 'local-G');
+  assert.deepEqual(
+    g.mediaUpdate.options.map((o) => o.votes),
+    [54391, 91246],
+  );
+  assert.equal(g.mediaUpdate.projection.outcome, 'rejected');
+  assert.equal(updates.filter((c) => c.mediaUpdate.projection).length, 1);
+  for (const mutate of [
+    (c) => {
+      c.mediaUpdate.sourceUrl = 'https://unverified.example/';
+    },
+    (c) => {
+      c.mediaUpdate.options[0].votes = -1;
+    },
+    (c) => {
+      c.mediaUpdate.options[0].id = 'wrong';
+    },
+    (c) => {
+      c.mediaUpdate.observedAt = '2026-11-04T03:00:00Z';
+    },
+    (c) => {
+      c.mediaUpdate.projection.outcome = 'certified';
+    },
+  ]) {
+    const bad = structuredClone(seed);
+    mutate(bad.contests.find((c) => c.id === 'local-G'));
+    assert.throws(() => validateSnapshot(bad), /media/);
+  }
+});
+test('recovery preserves newer newsroom updates without creating official results', () => {
+  const oldSeed = structuredClone(seed);
+  delete oldSeed.contests.find((c) => c.id === 'local-G').mediaUpdate;
+  const recovered = chooseSnapshotSeed(oldSeed, seed);
+  assert.deepEqual(
+    recovered.contests.find((c) => c.id === 'local-G').mediaUpdate,
+    seed.contests.find((c) => c.id === 'local-G').mediaUpdate,
+  );
+  assert.equal(recovered.status, 'pending');
 });
