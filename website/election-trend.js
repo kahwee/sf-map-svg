@@ -1,4 +1,6 @@
 import { renderElectionChart } from './election-chart.js';
+import { attachPointPopover } from './election-chart-interaction.js';
+import { mediaReportTime } from './election-media.js';
 
 const make = (tag, text, className) =>
   Object.assign(document.createElement(tag), {
@@ -63,7 +65,7 @@ export function createTrend(contest, state = {}) {
   const points = media
     ? contest.mediaHistory.map((p) => ({
         ...p,
-        sourceReportTime: `${p.sourceName} · ${observedTime(p.sourceUpdatedAt)}`,
+        sourceReportTime: `${p.sourceName} · ${mediaReportTime(p, observedTime)}`,
         resultSourceUrl: p.sourceUrl,
       }))
     : contest.resultHistory || [];
@@ -181,7 +183,12 @@ export function createTrend(contest, state = {}) {
       row.append(link, document.createTextNode(` · Observed ${observedTime(p.observedAt)}`));
       source.append(row);
     });
-    panel.replaceChildren(headline, svg, tableHost);
+    const popover = attachPointPopover(svg, series, points, {
+      share,
+      media,
+      scope: media ? contest.mediaUpdate?.resultGeography?.name || 'SF citywide' : 'SF county only',
+    });
+    panel.replaceChildren(headline, svg, tableHost, popover);
     evidence.replaceChildren(source, note);
   }
   optionSelect.addEventListener('change', draw);

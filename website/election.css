@@ -1,7 +1,3 @@
-.election-region h2 {
-  font-size: 1rem;
-  margin: 0 0 4px;
-}
 .election-shell {
   padding-block: 24px 40px;
 }
@@ -139,16 +135,6 @@
   font-size: 0.85rem;
   margin: 0 0 8px;
 }
-.election-region .example-map {
-  max-width: 300px;
-  margin: auto;
-}
-.election-region .small {
-  font-size: 0.75rem;
-  color: var(--muted);
-  line-height: 1.45;
-  margin: 8px 0;
-}
 .election-sources {
   border-top: 1px solid var(--rule);
   margin-top: 24px;
@@ -190,13 +176,6 @@
     font-size: 0.9rem;
     line-height: 1.45;
     margin-bottom: 12px;
-  }
-  .election-region {
-    border-top: 1px solid var(--rule);
-    padding-top: 16px;
-  }
-  .election-region .example-map {
-    max-width: 240px;
   }
 }
 .batch-history {
@@ -339,18 +318,6 @@
   max-width: 90ch;
   margin: 0;
 }
-.election-region {
-  display: grid;
-  grid-template-columns: 150px minmax(0, 1fr) minmax(220px, 0.85fr);
-  align-items: center;
-  gap: 24px;
-  margin-top: 24px;
-  border-top: 1px solid var(--rule);
-  padding-top: 16px;
-}
-.election-region .example-map {
-  max-width: 150px;
-}
 @media (max-width: 850px) {
   .contest-data-grid {
     grid-template-columns: minmax(0, 1fr);
@@ -364,13 +331,6 @@
   }
   .contest-totals .vote-count {
     font-size: 1.2rem;
-  }
-  .election-region {
-    grid-template-columns: 100px minmax(0, 1fr);
-    gap: 12px;
-  }
-  .election-region > div:last-child {
-    grid-column: 1 / -1;
   }
 }
 
@@ -434,4 +394,40 @@
 }
 .trend-selected-source p {
   margin: 0.3rem 0;
+}
+.chart-point-target {
+  cursor: pointer;
+  pointer-events: all;
+}
+.chart-point-target:focus-visible {
+  outline: none;
+  stroke: var(--ink);
+  stroke-width: 2px;
+  stroke-dasharray: 2 2;
+}
+.chart-point-popover {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  width: min(290px, calc(100vw - 32px));
+  max-height: calc(100dvh - 16px);
+  overflow: auto;
+  padding: 14px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 6px 24px #0003;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+.chart-point-popover p {
+  margin: 6px 0;
+}
+.chart-point-popover button {
+  margin-top: 8px;
+}
+
+#district-filter[hidden] {
+  display: none;
 }

@@ -91,6 +91,8 @@ Election code responsibilities:
 - `website/election-view.js` builds contest presentation, labels, tallies and source text.
 - `website/election-trend.js` owns observation controls and the exact-value table;
   `website/election-chart.js` renders the TanStack SVG without owning feed state.
+  `website/election-chart-interaction.js` adds keyboard/touch point popovers with
+  exact observation provenance and native dismissal.
 - `website/election-model.js`, `election-history.js` and `election-media.js` validate
   and reconcile snapshots, official history and newsroom observations separately.
 - `scripts/update-election.mjs` orchestrates checks; `scripts/lib/sos-county-results.mjs`

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
+import { latestMediaUpdate, mediaReportTime } from '../website/election-media.js';
 import {
   chooseSnapshotSeed,
   freshness,
@@ -220,20 +221,21 @@ test('RTM newsroom totals retain full five-county scope and observed projection 
   const c = seed.contests.find((c) => c.id === 'RTM');
   assert.deepEqual(
     c.mediaUpdate.options.map((o) => o.votes),
-    [690335, 431242],
+    [702848, 439585],
   );
   assert.equal(c.mediaUpdate.resultGeography.scope, 'full-contest');
   assert.equal(c.mediaUpdate.resultGeography.counties.length, 5);
   assert.equal(c.mediaUpdate.projection.publishedAt, undefined);
   assert.equal(c.mediaUpdate.projection.observedAt, '2026-11-04T06:39:42Z');
-  assert.equal(c.mediaHistory.length, 3);
+  assert.equal(c.mediaHistory.length, 4);
   assert.equal(c.mediaUpdate.sourceName, 'KQED');
   assert.equal(
     c.mediaUpdate.sourceUrl,
     'https://www.kqed.org/elections/results/california/regional-measure-rtm',
   );
-  assert.equal(c.mediaUpdate.sourceUpdatedAt, '2026-11-04T07:27:00Z');
-  assert.equal(c.mediaUpdate.observedAt, '2026-11-04T08:10:04Z');
+  assert.equal(c.mediaUpdate.sourceUpdatedAt, '2026-11-04T08:59:00Z');
+  assert.equal(c.mediaHistory[2].sourceUpdatedAt, '2026-11-04T07:27:00Z');
+  assert.equal(c.mediaUpdate.observedAt, '2026-11-04T09:23:52Z');
   assert.ok(
     c.mediaHistory.slice(0, 2).every((point) => point.sourceName === 'San Francisco Chronicle'),
   );
@@ -325,7 +327,7 @@ test('11:53 p.m. KQED observation appends exact local counts without changing RT
 test('KQED RTM requires the dedicated regional source and complete five-county scope', () => {
   const fixture = structuredClone(seed);
   const contest = fixture.contests.find((c) => c.id === 'RTM');
-  const next = structuredClone(contest.mediaUpdate);
+  const next = structuredClone(contest.mediaHistory[2]);
   Object.assign(next, {
     sourceName: 'KQED',
     sourceUrl: 'https://www.kqed.org/elections/results/california/regional-measure-rtm',
@@ -345,6 +347,55 @@ test('KQED RTM requires the dedicated regional source and complete five-county s
   ]) {
     const bad = structuredClone(fixture);
     bad.contests.find((c) => c.id === 'RTM').mediaUpdate.sourceUrl = url;
+    assert.throws(() => validateSnapshot(bad), /media/);
+  }
+});
+
+test('RTM permits only the documented future-dated publisher issue with unknown report time', () => {
+  const fixture = structuredClone(seed);
+  const contest = fixture.contests.find((c) => c.id === 'RTM');
+  const point = structuredClone(contest.mediaUpdate);
+  point.sourceUpdatedAt = null;
+  point.sourceTimestampIssue = {
+    type: 'future-dated',
+    rawText: 'Updated at 11:27 PM PT on November 4, 2026',
+  };
+  point.observedAt = '2026-11-04T09:05:03Z';
+  point.options[0].votes = 702848;
+  point.options[1].votes = 439585;
+  contest.mediaHistory = [...contest.mediaHistory.slice(0, 3), point];
+  contest.mediaUpdate = point;
+  validateSnapshot(fixture);
+  assert.match(
+    mediaReportTime(point, () => {
+      throw new Error('Unknown date must not be formatted');
+    }),
+    /Report time unverified/,
+  );
+  assert.equal(latestMediaUpdate(point, contest.mediaHistory[0]), point);
+  assert.equal(latestMediaUpdate(contest.mediaHistory[0], point), point);
+  for (const mutate of [
+    (p) => {
+      delete p.sourceTimestampIssue;
+    },
+    (p) => {
+      p.sourceTimestampIssue.rawText = 'corrected date';
+    },
+    (p) => {
+      p.sourceTimestampIssue.type = 'unknown';
+    },
+    (p) => {
+      p.sourceUpdatedAt = '2026-11-04T07:27:00Z';
+    },
+    (p) => {
+      p.sourceName = 'San Francisco Chronicle';
+    },
+    (p) => {
+      p.sourceUrl = 'https://www.kqed.org/elections/results/sanfrancisco';
+    },
+  ]) {
+    const bad = structuredClone(fixture);
+    mutate(bad.contests.find((c) => c.id === 'RTM').mediaUpdate);
     assert.throws(() => validateSnapshot(bad), /media/);
   }
 });

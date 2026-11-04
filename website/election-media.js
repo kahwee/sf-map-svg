@@ -5,13 +5,22 @@ export function validateMediaUpdate(contest) {
   const projection = media?.projection;
   const regional = contest.id === 'RTM';
   const projectionTime = regional ? projection?.observedAt : projection?.publishedAt;
+  const issue = media?.sourceTimestampIssue;
+  const unknownTime =
+    regional &&
+    media?.sourceName === 'KQED' &&
+    media.sourceUpdatedAt === null &&
+    issue?.type === 'future-dated' &&
+    issue.rawText === 'Updated at 11:27 PM PT on November 4, 2026' &&
+    Object.keys(issue).length === 2;
   const times = [
     media?.observedAt,
-    media?.sourceUpdatedAt,
+    ...(unknownTime ? [] : [media?.sourceUpdatedAt]),
     ...(projection ? [projectionTime] : []),
   ];
   if (
     (!/^local-[A-J]$/.test(contest.id) && !regional) ||
+    (issue !== undefined && !unknownTime) ||
     !(
       (!regional &&
         media?.sourceName === 'KQED' &&
@@ -77,9 +86,7 @@ export function validateMediaUpdate(contest) {
 export function latestMediaUpdate(current, previous) {
   if (!current) return previous;
   if (!previous) return current;
-  return Date.parse(current.sourceUpdatedAt) >= Date.parse(previous.sourceUpdatedAt)
-    ? current
-    : previous;
+  return Date.parse(current.observedAt) >= Date.parse(previous.observedAt) ? current : previous;
 }
 
 export function validateMediaHistory(contest) {
@@ -113,4 +120,11 @@ export function mergeMediaMetadata(current, previous) {
     (a, b) => Date.parse(a.observedAt) - Date.parse(b.observedAt),
   );
   return structuredClone({ mediaHistory, mediaUpdate: mediaHistory.at(-1) });
+}
+
+// A publisher's invalid date is retained verbatim, never inferred from fetch time.
+export function mediaReportTime(media, format) {
+  return media.sourceUpdatedAt === null
+    ? `Report time unverified · Source says “${media.sourceTimestampIssue.rawText}”`
+    : `Updated ${format(media.sourceUpdatedAt)}`;
 }

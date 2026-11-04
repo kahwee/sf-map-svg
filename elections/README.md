@@ -94,3 +94,18 @@ counties:["Alameda","Contra Costa","San Francisco","San Mateo","Santa Clara"]}`.
 The Chronicle passage projection uses `observedAt`, with no invented `publishedAt`.
 The tally's `sourceUpdatedAt` is the publisher page-update time. The official
 `options`, `call`, `resultHistory`, and neutral district map remain separate.
+
+The dedicated KQED RTM source also supports `sourceUpdatedAt: null` only alongside
+`sourceTimestampIssue: {type: "future-dated", rawText: "Updated at 11:27 PM PT on November 4, 2026"}`.
+This narrow exception preserves the publisher's literal invalid date; it does not
+repair or infer a report time. The UI displays “Report time unverified,” the raw
+issue and the actual `observedAt`. Newsroom history stays ordered by observation,
+including when publisher clocks disagree. Existing dated observations are retained
+unchanged. Consumer support does not itself publish a new observation.
+
+RTM source audit: at 2026-11-04T09:05:03Z the dedicated KQED page showed
+702,848 Yes / 439,585 No with the future-dated literal clock recorded above.
+That observation was held and never published. A normal visible-page reload at
+2026-11-04T09:23:52Z showed the same totals with “Updated at 12:59 AM PT on
+November 4, 2026” (08:59:00Z). Only this later verified observation is appended;
+its corrected source clock is not backdated onto the earlier observation.

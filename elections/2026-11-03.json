@@ -1290,20 +1290,20 @@
       },
       "resultHistory": [],
       "mediaUpdate": {
-        "observedAt": "2026-11-04T08:10:04Z",
-        "sourceUpdatedAt": "2026-11-04T07:27:00Z",
+        "observedAt": "2026-11-04T09:23:52Z",
+        "sourceUpdatedAt": "2026-11-04T08:59:00Z",
         "sourceName": "KQED",
         "sourceUrl": "https://www.kqed.org/elections/results/california/regional-measure-rtm",
         "options": [
           {
             "id": "0",
             "label": "Yes",
-            "votes": 690335
+            "votes": 702848
           },
           {
             "id": "1",
             "label": "No",
-            "votes": 431242
+            "votes": 439585
           }
         ],
         "resultGeography": {
@@ -1395,6 +1395,36 @@
               "id": "1",
               "label": "No",
               "votes": 431242
+            }
+          ],
+          "resultGeography": {
+            "type": "regional",
+            "scope": "full-contest",
+            "name": "Five-county RTM region",
+            "counties": ["Alameda", "Contra Costa", "San Francisco", "San Mateo", "Santa Clara"]
+          },
+          "projection": {
+            "outcome": "passed",
+            "sourceName": "San Francisco Chronicle",
+            "sourceUrl": "https://www.sfchronicle.com/election/article/live-results-bay-area-regional-transit-measure-22487820.php",
+            "observedAt": "2026-11-04T06:39:42Z"
+          }
+        },
+        {
+          "observedAt": "2026-11-04T09:23:52Z",
+          "sourceUpdatedAt": "2026-11-04T08:59:00Z",
+          "sourceName": "KQED",
+          "sourceUrl": "https://www.kqed.org/elections/results/california/regional-measure-rtm",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 702848
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 439585
             }
           ],
           "resultGeography": {

@@ -1,11 +1,9 @@
-import { createDistrictMap } from './district-map.js';
 import { freshness, validateSnapshot } from './election-model.js';
 import { createRefreshController, isOlderSnapshot } from './election-refresh.js';
 import { contestLabel, createContestView, formatTime } from './election-view.js';
 
 const $ = (id) => document.getElementById(id);
 let snapshot;
-let map;
 let feedFailed = false;
 const chartStates = new Map();
 let selectedId = new URLSearchParams(location.search).get('contest') || 'local-A';
@@ -41,6 +39,7 @@ function render() {
   const district = Number($('region').value);
   const query = $('ballot-search').value.toLocaleLowerCase().trim();
   const kind = $('contest-kind').value;
+  $('district-filter').hidden = kind !== 'candidate' && kind !== 'all';
   const contests = snapshot.contests.filter(
     (c) =>
       (kind === 'all' || c.kind === kind) &&
@@ -59,9 +58,6 @@ function render() {
   $('match-count').textContent =
     `${contests.length} ${contests.length === 1 ? 'contest' : 'contests'}`;
   renderContest(contests.find((c) => c.id === selectedId));
-  $('region-status').textContent =
-    `${district ? `District ${district}: ` : ''}district vote totals unavailable. Map shows boundaries only.`;
-  map?.select(district);
 }
 async function refresh() {
   $('refresh').disabled = true;
@@ -102,24 +98,8 @@ $('contest-select').addEventListener('change', () => {
   history.replaceState(null, '', url);
   renderContest(snapshot.contests.find((c) => c.id === selectedId));
 });
-createDistrictMap($('election-map'), {
-  year: 2022,
-  idPrefix: 'november-2026',
-  title: 'Supervisor district boundaries — vote totals unavailable',
-  label: (id) => `District ${id}: vote totals unavailable`,
-  onSelect: (id) => {
-    $('region').value = String(id);
-    render();
-  },
-})
-  .then((value) => {
-    map = value;
-    map.paint(() => ({ fill: '#d9d8cf' }));
-    if (snapshot) map.select(Number($('region').value));
-  })
-  .catch(() => {
-    $('election-map').textContent = 'Map unavailable. Use the district selector.';
-  });
+// The validated feed currently permits geography.type === 'none' only.
+// Render no map until contest-specific geographic returns have a verified contract.
 refreshController.run();
 setInterval(() => refreshController.ifDue(!document.hidden), 60_000);
 document.addEventListener('visibilitychange', () => {

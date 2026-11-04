@@ -457,11 +457,18 @@ async function checkPlayground() {
 }
 
 async function checkElection() {
-  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    hasTouch: true,
+  });
   const page = await context.newPage();
   try {
     await page.goto(`${origin}${base}election.html`);
     await page.locator('#contests article').first().waitFor();
+    if (await page.locator('#election-map, .election-region').count())
+      fail('election: unavailable geography reserves a map');
+    if (await page.locator('#district-filter').isVisible())
+      fail('election: measure view shows candidate-only district filter');
     if ((await page.locator('#contests article').count()) !== 1)
       fail('election: more than one active contest');
     if ((await page.locator('main details').count()) !== 0)
@@ -515,6 +522,32 @@ async function checkElection() {
       fail('election: history table should be hidden in default Chart view');
     if ((await page.locator('.trend-panel .ts-chart__grid line').count()) < 4)
       fail('election: chart guide lines missing');
+    const targets = page.locator('.chart-point-target');
+    await targets.first().focus();
+    await page.keyboard.press('Enter');
+    if (
+      !(await page.locator('.chart-point-popover').isVisible()) ||
+      !(await page.locator('.chart-point-popover').textContent()).includes('54,391')
+    )
+      fail('election: keyboard point popover lacks exact first observation');
+    await page.keyboard.press('Escape');
+    if (await page.locator('.chart-point-popover').isVisible())
+      fail('election: Escape did not dismiss point popover');
+    await targets.last().tap();
+    const popoverBox = await page.locator('.chart-point-popover').boundingBox();
+    if (
+      !popoverBox ||
+      popoverBox.x < 0 ||
+      popoverBox.x + popoverBox.width > 390 ||
+      popoverBox.y < 0 ||
+      popoverBox.y + popoverBox.height > 844
+    )
+      fail('election: mobile popover clips the viewport');
+    if (!(await page.locator('.chart-point-popover').textContent()).includes('109,319'))
+      fail('election: No series point has the wrong exact tally');
+    await page.locator('#contests h2').click();
+    if (await page.locator('.chart-point-popover').isVisible())
+      fail('election: outside click did not dismiss popover');
     await page.getByRole('button', { name: 'Table', exact: true }).focus();
     await page.keyboard.press('Enter');
     if (
@@ -546,13 +579,13 @@ async function checkElection() {
     )
       fail('election: RTM full-region scope missing');
     if (
-      !(await page.locator('.vote-list').textContent()).includes('690,335') ||
+      !(await page.locator('.vote-list').textContent()).includes('702,848') ||
       !(await page.locator('[data-media-projection]').textContent()).includes(
         'passed. Not certified',
       )
     )
       fail('election: RTM attributed tally/projection missing');
-    if ((await page.locator('.trend-panel svg circle').count()) !== 6)
+    if ((await page.locator('.trend-panel svg circle').count()) !== 8)
       fail('election: RTM observations missing');
     for (const count of ['671,876', '650,366', '431,242']) {
       if (!(await page.locator('.history-table-wrap').textContent()).includes(count))
@@ -661,6 +694,56 @@ async function checkElection() {
   }
 }
 
+async function checkUnknownMediaTime() {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const page = await context.newPage();
+  const data = JSON.parse(await readFile('elections/2026-11-03.json', 'utf8'));
+  const contest = data.contests.find((c) => c.id === 'RTM');
+  const point = structuredClone(contest.mediaUpdate);
+  Object.assign(point, {
+    sourceUpdatedAt: null,
+    sourceTimestampIssue: {
+      type: 'future-dated',
+      rawText: 'Updated at 11:27 PM PT on November 4, 2026',
+    },
+    observedAt: '2026-11-04T09:05:03Z',
+  });
+  point.options[0].votes = 702848;
+  point.options[1].votes = 439585;
+  contest.mediaHistory = [...contest.mediaHistory.slice(0, 3), point];
+  contest.mediaUpdate = point;
+  try {
+    await page.route('**/elections/2026-11-03.json', (route) => route.fulfill({ json: data }));
+    for (const single of [false, true]) {
+      if (single) contest.mediaHistory = [point];
+      await page.goto(`${origin}${base}election.html?contest=RTM`);
+      await page.locator('#contests article').waitFor();
+      const text = await page.locator('#contests').textContent();
+      if (
+        !text.includes('Report time unverified') ||
+        !text.includes(point.sourceTimestampIssue.rawText) ||
+        !text.includes('1:05:03 AM')
+      )
+        fail('election: invalid publisher date lost its raw issue or actual observation time');
+      if ((await page.locator('.trend-panel svg circle').count()) !== (single ? 2 : 8))
+        fail('election: unknown report time changed real observation count');
+      if (single && (await page.locator('.trend-panel svg path').count()) !== 0)
+        fail('election: single unknown-time observation invented a trend');
+      await page.getByRole('button', { name: 'Table', exact: true }).click();
+      if (
+        !(await page.locator('.history-table-wrap').textContent()).includes(
+          'Report time unverified',
+        )
+      )
+        fail('election: table inferred an unknown report time');
+    }
+  } catch (error) {
+    fail(`unknown media time: ${error.stack}`);
+  } finally {
+    await context.close();
+  }
+}
+
 async function checkElectionLifecycle() {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
@@ -736,6 +819,7 @@ async function checkElectionLifecycle() {
 try {
   await checkElection();
   await checkElectionLifecycle();
+  await checkUnknownMediaTime();
   await checkStudioLoading();
   await checkPlayground();
   for (const path of pages) {

@@ -15,10 +15,10 @@
 <label for="ballot-search">Search<input id="ballot-search" type="search" placeholder="Prop, topic or candidate"></label>
 <label for="contest-kind">Show<select id="contest-kind"><option value="measure">Propositions</option><option value="candidate">Candidates</option><option value="judicial-retention">Judges</option><option value="all">All contests</option></select></label>
 <label class="contest-choice" for="contest-select">Contest <span id="match-count"></span><select id="contest-select"><option>Loading ballot…</option></select></label>
+<label id="district-filter" for="region" hidden>Supervisor ballot district<select id="region"><option value="0">All San Francisco</option></select></label>
 </section>
 <div class="election-workspace">
 <section id="contests" class="is-loading" aria-label="Selected contest" aria-live="polite" aria-atomic="true"><p>Loading ballot…</p></section>
-<aside class="election-region" aria-labelledby="region-title"><div id="election-map" class="example-map"><p>Loading map…</p></div><div><h2 id="region-title">District reference</h2><p id="region-status">District vote totals are not available yet.</p><p class="small">2022 supervisor boundaries · not precincts</p></div><div><label for="region">Supervisor ballot district<select id="region"><option value="0">All San Francisco</option></select></label><p class="small">Filters supervisor races, not vote totals. Check your ballot for eligibility.</p></div></aside>
 </div>
 <section class="election-sources" aria-label="Sources and updates"><p id="report-time"></p><p id="source-detail"></p><p><a href="https://www.sfelections.org/results/20261103w/index.html">Official SF results</a> · <a href="https://media.sos.ca.gov/">California results</a> · <a href="./elections/2026-11-03.json">Shared data</a> · <a href="./measures.html">Historical elections</a></p><p>Checks about every 10 minutes; delays are possible. Candidate rosters cover printed ballots; later statewide write-ins are not verified.</p></section>
 <noscript><p>Read the <a href="https://media.api.sf.gov/documents/N26_EN_VIP.pdf">official voter pamphlet</a> or enable JavaScript to explore contests.</p></noscript>

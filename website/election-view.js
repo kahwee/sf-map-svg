@@ -1,3 +1,4 @@
+import { mediaReportTime } from './election-media.js';
 import { createTrend } from './election-trend.js';
 
 export const formatTime = (value) =>
@@ -97,7 +98,7 @@ export function createContestView(contest, chartState = {}) {
         href: media.sourceUrl,
         textContent: `${media.sourceName} preliminary tally`,
       }),
-      ` · Updated ${formatTime(media.sourceUpdatedAt)}.`,
+      ` · ${mediaReportTime(media, formatTime)}.${media.sourceUpdatedAt === null ? ` Observed ${formatTime(media.observedAt)}.` : ''}`,
     );
     totals.append(attribution);
   }
