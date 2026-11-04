@@ -328,3 +328,81 @@
 #contests.is-loading {
   min-height: 100vh;
 }
+
+/* Put verified results and their observations ahead of the reference geography. */
+.election-workspace {
+  display: block;
+}
+.contest-data-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: 32px;
+  margin-top: 20px;
+}
+.contest-data-grid .batch-history {
+  border-top: 0;
+  border-left: 1px solid var(--rule);
+  padding: 0 0 0 24px;
+  margin: 0;
+  min-width: 0;
+}
+.contest-totals .vote-list li {
+  padding: 18px 0 22px;
+}
+.contest-totals .vote-count {
+  font-size: clamp(1.15rem, 2vw, 1.65rem);
+  letter-spacing: -0.025em;
+}
+.contest-totals .vote-share {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--ink);
+  opacity: 0.55;
+}
+.contest-explanation {
+  border-top: 1px solid var(--rule);
+  margin-top: 22px;
+  padding-top: 16px;
+}
+.contest-explanation h3 {
+  font-size: 0.85rem;
+  margin: 0 0 6px;
+}
+.contest-explanation .contest-summary {
+  max-width: 90ch;
+  margin: 0;
+}
+.election-region {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr) minmax(220px, 0.85fr);
+  align-items: center;
+  gap: 24px;
+  margin-top: 24px;
+  border-top: 1px solid var(--rule);
+  padding-top: 16px;
+}
+.election-region .example-map {
+  max-width: 150px;
+}
+@media (max-width: 850px) {
+  .contest-data-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    margin-top: 12px;
+  }
+  .contest-data-grid .batch-history {
+    border-left: 0;
+    border-top: 1px solid var(--rule);
+    padding: 14px 0 0;
+  }
+  .contest-totals .vote-count {
+    font-size: 1.2rem;
+  }
+  .election-region {
+    grid-template-columns: 100px minmax(0, 1fr);
+    gap: 12px;
+  }
+  .election-region > div:last-child {
+    grid-column: 1 / -1;
+  }
+}

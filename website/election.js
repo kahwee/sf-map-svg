@@ -168,7 +168,26 @@ function renderContest(c) {
       }),
     );
   }
-  article.append(details, createTrend(c));
+  article.append(details);
+  const summary = article.querySelector('.contest-summary');
+  summary?.remove();
+  const dataGrid = document.createElement('div');
+  dataGrid.className = 'contest-data-grid';
+  const totals = document.createElement('div');
+  totals.className = 'contest-totals';
+  totals.append(...Array.from(article.children).slice(2));
+  dataGrid.append(totals, createTrend(c));
+  article.append(dataGrid);
+  if (summary) {
+    const explanation = document.createElement('section');
+    explanation.className = 'contest-explanation';
+    explanation.setAttribute('aria-label', 'What this measure does');
+    explanation.append(
+      Object.assign(document.createElement('h3'), { textContent: 'What this measure does' }),
+      summary,
+    );
+    totals.append(explanation);
+  }
   host.replaceChildren(article);
 }
 function render() {
