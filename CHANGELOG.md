@@ -9,9 +9,7 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 - Breaking: remove flat static presentation options. Use `layers` for geographic switches and `appearance` for theme, colors and district styles.
 - Breaking: remove element-based `createGuideMap` and `mountGuideMap` factories and their option/element aliases. Use `createGuideController` and `mountGuideController`, mount `.element`, and dispose the controller.
 - Remove older-package capability adapters from the site and snippet generator; require v6 or newer for Pages builds and versioned playground share links. Add a v6 migration guide and rejection coverage for removed contracts.
-
 - Use official sources only on the Pages election views: remove all newspaper and agency-compilation tallies, projections, history and their validation from the feed, views, trend charts and tests. Local measures without official counts read Pending until official counts are imported.
-
 
 ## 5.1.4 — 2026-11-05
 
