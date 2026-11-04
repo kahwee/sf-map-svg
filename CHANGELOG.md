@@ -4,6 +4,10 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 5.1.3 — 2026-11-05
+
+- Give configuration snapshots and revisions a dedicated internal owner. Split presentation preparation from a guarded, single-use commit, rejecting stale or disposed updates before mutating presentation. Preserve public configuration and reset behavior.
+
 ## 5.1.2 — 2026-11-05
 
 - Separate marker selection, activation and focus recovery into an internal controller; separate label candidate caching, screen-space collision layout and metrics invalidation into a label coordinator. Preserve the public API and shared animation frame scheduling.

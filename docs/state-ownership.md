@@ -1,12 +1,15 @@
 # Interactive state ownership
 
-The public controller (`src/map.ts`) owns configuration snapshots, subscriptions,
-capabilities and configuration revisions. The engine (`src/explorer-core.ts`)
+The public controller (`src/map.ts`) owns subscriptions and capabilities.
+`configuration-controller.ts` owns configuration snapshots and revisions. The engine (`src/explorer-core.ts`)
 coordinates presentation commits across layers. Preparing a patch may invoke
-consumer callbacks; revision checks must finish before committing prepared state.
+consumer callbacks. The engine returns a single-use prepared presentation; commit
+checks both configuration and engine revisions before and after the configuration
+commit callback. A newer update, selection change or disposal invalidates stale work.
 
 | Owner | State and lifetime |
 | --- | --- |
+| `configuration-controller.ts` | Configuration snapshot, update revision and prepare/commit coordination. |
 | `district-controller.ts` | Selected and hovered district, style callback and prepared styles, district revision, fill transitions and outline morphs. Selection and year callbacks check the revision before continuing. |
 | `explorer-core.ts` | Active year, mode, appearance, feature switches and overall initialization/disposal. Supplies district camera, composition and label hooks. |
 | `neighborhood-layer.ts` | Source-scoped lookup, prepared geometry, selection revisions and hover lifecycle. |

@@ -1,6 +1,7 @@
 import { copyAppearance } from './appearance.js';
 import { validateCameraOptions } from './camera.js';
 import { configurationPatch, expandMapOptions, prepareConfiguration } from './configuration.js';
+import { createConfigurationController } from './configuration-controller.js';
 import type {
   MapCapabilities,
   MapController,
@@ -12,7 +13,7 @@ import type {
 import { createNeighborhoodExplorerCore } from './explorer-core.js';
 import type { InteractiveSFMapData } from './explorer-data.js';
 import { createMapShell } from './explorer-shell.js';
-import { controlKeys, layerKeys } from './features.js';
+import { layerKeys } from './features.js';
 import { assertOptions } from './validation.js';
 
 export type * from './controller-types.js';
@@ -36,7 +37,7 @@ export type {
 /** No geography is imported. Supply a preset or your own immutable data. */
 export function createMap(data: InteractiveSFMapData, options: MapOptions = {}): MapController {
   const expanded = expandMapOptions(options);
-  let config = prepareConfiguration(
+  const initialConfiguration = prepareConfiguration(
     { features: {}, layers: {}, controls: {}, appearance: {} },
     {
       features: options.features,
@@ -56,7 +57,12 @@ export function createMap(data: InteractiveSFMapData, options: MapOptions = {}):
     { createShell: createMapShell },
   );
   const subscriptions = new Set<() => void>();
-  let configurationRevision = 0;
+  const configuration = createConfigurationController(
+    initialConfiguration,
+    element,
+    () => destroyed,
+  );
+  const configure = configuration.configure;
   const sourceList = (['realtor', 'sf-find', 'analysis'] as const).filter(
     (source) => !!data.neighborhoods[source],
   );
@@ -83,11 +89,11 @@ export function createMap(data: InteractiveSFMapData, options: MapOptions = {}):
   const snapshot = () => ({
     ...element.getMapState(),
     ...structuredClone({
-      features: config.features,
-      layers: config.layers,
-      controls: config.controls,
+      features: configuration.current.features,
+      layers: configuration.current.layers,
+      controls: configuration.current.controls,
     }),
-    appearance: copyAppearance(config.appearance),
+    appearance: copyAppearance(configuration.current.appearance),
   });
   const resolved = (): ResolvedMapConfiguration => {
     const state = element.getMapState();
@@ -100,7 +106,7 @@ export function createMap(data: InteractiveSFMapData, options: MapOptions = {}):
           key,
           supplied[key] &&
             (!key.endsWith('Labels') || state.labels) &&
-            (config.layers[key] ??
+            (configuration.current.layers[key] ??
               (key.startsWith('district')
                 ? state.mode === 'districts'
                 : key.startsWith('neighborhood')
@@ -167,37 +173,6 @@ export function createMap(data: InteractiveSFMapData, options: MapOptions = {}):
       },
     ),
   });
-  function configure(patch: import('./controller-types.js').MapConfiguration) {
-    const revision = ++configurationRevision;
-    const next = prepareConfiguration(config, patch);
-    const hasFeatures = 'features' in patch,
-      hasLayers = 'layers' in patch,
-      hasControls = 'controls' in patch;
-    const layers = Object.fromEntries(layerKeys.map((key) => [key, next.layers[key]]));
-    const controls = Object.fromEntries(controlKeys.map((key) => [key, next.controls[key]]));
-    const features =
-      patch.features === undefined
-        ? next.features
-        : Object.fromEntries(
-            Object.keys(patch.features).map((key) => [
-              key,
-              next.features[key as keyof typeof next.features],
-            ]),
-          );
-    let committed = false;
-    element.applyPresentation(
-      { ...patch, ...('appearance' in patch ? { appearance: next.appearance } : {}) },
-      () => {
-        committed = true;
-        config = next;
-        if (hasFeatures) element.setFeatures(features);
-        if (hasLayers) element.setLayers(layers);
-        if (hasControls) element.setControls(controls);
-      },
-      () => !destroyed && revision === configurationRevision,
-    );
-    return committed && !destroyed && revision === configurationRevision;
-  }
   return Object.freeze({
     element,
     overlayElement: element.overlayElement,
@@ -206,7 +181,7 @@ export function createMap(data: InteractiveSFMapData, options: MapOptions = {}):
       return destroyed;
     },
     configure: use((patch) => {
-      configure(configurationPatch(patch, config));
+      configure(configurationPatch(patch, configuration.current));
     }),
     resetConfiguration: use((groups = ['features', 'layers', 'controls', 'appearance']) => {
       if (
@@ -309,7 +284,7 @@ export function createMap(data: InteractiveSFMapData, options: MapOptions = {}):
     selectDistrict: use(element.selectDistrict),
     getSelectedDistrict: use(element.getSelectedDistrict),
     setDistrictYear: use((...args: Parameters<MapController['setDistrictYear']>) => {
-      configurationRevision++;
+      configuration.invalidate();
       element.setDistrictYear(...args);
     }),
     setDistrictStyle: use((style) => {

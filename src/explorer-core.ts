@@ -3,6 +3,7 @@ import { copyAppearance } from './appearance.js';
 import { createCamera, validateCameraOptions } from './camera.js';
 import { createClusterLayer } from './cluster-layer.js';
 import { clusterPoints } from './clusters.js';
+import type { PreparedPresentation } from './configuration-controller.js';
 import type { MapAppearance, MapConfiguration } from './controller-types.js';
 import { createDistrictController } from './district-controller.js';
 import { prepareDistrictStyles } from './district-style.js';
@@ -56,11 +57,7 @@ export type {
 
 /** Private bridge between the renderer and its public lifecycle controller. */
 type MapEngineElement = NeighborhoodExplorerElement & {
-  applyPresentation(
-    patch: MapConfiguration,
-    onCommit?: () => void,
-    isCurrent?: () => boolean,
-  ): boolean;
+  preparePresentation(patch: MapConfiguration): PreparedPresentation | undefined;
   getMapState(): {
     mode: ExplorerMode;
     source: NeighborhoodSource;
@@ -1047,11 +1044,7 @@ export function createNeighborhoodExplorerCore(
   };
 
   let presentationRevision = 0;
-  function applyPresentation(
-    patch: MapConfiguration,
-    onCommit?: () => void,
-    isCurrent: () => boolean = () => true,
-  ) {
+  function preparePresentation(patch: MapConfiguration): PreparedPresentation | undefined {
     const revision = ++presentationRevision;
     const nextYear = patch.year ?? year;
     const nextMode = patch.mode ?? mode;
@@ -1075,133 +1068,150 @@ export function createNeighborhoodExplorerCore(
       appearance || nextYear !== year
         ? prepareDistrictStyles(data.map.districts?.[nextYear] ?? [], nextStyle)
         : districts.styles;
-    if (
-      destroyed ||
-      !isCurrent() ||
-      revision !== presentationRevision ||
-      districtVersion !== districts.revision
-    )
-      return false;
+    if (destroyed || revision !== presentationRevision || districtVersion !== districts.revision)
+      return undefined;
     if (nextYear !== year) {
       // Validate target paths and label coordinates before any presentation group commits.
       getLayerPathsWithData({ year: nextYear }, data.map, false);
       for (const feature of data.districts?.[nextYear]?.features ?? [])
         for (const point of feature.properties.labelPoints) map.project(point);
     }
-    onCommit?.();
-    if (appearance) {
-      districts.invalidate();
-      const next = copyAppearance(appearance);
-      theme = next.theme ?? 'transit';
-      colors = next.colors ?? {};
-      labelStyle = next.labelStyle ?? {};
-      areaStyle = next.areaStyle ?? {};
-      styleOptions = next.style ?? {};
-      minLabelSize = next.labelSize?.min ?? 11;
-      maxLabelSize = next.labelSize?.max ?? 12;
-      markerRadius = next.markerRadius ?? 6;
-      markerHitSize = next.markerHitSize ?? 44;
-      markerColor = next.markerColor ?? colors.marker ?? '#245b61';
-      selectedMarkerColor = next.selectedMarkerColor ?? colors.selected ?? '#f04f32';
-      districtTransition.cancel();
-      const fills = districtLayers.find((layer) => layer.dataset.layer === 'district-fills');
-      const fade = layerFades.duration();
-      const stylesChanged =
-        nextStyle !== districts.style ||
-        [...prepared].some(([id, value]) =>
-          (['fill', 'stroke', 'opacity'] as const).some(
-            (key) => value[key] !== districts.styles.get(id)?.[key],
-          ),
-        );
-      if (fills && fade && enabled('districtFills') && nextYear === year && stylesChanged)
-        districtTransition.fade(fills, fade);
-      districts.commitStyles(nextStyle, prepared);
-      const palette = resolveMapColors(theme, colors);
-      svg.querySelector('rect')?.setAttribute('fill', palette.water);
-      svg.querySelector('[data-layer="coast"]')?.setAttribute('fill', palette.land);
-      svg.querySelector('[data-layer="coastline"]')?.setAttribute('stroke', palette.district);
-      for (const [layer, color] of [
-        ['landmarks', palette.park],
-        ['highways', palette.highway],
-        ['key-roads', palette.road],
-      ] as const)
-        for (const node of svg.querySelectorAll(`[data-layer="${layer}"] path`)) {
-          node.setAttribute(layer === 'landmarks' ? 'fill' : 'stroke', color);
-          if (layer === 'highways')
-            node.setAttribute('stroke-width', theme === 'transit' ? '2' : '1.4');
-        }
-      for (const [token, fallback, name] of [
-        ['ink', '#18364f', 'ink'],
-        ['surface', '#fff', 'surface'],
-        ['accent', '#163d61', 'accent'],
-        ['border', '#cedae3', 'border'],
-        ['focus', '#1676b8', 'focus'],
-        ['controlGap', '6px', 'control-gap'],
-        ['font', 'system-ui,sans-serif', 'font'],
-      ] as const)
-        root.style.setProperty(`--sf-map-${name}`, styleOptions[token] ?? fallback);
-      labelLayer.setAttribute(
-        'font-family',
-        labelStyle.fontFamily ?? styleOptions.font ?? 'system-ui,sans-serif',
-      );
-      labelCoordinator.invalidateMetrics();
-      for (const station of stationItems)
-        station.node.setAttribute('stroke', colors.bart ?? '#0073ae');
-      for (const kind of ['bart', 'park', 'highway', 'road'] as const) {
-        const symbol = legend.querySelector<HTMLElement>(`.sf-explorer-legend-${kind}`);
-        if (symbol) {
-          symbol.style.removeProperty(kind === 'bart' ? 'border-color' : 'background-color');
-          if (colors[kind])
-            symbol.style.setProperty(
-              kind === 'bart' ? 'border-color' : 'background-color',
-              colors[kind],
+    let consumed = false;
+    return {
+      commit(onCommit, isCurrent) {
+        if (
+          consumed ||
+          destroyed ||
+          !isCurrent() ||
+          revision !== presentationRevision ||
+          districtVersion !== districts.revision
+        )
+          return false;
+        consumed = true;
+        onCommit();
+        if (
+          destroyed ||
+          !isCurrent() ||
+          revision !== presentationRevision ||
+          districtVersion !== districts.revision
+        )
+          return false;
+
+        if (appearance) {
+          districts.invalidate();
+          const next = copyAppearance(appearance);
+          theme = next.theme ?? 'transit';
+          colors = next.colors ?? {};
+          labelStyle = next.labelStyle ?? {};
+          areaStyle = next.areaStyle ?? {};
+          styleOptions = next.style ?? {};
+          minLabelSize = next.labelSize?.min ?? 11;
+          maxLabelSize = next.labelSize?.max ?? 12;
+          markerRadius = next.markerRadius ?? 6;
+          markerHitSize = next.markerHitSize ?? 44;
+          markerColor = next.markerColor ?? colors.marker ?? '#245b61';
+          selectedMarkerColor = next.selectedMarkerColor ?? colors.selected ?? '#f04f32';
+          districtTransition.cancel();
+          const fills = districtLayers.find((layer) => layer.dataset.layer === 'district-fills');
+          const fade = layerFades.duration();
+          const stylesChanged =
+            nextStyle !== districts.style ||
+            [...prepared].some(([id, value]) =>
+              (['fill', 'stroke', 'opacity'] as const).some(
+                (key) => value[key] !== districts.styles.get(id)?.[key],
+              ),
             );
+          if (fills && fade && enabled('districtFills') && nextYear === year && stylesChanged)
+            districtTransition.fade(fills, fade);
+          districts.commitStyles(nextStyle, prepared);
+          const palette = resolveMapColors(theme, colors);
+          svg.querySelector('rect')?.setAttribute('fill', palette.water);
+          svg.querySelector('[data-layer="coast"]')?.setAttribute('fill', palette.land);
+          svg.querySelector('[data-layer="coastline"]')?.setAttribute('stroke', palette.district);
+          for (const [layer, color] of [
+            ['landmarks', palette.park],
+            ['highways', palette.highway],
+            ['key-roads', palette.road],
+          ] as const)
+            for (const node of svg.querySelectorAll(`[data-layer="${layer}"] path`)) {
+              node.setAttribute(layer === 'landmarks' ? 'fill' : 'stroke', color);
+              if (layer === 'highways')
+                node.setAttribute('stroke-width', theme === 'transit' ? '2' : '1.4');
+            }
+          for (const [token, fallback, name] of [
+            ['ink', '#18364f', 'ink'],
+            ['surface', '#fff', 'surface'],
+            ['accent', '#163d61', 'accent'],
+            ['border', '#cedae3', 'border'],
+            ['focus', '#1676b8', 'focus'],
+            ['controlGap', '6px', 'control-gap'],
+            ['font', 'system-ui,sans-serif', 'font'],
+          ] as const)
+            root.style.setProperty(`--sf-map-${name}`, styleOptions[token] ?? fallback);
+          labelLayer.setAttribute(
+            'font-family',
+            labelStyle.fontFamily ?? styleOptions.font ?? 'system-ui,sans-serif',
+          );
+          labelCoordinator.invalidateMetrics();
+          for (const station of stationItems)
+            station.node.setAttribute('stroke', colors.bart ?? '#0073ae');
+          for (const kind of ['bart', 'park', 'highway', 'road'] as const) {
+            const symbol = legend.querySelector<HTMLElement>(`.sf-explorer-legend-${kind}`);
+            if (symbol) {
+              symbol.style.removeProperty(kind === 'bart' ? 'border-color' : 'background-color');
+              if (colors[kind])
+                symbol.style.setProperty(
+                  kind === 'bart' ? 'border-color' : 'background-color',
+                  colors[kind],
+                );
+            }
+          }
+          for (const item of neighborhoods.items) {
+            const active = item.feature === neighborhoods.selected;
+            item.node.setAttribute(
+              'fill',
+              active ? (areaStyle.selectedFill ?? '#408dbe') : 'transparent',
+            );
+            item.node.setAttribute(
+              'stroke',
+              active ? (areaStyle.selectedStroke ?? '#176ba2') : (colors.neighborhood ?? '#9caebc'),
+            );
+          }
+          for (const item of markerCatalog.items) {
+            const visual = item.visual;
+            if (!visual) continue;
+            visual.dot.setAttribute(
+              'fill',
+              item.marker.id === markers.selected
+                ? selectedMarkerColor
+                : (item.marker.color ?? markerColor),
+            );
+            visual.ring.setAttribute(
+              'stroke',
+              features.selectedMarkerRing
+                ? (features.selectedMarkerRing.color ?? selectedMarkerColor)
+                : selectedMarkerColor,
+            );
+          }
+          invalidateClusters();
+          updateDistrictAppearance();
         }
-      }
-      for (const item of neighborhoods.items) {
-        const active = item.feature === neighborhoods.selected;
-        item.node.setAttribute(
-          'fill',
-          active ? (areaStyle.selectedFill ?? '#408dbe') : 'transparent',
-        );
-        item.node.setAttribute(
-          'stroke',
-          active ? (areaStyle.selectedStroke ?? '#176ba2') : (colors.neighborhood ?? '#9caebc'),
-        );
-      }
-      for (const item of markerCatalog.items) {
-        const visual = item.visual;
-        if (!visual) continue;
-        visual.dot.setAttribute(
-          'fill',
-          item.marker.id === markers.selected
-            ? selectedMarkerColor
-            : (item.marker.color ?? markerColor),
-        );
-        visual.ring.setAttribute(
-          'stroke',
-          features.selectedMarkerRing
-            ? (features.selectedMarkerRing.color ?? selectedMarkerColor)
-            : selectedMarkerColor,
-        );
-      }
-      invalidateClusters();
-      updateDistrictAppearance();
-    }
-    if (nextYear !== year) setDistrictYear(nextYear, {}, prepared);
-    if (destroyed || revision !== presentationRevision || !isCurrent()) return false;
-    commitSource?.();
-    if (destroyed || revision !== presentationRevision || !isCurrent()) return false;
-    if (commitSource && appearance)
-      for (const item of neighborhoods.items)
-        item.node.setAttribute('stroke', colors.neighborhood ?? '#9caebc');
-    if (patch.mode !== undefined) setMode(patch.mode, false);
-    if (patch.labels !== undefined) setLabels(patch.labels);
-    scheduleLabels();
-    return true;
+        if (nextYear !== year) setDistrictYear(nextYear, {}, prepared);
+        if (destroyed || revision !== presentationRevision || !isCurrent()) return false;
+        commitSource?.();
+        if (destroyed || revision !== presentationRevision || !isCurrent()) return false;
+        if (commitSource && appearance)
+          for (const item of neighborhoods.items)
+            item.node.setAttribute('stroke', colors.neighborhood ?? '#9caebc');
+        if (patch.mode !== undefined) setMode(patch.mode, false);
+        if (patch.labels !== undefined) setLabels(patch.labels);
+        scheduleLabels();
+        return true;
+      },
+    };
   }
   const explorer = Object.assign(root, {
-    applyPresentation,
+    preparePresentation,
     getMapState: () => ({ mode, source: neighborhoods.source, year, labels }),
     selectNeighborhood,
     getSelection,
