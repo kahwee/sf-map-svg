@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "electionDate": "2026-11-03",
+  "latest": "precincts-2026-11-03-230421.json",
+  "snapshots": [
+    {
+      "file": "precincts-2026-11-03-230421.json",
+      "reportStamp": "2026-11-03-230421",
+      "sourceReportTime": "11/3/2026 11:04:21 PM",
+      "ballotCards": 730137,
+      "precinctsWithBallots": 509,
+      "exportSha256": "0efa892bfc657706856190544c66ae5c8fa02251d9713eaa65f59501a8bb0e7e"
+    }
+  ]
+}

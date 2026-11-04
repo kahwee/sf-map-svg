@@ -3,12 +3,24 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 const json = async (path) => JSON.parse(await readFile(new URL(path, import.meta.url), 'utf8'));
-const aggregate = await json('../data/elections/precincts-2026-11-03.json');
+const index = await json('../data/elections/precincts-index.json');
+const aggregate = await json(`../data/elections/${index.latest}`);
 const boundaries = await json('../data/precincts-2022.json');
 const summary = await readFile(
   new URL('./fixtures/sfelections/summary-report-4.xml', import.meta.url),
   'utf8',
 );
+
+test('the index lists every snapshot in time order and latest is the newest', async () => {
+  const stamps = index.snapshots.map((s) => s.reportStamp);
+  assert.deepEqual(stamps, [...stamps].sort());
+  assert.equal(index.latest, index.snapshots.at(-1).file);
+  for (const snapshot of index.snapshots) {
+    const data = await json(`../data/elections/${snapshot.file}`);
+    assert.equal(data.source.reportStamp, snapshot.reportStamp);
+    assert.equal(data.source.sourceReportTime, snapshot.sourceReportTime);
+  }
+});
 
 test('every aggregated precinct has a 2022 boundary and no ballot-level fields', () => {
   const ids = new Set(boundaries.features.map((f) => f.properties.precinct));
@@ -26,6 +38,7 @@ test('every aggregated precinct has a 2022 boundary and no ballot-level fields',
     'source',
   ]);
   assert.equal(aggregate.source.sourceReportTime, '11/3/2026 11:04:21 PM');
+  assert.equal(aggregate.source.reportStamp, '2026-11-03-230421');
 });
 
 test('precinct sums reconcile with the official summary report for every contest', () => {

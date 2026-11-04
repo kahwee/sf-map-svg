@@ -3,7 +3,7 @@
 // first-choice counts. Ballot-level records are ingestion input only and are never written.
 //
 //   node scripts/import-cvr-precincts.mjs --zip CVR_Export_20261103231904.zip \
-//     --report-time "11/3/2026 11:04:21 PM" --out data/elections/precincts-2026-11-03.json
+//     --report-time "11/3/2026 11:04:21 PM" --out-dir data/elections
 //
 // `--dir <extracted dir>` may replace `--zip`. Counts use the current record of each ballot
 // card (`Modified` when adjudicated, otherwise `Original`); ranked-choice contests count a
@@ -25,7 +25,16 @@ const need = (name) => {
   return args[name];
 };
 const reportTime = need('report-time');
-const out = need('out');
+const outDir = need('out-dir');
+const match = /^(\d{1,2})\/(\d{1,2})\/(\d{4}) (\d{1,2}):(\d{2}):(\d{2}) (AM|PM)$/.exec(reportTime);
+if (!match) throw new Error(`Report time must look like "11/3/2026 11:04:21 PM": ${reportTime}`);
+const [month, day, year, hour12, minute, second, meridiem] = match.slice(1);
+const hour = (Number(hour12) % 12) + (meridiem === 'PM' ? 12 : 0);
+const two = (n) => String(n).padStart(2, '0');
+// Local department clock, used only to name and order snapshots; never converted to UTC.
+const reportStamp = `${year}-${two(month)}-${two(day)}-${two(hour)}${minute}${second}`;
+const file = `precincts-${reportStamp}.json`;
+const out = path.join(outDir, file);
 let dir = args.dir;
 let zipSha256 = null;
 let cleanup = null;
@@ -100,6 +109,7 @@ const result = {
     exportSha256: zipSha256,
     electionName: election.Description,
     sourceReportTime: reportTime,
+    reportStamp,
     note: 'Report time as supplied from the department; no timezone conversion applied.',
   },
   geography: {
@@ -127,6 +137,25 @@ const result = {
   ),
 };
 fs.writeFileSync(out, `${JSON.stringify(result)}\n`);
+
+// The index lists every retained report time; consumers use `latest`, which is the newest stamp.
+const indexPath = path.join(outDir, 'precincts-index.json');
+const index = fs.existsSync(indexPath)
+  ? JSON.parse(fs.readFileSync(indexPath, 'utf8'))
+  : { schemaVersion: 1, electionDate: result.electionDate, latest: null, snapshots: [] };
+index.snapshots = [
+  ...index.snapshots.filter((s) => s.reportStamp !== reportStamp),
+  {
+    file,
+    reportStamp,
+    sourceReportTime: reportTime,
+    ballotCards: cards,
+    precinctsWithBallots: result.geography.precinctsWithBallots,
+    exportSha256: zipSha256,
+  },
+].sort((a, b) => a.reportStamp.localeCompare(b.reportStamp));
+index.latest = index.snapshots.at(-1).file;
+fs.writeFileSync(indexPath, `${JSON.stringify(index, null, 2)}\n`);
 if (cleanup) fs.rmSync(cleanup, { recursive: true, force: true });
 console.log(
   `${out}: ${cards} ballot cards, ${result.geography.precinctsWithBallots} precincts with ballots`,
