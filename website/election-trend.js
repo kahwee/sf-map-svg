@@ -75,7 +75,8 @@ export function createTrend(contest) {
   rangeLabel.append(rangeText, range);
   const panel = make('div', '', 'trend-panel');
   panel.setAttribute('aria-live', 'polite');
-  section.append(controls, navigation, rangeLabel, panel);
+  const evidence = make('div', '', 'trend-evidence');
+  section.append(panel, controls, navigation, rangeLabel, evidence);
   function draw() {
     const selected = contest.options.find((o) => o.id === optionSelect.value);
     const share = metricSelect.value === 'share';
@@ -99,7 +100,7 @@ export function createTrend(contest) {
         ? points.length === 1
           ? `One ${unit.toLowerCase()}; no trend yet.`
           : `First ${unit.toLowerCase()}.`
-        : `Change from prior observation: ${change > 0 ? '+' : ''}${share ? `${change.toFixed(1)} percentage points` : `${change.toLocaleString('en-US')} votes`}.`;
+        : `Change: ${change > 0 ? '+' : ''}${share ? `${change.toFixed(1)} percentage points` : `${change.toLocaleString('en-US')} votes`}.`;
     const headline = make(
       'p',
       `${unit} ${batch + 1} · ${selected.label}: ${format(last)} · ${delta}`,
@@ -108,7 +109,7 @@ export function createTrend(contest) {
     const svg = svgElement('svg', {
       viewBox: '0 0 360 160',
       role: 'img',
-      'aria-label': `${selected.label}, ${share ? 'share of reported votes' : 'reported votes'}, ${points.length} observed ${points.length === 1 ? unit.toLowerCase() : units}. ${delta} Exact report and observation times in the table below.`,
+      'aria-label': `${selected.label}, ${share ? 'share of reported votes' : 'reported votes'}, ${points.length} ${media ? 'newsroom ' : 'reported '}${points.length === 1 ? unit.toLowerCase() : units}. ${delta} Exact ${media ? 'publisher update' : 'report'} and observation times in the table below.`,
     });
     const max = share ? 100 : Math.max(1, ...values);
     const x = (i) => (points.length === 1 ? 191 : 44 + (i * 294) / (points.length - 1));
@@ -237,12 +238,8 @@ export function createTrend(contest) {
     });
     table.append(body);
     tableHost.append(table);
-    const report = make(
-      'p',
-      `${media ? 'Publisher update' : 'Selected report'}: ${points[batch].sourceReportTime} · First observed: ${observedTime(points[batch].observedAt)}`,
-      'result-note',
-    );
-    panel.replaceChildren(headline, report, svg, note, tableHost);
+    panel.replaceChildren(headline, svg);
+    evidence.replaceChildren(note, tableHost);
   }
   previous.addEventListener('click', () => {
     if (batch > 0) {

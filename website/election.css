@@ -406,3 +406,10 @@
     grid-column: 1 / -1;
   }
 }
+
+.batch-history > .trend-panel .trend-value {
+  margin: 0 0 6px;
+}
+.batch-history > .trend-panel {
+  margin-bottom: 12px;
+}
