@@ -41,3 +41,24 @@
     grid-template-columns: 1fr;
   }
 }
+/* Reserve the asynchronous provenance panel so a source error does not move content. */
+#check-status {
+  min-block-size: 3em;
+}
+#report-time {
+  min-block-size: 3em;
+}
+#fetch-time {
+  min-block-size: 3em;
+}
+@media (max-width: 700px) {
+  #check-status {
+    min-block-size: 10em;
+  }
+  #report-time {
+    min-block-size: 6em;
+  }
+  #fetch-time {
+    min-block-size: 6em;
+  }
+}

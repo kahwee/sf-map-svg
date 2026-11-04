@@ -13,6 +13,7 @@ const root = 'pages-dist';
 const base = '/sf-map-svg/';
 const pages = [
   '',
+  'election.html',
   'layers.html',
   'playground.html',
   'examples.html',
@@ -29,6 +30,7 @@ const budgets = {
   index: 45.9, // Shared label preparation; static font estimation stays out (45.7 KB measured).
   layers: 48.7, // Includes opt-in static overview label layout (48.5 KB measured).
   playground: 54.4, // V5 tuple coordinates and explicit reset API (54.22 KiB measured).
+  election: 25,
   examples: 12,
   measures: 25,
   propositions: 25,
@@ -453,7 +455,43 @@ async function checkPlayground() {
   }
 }
 
+async function checkElection() {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const page = await context.newPage();
+  try {
+    await page.goto(`${origin}${base}election.html`);
+    await page.locator('#contests article').first().waitFor();
+    await page.locator('#region').selectOption('8');
+    await page.locator('#ballot-search').fill('supervisor');
+    const cards = page.locator('#contests article');
+    if ((await cards.count()) !== 1 || !(await cards.textContent()).includes('District 8'))
+      fail('election: district ballot filter failed');
+    await page.route('**/elections/2026-11-03.json', (route) => route.abort());
+    await page.locator('#refresh').click();
+    await page.waitForFunction(() =>
+      document.querySelector('#check-status').textContent.includes('Feed unavailable'),
+    );
+    if ((await cards.count()) !== 1) fail('election: failed refresh removed last-good display');
+    await page.unroute('**/elections/2026-11-03.json');
+    const stale = JSON.parse(await readFile('elections/2026-11-03.json', 'utf8'));
+    stale.checkedAt = '2026-11-03T00:00:00Z';
+    stale.checkStatus = 'error';
+    await page.route('**/elections/2026-11-03.json', (route) => route.fulfill({ json: stale }));
+    await page.locator('#refresh').click();
+    await page.waitForFunction(() =>
+      document.querySelector('#check-status').textContent.includes('Stale check'),
+    );
+    if (!(await page.locator('#report-time').textContent()).includes('not yet verified'))
+      fail('election: stale fetch synthesized report time');
+  } catch (error) {
+    fail(`election interaction: ${error.stack}`);
+  } finally {
+    await context.close();
+  }
+}
+
 try {
+  await checkElection();
   await checkStudioLoading();
   await checkPlayground();
   for (const path of pages) {
