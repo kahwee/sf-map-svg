@@ -1,4 +1,3 @@
-import { mediaReportTime } from './election-media.js';
 import { createTrend } from './election-trend.js';
 
 export const formatTime = (value) =>
@@ -9,15 +8,13 @@ export const formatTime = (value) =>
       })
     : 'not yet verified';
 const scopeName = (contest) =>
-  contest.mediaUpdate?.resultGeography?.name ||
-  {
+  ({
     citywide: 'San Francisco',
     statewide: 'California',
     regional: 'Bay Area',
     district: 'District contest',
     'appellate-district': 'First Appellate District',
-  }[contest.scope] ||
-  contest.scope;
+  })[contest.scope] || contest.scope;
 export const contestLabel = (contest) =>
   contest.shortTitle
     ? `${contest.id === 'RTM' ? 'RTM' : `Prop ${contest.id.split('-').at(-1)}`} · ${contest.shortTitle}`
@@ -33,7 +30,7 @@ export function createContestView(contest, chartState = {}) {
   article.dataset.contestId = contest.id;
   const meta = Object.assign(document.createElement('p'), {
     className: 'contest-meta',
-    textContent: `${contest.kind === 'measure' ? (contest.id === 'RTM' ? 'Regional measure' : `Proposition ${contest.id.split('-').at(-1)}`) : 'Ballot contest'} · ${contest.resultStatus || contest.mediaUpdate ? '' : `${scopeName(contest)} · `}${contest.mediaUpdate ? 'Preliminary' : 'Uncalled'}`,
+    textContent: `${contest.kind === 'measure' ? (contest.id === 'RTM' ? 'Regional measure' : `Proposition ${contest.id.split('-').at(-1)}`) : 'Ballot contest'} · ${contest.resultStatus ? '' : `${scopeName(contest)} · `}Uncalled`,
   });
   const title = Object.assign(document.createElement('h2'), {
     textContent: contest.shortTitle || contest.title,
@@ -42,27 +39,11 @@ export function createContestView(contest, chartState = {}) {
   const totals = document.createElement('div');
   totals.className = 'contest-totals';
   const reported = contest.options.some((o) => o.votes !== null);
-  const media = contest.mediaUpdate;
-  if (media?.projection) {
-    const update = document.createElement('p');
-    update.className = 'result-note';
-    update.dataset.mediaProjection = 'true';
-    const projection = Object.assign(document.createElement('a'), {
-      href: media.projection.sourceUrl,
-      textContent: `Chronicle projects: ${media.projection.outcome}. Not certified.`,
-    });
-    update.append(projection);
-    totals.append(update);
-  }
   const list = document.createElement('ul');
   list.className = 'vote-list';
-  list.setAttribute(
-    'aria-label',
-    !reported && media ? `${media.sourceName} preliminary vote totals` : 'Official vote totals',
-  );
-  const displayedOptions = !reported && media ? media.options : contest.options;
-  const total = displayedOptions.reduce((sum, option) => sum + (option.votes || 0), 0);
-  for (const option of displayedOptions) {
+  list.setAttribute('aria-label', 'Official vote totals');
+  const total = contest.options.reduce((sum, option) => sum + (option.votes || 0), 0);
+  for (const option of contest.options) {
     const row = document.createElement('li');
     const name = Object.assign(document.createElement('span'), { textContent: option.label });
     const votes = Object.assign(document.createElement('span'), {
@@ -82,26 +63,9 @@ export function createContestView(contest, chartState = {}) {
     list.append(row);
   }
   totals.append(list);
-  if (!reported && media) {
-    const attribution = document.createElement('p');
-    attribution.className = 'result-note';
-    attribution.dataset.mediaTally = 'true';
-    attribution.append(
-      Object.assign(document.createElement('a'), {
-        href: media.sourceUrl,
-        textContent: `${media.sourceName}${media.sourceKind === 'agency-compilation' ? ' · preliminary governmental compilation' : ' preliminary tally'}`,
-      }),
-      ` · ${media.sourceUpdatedAt === null ? mediaReportTime(media, formatTime) : `Publisher updated ${formatTime(media.sourceUpdatedAt)}`}.${media.sourceUpdatedAt === null ? ` Observed ${formatTime(media.observedAt)}.` : ''}${media.sourceKind === 'agency-compilation' ? ' County election-office results control; counting continues.' : ''}`,
-    );
-    totals.append(attribution);
-  }
   const note = contest.resultStatus
     ? `SF county votes only · ${reported ? 'Unofficial' : 'Awaiting votes; source has a zero/pre-election report'}.`
-    : media
-      ? media.resultGeography
-        ? 'Full five-county contest · shares of reported Yes/No votes, not ballot completion.'
-        : 'SF citywide · shares of reported Yes/No votes, not ballot completion.'
-      : 'Local results unavailable. Pending means unknown, not zero.';
+    : 'Local results unavailable. Pending means unknown, not zero.';
   totals.append(
     Object.assign(document.createElement('p'), {
       className: 'result-note',

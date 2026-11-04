@@ -260,7 +260,7 @@
   line-height: 1.4;
 }
 @media (max-width: 700px) {
-  #contests.is-loading {
+  #contests {
     min-height: 500px;
   }
 }
@@ -275,8 +275,8 @@
   border-radius: 2px;
 }
 
-/* Reserve the first viewport while the selected contest and its history load. */
-#contests.is-loading {
+/* Reserve the first viewport so the page does not shrink when a short contest replaces the placeholder. */
+#contests {
   min-height: 100vh;
 }
 

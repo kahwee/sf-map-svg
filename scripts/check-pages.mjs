@@ -510,118 +510,15 @@ async function checkElection() {
     const explanationPosition = await page.locator('.contest-explanation').boundingBox();
     if (!historyPosition || !explanationPosition || historyPosition.y <= explanationPosition.y)
       fail('election: measure explanation is not adjacent to the title');
-    if (!(await page.locator('[data-media-projection]').textContent()).includes('Not certified'))
-      fail('election: media projection lacks certification distinction');
-    if (
-      !(await page.locator('[data-media-tally]').textContent()).includes('KQED preliminary tally')
-    )
-      fail('election: media tally lacks attribution');
-    if (
-      !(await page.locator('.vote-list').textContent()).includes('62.8%') ||
-      (await page.locator('.vote-share').count()) !== 2
-    )
-      fail('election: count-derived shares missing');
-    if (!(await page.locator('.vote-list').textContent()).includes('109,319'))
-      fail('election: verified media tally missing');
-    if (
-      !(await page.locator('.batch-history h3').textContent()).includes('Newsroom observations') ||
-      (await page.locator('.trend-panel svg circle').count()) !== 8
-    )
-      fail('election: separate newsroom history missing');
+    // The committed ballot has no official local counts yet: Pending, never a newsroom substitute.
+    if (!(await page.locator('.vote-list').textContent()).includes('Pending'))
+      fail('election: local measure without official counts must read Pending');
+    if (await page.locator('[data-media-tally], [data-media-projection]').count())
+      fail('election: secondary tally markup remains');
+    if (/KQED|Chronicle|newsroom|MTC/i.test(await page.locator('main').textContent()))
+      fail('election: page mentions a secondary source');
     if (await page.locator('.history-table-wrap').isVisible())
       fail('election: history table should be hidden in default Chart view');
-    if ((await page.locator('.trend-panel .ts-chart__grid line').count()) < 4)
-      fail('election: chart guide lines missing');
-    const targets = page.getByRole('button', { name: /^(Yes|No),.*newsroom observation/ });
-    if ((await targets.count()) !== 8)
-      fail('election: point controls are hidden from assistive technology');
-    await targets.first().focus();
-    await page.keyboard.press('Enter');
-    if (
-      !(await page.locator('.chart-point-popover').isVisible()) ||
-      !(await page.locator('.chart-point-popover').textContent()).includes('54,391')
-    )
-      fail('election: keyboard point popover lacks exact first observation');
-    await page.keyboard.press('Escape');
-    if (await page.locator('.chart-point-popover').isVisible())
-      fail('election: Escape did not dismiss point popover');
-    await targets.last().tap();
-    const popoverBox = await page.locator('.chart-point-popover').boundingBox();
-    if (
-      !popoverBox ||
-      popoverBox.x < 0 ||
-      popoverBox.x + popoverBox.width > 390 ||
-      popoverBox.y < 0 ||
-      popoverBox.y + popoverBox.height > 844
-    )
-      fail('election: mobile popover clips the viewport');
-    if (!(await page.locator('.chart-point-popover').textContent()).includes('109,319'))
-      fail('election: No series point has the wrong exact tally');
-    await page.locator('#contests h2').click();
-    if (await page.locator('.chart-point-popover').isVisible())
-      fail('election: outside click did not dismiss popover');
-    await page.getByRole('button', { name: 'Table', exact: true }).focus();
-    await page.keyboard.press('Enter');
-    if (
-      !(await page.locator('.history-table-wrap').isVisible()) ||
-      (await page.locator('.trend-panel svg').isVisible())
-    )
-      fail('election: keyboard Table toggle did not switch views');
-    if (await page.locator('.trend-selected-source').count())
-      fail('election: repeated per-observation source list remains');
-    if (!(await page.locator('[data-media-tally]').isVisible()))
-      fail('election: current source is hidden');
-    if ((await page.locator('.trend-legend').textContent()).includes('64,776'))
-      fail('election: legend duplicates latest totals');
-    await page.getByRole('button', { name: 'Chart', exact: true }).click();
-    if (!(await page.locator('.trend-panel svg').isVisible()))
-      fail('election: Chart toggle did not restore chart');
-    for (const count of ['64,656', '57,242', '54,391', '109,319']) {
-      if (!(await page.locator('.history-table-wrap').textContent()).includes(count))
-        fail('election: comparison table lost a real observation');
-    }
-    if (await page.getByRole('button', { name: '← Previous', exact: true }).count())
-      fail('election: redundant previous navigation remains');
-    if (await page.getByLabel('View option', { exact: true }).count())
-      fail('election: measure comparison requires option selection');
-    if (
-      !(await page.locator('.history-table-wrap').textContent()).includes('Publisher page updated')
-    )
-      fail('election: media timestamps mislabeled as official reports');
-    await page.locator('#contest-select').selectOption('RTM');
-    if (
-      !(await page.locator('.contest-totals').textContent()).includes('Full five-county contest') ||
-      !(await page.locator('#contests').textContent()).includes('Santa Clara')
-    )
-      fail('election: RTM full-region scope missing');
-    if (
-      !(await page.locator('.vote-list').textContent()).includes('714,460') ||
-      !(await page.locator('[data-media-projection]').textContent()).includes(
-        'passed. Not certified',
-      )
-    )
-      fail('election: RTM attributed tally/projection missing');
-    if ((await page.locator('.trend-panel svg circle').count()) !== 12)
-      fail('election: RTM observations missing');
-    if (
-      !(await page.locator('.batch-history h3').textContent()).includes('Published observations') ||
-      !(await page.locator('[data-media-tally]').textContent()).includes('timezone unspecified') ||
-      !(await page.locator('[data-media-tally]').textContent()).includes('governmental compilation')
-    )
-      fail('election: MTC source kind or literal timezone disclosure missing');
-    for (const count of [
-      '671,876',
-      '650,366',
-      '431,242',
-      '702,848',
-      '439,585',
-      '443,928',
-      '708,996',
-      '446,326',
-    ]) {
-      if (!(await page.locator('.history-table-wrap').textContent()).includes(count))
-        fail('election: RTM comparison lost prior observations');
-    }
     await page.locator('#ballot-search').fill('zzzz-no-match');
     if (!(await page.locator('#contests').textContent()).includes('No matching'))
       fail('election: no-match state failed');
@@ -701,6 +598,32 @@ async function checkElection() {
     );
     if ((await page.locator('.trend-panel svg circle').count()) !== 4)
       fail('election: both official series must display both actual reports');
+    const targets = page.getByRole('button', { name: /^(Yes|No),.*official report/ });
+    if ((await targets.count()) !== 4)
+      fail('election: point controls are hidden from assistive technology');
+    await targets.first().focus();
+    await page.keyboard.press('Enter');
+    if (
+      !(await page.locator('.chart-point-popover').isVisible()) ||
+      !(await page.locator('.chart-point-popover').textContent()).includes('Official report')
+    )
+      fail('election: keyboard point popover lacks the official report');
+    await page.keyboard.press('Escape');
+    if (await page.locator('.chart-point-popover').isVisible())
+      fail('election: Escape did not dismiss point popover');
+    await targets.last().tap();
+    const popoverBox = await page.locator('.chart-point-popover').boundingBox();
+    if (
+      !popoverBox ||
+      popoverBox.x < 0 ||
+      popoverBox.x + popoverBox.width > 390 ||
+      popoverBox.y < 0 ||
+      popoverBox.y + popoverBox.height > 844
+    )
+      fail('election: mobile popover clips the viewport');
+    await page.locator('#contests h2').click();
+    if (await page.locator('.chart-point-popover').isVisible())
+      fail('election: outside click did not dismiss popover');
     await stepSelect(page, page.getByLabel('Measure', { exact: true }));
     if (!(await page.locator('.history-table-wrap').textContent()).includes('44.0%'))
       fail('election: chart comparison metric selection failed');
@@ -723,9 +646,56 @@ async function checkElection() {
   }
 }
 
+/**
+ * The committed ballot carries no official counts, so scenarios that need a trend inject a synthetic
+ * California Secretary of State county history for one measure. Test data only; never published.
+ */
+async function electionWithOfficialHistory(id = 'state-1', reports = 4) {
+  const data = JSON.parse(await readFile('elections/2026-11-03.json', 'utf8'));
+  data.status = 'unofficial';
+  data.checkStatus = 'partial';
+  data.checkedAt = '2026-11-04T06:30:00Z';
+  data.lastSuccessfulFetchAt = '2026-11-04T06:29:00Z';
+  const contest = data.contests.find((c) => c.id === id);
+  const geography = {
+    type: 'county',
+    id: '06075',
+    name: 'San Francisco',
+    scope: 'county-portion-of-contest',
+  };
+  const url = 'https://media.sos.ca.gov/media/ballot-measures.json';
+  contest.history = undefined;
+  contest.resultHistory = Array.from({ length: reports }, (_, i) => ({
+    sourceReportTime: `November 3, 2026, 9:${String(i * 10).padStart(2, '0')} p.m.`,
+    observedAt: `2026-11-04T05:${String(i * 10 + 10).padStart(2, '0')}:00Z`,
+    resultSourceUrl: url,
+    reporting: `${(i + 1) * 20}% (${(i + 1) * 100} of 514) precincts reporting`,
+    resultGeography: structuredClone(geography),
+    options: contest.options.map((o, index) => ({
+      id: o.id,
+      label: o.label,
+      votes: 1000 * (i + 1) + (index === 0 ? 120 * i : 0) + index * 700,
+    })),
+  }));
+  const latest = contest.resultHistory.at(-1);
+  Object.assign(contest, {
+    resultStatus: 'unofficial',
+    resultSourceUrl: url,
+    sourceReportTime: latest.sourceReportTime,
+    resultsFetchedAt: '2026-11-04T06:29:00Z',
+    resultCheckedAt: '2026-11-04T06:29:00Z',
+    reporting: latest.reporting,
+    resultGeography: structuredClone(geography),
+    options: structuredClone(latest.options),
+  });
+  delete contest.history;
+  return data;
+}
+
 async function checkPopoverViewport() {
   // Playwright normally hides scrollbars; keep a real gutter so innerWidth
   // cannot accidentally satisfy the usable-viewport assertion.
+  const history = await electionWithOfficialHistory();
   const gutterBrowser = await chromium.launch({ ignoreDefaultArgs: ['--hide-scrollbars'] });
   try {
     for (const width of [1180, 390, 320]) {
@@ -735,7 +705,10 @@ async function checkPopoverViewport() {
       });
       try {
         const page = await context.newPage();
-        await page.goto(`${origin}${base}election.html?contest=RTM`);
+        await page.route('**/elections/2026-11-03.json', (route) =>
+          route.fulfill({ json: history }),
+        );
+        await page.goto(`${origin}${base}election.html?contest=state-1`);
         await page.locator('.chart-point-target').first().waitFor();
         await page.addStyleTag({
           content:
@@ -788,56 +761,6 @@ async function checkPopoverViewport() {
   }
 }
 
-async function checkUnknownMediaTime() {
-  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
-  const page = await context.newPage();
-  const data = JSON.parse(await readFile('elections/2026-11-03.json', 'utf8'));
-  const contest = data.contests.find((c) => c.id === 'RTM');
-  const point = structuredClone(contest.mediaHistory[3]);
-  Object.assign(point, {
-    sourceUpdatedAt: null,
-    sourceTimestampIssue: {
-      type: 'future-dated',
-      rawText: 'Updated at 11:27 PM PT on November 4, 2026',
-    },
-    observedAt: '2026-11-04T09:05:03Z',
-  });
-  point.options[0].votes = 702848;
-  point.options[1].votes = 439585;
-  contest.mediaHistory = [...contest.mediaHistory.slice(0, 3), point];
-  contest.mediaUpdate = point;
-  try {
-    await page.route('**/elections/2026-11-03.json', (route) => route.fulfill({ json: data }));
-    for (const single of [false, true]) {
-      if (single) contest.mediaHistory = [point];
-      await page.goto(`${origin}${base}election.html?contest=RTM`);
-      await page.locator('#contests article').waitFor();
-      const text = await page.locator('#contests').textContent();
-      if (
-        !text.includes('Report time unverified') ||
-        !text.includes(point.sourceTimestampIssue.rawText) ||
-        !text.includes('1:05:03 AM')
-      )
-        fail('election: invalid publisher date lost its raw issue or actual observation time');
-      if ((await page.locator('.trend-panel svg circle').count()) !== (single ? 2 : 8))
-        fail('election: unknown report time changed real observation count');
-      if (single && (await page.locator('.trend-panel svg path').count()) !== 0)
-        fail('election: single unknown-time observation invented a trend');
-      await page.getByRole('button', { name: 'Table', exact: true }).click();
-      if (
-        !(await page.locator('.history-table-wrap').textContent()).includes(
-          'Report time unverified',
-        )
-      )
-        fail('election: table inferred an unknown report time');
-    }
-  } catch (error) {
-    fail(`unknown media time: ${error.stack}`);
-  } finally {
-    await context.close();
-  }
-}
-
 async function checkElectionLifecycle() {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
@@ -846,8 +769,7 @@ async function checkElectionLifecycle() {
     release = resolve;
   });
   let requests = 0;
-  const data = JSON.parse(await readFile('elections/2026-11-03.json', 'utf8'));
-  data.checkedAt = '2026-11-04T06:30:00Z';
+  const data = await electionWithOfficialHistory();
   try {
     await page.clock.install({ time: new Date('2026-11-04T06:30:00Z') });
     await page.route('**/elections/2026-11-03.json', async (route) => {
@@ -859,11 +781,11 @@ async function checkElectionLifecycle() {
       }
       if (requests >= 3) {
         response.checkedAt = '2026-11-04T06:20:00Z';
-        response.contests.find((c) => c.id === 'local-G').shortTitle = 'Older cached title';
+        response.contests.find((c) => c.id === 'state-1').shortTitle = 'Older cached title';
       }
       await route.fulfill({ json: response });
     });
-    await page.goto(`${origin}${base}election.html?contest=local-G`);
+    await page.goto(`${origin}${base}election.html?contest=state-1`);
     await page.locator('#contests article').waitFor();
     await page.locator('select[aria-label="Measure"]').selectOption('share');
     await page.getByRole('button', { name: 'Table', exact: true }).click();
@@ -913,7 +835,6 @@ async function checkElectionLifecycle() {
 try {
   await checkElection();
   await checkElectionLifecycle();
-  await checkUnknownMediaTime();
   await checkPopoverViewport();
   await checkStudioLoading();
   await checkPlayground();

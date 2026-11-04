@@ -10,11 +10,8 @@ let selectedId = new URLSearchParams(location.search).get('contest') || 'local-A
 for (let id = 1; id <= 11; id++) $('region').add(new Option(`District ${id}`, String(id)));
 function renderStatus() {
   const state = freshness(snapshot);
-  $('status-title').textContent = snapshot.contests.some((c) => c.mediaUpdate)
-    ? 'Preliminary results'
-    : snapshot.status === 'pending'
-      ? 'Awaiting official results'
-      : 'Unofficial · uncalled';
+  $('status-title').textContent =
+    snapshot.status === 'pending' ? 'Awaiting official results' : 'Unofficial · uncalled';
   $('check-status').textContent =
     `${state === 'stale' ? 'Stale check · ' : ''}${snapshot.checkedAt ? `Official sources checked ${formatTime(snapshot.checkedAt)}` : 'Official sources not checked yet'}`;
   $('report-time').textContent = `Local SF report: ${formatTime(snapshot.sourceReportTimestamp)}.`;

@@ -66,71 +66,11 @@ Recovery checks the public GitHub Actions metadata for the most recent completed
 
 This protects routine serialized refreshes from silently rolling history back to an older CDN response. The Pages snapshot is **not an immutable archive or independent backup**: durability still depends on retained public data and trustworthy GitHub deployment metadata. Manual rollbacks, deletion/corruption, or another publisher can require recovery outside this feed. The guard favors leaving the current deployment intact over publishing when freshness cannot be proved.
 
-### Separately attributed newsroom updates
+### Official sources only
 
-Local A–J may carry optional `mediaUpdate: {observedAt, sourceUpdatedAt, sourceName,
-sourceUrl, options: [{id,label,votes}], projection?}`. The optional projection is
-`{outcome,sourceName,sourceUrl,publishedAt}`. These are KQED preliminary tallies;
-G separately records the Chronicle's rejection projection. Neither timestamp is an
-official source report time. The UI labels the projection “Not certified.” Official
-`options`, `call`, root status and `resultHistory` remain unchanged. Media totals
-never enter official batch trends or district coloring. `observedAt` records the
-verification observation, not every automated fetch; these news updates are not
-an independently polled feed. Newer newsroom metadata survives snapshot recovery.
+The feed carries no secondary tallies: counts come from the San Francisco Department of
+Elections and the California Secretary of State's county reports. Newspaper, broadcaster and
+other compilation tallies and projections are never read, stored or shown. Official
+precinct counts live in `data/elections/` (see `precincts-index.json`) and are Pages data,
+not part of the feed.
 
-`mediaHistory` is an optional chronological array of complete `mediaUpdate` objects,
-including each observation's publisher, URL, publisher page-update time, observation
-time, options and optional attributed projection. `mediaUpdate` mirrors its final
-entry. A–J now preserve the first KQED observation and the newer Chronicle observation
-verified at 2026-11-04T05:53:30Z (publisher page updated 05:52Z). Recovery unions verified
-observations without dropping older entries. A separately labeled newsroom chart is
-used only when official history is unavailable. Its steps compare cumulative published
-tallies across observations/publishers, not distinct batches of newly cast ballots.
-
-RTM adds one Chronicle newsroom observation covering the **full five-county contest**,
-not San Francisco alone. Its `mediaUpdate` and `mediaHistory` point carry
-`resultGeography: {type:"regional", scope:"full-contest", name:"Five-county RTM region",
-counties:["Alameda","Contra Costa","San Francisco","San Mateo","Santa Clara"]}`.
-The Chronicle passage projection uses `observedAt`, with no invented `publishedAt`.
-The tally's `sourceUpdatedAt` is the publisher page-update time. The official
-`options`, `call`, `resultHistory`, and neutral district map remain separate.
-
-The dedicated KQED RTM source also supports `sourceUpdatedAt: null` only alongside
-`sourceTimestampIssue: {type: "future-dated", rawText: "Updated at 11:27 PM PT on November 4, 2026"}`.
-This narrow exception preserves the publisher's literal invalid date; it does not
-repair or infer a report time. The UI displays “Report time unverified,” the raw
-issue and the actual `observedAt`. Newsroom history stays ordered by observation,
-including when publisher clocks disagree. Existing dated observations are retained
-unchanged. Consumer support does not itself publish a new observation.
-
-RTM source audit: at 2026-11-04T09:05:03Z the dedicated KQED page showed
-702,848 Yes / 439,585 No with the future-dated literal clock recorded above.
-That observation was held and never published. A normal visible-page reload at
-2026-11-04T09:23:52Z showed the same totals with “Updated at 12:59 AM PT on
-November 4, 2026” (08:59:00Z). Only this later verified observation is appended;
-its corrected source clock is not backdated onto the earlier observation.
-
-MTC RTM compilation (prepared from the public district page observed
-2026-11-04T19:03:28Z): the existing secondary `mediaHistory` accepts only the exact
-Metropolitan Transportation Commission district URL for RTM with
-`sourceKind: "agency-compilation"`, `sourceUpdatedAt: null` and bounded literal
-`sourceUpdatedAtText: "Last updated 8:50 a.m., November 4"`. The publisher supplies
-no timezone, so this is not converted to an ISO report time. The sixth observation
-is 714,460 Yes / 446,326 No across the full five-county contest. Earlier newsroom
-observations and the original named Chronicle projection remain unchanged.
-Mixed history is described as published observations, ordered by `observedAt`;
-this compilation never enters direct official `resultHistory` or SF district maps.
-
-The offline-tested MTC adapter candidate parses the public HTML table, requiring the 2026 election
-identity, preliminary/unofficial status, all five unique counties, valid counts,
-and exact row and regional reconciliation. It ignores displayed percentages.
-Repeated identical cumulative counts do not append observations. Same-clock increases can append, but decreases or reversions to known earlier
-MTC counts require review. A later publisher wall clock can support a correction.
-These are observations, not inferred ballot batches. Retrieval/validation failures retain the last observation.
-Automatic MTC fetching is disabled: the production updater does not import this
-adapter. Its tested HTTP 401/403 marker is durable only after successful feed
-deployment, so it is not sufficient for automatic polling activation. A reviewed
-fail-closed recovery design is required before activation. Raw publisher clocks are
-currently limited to November 4–30 in this election; another format fails closed.
-
-Precinct-level official counts are separate from this feed: `data/elections/precincts-index.json` lists dated snapshots (`precincts-<YYYY-MM-DD-HHmmss>.json`, newest in `latest`; see `SOURCES.md`) that aggregate the department's cast vote record export per precinct and reconciles with its summary report. Boundaries are `data/precincts-2022.json`. Do not color or imply winners from first-choice counts in ranked-choice contests.

@@ -1,6 +1,5 @@
 import { renderElectionChart } from './election-chart.js';
 import { attachPointPopover } from './election-chart-interaction.js';
-import { mediaReportTime } from './election-media.js';
 
 const make = (tag, text, className) =>
   Object.assign(document.createElement(tag), {
@@ -9,7 +8,7 @@ const make = (tag, text, className) =>
   });
 const observedTime = (iso) =>
   new Date(iso).toLocaleString('en-US', { timeZone: 'America/Los_Angeles', timeZoneName: 'short' });
-function createHistoryTable({ points, series, media, unit, share, format }) {
+function createHistoryTable({ points, series, unit, share, format }) {
   const tableHost = make('div', '', 'history-table-wrap');
   tableHost.tabIndex = 0;
   tableHost.setAttribute('role', 'region');
@@ -18,11 +17,11 @@ function createHistoryTable({ points, series, media, unit, share, format }) {
     `${unit} data; scroll to see earlier and later observations`,
   );
   const table = document.createElement('table');
-  table.append(make('caption', `Exact ${media ? 'published' : 'batch'} observations`));
+  table.append(make('caption', 'Exact batch observations'));
   const head = document.createElement('thead');
   const header = document.createElement('tr');
   for (const text of [
-    media ? 'Publisher page updated (timezone shown)' : 'Official report time',
+    'Official report time',
     'First observed (Pacific)',
     ...series.map((s) => `${s.label} ${share ? '(%)' : '(votes)'}`),
   ]) {
@@ -53,32 +52,11 @@ function createHistoryTable({ points, series, media, unit, share, format }) {
 
 export function createTrend(contest, state = {}) {
   const section = make('section', '', 'batch-history');
-  const media = !contest.resultHistory?.length && !!contest.mediaHistory?.length;
-  const compiled = contest.mediaHistory?.some((p) => p.sourceKind === 'agency-compilation');
-  const unit = media ? 'Observation' : 'Batch';
-  const units = media ? 'observations' : 'batches';
-  section.setAttribute(
-    'aria-label',
-    media
-      ? compiled
-        ? 'Published observation history'
-        : 'Newsroom observation history'
-      : 'Reported batch history',
-  );
-  section.append(
-    make(
-      'h3',
-      media ? (compiled ? 'Published observations' : 'Newsroom observations') : 'Reported batches',
-    ),
-  );
-  // Adapt only the presentation; never put newsroom records in resultHistory.
-  const points = media
-    ? contest.mediaHistory.map((p) => ({
-        ...p,
-        sourceReportTime: `${p.sourceName} · ${mediaReportTime(p, observedTime)}`,
-        resultSourceUrl: p.sourceUrl,
-      }))
-    : contest.resultHistory || [];
+  const unit = 'Batch';
+  const units = 'batches';
+  section.setAttribute('aria-label', 'Reported batch history');
+  section.append(make('h3', 'Reported batches'));
+  const points = contest.resultHistory || [];
   if (!points.length) {
     const empty = make('div', '', 'batch-empty');
     empty.append(
@@ -160,7 +138,7 @@ export function createTrend(contest, state = {}) {
       renderElectionChart(series, {
         share,
         unit,
-        label: `${options.map((o) => o.label).join(' and ')}, ${share ? 'share of reported votes' : 'reported votes'}, ${points.length} ${media ? 'published ' : 'reported '}${points.length === 1 ? unit.toLowerCase() : units}. ${delta}`,
+        label: `${options.map((o) => o.label).join(' and ')}, ${share ? 'share of reported votes' : 'reported votes'}, ${points.length} reported ${points.length === 1 ? unit.toLowerCase() : units}. ${delta}`,
       }),
       'image/svg+xml',
     ).documentElement;
@@ -172,7 +150,6 @@ export function createTrend(contest, state = {}) {
     const tableHost = createHistoryTable({
       points,
       series,
-      media,
       unit,
       share,
       format,
@@ -185,8 +162,7 @@ export function createTrend(contest, state = {}) {
     tableHost.hidden = !tableView;
     const popover = attachPointPopover(svg, series, points, {
       share,
-      media,
-      scope: media ? contest.mediaUpdate?.resultGeography?.name || 'SF citywide' : 'SF county only',
+      scope: 'SF county only',
     });
     panel.replaceChildren(headline, svg, tableHost, popover);
     evidence.replaceChildren(note);

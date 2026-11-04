@@ -4,6 +4,8 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Use official sources only on the Pages election views: remove all newspaper and agency-compilation tallies, projections, history and their validation from the feed, views, trend charts and tests. Local measures without official counts read Pending until official counts are imported.
+
 ## 5.1.4 — 2026-11-05
 
 - Group internal browser controllers, renderers and shells under `src/interactive`, and SVG generation under `src/rendering`. Rename the general map engine, controls and marker renderer to match their responsibilities; clarify selection-detail, neighborhood-results and layer-composition operations. Keep public package entry points unchanged.

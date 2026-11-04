@@ -93,8 +93,8 @@ Election code responsibilities:
   `website/election-chart.js` renders the TanStack SVG without owning feed state.
   `website/election-chart-interaction.js` adds keyboard/touch point popovers with
   exact observation provenance and native dismissal.
-- `website/election-model.js`, `election-history.js` and `election-media.js` validate
-  and reconcile snapshots, official history and newsroom observations separately.
+- `website/election-model.js` and `election-history.js` validate and reconcile snapshots and
+  official history.
 - `scripts/update-election.mjs` orchestrates checks; `scripts/lib/sos-county-results.mjs`
   parses official county reports, and `previous-election.mjs` guards deployed recovery.
 
