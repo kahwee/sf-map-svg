@@ -114,7 +114,7 @@ try {
   if (verified) {
     next.checkStatus = 'partial';
     next.lastSuccessfulFetchAt = fetchedAt;
-    next.message = `Verified SOS county reports for ${verified} state/federal candidate contests. Zero/pre-election reports remain pending. Local SF and district/precinct results are unavailable. All counts are SF county portions; all contests remain uncalled.`;
+    next.message = `Verified SOS county reports for ${verified} state/federal and judicial contests. Zero/pre-election reports remain pending. Local SF and district/precinct results are unavailable. All counts are SF county portions; all contests remain uncalled.`;
   }
 } catch (error) {
   next.sourceChecks.push({

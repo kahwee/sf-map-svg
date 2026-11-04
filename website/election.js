@@ -56,7 +56,7 @@ function render() {
       article.append(title, status, list);
       if (c.resultStatus) {
         const provenance = document.createElement('p');
-        provenance.textContent = `San Francisco county portion only · ${c.resultStatus === 'pending' ? 'Zero/pre-election report — awaiting votes' : 'Unofficial county votes'} · SOS report: ${c.sourceReportTime} (as published) · Fetched: ${time(c.resultsFetchedAt)}${c.resultCheckStatus && c.resultCheckStatus !== 'ok' ? ' · Latest check failed; retained counts may be stale.' : ''}`;
+        provenance.textContent = `San Francisco county portion only · ${c.resultStatus === 'pending' ? 'Zero/pre-election report — awaiting votes' : 'Unofficial county votes'} · SOS report: ${c.sourceReportTime} (as published) · Fetched: ${time(c.resultsFetchedAt)}${c.resultCheckStatus && c.resultCheckStatus !== 'ok' ? ' · Newer results unavailable; retained counts may be stale.' : ''}`;
         const source = document.createElement('a');
         source.href = c.resultSourceUrl;
         source.textContent = 'Official SOS county report';

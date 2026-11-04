@@ -209,7 +209,7 @@ The independent California Secretary of State public media index at
 https://media.sos.ca.gov/media/json-endpoints.csv identifies the November 3,
 2026 election and links JSON reports. Downloaded November 4 UTC: the reports
 still carry the November 2, 6:28 p.m. zero-report time. The adapter extracts
-only exact San Francisco County rows for 13 supported state/federal candidate
+only exact San Francisco County rows for 40 supported state/federal candidate, proposition and judicial
 contests. It does not use statewide totals, infer precinct boundaries, or map
 county totals onto districts. Actual extracted fixtures and their URLs are
 recorded in `test/fixtures/sos/README.md`. Zero reports stay pending, and report

@@ -28,7 +28,7 @@ function reported() {
   sf.candidates[1].Votes = '567';
   return rows;
 }
-test('actual official November zero-report fixtures stay pending for all 13 mapped contests', () => {
+test('actual official November zero-report fixtures stay pending for all 40 mapped contests', () => {
   for (const m of sosMappings) {
     const result = parseSosCounty(
       files.get(m.file),
@@ -105,4 +105,29 @@ test('partial county snapshots validate without inventing an SF Department repor
   validateSnapshot(data);
   assert.equal(data.sourceReportTimestamp, null);
   assert.ok(data.contests.find((c) => c.id === 'local-A').options.every((o) => o.votes === null));
+});
+
+test('propositions and eligible judicial retention use exact identities and Yes/No values', () => {
+  for (const id of ['state-1', 'state-45', 'judicial-0', 'judicial-12']) {
+    const m = sosMappings.find((m) => m.id === id);
+    const c = seed.contests.find((c) => c.id === id);
+    const rows = structuredClone(files.get(m.file));
+    for (const row of rows) {
+      row.ReportingTime = 'November 3, 2026, 8:45 p.m.';
+      for (const item of row[m.category]) {
+        item.yesVotes = '123';
+        item.noVotes = '456';
+      }
+    }
+    const result = parseSosCounty(rows, m, c, index, now);
+    assert.deepEqual(
+      result.options.map((o) => o.votes),
+      [123, 456],
+    );
+    assert.equal(result.call, 'uncalled');
+    const selectedTitle = m.raceTitle;
+    for (const row of rows) row.raceTitle = selectedTitle.replace('San Francisco', 'San Mateo');
+    assert.throws(() => parseSosCounty(rows, m, c, index, now));
+  }
+  assert.equal(sosMappings.length, 40);
 });

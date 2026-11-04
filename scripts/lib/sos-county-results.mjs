@@ -20,6 +20,22 @@ export const sosMappings = [
   { file: 'us-rep', id: 'office-26', title: 'United States Representative District 15' },
   { file: 'state-assembly', id: 'office-27', title: 'State Assembly Member District 17' },
   { file: 'state-assembly', id: 'office-28', title: 'State Assembly Member District 19' },
+  ...[1, 2, 3, 4, 5, 37, 38, 39, 40, 41, 42, 43, 44, 45].map((number) => ({
+    file: 'ballot-measures',
+    category: 'ballot-measures',
+    id: `state-${number}`,
+    number,
+    raceTitle: 'Ballot Measures - San Francisco Results',
+  })),
+  ...Array.from({ length: 13 }, (_, i) => ({
+    file: i < 2 ? 'supreme-court' : 'court-of-appeal',
+    category: i < 2 ? 'supreme-court' : 'courts-of-appeal',
+    id: `judicial-${i}`,
+    raceTitle:
+      i < 2
+        ? 'Supreme Court Justice - San Francisco Results'
+        : 'Courts of Appeal - District 01 - San Francisco Results',
+  })),
 ];
 export const sosUrl = (mapping) => `${base}${mapping.file}.json`;
 const normalized = (name) => name.normalize('NFKC').trim().toLocaleLowerCase('en-US');
@@ -57,8 +73,22 @@ export function parseSosCounty(rows, mapping, contest, index, now = Date.now()) 
     throw new Error('SOS election identity or endpoint not verified');
   if (!Array.isArray(rows) || !contest || contest.id !== mapping.id)
     throw new Error('Invalid SOS report');
-  const title = `${mapping.title || contest.title} - San Francisco County Results`;
-  const matches = rows.filter((row) => row.raceTitle === title);
+  const title =
+    mapping.raceTitle || `${mapping.title || contest.title} - San Francisco County Results`;
+  const matchingRows = rows.filter((row) => row.raceTitle === title);
+  const matches = mapping.category
+    ? matchingRows.flatMap((row) => {
+        if (!Array.isArray(row[mapping.category])) throw new Error('SOS yes/no schema changed');
+        return row[mapping.category]
+          .filter((item) =>
+            mapping.number
+              ? item.Number === String(mapping.number).padStart(2, '0')
+              : normalized(item.Name) ===
+                normalized(contest.title.split(' — ')[0].replace('Retention: ', '')),
+          )
+          .map((item) => ({ ...row, item }));
+      })
+    : matchingRows;
   if (matches.length !== 1) throw new Error(`Expected exactly one ${title}`);
   const row = matches[0];
   const reportOrder = sourceTimeOrder(row.ReportingTime);
@@ -67,15 +97,25 @@ export function parseSosCounty(rows, mapping, contest, index, now = Date.now()) 
   );
   if (!reporting || +reporting[1] > 100 || count(reporting[2]) > count(reporting[3]))
     throw new Error('Invalid SOS reporting metadata');
-  if (!Array.isArray(row.candidates) || row.candidates.length !== contest.options.length)
-    throw new Error('SOS candidate roster changed');
-  const names = new Set(row.candidates.map((c) => normalized(c.Name)));
-  if (names.size !== contest.options.length) throw new Error('Duplicate SOS candidates');
-  const options = contest.options.map((option) => {
-    const candidate = row.candidates.find((c) => normalized(c.Name) === normalized(option.label));
-    if (!candidate) throw new Error('SOS candidate does not match certified ballot');
-    return { ...option, votes: count(candidate.Votes) };
-  });
+  let options;
+  if (mapping.category) {
+    if (contest.options.map((o) => o.label).join(',') !== 'Yes,No')
+      throw new Error('Unexpected yes/no ballot');
+    options = contest.options.map((option) => ({
+      ...option,
+      votes: count(option.label === 'Yes' ? row.item.yesVotes : row.item.noVotes),
+    }));
+  } else {
+    if (!Array.isArray(row.candidates) || row.candidates.length !== contest.options.length)
+      throw new Error('SOS candidate roster changed');
+    const names = new Set(row.candidates.map((c) => normalized(c.Name)));
+    if (names.size !== contest.options.length) throw new Error('Duplicate SOS candidates');
+    options = contest.options.map((option) => {
+      const candidate = row.candidates.find((c) => normalized(c.Name) === normalized(option.label));
+      if (!candidate) throw new Error('SOS candidate does not match certified ballot');
+      return { ...option, votes: count(candidate.Votes) };
+    });
+  }
   const total = options.reduce((sum, option) => sum + option.votes, 0);
   if (!Number.isSafeInteger(total)) throw new Error('Unsafe SOS total');
   const beforeElectionReport = reportOrder < 11_032_000;
