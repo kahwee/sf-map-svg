@@ -5,6 +5,8 @@ on:
   workflow_run:
     workflows: [Publish npm package]
     types: [completed]
+  schedule:
+    - cron: '7,17,27,37,47,57 * * * *'
   workflow_dispatch:
 permissions:
   contents: read
@@ -74,6 +76,8 @@ jobs:
           echo "npm has not exposed $version yet; rerun this workflow after registry processing."
           exit 1
       - run: pnpm build:pages:built --released
+      - name: Check official election source and preserve last validated snapshot
+        run: node scripts/update-election.mjs
       - run: pnpm test:visual
       - run: pnpm test:studio
       - run: pnpm test:pages

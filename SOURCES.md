@@ -177,3 +177,17 @@ index is https://sfelections.org/results/20121106/detail.php .
 reconciles all 2002, 2012, and 2022 district totals. The election JSON files
 are Pages datasets; the historical district maps retain their existing
 display geometry, and no precinct polygons or raw workbook data are shipped.
+
+## November 2026 ballot and pending results
+
+Downloaded November 4, 2026 UTC (November 3 Pacific):
+https://media.api.sf.gov/documents/N26_EN_VIP.pdf .
+`elections/2026-11-03.json` records its SHA-256 and verification time. Printed
+page 248 lists all 14 state, one regional and ten local measures. Pages 24–51
+supply candidate statement names, explicitly not a complete candidate roster.
+The November results endpoint
+https://www.sfelections.org/results/20261103w/index.html returned HTTP 403;
+no November vote totals, report time, winners or geographic results are asserted.
+The existing 2022 supervisorial boundaries are reused only for ballot district
+selection, with neutral fills. See `elections/README.md` for the feed contract
+and the ingestion blocker. Historical snapshots remain separate elections.

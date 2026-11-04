@@ -28,6 +28,7 @@ const darkWater = (svg) =>
 /** Every page, its section in the masthead, and whether it belongs in the sitemap. */
 const pages = [
   { file: 'index.html', section: 'atlas' },
+  { file: 'election.html', section: 'election' },
   { file: 'layers.html', section: 'layers' },
   { file: 'playground.html', section: 'playground' },
   { file: 'examples.html', section: 'examples' },
@@ -42,6 +43,7 @@ const pages = [
 ];
 const sections = [
   ['atlas', './', 'Atlas'],
+  ['election', './election.html', 'Election 2026'],
   ['layers', './layers.html', 'Layers'],
   ['playground', './playground.html', 'Playground'],
   ['examples', './examples.html', 'Examples'],
@@ -481,6 +483,7 @@ try {
     await writeFile(`pages-dist/maps/figures/${name}-dark.svg`, darkWater(svg));
   }
 
+  await cp('elections', 'pages-dist/elections', { recursive: true });
   await cp('data/elections', 'pages-dist/data/elections', { recursive: true });
   await cp('data/propositions', 'pages-dist/data/propositions', { recursive: true });
   await cp('data/candidates', 'pages-dist/data/candidates', { recursive: true });

@@ -1,0 +1,43 @@
+.election-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 2rem;
+}
+.election-grid figure {
+  margin: 0;
+}
+.election-contests {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 1rem;
+  margin-block: 2rem;
+}
+.election-contests article {
+  border: 1px solid var(--rule);
+  padding: 1.25rem;
+  background: var(--card);
+}
+.election-contests h3 {
+  font-size: 1.25rem;
+  overflow-wrap: anywhere;
+}
+.election-contests li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 0.3rem;
+}
+.election-contests ul {
+  padding: 0;
+}
+#check-status {
+  font-weight: 600;
+}
+#refresh {
+  padding: 0.7rem 1rem;
+}
+@media (max-width: 700px) {
+  .election-grid {
+    grid-template-columns: 1fr;
+  }
+}

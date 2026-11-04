@@ -1,0 +1,991 @@
+{
+  "schemaVersion": 1,
+  "electionDate": "2026-11-03",
+  "status": "pending",
+  "sourceUrl": "https://www.sfelections.org/results/20261103w/index.html",
+  "sourceReportTimestamp": null,
+  "lastSuccessfulFetchAt": null,
+  "checkedAt": null,
+  "generatedAt": null,
+  "buildCommit": null,
+  "checkStatus": "not-checked",
+  "message": "Awaiting verified official results. Candidate names cover pamphlet statements only; consult the official roster for complete ballot choices.",
+  "geography": {
+    "type": "none",
+    "boundaryYear": null
+  },
+  "ballotSource": {
+    "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+    "sha256": "9c6bcf0b49b5a04c1f03de363d5727458c673d8807ef2932c2912ed40d786136",
+    "verifiedAt": "2026-11-04T02:12:00Z",
+    "pages": "24–51 and 248",
+    "candidateRosterComplete": false
+  },
+  "contests": [
+    {
+      "id": "local-A",
+      "title": "Proposition A — Charter Changes Affecting Various City Departments and Commissions",
+      "kind": "measure",
+      "scope": "citywide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "local-B",
+      "title": "Proposition B — Establishing a Municipal Finance Corporation and a Public Bank",
+      "kind": "measure",
+      "scope": "citywide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "local-C",
+      "title": "Proposition C — Contributions to the Housing Trust Fund",
+      "kind": "measure",
+      "scope": "citywide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "local-D",
+      "title": "Proposition D — Changes to Ballot Measure Process",
+      "kind": "measure",
+      "scope": "citywide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "local-E",
+      "title": "Proposition E — City Administrator’s Authority and Changes to City Contracting",
+      "kind": "measure",
+      "scope": "citywide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "local-F",
+      "title": "Proposition F — Changes to Executive Branch Management",
+      "kind": "measure",
+      "scope": "citywide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "local-G",
+      "title": "Proposition G — Allowing Private Vehicles on the Upper Great Highway in Sunset Dunes Park",
+      "kind": "measure",
+      "scope": "citywide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "local-H",
+      "title": "Proposition H — Parcel Tax to Fund Muni Operations",
+      "kind": "measure",
+      "scope": "citywide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "local-I",
+      "title": "Proposition I — Changes to Real Property Transfer Tax",
+      "kind": "measure",
+      "scope": "citywide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "local-J",
+      "title": "Proposition J — Removal of Foreclosure Exemption for Real Property Transfer Tax",
+      "kind": "measure",
+      "scope": "citywide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "RTM",
+      "title": "Regional Transit Measure",
+      "kind": "measure",
+      "scope": "regional",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "state-1",
+      "title": "Proposition 1 — Authorizes Bonds for Housing Affordability Programs",
+      "kind": "measure",
+      "scope": "statewide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "state-2",
+      "title": "Proposition 2 — Increases State’s Rainy Day Fund",
+      "kind": "measure",
+      "scope": "statewide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "state-3",
+      "title": "Proposition 3 — Provides Permanent Funding for Schools and Health Care by Extending Existing Tax on High Incomes",
+      "kind": "measure",
+      "scope": "statewide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "state-4",
+      "title": "Proposition 4 — Repeals Prohibition Against Public Funding of Election Campaigns",
+      "kind": "measure",
+      "scope": "statewide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "state-5",
+      "title": "Proposition 5 — Changes Recall Election Process for Statewide Officers",
+      "kind": "measure",
+      "scope": "statewide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "state-37",
+      "title": "Proposition 37 — Creates Loan Program for Middle-Income Buyers of Qualified New Homes",
+      "kind": "measure",
+      "scope": "statewide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "state-38",
+      "title": "Proposition 38 — Authorizes Bonds for Immunology Medical Research",
+      "kind": "measure",
+      "scope": "statewide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "state-39",
+      "title": "Proposition 39 — Prohibits Citizens from Voting Unless They Present Government-Issued Identification",
+      "kind": "measure",
+      "scope": "statewide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "state-40",
+      "title": "Proposition 40 — Imposes One-Time Tax on Certain Taxpayers",
+      "kind": "measure",
+      "scope": "statewide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "state-41",
+      "title": "Proposition 41 — Prohibits New State Taxes that Exclude Revenues from State Spending Limit. Requires Audits for New State Special Taxes",
+      "kind": "measure",
+      "scope": "statewide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "state-42",
+      "title": "Proposition 42 — Prohibits New State Personal Property Taxes and Certain Retroactive State Taxes",
+      "kind": "measure",
+      "scope": "statewide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "state-43",
+      "title": "Proposition 43 — Limits Voters’ Ability to Raise Revenues for Local Government Services",
+      "kind": "measure",
+      "scope": "statewide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "state-44",
+      "title": "Proposition 44 — Requires Community Health Clinics Spend 90% of Revenue on Program Services",
+      "kind": "measure",
+      "scope": "statewide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "state-45",
+      "title": "Proposition 45 — Modifies Environmental Review for Certain Projects",
+      "kind": "measure",
+      "scope": "statewide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "office-25",
+      "title": "United States Representative, District 11",
+      "kind": "candidate",
+      "scope": "district",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "CONNIE CHAN",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "SCOTT WIENER",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled",
+      "rosterStatus": "pamphlet-statements-only",
+      "supervisorialDistrict": null,
+      "countingMethod": "votes"
+    },
+    {
+      "id": "office-26",
+      "title": "United States Representative, District 15",
+      "kind": "candidate",
+      "scope": "district",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "KEVIN MULLIN",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled",
+      "rosterStatus": "pamphlet-statements-only",
+      "supervisorialDistrict": null,
+      "countingMethod": "votes"
+    },
+    {
+      "id": "office-27",
+      "title": "State Assembly, District 17",
+      "kind": "candidate",
+      "scope": "district",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "MATT HANEY",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled",
+      "rosterStatus": "pamphlet-statements-only",
+      "supervisorialDistrict": null,
+      "countingMethod": "votes"
+    },
+    {
+      "id": "office-28",
+      "title": "State Assembly, District 19",
+      "kind": "candidate",
+      "scope": "district",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "CATHERINE STEFANI",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled",
+      "rosterStatus": "pamphlet-statements-only",
+      "supervisorialDistrict": null,
+      "countingMethod": "votes"
+    },
+    {
+      "id": "office-29",
+      "title": "Board of Education",
+      "kind": "candidate",
+      "scope": "citywide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "AUTUMN BROWN GARIBAY",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "VIRGINIA CHEUNG",
+          "votes": null
+        },
+        {
+          "id": "2",
+          "label": "ALIDA FISHER",
+          "votes": null
+        },
+        {
+          "id": "3",
+          "label": "RYAN HAZELTON",
+          "votes": null
+        },
+        {
+          "id": "4",
+          "label": "PHIL KIM",
+          "votes": null
+        },
+        {
+          "id": "5",
+          "label": "LAURANCE LEE",
+          "votes": null
+        },
+        {
+          "id": "6",
+          "label": "REINA TELLO",
+          "votes": null
+        },
+        {
+          "id": "7",
+          "label": "TIM TUNG",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled",
+      "rosterStatus": "pamphlet-statements-only",
+      "supervisorialDistrict": null,
+      "countingMethod": "votes"
+    },
+    {
+      "id": "office-30",
+      "title": "Community College Board (4-year term ending January 8, 2031)",
+      "kind": "candidate",
+      "scope": "citywide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "ELIJAH BALL",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "ROME MOSES JONES",
+          "votes": null
+        },
+        {
+          "id": "2",
+          "label": "MONROE LACE",
+          "votes": null
+        },
+        {
+          "id": "3",
+          "label": "LEAH LACROIX",
+          "votes": null
+        },
+        {
+          "id": "4",
+          "label": "JEREMY LEE",
+          "votes": null
+        },
+        {
+          "id": "5",
+          "label": "BUNNY MCFADDEN",
+          "votes": null
+        },
+        {
+          "id": "6",
+          "label": "ERWIN TAM",
+          "votes": null
+        },
+        {
+          "id": "7",
+          "label": "LISA PALAGI WYNN II",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled",
+      "rosterStatus": "pamphlet-statements-only",
+      "supervisorialDistrict": null,
+      "countingMethod": "votes"
+    },
+    {
+      "id": "office-31",
+      "title": "Community College Board (remainder of the current term ending January 8, 2029)",
+      "kind": "candidate",
+      "scope": "citywide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "RUTH FERGUSON",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled",
+      "rosterStatus": "pamphlet-statements-only",
+      "supervisorialDistrict": null,
+      "countingMethod": "votes"
+    },
+    {
+      "id": "office-32",
+      "title": "BART Director, District 8",
+      "kind": "candidate",
+      "scope": "district",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "SARA BARZ",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled",
+      "rosterStatus": "pamphlet-statements-only",
+      "supervisorialDistrict": null,
+      "countingMethod": "votes"
+    },
+    {
+      "id": "office-33",
+      "title": "Assessor-Recorder",
+      "kind": "candidate",
+      "scope": "citywide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "JOAQUÍN TORRES",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled",
+      "rosterStatus": "pamphlet-statements-only",
+      "supervisorialDistrict": null,
+      "countingMethod": "ranked-choice-first-choice"
+    },
+    {
+      "id": "office-34",
+      "title": "Public Defender",
+      "kind": "candidate",
+      "scope": "citywide",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "MANO RAJU",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled",
+      "rosterStatus": "pamphlet-statements-only",
+      "supervisorialDistrict": null,
+      "countingMethod": "ranked-choice-first-choice"
+    },
+    {
+      "id": "office-35",
+      "title": "Board of Supervisors, District 2",
+      "kind": "candidate",
+      "scope": "district",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "GUY MCCOY",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "MONTHANUS RATANAPAKDEE",
+          "votes": null
+        },
+        {
+          "id": "2",
+          "label": "STEPHEN SHERRILL",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled",
+      "rosterStatus": "pamphlet-statements-only",
+      "supervisorialDistrict": 2,
+      "countingMethod": "ranked-choice-first-choice"
+    },
+    {
+      "id": "office-36",
+      "title": "Board of Supervisors, District 4",
+      "kind": "candidate",
+      "scope": "district",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "ALBERT CHOW",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "JEREMY JULIAN GRECO",
+          "votes": null
+        },
+        {
+          "id": "2",
+          "label": "ALAN WONG",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled",
+      "rosterStatus": "pamphlet-statements-only",
+      "supervisorialDistrict": 4,
+      "countingMethod": "ranked-choice-first-choice"
+    },
+    {
+      "id": "office-37",
+      "title": "Board of Supervisors, District 6",
+      "kind": "candidate",
+      "scope": "district",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "ALEX BEHREND",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "MATT DORSEY",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled",
+      "rosterStatus": "pamphlet-statements-only",
+      "supervisorialDistrict": 6,
+      "countingMethod": "ranked-choice-first-choice"
+    },
+    {
+      "id": "office-38",
+      "title": "Board of Supervisors, District 8",
+      "kind": "candidate",
+      "scope": "district",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "GARY MCCOY",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "MICHAEL T. NGUYEN",
+          "votes": null
+        },
+        {
+          "id": "2",
+          "label": "DARSHINI PATEL",
+          "votes": null
+        },
+        {
+          "id": "3",
+          "label": "EMANUEL “MANNY” YEKUTIEL",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled",
+      "rosterStatus": "pamphlet-statements-only",
+      "supervisorialDistrict": 8,
+      "countingMethod": "ranked-choice-first-choice"
+    },
+    {
+      "id": "office-39",
+      "title": "Board of Supervisors, District 10",
+      "kind": "candidate",
+      "scope": "district",
+      "sourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+      "options": [
+        {
+          "id": "0",
+          "label": "PEARCI “PJ” BASTIANY III",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "DIONJAY (DJ) BROOKTER",
+          "votes": null
+        },
+        {
+          "id": "2",
+          "label": "DEANDRA BRYANT",
+          "votes": null
+        },
+        {
+          "id": "3",
+          "label": "THEO ELLINGTON",
+          "votes": null
+        },
+        {
+          "id": "4",
+          "label": "J.R. EPPLER",
+          "votes": null
+        },
+        {
+          "id": "5",
+          "label": "ELLSWORTH “ELL” M. JENNISON, JR.",
+          "votes": null
+        },
+        {
+          "id": "6",
+          "label": "MIKE TROUBLE LIN",
+          "votes": null
+        },
+        {
+          "id": "7",
+          "label": "JESSICA PESSECOW",
+          "votes": null
+        },
+        {
+          "id": "8",
+          "label": "SHAWN M. RICHARD",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled",
+      "rosterStatus": "pamphlet-statements-only",
+      "supervisorialDistrict": 10,
+      "countingMethod": "ranked-choice-first-choice"
+    }
+  ]
+}

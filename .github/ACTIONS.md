@@ -8,7 +8,7 @@ This guide describes the checked-in workflows. Follow each linked YAML file for 
 | --- | --- | --- |
 | [check.yml](workflows/check.yml) | `push`, `pull_request`, `workflow_dispatch` | `check`, `bun`, `browsers`, `stories` |
 | [maintenance.yml](workflows/maintenance.yml) | `schedule`, `workflow_dispatch` | `audit` |
-| [pages.yml](workflows/pages.yml) | `push`, `workflow_run`, `workflow_dispatch` | `package-ready`, `build`, `deploy` |
+| [pages.yml](workflows/pages.yml) | `push`, `schedule`, `workflow_run`, `workflow_dispatch` | `package-ready`, `build`, `deploy` |
 | [publish.yml](workflows/publish.yml) | `release`, `workflow_dispatch` | `publish` |
 
 ## Parallel steps
@@ -79,3 +79,7 @@ All library builds now require pinned Bun, including Node matrix, browser, and
 Storybook jobs. Source checking completes before `dist` is replaced; TypeScript
 emits with `--noCheck`. Consumer type checks and the Node 24/26 compatibility
 matrix remain enabled.
+
+## November 2026 election checks
+
+Pages also checks the official election source at minutes 7, 17, 27, 37, 47 and 57. Scheduling is best effort, not an exact ten-minute guarantee. The existing build and deployment gates remain enabled; no polling commits or npm publications occur. See [the feed contract](../elections/README.md) for the current ingestion limitation and last-good snapshot behavior.
