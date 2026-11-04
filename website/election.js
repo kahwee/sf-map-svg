@@ -91,7 +91,7 @@ function renderContest(c) {
   list.className = 'vote-list';
   list.setAttribute(
     'aria-label',
-    !reported && media ? 'KQED preliminary vote totals' : 'Official vote totals',
+    !reported && media ? `${media.sourceName} preliminary vote totals` : 'Official vote totals',
   );
   const displayedOptions = !reported && media ? media.options : c.options;
   const total = displayedOptions.reduce((sum, option) => sum + (option.votes || 0), 0);

@@ -60,23 +60,61 @@
       },
       "resultHistory": [],
       "mediaUpdate": {
-        "observedAt": "2026-11-04T05:12:50Z",
-        "sourceUpdatedAt": "2026-11-04T04:55:00Z",
-        "sourceName": "KQED",
-        "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+        "observedAt": "2026-11-04T05:53:30Z",
+        "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+        "sourceName": "San Francisco Chronicle",
+        "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
         "options": [
           {
             "id": "0",
             "label": "Yes",
-            "votes": 105243
+            "votes": 110647
           },
           {
             "id": "1",
             "label": "No",
-            "votes": 39873
+            "votes": 43330
           }
         ]
-      }
+      },
+      "mediaHistory": [
+        {
+          "observedAt": "2026-11-04T05:12:50Z",
+          "sourceUpdatedAt": "2026-11-04T04:55:00Z",
+          "sourceName": "KQED",
+          "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 105243
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 39873
+            }
+          ]
+        },
+        {
+          "observedAt": "2026-11-04T05:53:30Z",
+          "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 110647
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 43330
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "local-B",
@@ -106,23 +144,61 @@
       },
       "resultHistory": [],
       "mediaUpdate": {
-        "observedAt": "2026-11-04T05:12:50Z",
-        "sourceUpdatedAt": "2026-11-04T04:55:00Z",
-        "sourceName": "KQED",
-        "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+        "observedAt": "2026-11-04T05:53:30Z",
+        "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+        "sourceName": "San Francisco Chronicle",
+        "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
         "options": [
           {
             "id": "0",
             "label": "Yes",
-            "votes": 69434
+            "votes": 74576
           },
           {
             "id": "1",
             "label": "No",
-            "votes": 73858
+            "votes": 77493
           }
         ]
-      }
+      },
+      "mediaHistory": [
+        {
+          "observedAt": "2026-11-04T05:12:50Z",
+          "sourceUpdatedAt": "2026-11-04T04:55:00Z",
+          "sourceName": "KQED",
+          "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 69434
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 73858
+            }
+          ]
+        },
+        {
+          "observedAt": "2026-11-04T05:53:30Z",
+          "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 74576
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 77493
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "local-C",
@@ -152,23 +228,61 @@
       },
       "resultHistory": [],
       "mediaUpdate": {
-        "observedAt": "2026-11-04T05:12:50Z",
-        "sourceUpdatedAt": "2026-11-04T04:55:00Z",
-        "sourceName": "KQED",
-        "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+        "observedAt": "2026-11-04T05:53:30Z",
+        "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+        "sourceName": "San Francisco Chronicle",
+        "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
         "options": [
           {
             "id": "0",
             "label": "Yes",
-            "votes": 115901
+            "votes": 123099
           },
           {
             "id": "1",
             "label": "No",
-            "votes": 28976
+            "votes": 30676
           }
         ]
-      }
+      },
+      "mediaHistory": [
+        {
+          "observedAt": "2026-11-04T05:12:50Z",
+          "sourceUpdatedAt": "2026-11-04T04:55:00Z",
+          "sourceName": "KQED",
+          "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 115901
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 28976
+            }
+          ]
+        },
+        {
+          "observedAt": "2026-11-04T05:53:30Z",
+          "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 123099
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 30676
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "local-D",
@@ -198,23 +312,61 @@
       },
       "resultHistory": [],
       "mediaUpdate": {
-        "observedAt": "2026-11-04T05:12:50Z",
-        "sourceUpdatedAt": "2026-11-04T04:55:00Z",
-        "sourceName": "KQED",
-        "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+        "observedAt": "2026-11-04T05:53:30Z",
+        "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+        "sourceName": "San Francisco Chronicle",
+        "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
         "options": [
           {
             "id": "0",
             "label": "Yes",
-            "votes": 87684
+            "votes": 91968
           },
           {
             "id": "1",
             "label": "No",
-            "votes": 58951
+            "votes": 63641
           }
         ]
-      }
+      },
+      "mediaHistory": [
+        {
+          "observedAt": "2026-11-04T05:12:50Z",
+          "sourceUpdatedAt": "2026-11-04T04:55:00Z",
+          "sourceName": "KQED",
+          "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 87684
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 58951
+            }
+          ]
+        },
+        {
+          "observedAt": "2026-11-04T05:53:30Z",
+          "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 91968
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 63641
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "local-E",
@@ -244,23 +396,61 @@
       },
       "resultHistory": [],
       "mediaUpdate": {
-        "observedAt": "2026-11-04T05:12:50Z",
-        "sourceUpdatedAt": "2026-11-04T04:56:00Z",
-        "sourceName": "KQED",
-        "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+        "observedAt": "2026-11-04T05:53:30Z",
+        "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+        "sourceName": "San Francisco Chronicle",
+        "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
         "options": [
           {
             "id": "0",
             "label": "Yes",
-            "votes": 99749
+            "votes": 104890
           },
           {
             "id": "1",
             "label": "No",
-            "votes": 45553
+            "votes": 49282
           }
         ]
-      }
+      },
+      "mediaHistory": [
+        {
+          "observedAt": "2026-11-04T05:12:50Z",
+          "sourceUpdatedAt": "2026-11-04T04:56:00Z",
+          "sourceName": "KQED",
+          "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 99749
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 45553
+            }
+          ]
+        },
+        {
+          "observedAt": "2026-11-04T05:53:30Z",
+          "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 104890
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 49282
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "local-F",
@@ -290,23 +480,61 @@
       },
       "resultHistory": [],
       "mediaUpdate": {
-        "observedAt": "2026-11-04T05:12:50Z",
-        "sourceUpdatedAt": "2026-11-04T04:55:00Z",
-        "sourceName": "KQED",
-        "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+        "observedAt": "2026-11-04T05:53:30Z",
+        "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+        "sourceName": "San Francisco Chronicle",
+        "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
         "options": [
           {
             "id": "0",
             "label": "Yes",
-            "votes": 94121
+            "votes": 98953
           },
           {
             "id": "1",
             "label": "No",
-            "votes": 51543
+            "votes": 55672
           }
         ]
-      }
+      },
+      "mediaHistory": [
+        {
+          "observedAt": "2026-11-04T05:12:50Z",
+          "sourceUpdatedAt": "2026-11-04T04:55:00Z",
+          "sourceName": "KQED",
+          "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 94121
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 51543
+            }
+          ]
+        },
+        {
+          "observedAt": "2026-11-04T05:53:30Z",
+          "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 98953
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 55672
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "local-G",
@@ -336,20 +564,20 @@
       },
       "resultHistory": [],
       "mediaUpdate": {
-        "observedAt": "2026-11-04T05:12:50Z",
-        "sourceUpdatedAt": "2026-11-04T04:55:00Z",
-        "sourceName": "KQED",
-        "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco/proposition-g",
+        "observedAt": "2026-11-04T05:53:30Z",
+        "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+        "sourceName": "San Francisco Chronicle",
+        "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
         "options": [
           {
             "id": "0",
             "label": "Yes",
-            "votes": 54391
+            "votes": 57242
           },
           {
             "id": "1",
             "label": "No",
-            "votes": 91246
+            "votes": 97369
           }
         ],
         "projection": {
@@ -358,7 +586,57 @@
           "sourceUrl": "https://www.sfchronicle.com/election/article/california-polls-prop-40-governor-live-updates-22499351.php#a-victory-for-sunset-dunes-park-as-upper-great-highway-ballot-measure-is-voted-down-045404",
           "publishedAt": "2026-11-04T04:54:04Z"
         }
-      }
+      },
+      "mediaHistory": [
+        {
+          "observedAt": "2026-11-04T05:12:50Z",
+          "sourceUpdatedAt": "2026-11-04T04:55:00Z",
+          "sourceName": "KQED",
+          "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco/proposition-g",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 54391
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 91246
+            }
+          ],
+          "projection": {
+            "outcome": "rejected",
+            "sourceName": "San Francisco Chronicle",
+            "sourceUrl": "https://www.sfchronicle.com/election/article/california-polls-prop-40-governor-live-updates-22499351.php#a-victory-for-sunset-dunes-park-as-upper-great-highway-ballot-measure-is-voted-down-045404",
+            "publishedAt": "2026-11-04T04:54:04Z"
+          }
+        },
+        {
+          "observedAt": "2026-11-04T05:53:30Z",
+          "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 57242
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 97369
+            }
+          ],
+          "projection": {
+            "outcome": "rejected",
+            "sourceName": "San Francisco Chronicle",
+            "sourceUrl": "https://www.sfchronicle.com/election/article/california-polls-prop-40-governor-live-updates-22499351.php#a-victory-for-sunset-dunes-park-as-upper-great-highway-ballot-measure-is-voted-down-045404",
+            "publishedAt": "2026-11-04T04:54:04Z"
+          }
+        }
+      ]
     },
     {
       "id": "local-H",
@@ -388,23 +666,61 @@
       },
       "resultHistory": [],
       "mediaUpdate": {
-        "observedAt": "2026-11-04T05:12:50Z",
-        "sourceUpdatedAt": "2026-11-04T04:55:00Z",
-        "sourceName": "KQED",
-        "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+        "observedAt": "2026-11-04T05:53:30Z",
+        "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+        "sourceName": "San Francisco Chronicle",
+        "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
         "options": [
           {
             "id": "0",
             "label": "Yes",
-            "votes": 105363
+            "votes": 112181
           },
           {
             "id": "1",
             "label": "No",
-            "votes": 40360
+            "votes": 42533
           }
         ]
-      }
+      },
+      "mediaHistory": [
+        {
+          "observedAt": "2026-11-04T05:12:50Z",
+          "sourceUpdatedAt": "2026-11-04T04:55:00Z",
+          "sourceName": "KQED",
+          "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 105363
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 40360
+            }
+          ]
+        },
+        {
+          "observedAt": "2026-11-04T05:53:30Z",
+          "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 112181
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 42533
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "local-I",
@@ -434,23 +750,61 @@
       },
       "resultHistory": [],
       "mediaUpdate": {
-        "observedAt": "2026-11-04T05:12:50Z",
-        "sourceUpdatedAt": "2026-11-04T04:55:00Z",
-        "sourceName": "KQED",
-        "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+        "observedAt": "2026-11-04T05:53:30Z",
+        "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+        "sourceName": "San Francisco Chronicle",
+        "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
         "options": [
           {
             "id": "0",
             "label": "Yes",
-            "votes": 62215
+            "votes": 66907
           },
           {
             "id": "1",
             "label": "No",
-            "votes": 80937
+            "votes": 85026
           }
         ]
-      }
+      },
+      "mediaHistory": [
+        {
+          "observedAt": "2026-11-04T05:12:50Z",
+          "sourceUpdatedAt": "2026-11-04T04:55:00Z",
+          "sourceName": "KQED",
+          "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 62215
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 80937
+            }
+          ]
+        },
+        {
+          "observedAt": "2026-11-04T05:53:30Z",
+          "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 66907
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 85026
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "local-J",
@@ -480,23 +834,61 @@
       },
       "resultHistory": [],
       "mediaUpdate": {
-        "observedAt": "2026-11-04T05:12:50Z",
-        "sourceUpdatedAt": "2026-11-04T04:55:00Z",
-        "sourceName": "KQED",
-        "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+        "observedAt": "2026-11-04T05:53:30Z",
+        "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+        "sourceName": "San Francisco Chronicle",
+        "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
         "options": [
           {
             "id": "0",
             "label": "Yes",
-            "votes": 113935
+            "votes": 120907
           },
           {
             "id": "1",
             "label": "No",
-            "votes": 29241
+            "votes": 31088
           }
         ]
-      }
+      },
+      "mediaHistory": [
+        {
+          "observedAt": "2026-11-04T05:12:50Z",
+          "sourceUpdatedAt": "2026-11-04T04:55:00Z",
+          "sourceName": "KQED",
+          "sourceUrl": "https://www.kqed.org/elections/results/sanfrancisco",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 113935
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 29241
+            }
+          ]
+        },
+        {
+          "observedAt": "2026-11-04T05:53:30Z",
+          "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 120907
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 31088
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "RTM",

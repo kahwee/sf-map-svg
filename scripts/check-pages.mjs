@@ -491,18 +491,30 @@ async function checkElection() {
     if (!(await page.locator('[data-media-projection]').textContent()).includes('Not certified'))
       fail('election: media projection lacks certification distinction');
     if (
-      !(await page.locator('[data-media-tally]').textContent()).includes('KQED preliminary tally')
+      !(await page.locator('[data-media-tally]').textContent()).includes(
+        'San Francisco Chronicle preliminary tally',
+      )
     )
       fail('election: media tally lacks attribution');
     if (
-      !(await page.locator('.vote-list').textContent()).includes('62.7%') ||
+      !(await page.locator('.vote-list').textContent()).includes('63.0%') ||
       (await page.locator('.vote-share').count()) !== 2
     )
       fail('election: count-derived shares missing');
-    if (!(await page.locator('.vote-list').textContent()).includes('91,246'))
+    if (!(await page.locator('.vote-list').textContent()).includes('97,369'))
       fail('election: verified media tally missing');
-    if ((await page.locator('.trend-chart circle').count()) !== 0)
-      fail('election: media tally leaked into official trend');
+    if (
+      !(await page.locator('.batch-history h3').textContent()).includes('Newsroom observations') ||
+      (await page.locator('.trend-panel svg circle').count()) !== 2
+    )
+      fail('election: separate newsroom history missing');
+    await page.getByRole('button', { name: '← Previous', exact: true }).click();
+    if (!(await page.locator('.trend-value').textContent()).includes('54,391'))
+      fail('election: prior KQED observation was not preserved');
+    if (
+      !(await page.locator('.history-table-wrap').textContent()).includes('Publisher page updated')
+    )
+      fail('election: media timestamps mislabeled as official reports');
     await page.locator('#ballot-search').fill('zzzz-no-match');
     if (!(await page.locator('#contests').textContent()).includes('No matching'))
       fail('election: no-match state failed');

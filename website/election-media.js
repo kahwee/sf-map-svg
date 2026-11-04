@@ -10,13 +10,18 @@ export function validateMediaUpdate(contest) {
   ];
   if (
     !/^local-[A-J]$/.test(contest.id) ||
-    media?.sourceName !== 'KQED' ||
-    ![
-      'https://www.kqed.org/elections/results/sanfrancisco',
-      ...(contest.id === 'local-G'
-        ? ['https://www.kqed.org/elections/results/sanfrancisco/proposition-g']
-        : []),
-    ].includes(media.sourceUrl) ||
+    !(
+      (media?.sourceName === 'KQED' &&
+        [
+          'https://www.kqed.org/elections/results/sanfrancisco',
+          ...(contest.id === 'local-G'
+            ? ['https://www.kqed.org/elections/results/sanfrancisco/proposition-g']
+            : []),
+        ].includes(media.sourceUrl)) ||
+      (media?.sourceName === 'San Francisco Chronicle' &&
+        media.sourceUrl ===
+          'https://www.sfchronicle.com/projects/2026/election-results/san-francisco/')
+    ) ||
     times.some(
       (value) =>
         typeof value !== 'string' ||
@@ -53,4 +58,37 @@ export function latestMediaUpdate(current, previous) {
   return Date.parse(current.sourceUpdatedAt) >= Date.parse(previous.sourceUpdatedAt)
     ? current
     : previous;
+}
+
+export function validateMediaHistory(contest) {
+  if (contest.mediaHistory === undefined) return;
+  if (!Array.isArray(contest.mediaHistory) || !contest.mediaHistory.length)
+    throw new Error('Invalid media history');
+  let previous = -Infinity;
+  const seen = new Set();
+  for (const point of contest.mediaHistory) {
+    validateMediaUpdate({ ...contest, mediaUpdate: point });
+    const observed = Date.parse(point.observedAt);
+    const key = JSON.stringify(point);
+    if (observed < previous || seen.has(key)) throw new Error('Invalid media history order');
+    previous = observed;
+    seen.add(key);
+  }
+  if (JSON.stringify(contest.mediaUpdate) !== JSON.stringify(contest.mediaHistory.at(-1)))
+    throw new Error('Invalid media history latest observation');
+}
+export function mergeMediaMetadata(current, previous) {
+  if (!current?.mediaHistory && !previous?.mediaHistory) {
+    const mediaUpdate = latestMediaUpdate(current?.mediaUpdate, previous?.mediaUpdate);
+    return mediaUpdate ? { mediaUpdate: structuredClone(mediaUpdate) } : {};
+  }
+  const points = new Map();
+  for (const contest of [previous, current])
+    for (const point of contest?.mediaHistory ||
+      (contest?.mediaUpdate ? [contest.mediaUpdate] : []))
+      points.set(JSON.stringify(point), point);
+  const mediaHistory = [...points.values()].sort(
+    (a, b) => Date.parse(a.observedAt) - Date.parse(b.observedAt),
+  );
+  return structuredClone({ mediaHistory, mediaUpdate: mediaHistory.at(-1) });
 }

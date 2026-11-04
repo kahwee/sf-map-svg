@@ -77,3 +77,12 @@ official source report time. The UI labels the projection “Not certified.” O
 never enter official batch trends or district coloring. `observedAt` records the
 verification observation, not every automated fetch; these news updates are not
 an independently polled feed. Newer newsroom metadata survives snapshot recovery.
+
+`mediaHistory` is an optional chronological array of complete `mediaUpdate` objects,
+including each observation's publisher, URL, publisher page-update time, observation
+time, options and optional attributed projection. `mediaUpdate` mirrors its final
+entry. A–J now preserve the first KQED observation and the newer Chronicle observation
+verified at 2026-11-04T05:53:30Z (publisher page updated 05:52Z). Recovery unions verified
+observations without dropping older entries. A separately labeled newsroom chart is
+used only when official history is unavailable. Its steps compare cumulative published
+tallies across observations/publishers, not distinct batches of newly cast ballots.

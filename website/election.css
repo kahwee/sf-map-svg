@@ -323,3 +323,8 @@
   opacity: 0.6;
   border-radius: 2px;
 }
+
+/* Reserve the first viewport while the selected contest and its history load. */
+#contests.is-loading {
+  min-height: 100vh;
+}

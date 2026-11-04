@@ -14,9 +14,22 @@ const observedTime = (iso) =>
   new Date(iso).toLocaleString('en-US', { timeZone: 'America/Los_Angeles', timeZoneName: 'short' });
 export function createTrend(contest) {
   const section = make('section', '', 'batch-history');
-  section.setAttribute('aria-label', 'Reported batch history');
-  section.append(make('h3', 'Reported batches'));
-  const points = contest.resultHistory || [];
+  const media = !contest.resultHistory?.length && !!contest.mediaHistory?.length;
+  const unit = media ? 'Observation' : 'Batch';
+  const units = media ? 'observations' : 'batches';
+  section.setAttribute(
+    'aria-label',
+    media ? 'Newsroom observation history' : 'Reported batch history',
+  );
+  section.append(make('h3', media ? 'Newsroom observations' : 'Reported batches'));
+  // Adapt only the presentation; never put newsroom records in resultHistory.
+  const points = media
+    ? contest.mediaHistory.map((p) => ({
+        ...p,
+        sourceReportTime: `${p.sourceName} · ${observedTime(p.sourceUpdatedAt)}`,
+        resultSourceUrl: p.sourceUrl,
+      }))
+    : contest.resultHistory || [];
   if (!points.length) {
     const empty = make('div', '', 'batch-empty');
     empty.append(
@@ -49,9 +62,10 @@ export function createTrend(contest) {
   const position = make('span', '', 'batch-position');
   navigation.append(previous, position, next);
   const rangeLabel = make('label', '', 'batch-range-label');
-  const rangeText = make('span', 'Explore observed batches');
+  const exploreLabel = media ? 'Explore newsroom observations' : 'Explore observed batches';
+  const rangeText = make('span', exploreLabel);
   const range = document.createElement('input');
-  range.setAttribute('aria-label', 'Explore observed batches');
+  range.setAttribute('aria-label', exploreLabel);
   range.type = 'range';
   range.min = '0';
   range.max = String(points.length - 1);
@@ -75,7 +89,7 @@ export function createTrend(contest) {
     range.value = String(batch);
     range.setAttribute(
       'aria-valuetext',
-      `Batch ${batch + 1} of ${points.length}; report ${points[batch].sourceReportTime}; first observed ${observedTime(points[batch].observedAt)}`,
+      `${unit} ${batch + 1} of ${points.length}; report ${points[batch].sourceReportTime}; first observed ${observedTime(points[batch].observedAt)}`,
     );
     position.textContent = `${batch + 1} / ${points.length}`;
     previous.disabled = batch === 0;
@@ -83,18 +97,18 @@ export function createTrend(contest) {
     const delta =
       change === null
         ? points.length === 1
-          ? 'One batch; no trend yet.'
-          : 'First observed batch.'
+          ? `One ${unit.toLowerCase()}; no trend yet.`
+          : `First ${unit.toLowerCase()}.`
         : `Change from prior observation: ${change > 0 ? '+' : ''}${share ? `${change.toFixed(1)} percentage points` : `${change.toLocaleString('en-US')} votes`}.`;
     const headline = make(
       'p',
-      `Batch ${batch + 1} · ${selected.label}: ${format(last)} · ${delta}`,
+      `${unit} ${batch + 1} · ${selected.label}: ${format(last)} · ${delta}`,
       'trend-value',
     );
     const svg = svgElement('svg', {
       viewBox: '0 0 360 160',
       role: 'img',
-      'aria-label': `${selected.label}, ${share ? 'share of reported votes' : 'reported votes'}, ${points.length} observed ${points.length === 1 ? 'batch' : 'batches'}. ${delta} Exact report and observation times in the table below.`,
+      'aria-label': `${selected.label}, ${share ? 'share of reported votes' : 'reported votes'}, ${points.length} observed ${points.length === 1 ? unit.toLowerCase() : units}. ${delta} Exact report and observation times in the table below.`,
     });
     const max = share ? 100 : Math.max(1, ...values);
     const x = (i) => (points.length === 1 ? 191 : 44 + (i * 294) / (points.length - 1));
@@ -168,7 +182,7 @@ export function createTrend(contest) {
           'font-size': 13,
           fill: 'currentColor',
         },
-        'Batch 1',
+        `${unit} 1`,
       ),
     );
     if (points.length > 1)
@@ -176,12 +190,14 @@ export function createTrend(contest) {
         svgElement(
           'text',
           { x: 338, y: 153, 'text-anchor': 'end', 'font-size': 13, fill: 'currentColor' },
-          `Batch ${points.length}`,
+          `${unit} ${points.length}`,
         ),
       );
     const note = make(
       'p',
-      'SF county only · equally spaced reports and revisions. Changes are cumulative tally updates, not newly cast ballots. Share is of reported votes, not turnout.',
+      media
+        ? 'SF citywide · newsroom observations from the linked publishers. Steps compare cumulative published tallies, not newly cast ballots. Publisher update times are not official report times.'
+        : 'SF county only · equally spaced reports and revisions. Changes are cumulative tally updates, not newly cast ballots. Share is of reported votes, not turnout.',
       'result-note',
     );
     const tableHost = make('div', '', 'history-table-wrap');
@@ -189,14 +205,16 @@ export function createTrend(contest) {
     tableHost.setAttribute('role', 'region');
     tableHost.setAttribute(
       'aria-label',
-      'Batch data; scroll to see earlier and later observations',
+      `${unit} data; scroll to see earlier and later observations`,
     );
     const table = document.createElement('table');
-    table.append(make('caption', `${selected.label} — exact batch observations`));
+    table.append(
+      make('caption', `${selected.label} — exact ${media ? 'newsroom' : 'batch'} observations`),
+    );
     const head = document.createElement('thead');
     const header = document.createElement('tr');
     for (const text of [
-      'Official report time',
+      media ? 'Publisher page updated (Pacific)' : 'Official report time',
       'First observed (Pacific)',
       share ? 'Vote share' : 'Votes',
     ]) {
@@ -221,7 +239,7 @@ export function createTrend(contest) {
     tableHost.append(table);
     const report = make(
       'p',
-      `Selected report: ${points[batch].sourceReportTime} · First observed: ${observedTime(points[batch].observedAt)}`,
+      `${media ? 'Publisher update' : 'Selected report'}: ${points[batch].sourceReportTime} · First observed: ${observedTime(points[batch].observedAt)}`,
       'result-note',
     );
     panel.replaceChildren(headline, report, svg, note, tableHost);

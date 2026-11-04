@@ -127,6 +127,7 @@ test('new descriptions merge into unofficial snapshots without changing counts o
   assert.equal(merged.sourceReportTimestamp, previous.sourceReportTimestamp);
   assert.equal(previous.contests[0].summary, undefined);
   delete previous.contests[0].mediaUpdate;
+  delete previous.contests[0].mediaHistory;
   previous.contests[0].options[0].id = 'different-option';
   assert.equal(chooseSnapshotSeed(seed, previous).contests[0].summary, undefined);
 });
@@ -156,7 +157,7 @@ test('news tallies stay separate from official results and history', () => {
   const g = updates.find((c) => c.id === 'local-G');
   assert.deepEqual(
     g.mediaUpdate.options.map((o) => o.votes),
-    [54391, 91246],
+    [57242, 97369],
   );
   assert.equal(g.mediaUpdate.projection.outcome, 'rejected');
   assert.equal(updates.filter((c) => c.mediaUpdate.projection).length, 1);
@@ -185,10 +186,32 @@ test('news tallies stay separate from official results and history', () => {
 test('recovery preserves newer newsroom updates without creating official results', () => {
   const oldSeed = structuredClone(seed);
   delete oldSeed.contests.find((c) => c.id === 'local-G').mediaUpdate;
+  delete oldSeed.contests.find((c) => c.id === 'local-G').mediaHistory;
   const recovered = chooseSnapshotSeed(oldSeed, seed);
   assert.deepEqual(
     recovered.contests.find((c) => c.id === 'local-G').mediaUpdate,
     seed.contests.find((c) => c.id === 'local-G').mediaUpdate,
   );
   assert.equal(recovered.status, 'pending');
+});
+test('newsroom history preserves publisher observations separately from official batches', () => {
+  for (const c of seed.contests.filter((c) => c.mediaHistory)) {
+    assert.equal(c.mediaHistory.length, 2);
+    assert.equal(c.mediaHistory[0].sourceName, 'KQED');
+    assert.equal(c.mediaHistory[1].sourceName, 'San Francisco Chronicle');
+    assert.deepEqual(c.mediaUpdate, c.mediaHistory.at(-1));
+    assert.deepEqual(c.resultHistory, []);
+  }
+  const prior = structuredClone(seed);
+  for (const c of prior.contests.filter((c) => c.mediaHistory)) {
+    c.mediaUpdate = c.mediaHistory[0];
+    delete c.mediaHistory;
+  }
+  const merged = chooseSnapshotSeed(seed, prior);
+  assert.equal(merged.contests.find((c) => c.id === 'local-G').mediaHistory.length, 2);
+  const recovered = chooseSnapshotSeed(prior, seed);
+  assert.equal(recovered.contests.find((c) => c.id === 'local-G').mediaHistory.length, 2);
+  const bad = structuredClone(seed);
+  bad.contests.find((c) => c.id === 'local-G').mediaHistory.reverse();
+  assert.throws(() => validateSnapshot(bad), /media/);
 });
