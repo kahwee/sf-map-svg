@@ -4,6 +4,14 @@
   "latest": "precincts-2026-11-03-230421.json",
   "snapshots": [
     {
+      "file": "precincts-2026-11-03-193412.json",
+      "reportStamp": "2026-11-03-193412",
+      "sourceReportTime": "11/3/2026 7:34:12 PM",
+      "ballotCards": 608564,
+      "precinctsWithBallots": 509,
+      "exportSha256": "7069d113400104a8b6f6782c4a6fe1d293dd02d5846b9e98278304661a1a7c73"
+    },
+    {
       "file": "precincts-2026-11-03-230421.json",
       "reportStamp": "2026-11-03-230421",
       "sourceReportTime": "11/3/2026 11:04:21 PM",
