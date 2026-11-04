@@ -157,7 +157,7 @@ test('news tallies stay separate from official results and history', () => {
   const g = updates.find((c) => c.id === 'local-G');
   assert.deepEqual(
     g.mediaUpdate.options.map((o) => o.votes),
-    [64656, 109160],
+    [64776, 109319],
   );
   assert.equal(g.mediaUpdate.projection.outcome, 'rejected');
   assert.equal(updates.filter((c) => c.mediaUpdate.projection).length, 1);
@@ -196,7 +196,7 @@ test('recovery preserves newer newsroom updates without creating official result
 });
 test('newsroom history preserves publisher observations separately from official batches', () => {
   for (const c of seed.contests.filter((c) => c.mediaHistory && c.id !== 'RTM')) {
-    assert.equal(c.mediaHistory.length, 3);
+    assert.equal(c.mediaHistory.length, 4);
     assert.equal(c.mediaHistory[0].sourceName, 'KQED');
     assert.equal(c.mediaHistory[1].sourceName, 'San Francisco Chronicle');
     assert.deepEqual(c.mediaUpdate, c.mediaHistory.at(-1));
@@ -208,9 +208,9 @@ test('newsroom history preserves publisher observations separately from official
     delete c.mediaHistory;
   }
   const merged = chooseSnapshotSeed(seed, prior);
-  assert.equal(merged.contests.find((c) => c.id === 'local-G').mediaHistory.length, 3);
+  assert.equal(merged.contests.find((c) => c.id === 'local-G').mediaHistory.length, 4);
   const recovered = chooseSnapshotSeed(prior, seed);
-  assert.equal(recovered.contests.find((c) => c.id === 'local-G').mediaHistory.length, 3);
+  assert.equal(recovered.contests.find((c) => c.id === 'local-G').mediaHistory.length, 4);
   const bad = structuredClone(seed);
   bad.contests.find((c) => c.id === 'local-G').mediaHistory.reverse();
   assert.throws(() => validateSnapshot(bad), /media/);
@@ -267,13 +267,43 @@ test('10:50 p.m. newsroom observation retains every prior release and exact tall
   const ids = [...'ABCDEFGHIJ'].map((letter) => `local-${letter}`).concat('RTM');
   for (const [index, id] of ids.entries()) {
     const contest = seed.contests.find((c) => c.id === id);
+    const observation = contest.mediaHistory[id === 'RTM' ? 1 : 2];
+    assert.deepEqual(
+      observation.options.map((o) => o.votes),
+      counts[index],
+    );
+    assert.equal(observation.sourceUpdatedAt, '2026-11-04T06:50:00Z');
+    assert.equal(observation.observedAt, '2026-11-04T06:51:51Z');
+    assert.deepEqual(observation.projection, contest.mediaHistory[0].projection);
+    assert.deepEqual(observation.resultGeography, contest.mediaHistory[0].resultGeography);
+  }
+});
+
+test('11:53 p.m. KQED observation appends exact local counts without changing RTM or projections', () => {
+  const counts = [
+    [122226, 50809],
+    [85175, 85805],
+    [138152, 34852],
+    [101064, 73937],
+    [115890, 57388],
+    [109328, 64585],
+    [64776, 109319],
+    [126168, 47995],
+    [76936, 93917],
+    [135129, 35793],
+  ];
+  for (const [index, letter] of [...'ABCDEFGHIJ'].entries()) {
+    const contest = seed.contests.find((c) => c.id === `local-${letter}`);
+    assert.equal(contest.mediaHistory.length, 4);
     assert.deepEqual(
       contest.mediaUpdate.options.map((o) => o.votes),
       counts[index],
     );
-    assert.equal(contest.mediaUpdate.sourceUpdatedAt, '2026-11-04T06:50:00Z');
-    assert.equal(contest.mediaUpdate.observedAt, '2026-11-04T06:51:51Z');
+    assert.equal(contest.mediaUpdate.sourceName, 'KQED');
+    assert.equal(contest.mediaUpdate.sourceUpdatedAt, '2026-11-04T07:53:00Z');
+    assert.equal(contest.mediaUpdate.observedAt, '2026-11-04T08:07:39Z');
     assert.deepEqual(contest.mediaUpdate.projection, contest.mediaHistory[0].projection);
-    assert.deepEqual(contest.mediaUpdate.resultGeography, contest.mediaHistory[0].resultGeography);
+    assert.deepEqual(contest.resultHistory, []);
   }
+  assert.equal(seed.contests.find((c) => c.id === 'RTM').mediaHistory.length, 2);
 });

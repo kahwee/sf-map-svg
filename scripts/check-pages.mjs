@@ -492,9 +492,7 @@ async function checkElection() {
     if (!(await page.locator('[data-media-projection]').textContent()).includes('Not certified'))
       fail('election: media projection lacks certification distinction');
     if (
-      !(await page.locator('[data-media-tally]').textContent()).includes(
-        'San Francisco Chronicle preliminary tally',
-      )
+      !(await page.locator('[data-media-tally]').textContent()).includes('KQED preliminary tally')
     )
       fail('election: media tally lacks attribution');
     if (
@@ -502,11 +500,11 @@ async function checkElection() {
       (await page.locator('.vote-share').count()) !== 2
     )
       fail('election: count-derived shares missing');
-    if (!(await page.locator('.vote-list').textContent()).includes('109,160'))
+    if (!(await page.locator('.vote-list').textContent()).includes('109,319'))
       fail('election: verified media tally missing');
     if (
       !(await page.locator('.batch-history h3').textContent()).includes('Newsroom observations') ||
-      (await page.locator('.trend-panel svg circle').count()) !== 3
+      (await page.locator('.trend-panel svg circle').count()) !== 4
     )
       fail('election: separate newsroom history missing');
     if (await page.locator('.history-table-wrap').isVisible())
@@ -525,6 +523,9 @@ async function checkElection() {
     await page.getByRole('button', { name: 'Chart', exact: true }).click();
     if (!(await page.locator('.trend-panel svg').isVisible()))
       fail('election: Chart toggle did not restore chart');
+    await page.getByRole('button', { name: '← Previous', exact: true }).click();
+    if (!(await page.locator('.trend-value').textContent()).includes('64,656'))
+      fail('election: third newsroom observation was not preserved');
     await page.getByRole('button', { name: '← Previous', exact: true }).click();
     if (!(await page.locator('.trend-value').textContent()).includes('57,242'))
       fail('election: second newsroom observation was not preserved');
@@ -721,7 +722,7 @@ async function checkElectionLifecycle() {
     if (
       (await page.locator('select[aria-label="View option"]').inputValue()) !== '1' ||
       (await page.locator('select[aria-label="Measure"]').inputValue()) !== 'share' ||
-      (await page.locator('input[type="range"]').inputValue()) !== '1'
+      (await page.locator('input[type="range"]').inputValue()) !== '2'
     )
       fail('election lifecycle: automatic refresh reset chart selection');
     await page.locator('#refresh').click();
@@ -730,7 +731,7 @@ async function checkElectionLifecycle() {
     );
     if ((await page.locator('#contests h2').textContent()).includes('Older cached title'))
       fail('election lifecycle: older snapshot replaced newer data');
-    if ((await page.locator('input[type="range"]').inputValue()) !== '1')
+    if ((await page.locator('input[type="range"]').inputValue()) !== '2')
       fail('election lifecycle: rejected response reset observation');
   } catch (error) {
     fail(`election lifecycle: ${error.stack}`);
