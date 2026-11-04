@@ -4,6 +4,12 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 5.1.1 — 2026-11-05
+
+- Reserve precinct report controls and status space during loading to prevent phone layout shifts when multiple reports are available.
+
+- Isolate district selection, style revisions and cancellable motion in an internal controller while preserving public map behavior. Document interactive state ownership and verify district lifecycle callbacks.
+
 ## 5.1.0 — 2026-11-05
 
 - Add official November 2026 precinct aggregates (`data/elections/precincts-<report time>.json` with a time-ordered `precincts-index.json`) and the 2022 precinct boundaries (`data/precincts-2022.json`), reconciled with the department's summary report. Only aggregates are committed, never the ballot-level export. Export the boundaries as `precinctMaps` from `@kahwee/sf-map-svg/data` and `@kahwee/sf-map-svg/data/precincts`; results snapshots stay Pages data.

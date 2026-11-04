@@ -162,19 +162,16 @@ async function main() {
     $('precinct-source').textContent =
       `Aggregated from the San Francisco Department of Elections cast vote record export (${data.source.electionName}); every contest total matches its summary report.`;
   }
-
-  if (index.snapshots.length > 1) {
-    $('precinct-report-label').hidden = false;
-    reportSelect.replaceChildren(
-      ...[...index.snapshots].reverse().map((s) => new Option(s.sourceReportTime, s.file)),
-    );
-    reportSelect.value = index.latest;
-    reportSelect.addEventListener('change', async () => {
-      data = await load(reportSelect.value);
-      describe();
-      paint();
-    });
-  }
+  reportSelect.disabled = index.snapshots.length < 2;
+  reportSelect.replaceChildren(
+    ...[...index.snapshots].reverse().map((s) => new Option(s.sourceReportTime, s.file)),
+  );
+  reportSelect.value = index.latest;
+  reportSelect.addEventListener('change', async () => {
+    data = await load(reportSelect.value);
+    describe();
+    paint();
+  });
   contestSelect.addEventListener('change', () => {
     fillOptions();
     paint();

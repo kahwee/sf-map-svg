@@ -4,10 +4,8 @@ import { createCamera, validateCameraOptions } from './camera.js';
 import { createClusterLayer } from './cluster-layer.js';
 import { clusterPoints } from './clusters.js';
 import type { MapAppearance, MapConfiguration } from './controller-types.js';
-import { renderDistrictAppearance } from './district-layer.js';
-import { createDistrictMorph } from './district-morph.js';
+import { createDistrictController } from './district-controller.js';
 import { prepareDistrictStyles } from './district-style.js';
-import { createDistrictTransition } from './district-transition.js';
 import { element, setAttributeIfChanged, svgElement } from './dom.js';
 import { createExplorerControls } from './explorer-controls.js';
 import type { InteractiveSFMapData } from './explorer-data.js';
@@ -323,178 +321,59 @@ export function createNeighborhoodExplorerCore(
   const labelRenderer = createLabelRenderer(labelLayer);
   geography.append(areas, stations, labelLayer, overlayLayer, markerLayer);
   let view: View = [0, 0, 800];
-  let selectedDistrict: number | null = null;
-  let hoveredDistrict: number | null = null;
-  let districtStyle = initialDistrictStyle;
-  let districtStyles = prepareDistrictStyles(data.map.districts?.[year] ?? [], districtStyle);
-  const districtTransition = createDistrictTransition();
-  let districtRevision = 0;
-  root.dataset.year = String(year);
-  function districtRow(id: number) {
-    return data.map.districts?.[year]?.find((district) => district.id === id);
-  }
-  function districtSelection(
-    id: number | null,
-  ): DistrictSelection | { id: null; year: DistrictYear; district: null } {
-    const district = id === null ? undefined : districtRow(id);
-    return district
-      ? { id: district.id, year, district: structuredClone(district) }
-      : { id: null, year, district: null };
-  }
-  function getSelectedDistrict(): DistrictSelection | null {
-    return selectedDistrict === null
-      ? null
-      : (districtSelection(selectedDistrict) as DistrictSelection);
-  }
-  function updateDistrictAppearance() {
-    renderDistrictAppearance({
+  const districts = createDistrictController(
+    {
+      root,
       svg,
-      rows: data.map.districts?.[year] ?? [],
-      styles: districtStyles,
-      selectedDistrict,
-      hoveredDistrict,
-      year,
-      theme,
-      colors,
-      fills: enabled('districtFills'),
-      lines: enabled('districtLines'),
-    });
-  }
-  function selectDistrict(id: number | null, options: { fit?: boolean } & CameraOptions = {}) {
-    if (destroyed) return false;
-    validateCameraOptions(options);
-    if (id !== null && (!Number.isInteger(id) || !districtRow(id))) return false;
-    const changed = selectedDistrict !== id;
-    const revision = ++districtRevision;
-    selectedDistrict = id;
-    if (id === null) delete root.dataset.selectedDistrict;
-    else root.dataset.selectedDistrict = String(id);
-    updateDistrictAppearance();
-    const selectedRow = id === null ? undefined : districtRow(id);
-    if (selectedRow && options.fit) fitGeometry(selectedRow.geometry, undefined, options);
-    if (destroyed || revision !== districtRevision) return true;
-    status.textContent =
-      id === null ? 'District selection cleared.' : `District ${id} selected, ${year} boundaries.`;
-    if (changed)
-      root.dispatchEvent(
-        new CustomEvent('districtchange', { bubbles: true, detail: districtSelection(id) }),
-      );
-    return true;
-  }
-  function activateDistrict(id: number) {
-    const revision = districtRevision + 1;
-    if (!selectDistrict(id) || destroyed || revision !== districtRevision) return false;
-    root.dispatchEvent(
-      new CustomEvent('districtactivate', { bubbles: true, detail: districtSelection(id) }),
-    );
-    return !destroyed && revision === districtRevision;
-  }
-  function setDistrictStyle(style: typeof districtStyle) {
-    if (destroyed) return;
-    const revision = districtRevision;
-    const prepared = prepareDistrictStyles(data.map.districts?.[year] ?? [], style);
-    if (destroyed || revision !== districtRevision) return;
-    districtRevision++;
-    districtStyle = style;
-    districtStyles = prepared;
-    const fills = districtLayers.find((layer) => layer.dataset.layer === 'district-fills');
-    const fade = layerFades.duration();
-    // A new style settles any fill crossfade still running from an earlier change.
-    districtTransition.cancel();
-    if (fills && fade && enabled('districtFills')) districtTransition.fade(fills, fade);
-    updateDistrictAppearance();
-  }
-  function setDistrictYear(
-    next: DistrictYear,
-    options: CameraOptions = {},
-    preparedStyles?: ReturnType<typeof prepareDistrictStyles>,
-  ) {
-    if (destroyed) return;
-    validateCameraOptions(options);
-    if (![2002, 2012, 2022].includes(next))
-      throw new RangeError('District year must be 2002, 2012, or 2022.');
-    if (!data.map.districts?.[next] || !data.districts?.[next])
-      throw new RangeError(`No ${next} district dataset was supplied.`);
-    if (next === year) return;
-    const revision = districtRevision;
-    const prepared =
-      preparedStyles ?? prepareDistrictStyles(data.map.districts[next], districtStyle);
-    if (destroyed || revision !== districtRevision) return;
-    const committedRevision = ++districtRevision;
-    const geometry = getLayerPathsWithData({ year: next }, data.map, false);
-    const previousYear = year;
-    districtTransition.cancel();
-    districtMorph.stop();
-    const lineLayer = districtLayers.find((layer) => layer.dataset.layer === 'district-lines');
-    const morph =
-      features.districtMorph &&
-      options.animate !== false &&
-      initialized &&
-      !reducedMotion.matches &&
-      (enabled('districtLines') || enabled('districtFills'))
-        ? features.districtMorph
-        : false;
-    const previousOutlines =
-      morph && lineLayer
-        ? new Map(
-            [...lineLayer.querySelectorAll<SVGPathElement>('path[data-district]')].map((path) => [
-              path.dataset.district ?? '',
-              path.getAttribute('d') ?? '',
-            ]),
-          )
-        : undefined;
-    for (const layer of districtLayers) {
-      if (morph) {
-        // The morph replaces the line crossfade; fills fade across the whole morph.
-        if (layer !== lineLayer) districtTransition.fade(layer, morph.duration);
-      } else if (options.animate && !reducedMotion.matches)
-        districtTransition.fade(layer, options.duration ?? 280);
-      layer.replaceChildren(
-        ...geometry.districts.map((district) =>
-          svgElement('path', {
-            'data-district': district.id,
-            d: district.path,
-            ...(layer.dataset.layer === 'district-fills'
-              ? { 'fill-rule': 'evenodd' }
-              : { fill: 'none', 'stroke-width': 1.1 }),
-          }),
-        ),
-      );
-    }
-    year = next;
-    districtStyles = prepared;
-    hoveredDistrict = null;
-    root.dataset.year = String(year);
-    svg.dataset.year = String(year);
-    districtItems = (data.districts[next]?.features ?? []).flatMap((feature) =>
-      feature.properties.labelPoints.map((point) => ({
-        point: map.project(point),
-        name: String(feature.properties.district),
-        kind: 'district',
-      })),
-    );
-    if (selectedDistrict !== null && !districtRow(selectedDistrict)) selectedDistrict = null;
-    if (selectedDistrict === null) delete root.dataset.selectedDistrict;
-    updateDistrictAppearance();
-    updateComposition();
-    if (morph && lineLayer && previousOutlines)
-      districtMorph.start(lineLayer, previousOutlines, {
-        duration: morph.duration,
-        stroke: colors.district ?? '#71838a',
-      });
-    scheduleLabels();
-    status.textContent = `${year} supervisorial districts.`;
-    root.dispatchEvent(
-      new CustomEvent('districtyearchange', { bubbles: true, detail: { year, previousYear } }),
-    );
-    if (!destroyed && committedRevision === districtRevision && selectedDistrict !== null)
-      root.dispatchEvent(
-        new CustomEvent('districtchange', {
-          bubbles: true,
-          detail: districtSelection(selectedDistrict),
-        }),
-      );
-  }
+      status,
+      data,
+      districtLayers,
+      reducedMotion,
+      enabled,
+      fitGeometry,
+      updateComposition,
+      scheduleLabels,
+      get year() {
+        return year;
+      },
+      set year(value) {
+        year = value;
+      },
+      get theme() {
+        return theme;
+      },
+      get colors() {
+        return colors;
+      },
+      get features() {
+        return features;
+      },
+      get destroyed() {
+        return destroyed;
+      },
+      get initialized() {
+        return initialized;
+      },
+      fadeDuration: () => layerFades.duration(),
+      project: map.project,
+      setLabels: (items) => {
+        districtItems = items;
+      },
+    },
+    initialDistrictStyle,
+  );
+  const {
+    districtRow,
+    districtSelection,
+    getSelectedDistrict,
+    updateDistrictAppearance,
+    selectDistrict,
+    activateDistrict,
+    setDistrictStyle,
+    setDistrictYear,
+    transition: districtTransition,
+    morph: districtMorph,
+  } = districts;
   updateDistrictAppearance();
   let destroyed = false;
   let initialized = false;
@@ -503,7 +382,6 @@ export function createNeighborhoodExplorerCore(
       ? features.layerTransitions.duration
       : 0,
   );
-  const districtMorph = createDistrictMorph();
   const frames = createFrameScheduler({
     request: (callback) => requestAnimationFrame(callback),
     cancel: (id) => cancelAnimationFrame(id),
@@ -1282,8 +1160,8 @@ export function createNeighborhoodExplorerCore(
           )
         : null;
     const id = district?.dataset.district ? Number(district.dataset.district) : null;
-    if (id === hoveredDistrict) return;
-    hoveredDistrict = id;
+    if (id === districts.hovered) return;
+    districts.hovered = id;
     updateDistrictAppearance();
     root.dispatchEvent(
       new CustomEvent('districthover', { bubbles: true, detail: districtSelection(id) }),
@@ -1297,8 +1175,8 @@ export function createNeighborhoodExplorerCore(
       )
     )
       return;
-    if (hoveredDistrict === null) return;
-    hoveredDistrict = null;
+    if (districts.hovered === null) return;
+    districts.hovered = null;
     updateDistrictAppearance();
     root.dispatchEvent(
       new CustomEvent('districthover', { bubbles: true, detail: districtSelection(null) }),
@@ -1335,17 +1213,17 @@ export function createNeighborhoodExplorerCore(
         ? prepareSource(patch.source, false)
         : undefined;
     const appearance: MapAppearance | undefined = patch.appearance;
-    const nextStyle = appearance ? appearance.districtStyle : districtStyle;
-    const districtVersion = districtRevision;
+    const nextStyle = appearance ? appearance.districtStyle : districts.style;
+    const districtVersion = districts.revision;
     const prepared =
       appearance || nextYear !== year
         ? prepareDistrictStyles(data.map.districts?.[nextYear] ?? [], nextStyle)
-        : districtStyles;
+        : districts.styles;
     if (
       destroyed ||
       !isCurrent() ||
       revision !== presentationRevision ||
-      districtVersion !== districtRevision
+      districtVersion !== districts.revision
     )
       return false;
     if (nextYear !== year) {
@@ -1356,7 +1234,7 @@ export function createNeighborhoodExplorerCore(
     }
     onCommit?.();
     if (appearance) {
-      districtRevision++;
+      districts.invalidate();
       const next = copyAppearance(appearance);
       theme = next.theme ?? 'transit';
       colors = next.colors ?? {};
@@ -1373,16 +1251,15 @@ export function createNeighborhoodExplorerCore(
       const fills = districtLayers.find((layer) => layer.dataset.layer === 'district-fills');
       const fade = layerFades.duration();
       const stylesChanged =
-        nextStyle !== districtStyle ||
+        nextStyle !== districts.style ||
         [...prepared].some(([id, value]) =>
           (['fill', 'stroke', 'opacity'] as const).some(
-            (key) => value[key] !== districtStyles.get(id)?.[key],
+            (key) => value[key] !== districts.styles.get(id)?.[key],
           ),
         );
       if (fills && fade && enabled('districtFills') && nextYear === year && stylesChanged)
         districtTransition.fade(fills, fade);
-      districtStyle = nextStyle;
-      districtStyles = prepared;
+      districts.commitStyles(nextStyle, prepared);
       const palette = resolveMapColors(theme, colors);
       svg.querySelector('rect')?.setAttribute('fill', palette.water);
       svg.querySelector('[data-layer="coast"]')?.setAttribute('fill', palette.land);

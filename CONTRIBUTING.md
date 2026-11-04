@@ -4,6 +4,8 @@ Use pnpm 12 (declared in `package.json`), Node 24 or newer, and Bun from `.bun-v
 
 Install with `pnpm install --frozen-lockfile`. The [validation and release runbook](docs/maintenance.md) is the canonical checklist for docs, site, library, geography, and publication changes.
 
+See [interactive state ownership](docs/state-ownership.md) for state and disposal boundaries.
+
 ## Source layout
 
 | Path              | Responsibility                                          |

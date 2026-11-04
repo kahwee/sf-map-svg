@@ -116,3 +116,43 @@ export const UninterruptedActivation: Story = {
     }
   },
 };
+
+export const YearChangesPreserveLatestSelection: Story = {
+  play: async ({ canvasElement }) => {
+    for (const action of ['replace', 'destroy'] as const) {
+      const map = createMap(fullMapData, { mode: 'districts' });
+      canvasElement.append(map.element);
+      try {
+        map.selectDistrict(2);
+        map.setDistrictYear(2002);
+        map.setDistrictYear(2012);
+        expect(map.getSelectedDistrict()?.id).toBe(2);
+        expect(map.getSelectedDistrict()?.year).toBe(2012);
+        const changes: unknown[] = [];
+        map.element.addEventListener('districtchange', (event) => {
+          changes.push((event as CustomEvent).detail);
+        });
+        map.element.addEventListener(
+          'districtyearchange',
+          () => {
+            if (action === 'destroy') map.destroy();
+            else map.setDistrictYear(2002);
+          },
+          { once: true },
+        );
+        map.setDistrictYear(2022);
+        if (action === 'destroy') {
+          expect(map.destroyed).toBe(true);
+          expect(changes).toEqual([]);
+        } else {
+          expect(map.getSelectedDistrict()?.year).toBe(2002);
+          expect(changes).toHaveLength(1);
+          expect(changes[0]).toMatchObject({ id: 2, year: 2002 });
+        }
+      } finally {
+        map.destroy();
+        map.element.remove();
+      }
+    }
+  },
+};
