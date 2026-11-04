@@ -357,8 +357,9 @@
   opacity: 0.55;
 }
 .contest-explanation {
+  grid-column: 1 / -1;
   border-top: 1px solid var(--rule);
-  margin-top: 22px;
+  margin-top: 0;
   padding-top: 16px;
 }
 .contest-explanation h3 {

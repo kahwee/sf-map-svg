@@ -193,7 +193,7 @@ function renderContest(c) {
       Object.assign(document.createElement('h3'), { textContent: 'What this measure does' }),
       summary,
     );
-    totals.append(explanation);
+    dataGrid.append(explanation);
   }
   host.replaceChildren(article);
 }

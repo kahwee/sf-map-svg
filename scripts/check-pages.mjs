@@ -489,6 +489,10 @@ async function checkElection() {
     await page.locator('#contest-select').selectOption('local-G');
     if (!(await page.locator('.contest-summary').textContent()).includes('Monday'))
       fail('election: summary did not change');
+    const historyPosition = await page.locator('.batch-history').boundingBox();
+    const explanationPosition = await page.locator('.contest-explanation').boundingBox();
+    if (!historyPosition || !explanationPosition || historyPosition.y >= explanationPosition.y)
+      fail('election: explanation precedes the results visualization on phone');
     if (!(await page.locator('[data-media-projection]').textContent()).includes('Not certified'))
       fail('election: media projection lacks certification distinction');
     if (
