@@ -221,13 +221,13 @@ test('RTM newsroom totals retain full five-county scope and observed projection 
   const c = seed.contests.find((c) => c.id === 'RTM');
   assert.deepEqual(
     c.mediaUpdate.options.map((o) => o.votes),
-    [702848, 439585],
+    [708996, 443928],
   );
   assert.equal(c.mediaUpdate.resultGeography.scope, 'full-contest');
   assert.equal(c.mediaUpdate.resultGeography.counties.length, 5);
   assert.equal(c.mediaUpdate.projection.publishedAt, undefined);
   assert.equal(c.mediaUpdate.projection.observedAt, '2026-11-04T06:39:42Z');
-  assert.equal(c.mediaHistory.length, 4);
+  assert.equal(c.mediaHistory.length, 5);
   assert.equal(c.mediaUpdate.sourceName, 'KQED');
   assert.equal(
     c.mediaUpdate.sourceUrl,
@@ -235,7 +235,7 @@ test('RTM newsroom totals retain full five-county scope and observed projection 
   );
   assert.equal(c.mediaUpdate.sourceUpdatedAt, '2026-11-04T08:59:00Z');
   assert.equal(c.mediaHistory[2].sourceUpdatedAt, '2026-11-04T07:27:00Z');
-  assert.equal(c.mediaUpdate.observedAt, '2026-11-04T09:23:52Z');
+  assert.equal(c.mediaUpdate.observedAt, '2026-11-04T16:31:33Z');
   assert.ok(
     c.mediaHistory.slice(0, 2).every((point) => point.sourceName === 'San Francisco Chronicle'),
   );
@@ -397,5 +397,31 @@ test('RTM permits only the documented future-dated publisher issue with unknown 
     const bad = structuredClone(fixture);
     mutate(bad.contests.find((c) => c.id === 'RTM').mediaUpdate);
     assert.throws(() => validateSnapshot(bad), /media/);
+  }
+});
+
+test('RTM changed counts at the same publisher clock survive recovery as separate observations', () => {
+  const current = seed.contests.find((c) => c.id === 'RTM');
+  const previous = structuredClone(seed);
+  const older = previous.contests.find((c) => c.id === 'RTM');
+  older.mediaHistory.pop();
+  older.mediaUpdate = structuredClone(older.mediaHistory.at(-1));
+  assert.deepEqual(
+    older.mediaUpdate.options.map((o) => o.votes),
+    [702848, 439585],
+  );
+  assert.equal(older.mediaUpdate.sourceUpdatedAt, current.mediaUpdate.sourceUpdatedAt);
+  assert.notEqual(older.mediaUpdate.observedAt, current.mediaUpdate.observedAt);
+  for (const recovered of [
+    chooseSnapshotSeed(seed, previous),
+    chooseSnapshotSeed(previous, seed),
+  ]) {
+    validateSnapshot(recovered);
+    const contest = recovered.contests.find((c) => c.id === 'RTM');
+    assert.deepEqual(contest.mediaHistory, current.mediaHistory);
+    assert.deepEqual(contest.mediaHistory.slice(0, 4), older.mediaHistory);
+    assert.deepEqual(contest.mediaUpdate, current.mediaUpdate);
+    assert.deepEqual(contest.options, older.options);
+    assert.deepEqual(contest.resultHistory, older.resultHistory);
   }
 });
