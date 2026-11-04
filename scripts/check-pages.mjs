@@ -515,6 +515,26 @@ async function checkElection() {
       !(await page.locator('.history-table-wrap').textContent()).includes('Publisher page updated')
     )
       fail('election: media timestamps mislabeled as official reports');
+    await page.locator('#contest-select').selectOption('RTM');
+    if (
+      !(await page.locator('.contest-meta').textContent()).includes('Five-county RTM region') ||
+      !(await page.locator('#contests').textContent()).includes('Santa Clara')
+    )
+      fail('election: RTM full-region scope missing');
+    if (
+      !(await page.locator('.vote-list').textContent()).includes('650,366') ||
+      !(await page.locator('[data-media-projection]').textContent()).includes(
+        'passed. Not certified',
+      )
+    )
+      fail('election: RTM attributed tally/projection missing');
+    if (
+      !(await page.locator('.trend-value').textContent()).includes(
+        'One observation; no trend yet',
+      ) ||
+      (await page.locator('.batch-history svg path').count()) !== 0
+    )
+      fail('election: one RTM observation invented a trend');
     await page.locator('#ballot-search').fill('zzzz-no-match');
     if (!(await page.locator('#contests').textContent()).includes('No matching'))
       fail('election: no-match state failed');

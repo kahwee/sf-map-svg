@@ -17,13 +17,15 @@ const time = (value) =>
       })
     : 'not yet verified';
 const scopeName = (c) =>
-  ({
+  c.mediaUpdate?.resultGeography?.name ||
+  {
     citywide: 'San Francisco',
     statewide: 'California',
     regional: 'Bay Area',
     district: 'District contest',
     'appellate-district': 'First Appellate District',
-  })[c.scope] || c.scope;
+  }[c.scope] ||
+  c.scope;
 const label = (c) =>
   c.shortTitle
     ? `${c.id === 'RTM' ? 'RTM' : `Prop ${c.id.split('-').at(-1)}`} · ${c.shortTitle}`
@@ -84,7 +86,7 @@ function renderContest(c) {
     update.dataset.mediaProjection = 'true';
     const projection = Object.assign(document.createElement('a'), {
       href: media.projection.sourceUrl,
-      textContent: 'Chronicle projects: rejected. Not certified.',
+      textContent: `Chronicle projects: ${media.projection.outcome}. Not certified.`,
     });
     update.append(projection);
     article.append(update);
@@ -140,7 +142,9 @@ function renderContest(c) {
   const note = c.resultStatus
     ? `SF county votes only · ${reported ? 'Unofficial' : 'Awaiting votes; source has a zero/pre-election report'}.`
     : media
-      ? 'Shares of reported Yes/No votes; not ballot completion.'
+      ? media.resultGeography
+        ? `Full five-county contest: ${media.resultGeography.counties.join(', ')}. Shares are of reported votes, not ballot completion.`
+        : 'Shares of reported Yes/No votes; not ballot completion.'
       : 'Local results unavailable. Pending means unknown, not zero.';
   article.append(
     Object.assign(document.createElement('p'), {

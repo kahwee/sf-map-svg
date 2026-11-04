@@ -146,7 +146,7 @@ test('reviewed summaries retain material conditions without endorsements', () =>
 });
 
 test('news tallies stay separate from official results and history', () => {
-  const updates = seed.contests.filter((c) => c.mediaUpdate);
+  const updates = seed.contests.filter((c) => c.mediaUpdate && c.id !== 'RTM');
   assert.equal(updates.length, 10);
   assert.equal(seed.status, 'pending');
   for (const c of updates) {
@@ -195,7 +195,7 @@ test('recovery preserves newer newsroom updates without creating official result
   assert.equal(recovered.status, 'pending');
 });
 test('newsroom history preserves publisher observations separately from official batches', () => {
-  for (const c of seed.contests.filter((c) => c.mediaHistory)) {
+  for (const c of seed.contests.filter((c) => c.mediaHistory && c.id !== 'RTM')) {
     assert.equal(c.mediaHistory.length, 2);
     assert.equal(c.mediaHistory[0].sourceName, 'KQED');
     assert.equal(c.mediaHistory[1].sourceName, 'San Francisco Chronicle');
@@ -214,4 +214,38 @@ test('newsroom history preserves publisher observations separately from official
   const bad = structuredClone(seed);
   bad.contests.find((c) => c.id === 'local-G').mediaHistory.reverse();
   assert.throws(() => validateSnapshot(bad), /media/);
+});
+
+test('RTM newsroom totals retain full five-county scope and observed projection time', () => {
+  const c = seed.contests.find((c) => c.id === 'RTM');
+  assert.deepEqual(
+    c.mediaUpdate.options.map((o) => o.votes),
+    [650366, 410598],
+  );
+  assert.equal(c.mediaUpdate.resultGeography.scope, 'full-contest');
+  assert.equal(c.mediaUpdate.resultGeography.counties.length, 5);
+  assert.equal(c.mediaUpdate.projection.publishedAt, undefined);
+  assert.equal(c.mediaUpdate.projection.observedAt, '2026-11-04T06:39:42Z');
+  assert.equal(c.mediaHistory.length, 1);
+  assert.deepEqual(c.resultHistory, []);
+  assert.ok(c.options.every((o) => o.votes === null));
+  assert.equal(c.call, 'uncalled');
+  for (const mutate of [
+    (c) => {
+      c.mediaUpdate.resultGeography.counties = ['San Francisco'];
+    },
+    (c) => {
+      c.mediaUpdate.resultGeography.scope = 'county-portion-of-contest';
+    },
+    (c) => {
+      c.mediaUpdate.projection.publishedAt = '2026-11-04T06:36:00Z';
+    },
+    (c) => {
+      c.mediaUpdate.sourceName = 'KQED';
+    },
+  ]) {
+    const bad = structuredClone(seed);
+    mutate(bad.contests.find((c) => c.id === 'RTM'));
+    assert.throws(() => validateSnapshot(bad), /media/);
+  }
 });

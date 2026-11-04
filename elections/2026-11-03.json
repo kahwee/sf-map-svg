@@ -916,7 +916,69 @@
         "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
         "pages": "52–53"
       },
-      "resultHistory": []
+      "resultHistory": [],
+      "mediaUpdate": {
+        "observedAt": "2026-11-04T06:39:42Z",
+        "sourceUpdatedAt": "2026-11-04T06:36:00Z",
+        "sourceName": "San Francisco Chronicle",
+        "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
+        "options": [
+          {
+            "id": "0",
+            "label": "Yes",
+            "votes": 650366
+          },
+          {
+            "id": "1",
+            "label": "No",
+            "votes": 410598
+          }
+        ],
+        "resultGeography": {
+          "type": "regional",
+          "scope": "full-contest",
+          "name": "Five-county RTM region",
+          "counties": ["Alameda", "Contra Costa", "San Francisco", "San Mateo", "Santa Clara"]
+        },
+        "projection": {
+          "outcome": "passed",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/election/article/live-results-bay-area-regional-transit-measure-22487820.php",
+          "observedAt": "2026-11-04T06:39:42Z"
+        }
+      },
+      "mediaHistory": [
+        {
+          "observedAt": "2026-11-04T06:39:42Z",
+          "sourceUpdatedAt": "2026-11-04T06:36:00Z",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 650366
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 410598
+            }
+          ],
+          "resultGeography": {
+            "type": "regional",
+            "scope": "full-contest",
+            "name": "Five-county RTM region",
+            "counties": ["Alameda", "Contra Costa", "San Francisco", "San Mateo", "Santa Clara"]
+          },
+          "projection": {
+            "outcome": "passed",
+            "sourceName": "San Francisco Chronicle",
+            "sourceUrl": "https://www.sfchronicle.com/election/article/live-results-bay-area-regional-transit-measure-22487820.php",
+            "observedAt": "2026-11-04T06:39:42Z"
+          }
+        }
+      ]
     },
     {
       "id": "state-1",

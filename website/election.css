@@ -84,10 +84,7 @@
   min-height: 340px;
 }
 #contests article {
-  border: 1px solid var(--rule);
-  border-radius: 10px;
-  padding: 24px;
-  background: var(--card);
+  padding: 8px 0;
 }
 .contest-meta {
   color: var(--muted);
@@ -184,7 +181,7 @@
     gap: 20px;
   }
   #contests article {
-    padding: 16px;
+    padding: 8px 0;
   }
   #contests {
     min-height: 340px;

@@ -86,3 +86,11 @@ verified at 2026-11-04T05:53:30Z (publisher page updated 05:52Z). Recovery union
 observations without dropping older entries. A separately labeled newsroom chart is
 used only when official history is unavailable. Its steps compare cumulative published
 tallies across observations/publishers, not distinct batches of newly cast ballots.
+
+RTM adds one Chronicle newsroom observation covering the **full five-county contest**,
+not San Francisco alone. Its `mediaUpdate` and `mediaHistory` point carry
+`resultGeography: {type:"regional", scope:"full-contest", name:"Five-county RTM region",
+counties:["Alameda","Contra Costa","San Francisco","San Mateo","Santa Clara"]}`.
+The Chronicle passage projection uses `observedAt`, with no invented `publishedAt`.
+The tally's `sourceUpdatedAt` is the publisher page-update time. The official
+`options`, `call`, `resultHistory`, and neutral district map remain separate.

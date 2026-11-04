@@ -214,7 +214,7 @@ export function createTrend(contest, state = {}) {
     const note = make(
       'p',
       media
-        ? 'SF citywide · newsroom observations from the linked publishers. Steps compare cumulative published tallies, not newly cast ballots. Publisher update times are not official report times.'
+        ? `${contest.mediaUpdate?.resultGeography?.name || 'SF citywide'} · newsroom observations from the linked publishers. Steps compare cumulative published tallies, not newly cast ballots. Publisher update times are not official report times.`
         : 'SF county only · equally spaced reports and revisions. Changes are cumulative tally updates, not newly cast ballots. Share is of reported votes, not turnout.',
       'result-note',
     );

@@ -3,15 +3,18 @@ export function validateMediaUpdate(contest) {
   const media = contest.mediaUpdate;
   if (media === undefined) return;
   const projection = media?.projection;
+  const regional = contest.id === 'RTM';
+  const projectionTime = regional ? projection?.observedAt : projection?.publishedAt;
   const times = [
     media?.observedAt,
     media?.sourceUpdatedAt,
-    ...(projection ? [projection.publishedAt] : []),
+    ...(projection ? [projectionTime] : []),
   ];
   if (
-    !/^local-[A-J]$/.test(contest.id) ||
+    (!/^local-[A-J]$/.test(contest.id) && !regional) ||
     !(
-      (media?.sourceName === 'KQED' &&
+      (!regional &&
+        media?.sourceName === 'KQED' &&
         [
           'https://www.kqed.org/elections/results/sanfrancisco',
           ...(contest.id === 'local-G'
@@ -29,7 +32,7 @@ export function validateMediaUpdate(contest) {
         !Number.isFinite(Date.parse(value)),
     ) ||
     Date.parse(media.observedAt) < Date.parse(media.sourceUpdatedAt) ||
-    (projection && Date.parse(media.observedAt) < Date.parse(projection.publishedAt)) ||
+    (projection && Date.parse(media.observedAt) < Date.parse(projectionTime)) ||
     !Array.isArray(media.options) ||
     media.options.length !== contest.options.length ||
     media.options.some(
@@ -42,15 +45,30 @@ export function validateMediaUpdate(contest) {
     !media.options.some((option) => option.votes > 0)
   )
     throw new Error('Invalid media update provenance');
-  if (
-    projection &&
-    (contest.id !== 'local-G' ||
-      projection.outcome !== 'rejected' ||
-      projection.sourceName !== 'San Francisco Chronicle' ||
-      projection.sourceUrl !==
-        'https://www.sfchronicle.com/election/article/california-polls-prop-40-governor-live-updates-22499351.php#a-victory-for-sunset-dunes-park-as-upper-great-highway-ballot-measure-is-voted-down-045404')
-  )
-    throw new Error('Invalid media projection provenance');
+  if (regional) {
+    const geography = media.resultGeography;
+    if (
+      geography?.type !== 'regional' ||
+      geography.scope !== 'full-contest' ||
+      geography.name !== 'Five-county RTM region' ||
+      JSON.stringify(geography.counties) !==
+        JSON.stringify(['Alameda', 'Contra Costa', 'San Francisco', 'San Mateo', 'Santa Clara'])
+    )
+      throw new Error('Invalid media regional geography');
+  } else if (media.resultGeography !== undefined) throw new Error('Invalid media local geography');
+  if (projection) {
+    const valid = regional
+      ? projection.outcome === 'passed' &&
+        projection.publishedAt === undefined &&
+        projection.sourceUrl ===
+          'https://www.sfchronicle.com/election/article/live-results-bay-area-regional-transit-measure-22487820.php'
+      : contest.id === 'local-G' &&
+        projection.outcome === 'rejected' &&
+        projection.sourceUrl ===
+          'https://www.sfchronicle.com/election/article/california-polls-prop-40-governor-live-updates-22499351.php#a-victory-for-sunset-dunes-park-as-upper-great-highway-ballot-measure-is-voted-down-045404';
+    if (!valid || projection.sourceName !== 'San Francisco Chronicle')
+      throw new Error('Invalid media projection provenance');
+  }
 }
 export function latestMediaUpdate(current, previous) {
   if (!current) return previous;
