@@ -58,3 +58,10 @@ The sample count above illustrates the schema only; it is not an election result
 The selected-contest chart uses discrete, equally spaced observations and step changes, with a keyboard-accessible table of exact report and observation times. Previous/Next buttons and a keyboard-operable batch slider select actual stored observations; option and count/share selectors never synthesize intermediate data. A single report is one point, not a trend. Vote share uses the sum of that contest’s reported option counts, not turnout. County changes may include corrections, not just newly counted ballots.
 
 The public deployed feed is the last-good history store. Every update must load and validate it before fetching new counts; failed recovery aborts the build and leaves the current Pages deployment intact. No polling data is committed, and no second storage service or pipeline is used. Verified description updates merge by exact contest and option identity without touching history or counts.
+
+
+### CDN rollback guard and durability limits
+
+Recovery checks the public GitHub Actions metadata for the most recent completed Pages run with a successful `deploy` job, including failed overall runs whose deploy succeeded. It requires the public JSON's build SHA and check/generation window to match that deployment (from its build-job start through deploy completion, not the possibly earlier queue time). During a new workflow run, the metadata must also include the preceding workflow run number; metadata lag, incomplete jobs, API failure/rate limits, or an older CDN snapshot abort publication. API reads are public and add no credentials or permission grants.
+
+This protects routine serialized refreshes from silently rolling history back to an older CDN response. The Pages snapshot is **not an immutable archive or independent backup**: durability still depends on retained public data and trustworthy GitHub deployment metadata. Manual rollbacks, deletion/corruption, or another publisher can require recovery outside this feed. The guard favors leaving the current deployment intact over publishing when freshness cannot be proved.
