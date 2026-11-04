@@ -30,7 +30,8 @@ const budgets = {
   index: 45.9, // Shared label preparation; static font estimation stays out (45.7 KB measured).
   layers: 48.7, // Includes opt-in static overview label layout (48.5 KB measured).
   playground: 54.4, // V5 tuple coordinates and explicit reset API (54.22 KiB measured).
-  election: 25,
+  // TanStack Charts 1.2.1 adds typed scales, axes and accessible SVG (37.78 KB measured).
+  election: 40,
   examples: 12,
   measures: 25,
   propositions: 25,
@@ -508,6 +509,22 @@ async function checkElection() {
       (await page.locator('.trend-panel svg circle').count()) !== 3
     )
       fail('election: separate newsroom history missing');
+    if (await page.locator('.history-table-wrap').isVisible())
+      fail('election: history table should be hidden in default Chart view');
+    if ((await page.locator('.trend-panel .ts-chart__grid line').count()) < 4)
+      fail('election: chart guide lines missing');
+    await page.getByRole('button', { name: 'Table', exact: true }).focus();
+    await page.keyboard.press('Enter');
+    if (
+      !(await page.locator('.history-table-wrap').isVisible()) ||
+      (await page.locator('.trend-panel svg').isVisible())
+    )
+      fail('election: keyboard Table toggle did not switch views');
+    if (!(await page.locator('.trend-selected-source').isVisible()))
+      fail('election: view toggle hid source provenance');
+    await page.getByRole('button', { name: 'Chart', exact: true }).click();
+    if (!(await page.locator('.trend-panel svg').isVisible()))
+      fail('election: Chart toggle did not restore chart');
     await page.getByRole('button', { name: '← Previous', exact: true }).click();
     if (!(await page.locator('.trend-value').textContent()).includes('57,242'))
       fail('election: second newsroom observation was not preserved');
@@ -628,6 +645,7 @@ async function checkElection() {
       fail('election: chart option/metric selection failed');
     if (!(await page.locator('.history-table-wrap').textContent()).includes('8:03 p.m.'))
       fail('election: exact report time absent from accessible table');
+    await page.getByRole('button', { name: 'Table', exact: true }).click();
     await page.locator('.history-table-wrap').focus();
     if (
       !(await page
@@ -674,6 +692,7 @@ async function checkElectionLifecycle() {
     await page.locator('select[aria-label="View option"]').selectOption('1');
     await page.locator('select[aria-label="Measure"]').selectOption('share');
     await page.getByRole('button', { name: '← Previous', exact: true }).click();
+    await page.getByRole('button', { name: 'Table', exact: true }).click();
     await page.evaluate(() =>
       Object.defineProperty(document, 'hidden', { configurable: true, value: true }),
     );
@@ -692,6 +711,13 @@ async function checkElectionLifecycle() {
     release();
     await page.waitForFunction(() => !document.getElementById('refresh').disabled);
     if (requests !== 2) fail('election lifecycle: due visibility refresh missing');
+    if (
+      (await page
+        .getByRole('button', { name: 'Table', exact: true })
+        .getAttribute('aria-pressed')) !== 'true' ||
+      !(await page.locator('.history-table-wrap').isVisible())
+    )
+      fail('election lifecycle: refresh reset Table view');
     if (
       (await page.locator('select[aria-label="View option"]').inputValue()) !== '1' ||
       (await page.locator('select[aria-label="Measure"]').inputValue()) !== 'share' ||

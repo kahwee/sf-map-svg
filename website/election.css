@@ -410,3 +410,37 @@
 .batch-history > .trend-panel {
   margin-bottom: 12px;
 }
+
+.trend-view-toggle {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+.trend-view-toggle button {
+  padding: 5px 12px;
+  font: inherit;
+  font-size: 0.8rem;
+}
+.trend-view-toggle [aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+.trend-selected-source {
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.trend-panel svg {
+  max-height: 210px;
+}
+.history-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.history-heading h3,
+.history-heading .trend-view-toggle {
+  margin: 0;
+}

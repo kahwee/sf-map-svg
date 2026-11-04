@@ -77,3 +77,10 @@ The measures card retains its browser-validated three-column grid. A declaration
 scoped suppression handles Biome's false positive for repeated grid area
 names; other grid declarations remain checked. Revisit this workaround when the
 upstream rule accepts the valid layout.
+
+The election explorer bundles TanStack Charts 1.2.1 from its published vanilla SVG API.
+Its JS/CSS budget is 40 KB gzip (37.78 KB measured with the chart/table view); other
+page budgets are unchanged. Charts use discrete cumulative steps and exact source
+observations. TanStack is a development dependency for the website bundle, not a
+runtime dependency of the published map package. Release API reference:
+https://github.com/TanStack/charts/tree/v1.2.1/docs .

@@ -1,15 +1,10 @@
-const ns = 'http://www.w3.org/2000/svg';
+import { renderElectionChart } from './election-chart.js';
+
 const make = (tag, text, className) =>
   Object.assign(document.createElement(tag), {
     textContent: text || '',
     className: className || '',
   });
-const svgElement = (tag, attrs, text) => {
-  const node = document.createElementNS(ns, tag);
-  for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, String(value));
-  if (text) node.textContent = text;
-  return node;
-};
 const observedTime = (iso) =>
   new Date(iso).toLocaleString('en-US', { timeZone: 'America/Los_Angeles', timeZoneName: 'short' });
 export function createTrend(contest, state = {}) {
@@ -89,6 +84,25 @@ export function createTrend(contest, state = {}) {
   const panel = make('div', '', 'trend-panel');
   panel.setAttribute('aria-live', 'polite');
   const evidence = make('div', '', 'trend-evidence');
+  const viewToggle = make('div', '', 'trend-view-toggle');
+  viewToggle.setAttribute('role', 'group');
+  viewToggle.setAttribute('aria-label', 'History view');
+  const chartButton = make('button', 'Chart');
+  const tableButton = make('button', 'Table');
+  chartButton.type = tableButton.type = 'button';
+  for (const [button, view] of [
+    [chartButton, 'chart'],
+    [tableButton, 'table'],
+  ]) {
+    button.addEventListener('click', () => {
+      state.view = view;
+      draw();
+    });
+    viewToggle.append(button);
+  }
+  const historyHeader = make('div', '', 'history-heading');
+  historyHeader.append(section.querySelector('h3'), viewToggle);
+  section.prepend(historyHeader);
   section.append(panel, controls, navigation, rangeLabel, evidence);
   function draw() {
     const selected = contest.options.find((o) => o.id === optionSelect.value);
@@ -123,94 +137,15 @@ export function createTrend(contest, state = {}) {
       `${unit} ${batch + 1} · ${selected.label}: ${format(last)} · ${delta}`,
       'trend-value',
     );
-    const svg = svgElement('svg', {
-      viewBox: '0 0 360 160',
-      role: 'img',
-      'aria-label': `${selected.label}, ${share ? 'share of reported votes' : 'reported votes'}, ${points.length} ${media ? 'newsroom ' : 'reported '}${points.length === 1 ? unit.toLowerCase() : units}. ${delta} Exact ${media ? 'publisher update' : 'report'} and observation times in the table below.`,
-    });
-    const max = share ? 100 : Math.max(1, ...values);
-    const x = (i) => (points.length === 1 ? 191 : 44 + (i * 294) / (points.length - 1));
-    const y = (v) => 130 - (108 * v) / max;
-    for (const value of [0, max]) {
-      svg.append(
-        svgElement('line', {
-          x1: 44,
-          x2: 338,
-          y1: y(value),
-          y2: y(value),
-          stroke: 'currentColor',
-          opacity: '.15',
-        }),
-      );
-      svg.append(
-        svgElement(
-          'text',
-          { x: 38, y: y(value) + 4, 'text-anchor': 'end', 'font-size': 13, fill: 'currentColor' },
-          share
-            ? format(value)
-            : new Intl.NumberFormat('en-US', {
-                notation: 'compact',
-                maximumFractionDigits: 1,
-              }).format(value),
-        ),
-      );
-    }
-    if (points.length > 1) {
-      let path = `M ${x(0)} ${y(values[0])}`;
-      for (let i = 1; i < values.length; i++) path += ` H ${x(i)} V ${y(values[i])}`;
-      svg.append(
-        svgElement('path', { d: path, fill: 'none', stroke: 'currentColor', 'stroke-width': 2 }),
-      );
-    }
-    svg.append(
-      svgElement('line', {
-        x1: x(batch),
-        x2: x(batch),
-        y1: 15,
-        y2: 130,
-        stroke: 'currentColor',
-        opacity: '.25',
-        'stroke-dasharray': '3 4',
+    const svg = new DOMParser().parseFromString(
+      renderElectionChart(values, {
+        share,
+        batch,
+        unit,
+        label: `${selected.label}, ${share ? 'share of reported votes' : 'reported votes'}, ${points.length} ${media ? 'newsroom ' : 'reported '}${points.length === 1 ? unit.toLowerCase() : units}. ${delta}`,
       }),
-    );
-    values.forEach((value, i) => {
-      const dot = svgElement('circle', {
-        cx: x(i),
-        cy: y(value),
-        r: i === batch ? 6 : 3,
-        fill: 'currentColor',
-        opacity: i === batch ? 1 : 0.5,
-      });
-      dot.append(
-        svgElement(
-          'title',
-          {},
-          `${points[i].sourceReportTime}: ${format(value)}; observed ${observedTime(points[i].observedAt)}`,
-        ),
-      );
-      svg.append(dot);
-    });
-    svg.append(
-      svgElement(
-        'text',
-        {
-          x: points.length === 1 ? 191 : 44,
-          y: 153,
-          'text-anchor': points.length === 1 ? 'middle' : 'start',
-          'font-size': 13,
-          fill: 'currentColor',
-        },
-        `${unit} 1`,
-      ),
-    );
-    if (points.length > 1)
-      svg.append(
-        svgElement(
-          'text',
-          { x: 338, y: 153, 'text-anchor': 'end', 'font-size': 13, fill: 'currentColor' },
-          `${unit} ${points.length}`,
-        ),
-      );
+      'image/svg+xml',
+    ).documentElement;
     const note = make(
       'p',
       media
@@ -255,8 +190,24 @@ export function createTrend(contest, state = {}) {
     });
     table.append(body);
     tableHost.append(table);
-    panel.replaceChildren(headline, svg);
-    evidence.replaceChildren(note, tableHost);
+    const tableView = state.view === 'table';
+    chartButton.setAttribute('aria-pressed', String(!tableView));
+    tableButton.setAttribute('aria-pressed', String(tableView));
+    svg.hidden = tableView;
+    if (tableView) svg.setAttribute('style', 'display:none');
+    tableHost.hidden = !tableView;
+    const source = make('p', '', 'trend-selected-source');
+    const sourceLink = make(
+      'a',
+      `${media ? 'Publisher update' : 'Official report'}: ${points[batch].sourceReportTime}`,
+    );
+    sourceLink.href = points[batch].resultSourceUrl;
+    source.append(
+      sourceLink,
+      document.createTextNode(` · Observed ${observedTime(points[batch].observedAt)}`),
+    );
+    panel.replaceChildren(headline, svg, tableHost);
+    evidence.replaceChildren(source, note);
   }
   previous.addEventListener('click', () => {
     if (batch > 0) {
