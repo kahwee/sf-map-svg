@@ -1,22 +1,21 @@
 # Changelog
 
-## Unreleased
-
-- Add official November 2026 precinct aggregates (`data/elections/precincts-<report time>.json` with a time-ordered `precincts-index.json`) and the 2022 precinct boundaries (`data/precincts-2022.json`), reconciled with the department's summary report. Only aggregates are committed, never the ballot-level export. Export the boundaries as `precinctMaps` from `@kahwee/sf-map-svg/data` and `@kahwee/sf-map-svg/data/precincts`; results snapshots stay Pages data.
-- Update Biome to 2.6.3 and the aligned Storybook packages to 10.6.4.
-
-- Gate library output replacement on Bun source checking, then emit JavaScript, declarations, and JSON with TypeScript `--noCheck`; install pinned Bun in every build job.
-- Align Storybook on 10.6.3 and Vitest/browser/coverage tooling on 5.0.5, with compatible dependency updates for current security fixes.
-- Record identical-output library build benchmarks alongside the earlier build-reuse measurements.
-
-- Reuse completed library builds in CI demo, Storybook, coverage, and Pages steps; retain fresh builds for standalone commands and archive packing.
-- Add a reproducible compilation-phase benchmark that checks emitted-output equivalence.
-
-- Use Bun for consumer, Storybook, and website project checks; run them once in the Bun CI job instead of repeating them in the Node matrix.
-
 User-visible changes are recorded here. Unreleased entries describe changes on `main` that are not part of a tagged package release.
 
 ## Unreleased
+
+## 5.1.0 — 2026-11-05
+
+- Add official November 2026 precinct aggregates (`data/elections/precincts-<report time>.json` with a time-ordered `precincts-index.json`) and the 2022 precinct boundaries (`data/precincts-2022.json`), reconciled with the department's summary report. Only aggregates are committed, never the ballot-level export. Export the boundaries as `precinctMaps` from `@kahwee/sf-map-svg/data` and `@kahwee/sf-map-svg/data/precincts`; results snapshots stay Pages data.
+- Update Biome to 2.6.3 and the aligned Storybook packages to 10.6.4.
+- Gate library output replacement on Bun source checking, then emit JavaScript, declarations, and JSON with TypeScript `--noCheck`; install pinned Bun in every build job.
+- Align Storybook on 10.6.3 and Vitest/browser/coverage tooling on 5.0.5, with compatible dependency updates for current security fixes.
+- Record identical-output library build benchmarks alongside the earlier build-reuse measurements.
+- Reuse completed library builds in CI demo, Storybook, coverage, and Pages steps; retain fresh builds for standalone commands and archive packing.
+- Add a reproducible compilation-phase benchmark that checks emitted-output equivalence.
+- Use Bun for consumer, Storybook, and website project checks; run them once in the Bun CI job instead of repeating them in the Node matrix.
+- Add a Pages precinct results page (`precincts.html`) that shades the 514 precincts by any contest in the latest official snapshot, and compact the committed precinct snapshot to about 0.6 MB with a 5 KB reconciliation fixture.
+- Fix election page checks on 390 px phones and in macOS Chromium, and wait for the scrollbar gutter in popover checks.
 
 ## 5.0.0 — 2026-10-19
 

@@ -31,7 +31,7 @@
 }
 .precinct-map path:hover,
 .precinct-map path:focus-visible,
-.precinct-map path[aria-current='true'] {
+.precinct-map path[aria-current="true"] {
   stroke: var(--ink);
   stroke-width: 2;
   outline: none;

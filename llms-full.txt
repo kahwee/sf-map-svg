@@ -2,13 +2,13 @@
 
 > Offline San Francisco SVG maps with explicit geographic imports, no runtime dependencies, static rendering, and a browser controller.
 
-@kahwee/sf-map-svg 5.0.0 · local working tree. Node >=24.0.0 for server rendering; browsers need a DOM and a JSON-capable bundler.
+@kahwee/sf-map-svg 5.1.0 · local working tree. Node >=24.0.0 for server rendering; browsers need a DOM and a JSON-capable bundler.
 
 These are working-tree docs. Unreleased changelog entries may describe APIs absent from npm; verify the installed version before copying them.
 
 Use renderMap(data, options) for SVG strings; createMap(data, options) returns a controller. Mount map.element and destroy it on unmount. Choose mode explicitly: createMap defaults to basemap. Geography is separate; staticMapData and fullMapData have different shapes.
 
-<!-- Generated from README.md; @kahwee/sf-map-svg 5.0.0 · local working tree. -->
+<!-- Generated from README.md; @kahwee/sf-map-svg 5.1.0 · local working tree. -->
 
 # SF Map SVG
 
@@ -93,7 +93,7 @@ function disposeMap() {
 }
 ```
 
-`createMap(data, options)` returns a controller. Use `map.element` for mounting, `map.configure({ features, layers, controls, appearance, mode, source, year, labels })` for runtime switches, `map.camera` for pan/zoom/fit/reset, and `map.on()` for typed events. Appearance can change live while preserving camera, selection, and focus. `getResolvedConfiguration()` explains effective layers; `getCapabilities()` reports supplied geography. SFAR realtor neighborhoods are the default when supplied; SF Find and analysis are explicit alternate sources. The `/data/full` preset includes all three collections and historical districts.
+`createMap(data, options)` returns a controller. Use `map.element` for mounting, `map.configure({ features, layers, controls, appearance, mode, source, year, labels })` for runtime switches, `map.camera` for pan/zoom/fit/reset, and `map.on()` for typed events. Appearance can change live while preserving camera, selection, and focus. `getResolvedConfiguration()` explains effective layers; `getCapabilities()` reports supplied geography. SFAR realtor neighborhoods are the default when supplied; SF Find and analysis are explicit alternate sources. The `/data/full` preset includes all three collections and historical districts. `precinctMaps[2022]` from `@kahwee/sf-map-svg/data/precincts` holds the 514 Department of Elections precinct boundaries (data only, not a rendered layer).
 
 See [controller options, events, and lifecycle](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md#interactive-maps),
 [examples](https://github.com/kahwee/sf-map-svg/blob/main/docs/EXAMPLES.md), and [consumer integration](https://github.com/kahwee/sf-map-svg/blob/main/docs/consumer-integration.md).
@@ -267,7 +267,7 @@ for raw samples, output-equivalence checks, and reproducible commands.
 
 ---
 
-<!-- Generated from docs/developer-guide.md; @kahwee/sf-map-svg 5.0.0 · local working tree. -->
+<!-- Generated from docs/developer-guide.md; @kahwee/sf-map-svg 5.1.0 · local working tree. -->
 
 # Developer guide
 
@@ -433,7 +433,7 @@ See [API options](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md), [
 
 ---
 
-<!-- Generated from docs/API.md; @kahwee/sf-map-svg 5.0.0 · local working tree. -->
+<!-- Generated from docs/API.md; @kahwee/sf-map-svg 5.1.0 · local working tree. -->
 
 # Map options and lifecycle
 
@@ -619,7 +619,7 @@ Call `binding.setMarkers(next)` after `map.setMarkers(next)` when the catalog ch
 
 ---
 
-<!-- Generated from docs/EXAMPLES.md; @kahwee/sf-map-svg 5.0.0 · local working tree. -->
+<!-- Generated from docs/EXAMPLES.md; @kahwee/sf-map-svg 5.1.0 · local working tree. -->
 
 # Examples
 
@@ -760,7 +760,7 @@ See [query semantics and limitations](https://github.com/kahwee/sf-map-svg/blob/
 
 ---
 
-<!-- Generated from docs/consumer-integration.md; @kahwee/sf-map-svg 5.0.0 · local working tree. -->
+<!-- Generated from docs/consumer-integration.md; @kahwee/sf-map-svg 5.1.0 · local working tree. -->
 
 # Embedding and progressive enhancement
 
@@ -938,7 +938,7 @@ keyboard, focus, and dismissal behavior. See [coordinates and units](https://git
 
 ---
 
-<!-- Generated from docs/migration-v5.md; @kahwee/sf-map-svg 5.0.0 · local working tree. -->
+<!-- Generated from docs/migration-v5.md; @kahwee/sf-map-svg 5.1.0 · local working tree. -->
 
 # Migrating to v5
 
@@ -1043,7 +1043,7 @@ collections. Shared edges can match more than one feature. See the
 
 ---
 
-<!-- Generated from docs/migration-v3.md; @kahwee/sf-map-svg 5.0.0 · local working tree. -->
+<!-- Generated from docs/migration-v3.md; @kahwee/sf-map-svg 5.1.0 · local working tree. -->
 
 # Migrate to version 3
 
@@ -1084,7 +1084,7 @@ District styles are now prepared once per district on construction and style/yea
 
 ---
 
-<!-- Generated from SOURCES.md; @kahwee/sf-map-svg 5.0.0 · local working tree. -->
+<!-- Generated from SOURCES.md; @kahwee/sf-map-svg 5.1.0 · local working tree. -->
 
 # Geometry and provenance
 
@@ -1313,28 +1313,34 @@ The November 3 impartiality review checked all 25 descriptions against the offic
 
 Report-history points preserve only actual validated source counts and their distinct first observation times. Tests use explicitly synthetic mutations of the official zero-report fixtures; no synthetic counts or history points are in the checked-in ballot seed or deployed as results.
 
+## November 2026 precinct results and boundaries
+
+- `data/elections/precincts-<report time>.json`, such as `precincts-2026-11-03-230421.json` (local department clock, `YYYY-MM-DD-HHmmss`), aggregates the San Francisco Department of Elections cast vote record export `CVR_Export_20261103231904.zip` (downloaded November 5, 2026; the department's report time was supplied as 11/3/2026 11:04:21 PM, kept verbatim with no timezone conversion) to per-precinct, per-contest counts in a compact format (`precincts[id].c[contestIndex] = [undervotes, overvotes, ...votes in option order]`, with `contests[]` giving each index's options; schema version 2, about 0.6 MB). Generate it with `scripts/import-cvr-precincts.mjs --zip <export> --report-time "<M/D/YYYY h:mm:ss AM|PM>" --out-dir data/elections`. Each report time keeps its own file, and `data/elections/precincts-index.json` lists them in time order; consumers read `latest`, the newest report time. The export, which is ballot-level, is an ingestion input and is never committed; its SHA-256 is recorded in the file. Counts use each ballot card's current record (`Modified` when adjudicated). Ranked-choice contests count a single rank-1 mark only, matching the department's first-round figures. These are not winners.
+- Reconciliation: `test/election-precincts.test.mjs` sums the precincts and compares every candidate and option of all 65 contests with the official Election Summary Report 4 (`test/fixtures/sfelections/summary-report-4.json`, a 5 KB extract of the report's option totals made with `scripts/extract-summary-totals.mjs`, with the XML's SHA-256 recorded; 514 of 514 precincts reported). Every total matches exactly. Five precincts have no ballots in the export and are absent from the file.
+- `data/precincts-2022.json` holds the 514 polygons of DataSF "Election Precincts - Current, Defined 2022" (`d6x4-hefw`, https://data.sfgov.org/resource/d6x4-hefw.geojson, downloaded November 5, 2026), reduced to the precinct ID with coordinates rounded to six decimals. All 514 IDs match the export's precinct manifest exactly.
+
 ---
 
-<!-- Generated from CHANGELOG.md; @kahwee/sf-map-svg 5.0.0 · local working tree. -->
+<!-- Generated from CHANGELOG.md; @kahwee/sf-map-svg 5.1.0 · local working tree. -->
 
 # Changelog
-
-## Unreleased
-
-- Update Biome to 2.6.3 and the aligned Storybook packages to 10.6.4.
-
-- Gate library output replacement on Bun source checking, then emit JavaScript, declarations, and JSON with TypeScript `--noCheck`; install pinned Bun in every build job.
-- Align Storybook on 10.6.3 and Vitest/browser/coverage tooling on 5.0.5, with compatible dependency updates for current security fixes.
-- Record identical-output library build benchmarks alongside the earlier build-reuse measurements.
-
-- Reuse completed library builds in CI demo, Storybook, coverage, and Pages steps; retain fresh builds for standalone commands and archive packing.
-- Add a reproducible compilation-phase benchmark that checks emitted-output equivalence.
-
-- Use Bun for consumer, Storybook, and website project checks; run them once in the Bun CI job instead of repeating them in the Node matrix.
 
 User-visible changes are recorded here. Unreleased entries describe changes on `main` that are not part of a tagged package release.
 
 ## Unreleased
+
+## 5.1.0 — 2026-11-05
+
+- Add official November 2026 precinct aggregates (`data/elections/precincts-<report time>.json` with a time-ordered `precincts-index.json`) and the 2022 precinct boundaries (`data/precincts-2022.json`), reconciled with the department's summary report. Only aggregates are committed, never the ballot-level export. Export the boundaries as `precinctMaps` from `@kahwee/sf-map-svg/data` and `@kahwee/sf-map-svg/data/precincts`; results snapshots stay Pages data.
+- Update Biome to 2.6.3 and the aligned Storybook packages to 10.6.4.
+- Gate library output replacement on Bun source checking, then emit JavaScript, declarations, and JSON with TypeScript `--noCheck`; install pinned Bun in every build job.
+- Align Storybook on 10.6.3 and Vitest/browser/coverage tooling on 5.0.5, with compatible dependency updates for current security fixes.
+- Record identical-output library build benchmarks alongside the earlier build-reuse measurements.
+- Reuse completed library builds in CI demo, Storybook, coverage, and Pages steps; retain fresh builds for standalone commands and archive packing.
+- Add a reproducible compilation-phase benchmark that checks emitted-output equivalence.
+- Use Bun for consumer, Storybook, and website project checks; run them once in the Bun CI job instead of repeating them in the Node matrix.
+- Add a Pages precinct results page (`precincts.html`) that shades the 514 precincts by any contest in the latest official snapshot, and compact the committed precinct snapshot to about 0.6 MB with a 5 KB reconciliation fixture.
+- Fix election page checks on 390 px phones and in macOS Chromium, and wait for the scrollbar gutter in popover checks.
 
 ## 5.0.0 — 2026-10-19
 
@@ -1705,7 +1711,7 @@ consistent home, and makes animation and subscription ownership predictable.
 
 # Published type contracts
 
-@kahwee/sf-map-svg 5.0.0 · local working tree. These declarations are generated by TypeScript. Use package export paths, not the internal filenames below. Imported relative contracts are included for context, not as additional public entry points.
+@kahwee/sf-map-svg 5.1.0 · local working tree. These declarations are generated by TypeScript. Use package export paths, not the internal filenames below. Imported relative contracts are included for context, not as additional public entry points.
 
 | Public import | Declaration |
 | --- | --- |
@@ -1720,6 +1726,7 @@ consistent home, and makes animation and subscription ownership predictable.
 | @kahwee/sf-map-svg/data/highways | ./dist/data/highways.d.ts |
 | @kahwee/sf-map-svg/data/landmarks | ./dist/data/landmarks.d.ts |
 | @kahwee/sf-map-svg/data/lookup | ./dist/data/lookup.d.ts |
+| @kahwee/sf-map-svg/data/precincts | ./dist/data/precincts.d.ts |
 | @kahwee/sf-map-svg/data/realtor | ./dist/data/realtor.d.ts |
 | @kahwee/sf-map-svg/data/roads | ./dist/data/roads.d.ts |
 | @kahwee/sf-map-svg/data/sf-find | ./dist/data/sf-find.d.ts |
@@ -2033,6 +2040,11 @@ export interface DistrictProperties {
     readonly label: Position;
     readonly labelPoints: readonly Position[];
     readonly displayExtras: Geometry | null;
+}
+export interface PrecinctProperties {
+    /** Four-digit Department of Elections precinct number, such as "1101". */
+    readonly precinct: string;
+    readonly year: 2022;
 }
 export interface Catalog {
     readonly schemaVersion: 1;
@@ -2546,6 +2558,7 @@ export { districtMaps } from './districts.js';
 export { highways } from './highways.js';
 export { landmarks } from './landmarks.js';
 export { getNeighborhood, neighborhoodCollections, neighborhoodSources } from './lookup.js';
+export { precinctMaps } from './precincts.js';
 export { getRealtorNeighborhood, neighborhoods } from './realtor.js';
 export { keyRoads } from './roads.js';
 export { bartStations } from './stations.js';
@@ -2605,6 +2618,13 @@ export declare const neighborhoodSources: readonly NeighborhoodSource[];
 export declare function getNeighborhood(name: string, { source }?: {
     source?: NeighborhoodSource;
 }): import("./types.js").Feature<NeighborhoodProperties> | undefined;
+```
+
+### dist/data/precincts.d.ts
+
+```ts
+import type { FeatureCollection, PrecinctProperties } from './types.js';
+export declare const precinctMaps: Readonly<Record<2022, FeatureCollection<PrecinctProperties>>>;
 ```
 
 ### dist/data/realtor.d.ts
