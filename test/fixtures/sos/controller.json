@@ -1,0 +1,23 @@
+[
+  {
+    "raceTitle": "Controller - San Francisco County Results",
+    "Reporting": "0% (0 of 514) precincts reporting",
+    "ReportingTime": "November 2, 2026, 6:28 p.m.",
+    "candidates": [
+      {
+        "Name": "Malia M. Cohen",
+        "Party": "Dem",
+        "Votes": "0",
+        "Percent": "0.0",
+        "incumbent": true
+      },
+      {
+        "Name": "Herb W Morgan",
+        "Party": "Rep",
+        "Votes": "0",
+        "Percent": "0.0",
+        "incumbent": false
+      }
+    ]
+  }
+]

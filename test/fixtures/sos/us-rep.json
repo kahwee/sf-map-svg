@@ -1,0 +1,44 @@
+[
+  {
+    "raceTitle": "United States Representative District 11 - San Francisco County Results",
+    "Reporting": "0% (0 of 453) precincts reporting",
+    "ReportingTime": "November 2, 2026, 6:28 p.m.",
+    "candidates": [
+      {
+        "Name": "Connie Chan",
+        "Party": "Dem",
+        "Votes": "0",
+        "Percent": "0.0",
+        "incumbent": false
+      },
+      {
+        "Name": "Scott Wiener",
+        "Party": "Dem",
+        "Votes": "0",
+        "Percent": "0.0",
+        "incumbent": false
+      }
+    ]
+  },
+  {
+    "raceTitle": "United States Representative District 15 - San Francisco County Results",
+    "Reporting": "0% (0 of 61) precincts reporting",
+    "ReportingTime": "November 2, 2026, 6:28 p.m.",
+    "candidates": [
+      {
+        "Name": "Kevin Mullin",
+        "Party": "Dem",
+        "Votes": "0",
+        "Percent": "0.0",
+        "incumbent": false
+      },
+      {
+        "Name": "Charles Hoelter",
+        "Party": "Rep",
+        "Votes": "0",
+        "Percent": "0.0",
+        "incumbent": false
+      }
+    ]
+  }
+]

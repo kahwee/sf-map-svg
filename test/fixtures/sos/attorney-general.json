@@ -1,0 +1,23 @@
+[
+  {
+    "raceTitle": "Attorney General - San Francisco County Results",
+    "Reporting": "0% (0 of 514) precincts reporting",
+    "ReportingTime": "November 2, 2026, 6:28 p.m.",
+    "candidates": [
+      {
+        "Name": "Rob Bonta",
+        "Party": "Dem",
+        "Votes": "0",
+        "Percent": "0.0",
+        "incumbent": true
+      },
+      {
+        "Name": "Michael E. Gates",
+        "Party": "Rep",
+        "Votes": "0",
+        "Percent": "0.0",
+        "incumbent": false
+      }
+    ]
+  }
+]

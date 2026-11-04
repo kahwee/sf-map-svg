@@ -1,0 +1,86 @@
+[
+  {
+    "raceTitle": "State Assembly Member District 12 - San Francisco County Results",
+    "Reporting": "0% (0 of 1) precincts reporting",
+    "ReportingTime": "November 2, 2026, 6:28 p.m.",
+    "candidates": [
+      {
+        "Name": "Jackie Elward",
+        "Party": "Dem",
+        "Votes": "0",
+        "Percent": "0.0",
+        "incumbent": false
+      },
+      {
+        "Name": "Eric Lucan",
+        "Party": "Dem",
+        "Votes": "0",
+        "Percent": "0.0",
+        "incumbent": false
+      }
+    ]
+  },
+  {
+    "raceTitle": "State Assembly Member District 17 - San Francisco County Results",
+    "Reporting": "0% (0 of 298) precincts reporting",
+    "ReportingTime": "November 2, 2026, 6:28 p.m.",
+    "candidates": [
+      {
+        "Name": "Matt Haney",
+        "Party": "Dem",
+        "Votes": "0",
+        "Percent": "0.0",
+        "incumbent": true
+      },
+      {
+        "Name": "Manuel Noris-Barrera",
+        "Party": "Rep",
+        "Votes": "0",
+        "Percent": "0.0",
+        "incumbent": false
+      }
+    ]
+  },
+  {
+    "raceTitle": "State Assembly Member District 18 - San Francisco County Results",
+    "Reporting": "0% (0 of 1) precincts reporting",
+    "ReportingTime": "November 2, 2026, 6:28 p.m.",
+    "candidates": [
+      {
+        "Name": "Mia Bonta",
+        "Party": "Dem",
+        "Votes": "0",
+        "Percent": "0.0",
+        "incumbent": true
+      },
+      {
+        "Name": "Andre Sandford",
+        "Party": "Dem",
+        "Votes": "0",
+        "Percent": "0.0",
+        "incumbent": false
+      }
+    ]
+  },
+  {
+    "raceTitle": "State Assembly Member District 19 - San Francisco County Results",
+    "Reporting": "0% (0 of 214) precincts reporting",
+    "ReportingTime": "November 2, 2026, 6:28 p.m.",
+    "candidates": [
+      {
+        "Name": "Catherine Stefani",
+        "Party": "Dem",
+        "Votes": "0",
+        "Percent": "0.0",
+        "incumbent": true
+      },
+      {
+        "Name": "Philip Louis Wing",
+        "Party": "Rep",
+        "Votes": "0",
+        "Percent": "0.0",
+        "incumbent": false
+      }
+    ]
+  }
+]

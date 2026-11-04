@@ -16,11 +16,13 @@ function render() {
   if (!snapshot) return;
   const state = freshness(snapshot);
   $('status-title').textContent =
-    snapshot.status === 'pending' ? 'Awaiting verified results' : 'Unofficial results · uncalled';
+    snapshot.status === 'pending'
+      ? 'Awaiting verified results'
+      : 'Partial unofficial results · uncalled';
   $('check-status').textContent =
     `${state === 'stale' ? 'Stale check — refresh overdue. ' : state === 'source-error' ? 'Official source check unavailable. ' : ''}${snapshot.message}`;
   $('report-time').textContent =
-    `Official report time: ${time(snapshot.sourceReportTimestamp)}. Last successful results fetch: ${time(snapshot.lastSuccessfulFetchAt)}.`;
+    `SF Department report time: ${time(snapshot.sourceReportTimestamp)}. Last successful results fetch: ${time(snapshot.lastSuccessfulFetchAt)}.`;
   $('fetch-time').textContent =
     `Last check attempt: ${time(snapshot.checkedAt)}. Page data generated: ${time(snapshot.generatedAt)}.`;
   const district = Number($('region').value);
@@ -39,7 +41,7 @@ function render() {
       const title = document.createElement('h3');
       title.textContent = c.title;
       const status = document.createElement('p');
-      status.textContent = `${c.scope} · Uncalled${c.countingMethod === 'ranked-choice-first-choice' ? ' · Ranked-choice contest' : ''}`;
+      status.textContent = `${c.scope} contest${c.resultStatus ? ' · SF county portion only' : ''} · Uncalled${c.countingMethod === 'ranked-choice-first-choice' ? ' · Ranked-choice contest' : ''}`;
       const list = document.createElement('ul');
       for (const option of c.options) {
         const row = document.createElement('li');
@@ -52,6 +54,14 @@ function render() {
         list.append(row);
       }
       article.append(title, status, list);
+      if (c.resultStatus) {
+        const provenance = document.createElement('p');
+        provenance.textContent = `San Francisco county portion only · ${c.resultStatus === 'pending' ? 'Zero/pre-election report — awaiting votes' : 'Unofficial county votes'} · SOS report: ${c.sourceReportTime} (as published) · Fetched: ${time(c.resultsFetchedAt)}${c.resultCheckStatus && c.resultCheckStatus !== 'ok' ? ' · Latest check failed; retained counts may be stale.' : ''}`;
+        const source = document.createElement('a');
+        source.href = c.resultSourceUrl;
+        source.textContent = 'Official SOS county report';
+        article.append(provenance, source);
+      }
       if (c.rosterStatus) {
         const note = document.createElement('p');
         note.textContent =

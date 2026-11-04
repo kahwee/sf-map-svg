@@ -1,0 +1,20 @@
+"This file lists all available JSON endpoints for the California November 3, 2026 Statewide General Election"
+
+URL,Description
+
+https://media.sos.ca.gov/media/governor.json,"Contains all statewide and county data for Governor contests"
+https://media.sos.ca.gov/media/lieutenant-governor.json,"Contains all statewide and county data for Lieutenant Governor contests"
+https://media.sos.ca.gov/media/secretary-of-state.json,"Contains all statewide and county data for Secretary of State contests"
+https://media.sos.ca.gov/media/controller.json,"Contains all statewide and county data for Controller contests"
+https://media.sos.ca.gov/media/treasurer.json,"Contains all statewide and county data for Treasurer contests"
+https://media.sos.ca.gov/media/attorney-general.json,"Contains all statewide and county data for Attorney General contests"
+https://media.sos.ca.gov/media/insurance-commissioner.json,"Contains all statewide and county data for Insurance Commissioner contests"
+https://media.sos.ca.gov/media/supreme-court.json,"Contains all statewide and county data for Supreme Court contests"
+https://media.sos.ca.gov/media/superintendent-of-public-instruction.json,"Contains all statewide and county data for Superintendent of Public Instruction contests"
+https://media.sos.ca.gov/media/ballot-measures.json,"Contains all statewide and county data for Ballot Measure contests"
+https://media.sos.ca.gov/media/board-of-equalization.json,"Contains all districtwide and county data for Board of Equalization contests"
+https://media.sos.ca.gov/media/us-rep.json,"Contains all districtwide and county data for U.S. Representative contests"
+https://media.sos.ca.gov/media/state-senate.json,"Contains all districtwide and county data for State Senate contests"
+https://media.sos.ca.gov/media/state-assembly.json,"Contains all districtwide and county data for State Assembly contests"
+https://media.sos.ca.gov/media/court-of-appeal.json,"Contains all districtwide and county data for Court of Appeal contests"
+https://media.sos.ca.gov/media/status_GG.json,"Contains County Reporting Status data for voter-nominated contests"

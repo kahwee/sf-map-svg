@@ -2,7 +2,7 @@ export const ELECTION_DATE = '2026-11-03';
 export function validateSnapshot(data) {
   if (data?.schemaVersion !== 1 || data.electionDate !== ELECTION_DATE)
     throw new Error('Wrong election or schema');
-  if (!['not-checked', 'ok', 'error'].includes(data.checkStatus))
+  if (!['not-checked', 'ok', 'partial', 'error'].includes(data.checkStatus))
     throw new Error('Invalid check status');
   if (!['pending', 'unofficial'].includes(data.status)) throw new Error('Invalid result status');
   if (data.sourceUrl !== 'https://www.sfelections.org/results/20261103w/index.html')
@@ -45,18 +45,46 @@ export function validateSnapshot(data) {
       if (data.status === 'pending' && option.votes !== null)
         throw new Error('Pending votes must be null');
     }
+    if (contest.resultStatus) {
+      if (
+        !['pending', 'unofficial'].includes(contest.resultStatus) ||
+        !/^https:\/\/media\.sos\.ca\.gov\/media\/[a-z-]+\.json$/.test(contest.resultSourceUrl) ||
+        typeof contest.sourceReportTime !== 'string' ||
+        !Number.isFinite(Date.parse(contest.resultsFetchedAt)) ||
+        contest.resultGeography?.type !== 'county' ||
+        contest.resultGeography.id !== '06075' ||
+        contest.resultGeography.scope !== 'county-portion-of-contest'
+      )
+        throw new Error('Invalid county provenance');
+      if (contest.resultStatus === 'pending' && contest.options.some((o) => o.votes !== null))
+        throw new Error('Pending county report has votes');
+    }
+    if (
+      contest.options.some((o) => o.votes !== null) &&
+      !data.sourceReportTimestamp &&
+      contest.resultStatus !== 'unofficial'
+    )
+      throw new Error('Votes lack report provenance');
     // No geographic result adapter has been verified for the November source yet.
     if (contest.regions.length) throw new Error('Unverified geographic results');
   }
   if (data.geography?.type !== 'none' || data.geography.boundaryYear !== null)
     throw new Error('Unverified geography');
-  if (data.status === 'unofficial' && (!data.sourceReportTimestamp || !data.lastSuccessfulFetchAt))
+  if (
+    data.status === 'unofficial' &&
+    (!data.lastSuccessfulFetchAt ||
+      (!data.sourceReportTimestamp && !data.contests.some((c) => c.resultStatus === 'unofficial')))
+  )
     throw new Error('Missing result provenance');
   return data;
 }
 export function freshness(data, now = Date.now()) {
   if (!data.checkedAt || now - Date.parse(data.checkedAt) > 30 * 60_000) return 'stale';
-  return data.checkStatus === 'ok' ? 'current' : 'source-error';
+  return data.checkStatus === 'ok'
+    ? 'current'
+    : data.checkStatus === 'partial'
+      ? 'partial'
+      : 'source-error';
 }
 // Refuse to infer a live schema from historical reports or from a challenge/error page.
 export function parseOfficialReport(html) {
