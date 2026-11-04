@@ -461,6 +461,34 @@ async function checkElection() {
   try {
     await page.goto(`${origin}${base}election.html`);
     await page.locator('#contests article').first().waitFor();
+    if ((await page.locator('#contests article').count()) !== 1)
+      fail('election: more than one active contest');
+    const votes = await page.locator('.vote-list').boundingBox();
+    if (!votes || votes.y + votes.height > 844)
+      fail('election: phone Yes/No rows are below the first screen');
+    const measureIds = await page
+      .locator('#contest-select option')
+      .evaluateAll((options) => options.map((o) => o.value));
+    for (const id of measureIds) {
+      await page.locator('#contest-select').selectOption(id);
+      const rows = await page.locator('.vote-list').boundingBox();
+      if (!rows || rows.y + rows.height > 844)
+        fail(`election: ${id} phone vote rows require scrolling`);
+    }
+    await page.locator('#contest-select').selectOption('local-A');
+    await page.locator('#contest-select').focus();
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Enter');
+    if (!(await page.locator('#contests h2').textContent()).includes('city-owned bank'))
+      fail('election: keyboard contest switch failed');
+    await page.locator('#contest-select').selectOption('local-G');
+    if (!(await page.locator('.contest-summary').textContent()).includes('Monday'))
+      fail('election: summary did not change');
+    await page.locator('#ballot-search').fill('zzzz-no-match');
+    if (!(await page.locator('#contests').textContent()).includes('No matching'))
+      fail('election: no-match state failed');
+    await page.locator('#ballot-search').fill('');
+    await page.locator('#contest-kind').selectOption('candidate');
     await page.locator('#region').selectOption('8');
     await page.locator('#ballot-search').fill('supervisor');
     const cards = page.locator('#contests article');

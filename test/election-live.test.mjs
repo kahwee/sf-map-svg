@@ -103,3 +103,29 @@ test('judicial retention includes only San Francisco-eligible courts', () => {
   assert.ok(judicial.every((c) => c.options.map((o) => o.label).join(',') === 'Yes,No'));
   assert.match(seed.ballotSource.candidateRosterScope, /write-in/);
 });
+
+test('every measure has a concise official-guide explanation', () => {
+  for (const c of seed.contests.filter((c) => c.kind === 'measure')) {
+    assert.ok(c.shortTitle.length < 70);
+    assert.ok(c.summary.length < 500);
+    assert.match(c.summarySource.url, /^https:\/\//);
+    assert.match(c.summarySource.pages, /^\d+(?:–\d+)?$/);
+  }
+});
+test('new descriptions merge into unofficial snapshots without changing counts or provenance', () => {
+  const previous = structuredClone(seed);
+  previous.status = 'unofficial';
+  previous.sourceReportTimestamp = '2026-11-04T04:45:00Z';
+  previous.lastSuccessfulFetchAt = '2026-11-04T04:47:00Z';
+  previous.contests[0].options[0].votes = 123;
+  delete previous.contests[0].summary;
+  delete previous.contests[0].shortTitle;
+  delete previous.contests[0].summarySource;
+  const merged = chooseSnapshotSeed(seed, previous);
+  assert.equal(merged.contests[0].summary, seed.contests[0].summary);
+  assert.deepEqual(merged.contests[0].options, previous.contests[0].options);
+  assert.equal(merged.sourceReportTimestamp, previous.sourceReportTimestamp);
+  assert.equal(previous.contests[0].summary, undefined);
+  previous.contests[0].options[0].id = 'different-option';
+  assert.equal(chooseSnapshotSeed(seed, previous).contests[0].summary, undefined);
+});

@@ -51,7 +51,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "City departments and commissions",
+      "summary": "Updates the City Charter to reflect current department operations, changes procedures, and eliminates or reorganizes some commissions and advisory bodies. It also requires supervisors to amend certain voter-approved laws to carry out these changes.",
+      "summarySource": {
+        "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+        "pages": "64"
+      }
     },
     {
       "id": "local-B",
@@ -72,7 +78,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "A city-owned bank",
+      "summary": "Allows the City to create a lending corporation if funding and resources are sufficient; after three years it may become a public bank that also takes deposits. It authorizes these institutions but does not require their creation.",
+      "summarySource": {
+        "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+        "pages": "70–71"
+      }
     },
     {
       "id": "local-C",
@@ -93,7 +105,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "Housing Trust Fund funding",
+      "summary": "Changes the formula for City housing contributions, increases funding and expands eligible housing programs, and extends the fund from 2043 to 2058. Contributions could be paused or reduced under specified budget conditions.",
+      "summarySource": {
+        "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+        "pages": "78"
+      }
     },
     {
       "id": "local-D",
@@ -114,7 +132,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "Rules for putting measures on the ballot",
+      "summary": "Raises the petition threshold from 2% to 8% of registered voters and increases special-election requirements, while allowing initiatives to be withdrawn. The Mayor or a minority of supervisors could no longer place measures on the ballot independently; a Board majority still could.",
+      "summarySource": {
+        "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+        "pages": "84"
+      }
     },
     {
       "id": "local-E",
@@ -135,7 +159,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "City purchasing and administrator powers",
+      "summary": "Centralizes purchasing authority under the City Administrator, raises the contract values requiring supervisors’ approval, and extends the administrator’s term from five to ten years. Supervisors and the Mayor could approve or reject proposed purchasing rules but generally could not amend them.",
+      "summarySource": {
+        "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+        "pages": "94–95"
+      }
     },
     {
       "id": "local-F",
@@ -156,7 +186,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "Mayor and commission powers",
+      "summary": "Expands the Mayor’s authority to move department responsibilities, hire deputy mayors, and hire some or fire most department heads, with exceptions. Appointing officials could remove most commissioners without cause.",
+      "summarySource": {
+        "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+        "pages": "100–101"
+      }
     },
     {
       "id": "local-G",
@@ -177,7 +213,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "Weekday cars on the Great Highway",
+      "summary": "Closes Sunset Dunes Park to reopen the Upper Great Highway to private vehicles from Monday at 4 a.m. to Friday at 6 p.m., except weekday holidays. Reopening would require the necessary government approvals and permits.",
+      "summarySource": {
+        "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+        "pages": "108"
+      }
     },
     {
       "id": "local-H",
@@ -198,7 +240,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "A parcel tax for Muni",
+      "summary": "Creates a 15-year property parcel tax for Muni starting July 2027, with rates based on property type and size and adjusted for inflation. Single-family homes start at $129; exemptions and senior discounts apply, and the largest parcels can owe up to $400,000.",
+      "summarySource": {
+        "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+        "pages": "124–125"
+      }
     },
     {
       "id": "local-I",
@@ -219,7 +267,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "Property transfer taxes for housing",
+      "summary": "Dedicates half of the transfer tax on qualifying real-estate sales of $10 million or more to affordable housing and housing assistance, without raising current combined rates. It exempts certain first sales of newly built multifamily housing from the dedicated portion.",
+      "summarySource": {
+        "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+        "pages": "132–133"
+      }
     },
     {
       "id": "local-J",
@@ -240,7 +294,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "Transfer taxes on foreclosed properties",
+      "summary": "Taxes the full market value of certain properties transferred to lenders through foreclosure or to avoid foreclosure, starting March 2027. Existing relief remains for single-family homes, residential buildings with fewer than five units, and qualifying small mixed-use properties.",
+      "summarySource": {
+        "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+        "pages": "144"
+      }
     },
     {
       "id": "RTM",
@@ -261,7 +321,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "A regional transit sales tax",
+      "summary": "Adds a 1% sales tax in San Francisco and 0.5% in Alameda, Contra Costa, San Mateo and Santa Clara counties for 14 years. Revenue funds transit and related programs; passage depends on the combined vote across all five counties.",
+      "summarySource": {
+        "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
+        "pages": "52–53"
+      }
     },
     {
       "id": "state-1",
@@ -282,7 +348,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "Housing bonds",
+      "summary": "Allows $11.25 billion in state borrowing for affordable housing, veterans’ mortgages and homeownership assistance. State repayment costs are estimated at $500 million to $600 million a year for about 25 years.",
+      "summarySource": {
+        "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
+        "pages": "14"
+      }
     },
     {
       "id": "state-2",
@@ -303,7 +375,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "A larger state rainy-day fund",
+      "summary": "Raises the state budget reserve cap from 10% to 20% of General Fund revenue and changes rules for savings and debt payments. It requires additional savings when tax revenue is high.",
+      "summarySource": {
+        "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
+        "pages": "20–23"
+      }
     },
     {
       "id": "state-3",
@@ -324,7 +402,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "Make higher income-tax rates permanent",
+      "summary": "Makes existing higher tax rates on high incomes permanent instead of allowing them to expire in 2031. The measure supports schools and community colleges and makes more General Fund revenue available for health care and other programs.",
+      "summarySource": {
+        "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
+        "pages": "26–27"
+      }
     },
     {
       "id": "state-4",
@@ -345,7 +429,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "Public funding for election campaigns",
+      "summary": "Lets state and local governments create public campaign-funding programs for eligible candidates who accept spending limits. It bars using money earmarked for education, transportation or public safety and triples the maximum fine for foreign campaign contributions.",
+      "summarySource": {
+        "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
+        "pages": "30"
+      }
     },
     {
       "id": "state-5",
@@ -366,7 +456,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "How recalled officials are replaced",
+      "summary": "Removes the replacement-candidate election from the recall ballot: a recalled governor would be succeeded by the lieutenant governor. Other recalled offices would be filled later by election or appointment under existing law; a recalled official could run in a later special election.",
+      "summarySource": {
+        "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
+        "pages": "34–37"
+      }
     },
     {
       "id": "state-37",
@@ -387,7 +483,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "Loans for buyers of new homes",
+      "summary": "Authorizes up to $25 billion in bonds for loans covering up to 17% of a qualifying new home’s price, repaid through borrowers’ mortgage payments. Buyers must meet residency, occupancy, income and down-payment requirements, and homes must meet price limits.",
+      "summarySource": {
+        "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
+        "pages": "40–41"
+      }
     },
     {
       "id": "state-38",
@@ -408,7 +510,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "Bonds for immune-system research",
+      "summary": "Allows $8.4 billion in state borrowing for immune-system research and treatments, with half directed to cancer, heart disease and Alzheimer’s disease. Estimated repayment is $500 million to $600 million annually for about 20 years, potentially offset by research revenue.",
+      "summarySource": {
+        "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
+        "pages": "44"
+      }
     },
     {
       "id": "state-39",
@@ -429,7 +537,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "Identification requirements for voting",
+      "summary": "Requires government-issued identification for in-person voting and matching identification-number digits on mail-ballot envelopes. Election officials would also report annually on how many voters’ citizenship status they have verified.",
+      "summarySource": {
+        "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
+        "pages": "48–51"
+      }
     },
     {
       "id": "state-40",
@@ -450,7 +564,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "A one-time billionaire wealth tax",
+      "summary": "Imposes a one-time tax of up to 5% on covered assets of certain billionaires who were California residents on January 1, 2026, excluding real estate and some retirement assets. It directs 90% of revenue to health care and 10% to food assistance or education-related programs.",
+      "summarySource": {
+        "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
+        "pages": "54–55"
+      }
     },
     {
       "id": "state-41",
@@ -471,7 +591,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "State tax spending limits and audits",
+      "summary": "Bars new state taxes that exclude their revenue from the state spending limit and requires audits of programs funded by new state special taxes. It could override conflicting measures on this ballot if it receives more Yes votes.",
+      "summarySource": {
+        "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
+        "pages": "58–59"
+      }
     },
     {
       "id": "state-42",
@@ -492,7 +618,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "Limits on new state property taxes",
+      "summary": "Bans new state taxes on personal property, including financial assets, and certain taxes based on conduct or status before the tax takes effect. It applies to taxes enacted or taking effect from January 1, 2026, and could override conflicting measures on this ballot if it receives more Yes votes.",
+      "summarySource": {
+        "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
+        "pages": "62–63"
+      }
     },
     {
       "id": "state-43",
@@ -513,7 +645,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "A two-thirds vote for local special taxes",
+      "summary": "Raises the approval threshold for voter-initiated local taxes dedicated to a specific purpose from a majority to two-thirds. It applies to measures approved after January 1, 2027.",
+      "summarySource": {
+        "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
+        "pages": "66–67"
+      }
     },
     {
       "id": "state-44",
@@ -534,7 +672,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "Community clinic spending rules",
+      "summary": "Requires nonprofit federally qualified health centers to spend at least 90% of revenue on services advancing their charitable purpose, including patient services. It adds penalties and reporting rules, with waivers possible in exceptional circumstances.",
+      "summarySource": {
+        "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
+        "pages": "70–71"
+      }
     },
     {
       "id": "state-45",
@@ -555,7 +699,13 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "shortTitle": "Environmental review deadlines",
+      "summary": "Changes environmental review for qualifying housing, infrastructure and other projects by setting agency and court deadlines. It also limits the alternatives agencies must consider and the evidence and remedies available in court challenges.",
+      "summarySource": {
+        "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
+        "pages": "74–77"
+      }
     },
     {
       "id": "office-25",

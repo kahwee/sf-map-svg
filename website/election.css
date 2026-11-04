@@ -1,64 +1,206 @@
-.election-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-  gap: 2rem;
+.election-region h2 {
+  font-size: 1rem;
+  margin: 0 0 4px;
 }
-.election-grid figure {
+.election-shell {
+  padding-block: 24px 40px;
+}
+.election-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.election-head h1 {
+  font-size: clamp(1.65rem, 4vw, 2.8rem);
+  letter-spacing: -0.035em;
   margin: 0;
 }
-.election-contests {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
-  gap: 1rem;
-  margin-block: 2rem;
+.election-head .eyebrow {
+  margin: 0 0 4px;
+  font-size: 0.75rem;
 }
-.election-contests article {
+.election-shell button,
+.election-shell input,
+.election-shell select {
+  font: inherit;
+  color: var(--ink);
+  background: var(--card);
   border: 1px solid var(--rule);
-  padding: 1.25rem;
+  border-radius: 6px;
+  padding: 9px 12px;
+  min-height: 44px;
+}
+.election-shell select,
+.election-shell input {
+  width: 100%;
+  min-width: 0;
+}
+.election-shell label {
+  display: grid;
+  gap: 5px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-width: 0;
+}
+.election-shell :focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.election-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  font-size: 0.8rem;
+  margin: 12px 0 20px;
+  min-height: 24px;
+}
+.election-status strong {
+  color: var(--accent);
+}
+.contest-picker {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) 150px minmax(230px, 1.7fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.contest-choice {
+  position: relative;
+}
+#match-count {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-weight: 400;
+  color: var(--muted);
+}
+.election-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(250px, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+#contests {
+  min-height: 340px;
+}
+#contests article {
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 24px;
   background: var(--card);
 }
-.election-contests h3 {
-  font-size: 1.25rem;
-  overflow-wrap: anywhere;
+.contest-meta {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin: 0 0 8px;
 }
-.election-contests li {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  padding-block: 0.3rem;
+#contests h2 {
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  margin: 0 0 12px;
 }
-.election-contests ul {
+.contest-summary {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 0 0 20px;
+  max-width: 65ch;
+}
+.vote-list {
+  list-style: none;
   padding: 0;
+  margin: 12px 0;
 }
-#check-status {
+.vote-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-top: 1px solid var(--rule);
+  padding: 12px 0;
+}
+.vote-list li:last-child {
+  border-bottom: 1px solid var(--rule);
+}
+.vote-count {
+  font-variant-numeric: tabular-nums;
   font-weight: 600;
+  white-space: nowrap;
 }
-#refresh {
-  padding: 0.7rem 1rem;
+.result-note {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 12px 0 0;
+}
+.contest-details {
+  margin-top: 16px;
+  font-size: 0.8rem;
+}
+.election-shell summary {
+  cursor: pointer;
+  padding-block: 6px;
+}
+#region-status {
+  font-size: 0.85rem;
+  margin: 0 0 8px;
+}
+.election-region .example-map {
+  max-width: 300px;
+  margin: auto;
+}
+.election-region .small {
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.45;
+  margin: 8px 0;
+}
+.election-sources {
+  border-top: 1px solid var(--rule);
+  margin-top: 24px;
+  padding-top: 10px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.election-sources p {
+  max-width: 85ch;
 }
 @media (max-width: 700px) {
-  .election-grid {
+  .election-shell {
+    padding-block: 16px 24px;
+  }
+  .election-status {
+    margin: 8px 0 14px;
+    font-size: 0.75rem;
+    min-height: 40px;
+  }
+  .contest-picker {
+    grid-template-columns: minmax(0, 1fr) 130px;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .contest-choice {
+    grid-column: 1 / -1;
+  }
+  .election-workspace {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
-}
-/* Reserve the asynchronous provenance panel so a source error does not move content. */
-#check-status {
-  min-block-size: 3em;
-}
-#report-time {
-  min-block-size: 3em;
-}
-#fetch-time {
-  min-block-size: 3em;
-}
-@media (max-width: 700px) {
-  #check-status {
-    min-block-size: 10em;
+  #contests article {
+    padding: 16px;
   }
-  #report-time {
-    min-block-size: 6em;
+  #contests {
+    min-height: 340px;
   }
-  #fetch-time {
-    min-block-size: 6em;
+  .contest-summary {
+    font-size: 0.9rem;
+    line-height: 1.45;
+    margin-bottom: 12px;
+  }
+  .election-region {
+    border-top: 1px solid var(--rule);
+    padding-top: 16px;
+  }
+  .election-region .example-map {
+    max-width: 240px;
   }
 }

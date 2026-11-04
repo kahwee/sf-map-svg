@@ -32,6 +32,25 @@ export function validateSnapshot(data) {
       contest.call !== 'uncalled'
     )
       throw new Error('Invalid contest');
+    if (
+      contest.shortTitle !== undefined ||
+      contest.summary !== undefined ||
+      contest.summarySource !== undefined
+    ) {
+      if (
+        typeof contest.shortTitle !== 'string' ||
+        !contest.shortTitle.trim() ||
+        typeof contest.summary !== 'string' ||
+        !contest.summary.trim() ||
+        ![
+          'https://media.api.sf.gov/documents/N26_EN_VIP.pdf',
+          'https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf',
+        ].includes(contest.summarySource?.url) ||
+        typeof contest.summarySource?.pages !== 'string' ||
+        !/^\d+(?:–\d+)?$/.test(contest.summarySource.pages)
+      )
+        throw new Error('Invalid measure explanation provenance');
+    }
     ids.add(contest.id);
     const optionIds = new Set();
     for (const option of contest.options) {
@@ -100,5 +119,25 @@ export function chooseSnapshotSeed(seed, deployed) {
   // Pending snapshots carry no results to preserve. New verified ballot corrections win.
   // Preserve actual last-good results wholesale until a verified results adapter can
   // reconcile changed roster IDs; never discard real counts just to refresh metadata.
-  return deployed.status === 'pending' ? seed : deployed;
+  if (deployed.status === 'pending') return seed;
+  const metadata = new Map(seed.contests.map((c) => [c.id, c]));
+  const merged = structuredClone(deployed);
+  for (const contest of merged.contests) {
+    const current = metadata.get(contest.id);
+    // Attach descriptions only when the exact contest and option identities agree.
+    if (
+      !current ||
+      current.kind !== contest.kind ||
+      current.title !== contest.title ||
+      current.options.length !== contest.options.length ||
+      !current.options.every((o) =>
+        contest.options.some((p) => p.id === o.id && p.label === o.label),
+      )
+    )
+      continue;
+    for (const key of ['shortTitle', 'summary', 'summarySource']) {
+      if (current[key] !== undefined) contest[key] = structuredClone(current[key]);
+    }
+  }
+  return validateSnapshot(merged);
 }

@@ -4,6 +4,8 @@ import { freshness, validateSnapshot } from './election-model.js';
 const $ = (id) => document.getElementById(id);
 let snapshot;
 let map;
+let feedFailed = false;
+let selectedId = new URLSearchParams(location.search).get('contest') || 'local-A';
 const time = (value) =>
   value
     ? new Date(value).toLocaleString('en-US', {
@@ -11,68 +13,140 @@ const time = (value) =>
         timeZoneName: 'short',
       })
     : 'not yet verified';
+const scopeName = (c) =>
+  ({
+    citywide: 'San Francisco',
+    statewide: 'California',
+    regional: 'Bay Area',
+    district: 'District contest',
+    'appellate-district': 'First Appellate District',
+  })[c.scope] || c.scope;
+const label = (c) =>
+  c.shortTitle
+    ? `${c.id === 'RTM' ? 'RTM' : `Prop ${c.id.split('-').at(-1)}`} · ${c.shortTitle}`
+    : c.title;
 for (let id = 1; id <= 11; id++) $('region').add(new Option(`District ${id}`, String(id)));
-function render() {
-  if (!snapshot) return;
+function renderStatus() {
   const state = freshness(snapshot);
   $('status-title').textContent =
-    snapshot.status === 'pending'
-      ? 'Awaiting verified results'
-      : 'Partial unofficial results · uncalled';
+    snapshot.status === 'pending' ? 'Awaiting results' : 'Unofficial · uncalled';
   $('check-status').textContent =
-    `${state === 'stale' ? 'Stale check — refresh overdue. ' : state === 'source-error' ? 'Official source check unavailable. ' : ''}${snapshot.message}`;
+    `${state === 'stale' ? 'Stale check · ' : ''}${snapshot.checkedAt ? `Checked ${time(snapshot.checkedAt)}` : 'Not checked yet'} · ${snapshot.checkStatus === 'not-checked' ? 'Source check pending' : snapshot.checkStatus === 'partial' || snapshot.checkStatus === 'error' ? 'Local source unavailable' : 'Official sources'}`;
   $('report-time').textContent =
     `SF Department report time: ${time(snapshot.sourceReportTimestamp)}. Last successful results fetch: ${time(snapshot.lastSuccessfulFetchAt)}.`;
   $('fetch-time').textContent =
-    `Last check attempt: ${time(snapshot.checkedAt)}. Page data generated: ${time(snapshot.generatedAt)}.`;
-  const district = Number($('region').value);
-  $('region-status').textContent =
-    `${district ? `District ${district}: ` : ''}verified geographic vote totals are not available in this feed. No result colors are assigned.`;
-  map?.select(district);
-  const query = $('ballot-search').value.toLocaleLowerCase().trim();
-  const cards = snapshot.contests
-    .filter(
-      (c) =>
-        (!district || !c.supervisorialDistrict || c.supervisorialDistrict === district) &&
-        `${c.title} ${c.options.map((o) => o.label).join(' ')}`.toLocaleLowerCase().includes(query),
-    )
-    .map((c) => {
-      const article = document.createElement('article');
-      const title = document.createElement('h3');
-      title.textContent = c.title;
-      const status = document.createElement('p');
-      status.textContent = `${c.scope} contest${c.resultStatus ? ' · SF county portion only' : ''} · Uncalled${c.countingMethod === 'ranked-choice-first-choice' ? ' · Ranked-choice contest' : ''}`;
-      const list = document.createElement('ul');
-      for (const option of c.options) {
-        const row = document.createElement('li');
-        const label = document.createElement('span');
-        const votes = document.createElement('span');
-        label.textContent = option.label;
-        votes.textContent =
-          option.votes === null ? 'Pending' : option.votes.toLocaleString('en-US');
-        row.append(label, votes);
-        list.append(row);
-      }
-      article.append(title, status, list);
-      if (c.resultStatus) {
-        const provenance = document.createElement('p');
-        provenance.textContent = `San Francisco county portion only · ${c.resultStatus === 'pending' ? 'Zero/pre-election report — awaiting votes' : 'Unofficial county votes'} · SOS report: ${c.sourceReportTime} (as published) · Fetched: ${time(c.resultsFetchedAt)}${c.resultCheckStatus && c.resultCheckStatus !== 'ok' ? ' · Newer results unavailable; retained counts may be stale.' : ''}`;
-        const source = document.createElement('a');
-        source.href = c.resultSourceUrl;
-        source.textContent = 'Official SOS county report';
-        article.append(provenance, source);
-      }
-      if (c.rosterStatus) {
-        const note = document.createElement('p');
-        note.textContent =
-          c.rosterStatus === 'verified-official-roster'
-            ? 'Candidates verified against the official roster.'
-            : 'Pamphlet statement names only; roster may be incomplete.';
-        article.append(note);
-      }
-      return article;
+    `Last check: ${time(snapshot.checkedAt)}. Feed generated: ${time(snapshot.generatedAt)}.`;
+  $('source-detail').textContent = snapshot.message;
+  if (feedFailed)
+    $('check-status').textContent =
+      'Feed unavailable · showing last loaded data, which may be stale.';
+}
+function renderContest(c) {
+  const host = $('contests');
+  if (!c) {
+    host.replaceChildren(
+      Object.assign(document.createElement('p'), {
+        textContent: 'No matching contests. Change the search or filter.',
+      }),
+    );
+    return;
+  }
+  const article = document.createElement('article');
+  article.dataset.contestId = c.id;
+  const meta = Object.assign(document.createElement('p'), {
+    className: 'contest-meta',
+    textContent: `${c.kind === 'measure' ? (c.id === 'RTM' ? 'Regional measure' : `Proposition ${c.id.split('-').at(-1)}`) : 'Ballot contest'} · ${scopeName(c)} · Uncalled`,
+  });
+  const title = Object.assign(document.createElement('h2'), {
+    textContent: c.shortTitle || c.title,
+  });
+  article.append(meta, title);
+  if (c.summary)
+    article.append(
+      Object.assign(document.createElement('p'), {
+        className: 'contest-summary',
+        textContent: c.summary,
+      }),
+    );
+  const list = document.createElement('ul');
+  list.className = 'vote-list';
+  for (const option of c.options) {
+    const row = document.createElement('li');
+    const name = Object.assign(document.createElement('span'), { textContent: option.label });
+    const votes = Object.assign(document.createElement('span'), {
+      className: 'vote-count',
+      textContent: option.votes === null ? 'Pending' : option.votes.toLocaleString('en-US'),
     });
-  $('contests').replaceChildren(...cards);
+    row.append(name, votes);
+    list.append(row);
+  }
+  article.append(list);
+  const reported = c.options.some((o) => o.votes !== null);
+  const note = c.resultStatus
+    ? `SF county votes only · ${reported ? 'Unofficial' : 'Awaiting votes; source has a zero/pre-election report'}.`
+    : 'Local results unavailable. Pending means unknown, not zero.';
+  article.append(
+    Object.assign(document.createElement('p'), {
+      className: 'result-note',
+      textContent: `${note}${c.resultCheckStatus && c.resultCheckStatus !== 'ok' ? ' Latest source check failed; retained counts may be stale.' : ''}${c.countingMethod === 'ranked-choice-first-choice' ? ' Ranked-choice: first choices do not determine the final winner.' : ''}`,
+    }),
+  );
+  const details = document.createElement('details');
+  details.className = 'contest-details';
+  details.append(
+    Object.assign(document.createElement('summary'), { textContent: 'Official wording & sources' }),
+  );
+  details.append(Object.assign(document.createElement('p'), { textContent: c.title }));
+  const source = Object.assign(document.createElement('a'), {
+    href: c.summarySource?.url || c.sourceUrl,
+    textContent: c.summarySource
+      ? `Official voter guide · printed page ${c.summarySource.pages}`
+      : 'Official ballot source',
+  });
+  details.append(source);
+  if (c.resultStatus) {
+    details.append(
+      Object.assign(document.createElement('p'), {
+        textContent: `SOS report: ${c.sourceReportTime} (as published). Fetched: ${time(c.resultsFetchedAt)}. ${c.reporting || ''}`,
+      }),
+    );
+    details.append(
+      Object.assign(document.createElement('a'), {
+        href: c.resultSourceUrl,
+        textContent: 'Official SF county count',
+      }),
+    );
+  }
+  article.append(details);
+  host.replaceChildren(article);
+}
+function render() {
+  if (!snapshot) return;
+  renderStatus();
+  const district = Number($('region').value);
+  const query = $('ballot-search').value.toLocaleLowerCase().trim();
+  const kind = $('contest-kind').value;
+  const contests = snapshot.contests.filter(
+    (c) =>
+      (kind === 'all' || c.kind === kind) &&
+      (!district || !c.supervisorialDistrict || c.supervisorialDistrict === district) &&
+      `${label(c)} ${c.title} ${c.shortTitle || ''} ${c.summary || ''} ${c.options.map((o) => o.label).join(' ')}`
+        .toLocaleLowerCase()
+        .includes(query),
+  );
+  if (!contests.some((c) => c.id === selectedId)) selectedId = contests[0]?.id || '';
+  const picker = $('contest-select');
+  picker.replaceChildren(
+    ...contests.map((c) => new Option(label(c), c.id, false, c.id === selectedId)),
+  );
+  picker.disabled = !contests.length;
+  if (!contests.length) picker.add(new Option('No matches', ''));
+  $('match-count').textContent =
+    `${contests.length} ${contests.length === 1 ? 'contest' : 'contests'}`;
+  renderContest(contests.find((c) => c.id === selectedId));
+  $('region-status').textContent =
+    `${district ? `District ${district}: ` : ''}district vote totals unavailable. Map shows boundaries only.`;
+  map?.select(district);
 }
 async function refresh() {
   $('refresh').disabled = true;
@@ -82,12 +156,19 @@ async function refresh() {
       signal: AbortSignal.timeout(15_000),
     });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const first = !snapshot;
     snapshot = validateSnapshot(await response.json());
+    feedFailed = false;
+    if (first && location.search) {
+      const requested = snapshot.contests.find((c) => c.id === selectedId);
+      if (requested) $('contest-kind').value = requested.kind;
+    }
     render();
   } catch {
+    feedFailed = true;
     if (snapshot) render();
     $('check-status').textContent =
-      'Feed unavailable. Previously displayed data, if any, is retained and may be stale. Check the official results link.';
+      'Feed unavailable · showing last loaded data, which may be stale.';
   } finally {
     $('refresh').disabled = false;
   }
@@ -95,11 +176,19 @@ async function refresh() {
 $('refresh').addEventListener('click', refresh);
 $('region').addEventListener('change', render);
 $('ballot-search').addEventListener('input', render);
+$('contest-kind').addEventListener('change', render);
+$('contest-select').addEventListener('change', () => {
+  selectedId = $('contest-select').value;
+  const url = new URL(location.href);
+  url.searchParams.set('contest', selectedId);
+  history.replaceState(null, '', url);
+  renderContest(snapshot.contests.find((c) => c.id === selectedId));
+});
 createDistrictMap($('election-map'), {
   year: 2022,
   idPrefix: 'november-2026',
-  title: 'November 2026 district reference map — results unavailable',
-  label: (id) => `District ${id}: results unavailable`,
+  title: 'Supervisor district boundaries — vote totals unavailable',
+  label: (id) => `District ${id}: vote totals unavailable`,
   onSelect: (id) => {
     $('region').value = String(id);
     render();
@@ -108,11 +197,13 @@ createDistrictMap($('election-map'), {
   .then((value) => {
     map = value;
     map.paint(() => ({ fill: '#d9d8cf' }));
-    render();
+    if (snapshot) map.select(Number($('region').value));
   })
   .catch(() => {
     $('election-map').textContent = 'Map unavailable. Use the district selector.';
   });
 refresh();
 setInterval(refresh, 10 * 60_000);
-setInterval(render, 60_000);
+setInterval(() => {
+  if (snapshot) renderStatus();
+}, 60_000);

@@ -214,3 +214,9 @@ contests. It does not use statewide totals, infer precinct boundaries, or map
 county totals onto districts. Actual extracted fixtures and their URLs are
 recorded in `test/fixtures/sos/README.md`. Zero reports stay pending, and report
 time is preserved verbatim separately from fetch time.
+
+### November 2026 plain-language ballot descriptions (verified November 3, 2026 Pacific)
+
+- SF official voter pamphlet: https://media.api.sf.gov/documents/N26_EN_VIP.pdf — printed pp. 52–53 (regional transit), 64 (A), 70–71 (B), 78 (C), 84 (D), 94–95 (E), 100–101 (F), 108 (G), 124–125 (H), 132–133 (I), 144 (J). Summaries use impartial digests, not campaign arguments. PDF viewer page numbers are two higher than printed pages.
+- California Secretary of State official November 3, 2026 voter guide: https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf, downloaded November 4 UTC; SHA-256 `9509a4e3ac10b09e3c36d8b9b6c5d2f3935af3c7e2473c392b64352811cac1d8`. Official titles/summaries and Legislative Analyst analysis: printed pp. 14 (1), 20–23 (2), 26–27 (3), 30 (4), 34–37 (5), 40–41 (37), 44 (38), 48–51 (39), 54–55 (40), 58–59 (41), 62–63 (42), 66–67 (43), 70–71 (44), 74–77 (45).
+- `shortTitle`, `summary`, and `summarySource` in the shared election feed preserve official full titles and source page provenance. Descriptions are neutral paraphrases; no endorsements or outcome predictions.
