@@ -9,7 +9,7 @@
   "generatedAt": null,
   "buildCommit": null,
   "checkStatus": "not-checked",
-  "message": "Awaiting verified official results. The 15 displayed candidate contests are verified against the official roster. Statewide candidate and judicial contests are not included.",
+  "message": "Awaiting verified official results. Ballot coverage includes 25 measures, 24 candidate contests and 13 judicial retention contests. District-specific eligibility varies by address.",
   "geography": {
     "type": "none",
     "boundaryYear": null
@@ -19,9 +19,17 @@
     "sha256": "9c6bcf0b49b5a04c1f03de363d5727458c673d8807ef2932c2912ed40d786136",
     "verifiedAt": "2026-11-04T02:12:00Z",
     "pages": "24–51 and 248",
-    "candidateRosterComplete": false,
+    "candidateRosterComplete": true,
     "candidateRosterSourceUrl": "https://www.sf.gov/candidates-november-3-2026-general-election",
-    "displayedCandidateContestsComplete": true
+    "displayedCandidateContestsComplete": true,
+    "candidateRosterScope": "Printed certified candidates; later statewide write-in qualifications have not been independently verified.",
+    "stateCandidateSource": {
+      "url": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+      "sha256": "0e514ae7b14378b1837bcea99c07e6a05ce35baa9db4c3d3a2297704dc7e6017",
+      "certifiedDate": "2026-08-27",
+      "pages": "1–2 and 33–34"
+    },
+    "coverage": "25 measures, 24 candidate contests, 13 judicial retention contests; district-specific eligibility varies by address."
   },
   "contests": [
     {
@@ -1013,6 +1021,521 @@
       "rosterStatus": "verified-official-roster",
       "supervisorialDistrict": 10,
       "countingMethod": "ranked-choice-first-choice"
+    },
+    {
+      "id": "state-office-0",
+      "title": "Governor",
+      "kind": "candidate",
+      "scope": "statewide",
+      "sourceUrl": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+      "sourcePages": "1–2",
+      "rosterStatus": "verified-official-roster",
+      "countingMethod": "votes",
+      "options": [
+        {
+          "id": "0",
+          "label": "Xavier Becerra",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "Steve Hilton",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "state-office-1",
+      "title": "Lieutenant Governor",
+      "kind": "candidate",
+      "scope": "statewide",
+      "sourceUrl": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+      "sourcePages": "1–2",
+      "rosterStatus": "verified-official-roster",
+      "countingMethod": "votes",
+      "options": [
+        {
+          "id": "0",
+          "label": "Fiona Ma",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "Gloria Romero",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "state-office-2",
+      "title": "Secretary of State",
+      "kind": "candidate",
+      "scope": "statewide",
+      "sourceUrl": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+      "sourcePages": "1–2",
+      "rosterStatus": "verified-official-roster",
+      "countingMethod": "votes",
+      "options": [
+        {
+          "id": "0",
+          "label": "Shirley N. Weber",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "Donald P. (Don) Wagner",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "state-office-3",
+      "title": "Controller",
+      "kind": "candidate",
+      "scope": "statewide",
+      "sourceUrl": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+      "sourcePages": "1–2",
+      "rosterStatus": "verified-official-roster",
+      "countingMethod": "votes",
+      "options": [
+        {
+          "id": "0",
+          "label": "Malia M. Cohen",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "Herb W Morgan",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "state-office-4",
+      "title": "Treasurer",
+      "kind": "candidate",
+      "scope": "statewide",
+      "sourceUrl": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+      "sourcePages": "1–2",
+      "rosterStatus": "verified-official-roster",
+      "countingMethod": "votes",
+      "options": [
+        {
+          "id": "0",
+          "label": "Eleni Kounalakis",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "Jennifer Hawks",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "state-office-5",
+      "title": "Attorney General",
+      "kind": "candidate",
+      "scope": "statewide",
+      "sourceUrl": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+      "sourcePages": "1–2",
+      "rosterStatus": "verified-official-roster",
+      "countingMethod": "votes",
+      "options": [
+        {
+          "id": "0",
+          "label": "Rob Bonta",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "Michael E. Gates",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "state-office-6",
+      "title": "Insurance Commissioner",
+      "kind": "candidate",
+      "scope": "statewide",
+      "sourceUrl": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+      "sourcePages": "1–2",
+      "rosterStatus": "verified-official-roster",
+      "countingMethod": "votes",
+      "options": [
+        {
+          "id": "0",
+          "label": "Ben Allen",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "Jane Kim",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "state-office-7",
+      "title": "Superintendent of Public Instruction",
+      "kind": "candidate",
+      "scope": "statewide",
+      "sourceUrl": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+      "sourcePages": "1–2",
+      "rosterStatus": "verified-official-roster",
+      "countingMethod": "votes",
+      "options": [
+        {
+          "id": "0",
+          "label": "Richard Barrera",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "Sonja Shaw",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "state-office-8",
+      "title": "Board of Equalization Member, District 2",
+      "kind": "candidate",
+      "scope": "district",
+      "sourceUrl": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+      "sourcePages": "1–2",
+      "rosterStatus": "verified-official-roster",
+      "countingMethod": "votes",
+      "options": [
+        {
+          "id": "0",
+          "label": "Sally J. Lieber",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "John Pimentel",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "judicial-0",
+      "title": "Retention: Kelli M. Evans — Associate Justice, Supreme Court",
+      "kind": "judicial-retention",
+      "scope": "statewide",
+      "sourceUrl": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+      "sourcePages": "33–34",
+      "eligibilitySourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf#page=249",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "judicial-1",
+      "title": "Retention: Joshua Groban — Associate Justice, Supreme Court",
+      "kind": "judicial-retention",
+      "scope": "statewide",
+      "sourceUrl": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+      "sourcePages": "33–34",
+      "eligibilitySourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf#page=249",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "judicial-2",
+      "title": "Retention: Charles A. Smiley — Associate Justice, First District, Division One",
+      "kind": "judicial-retention",
+      "scope": "appellate-district",
+      "sourceUrl": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+      "sourcePages": "33–34",
+      "eligibilitySourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf#page=249",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "judicial-3",
+      "title": "Retention: Kathleen M. Banke — Associate Justice, First District, Division One",
+      "kind": "judicial-retention",
+      "scope": "appellate-district",
+      "sourceUrl": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+      "sourcePages": "33–34",
+      "eligibilitySourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf#page=249",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "judicial-4",
+      "title": "Retention: Monique Langhorne Wilson — Associate Justice, First District, Division One",
+      "kind": "judicial-retention",
+      "scope": "appellate-district",
+      "sourceUrl": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+      "sourcePages": "33–34",
+      "eligibilitySourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf#page=249",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "judicial-5",
+      "title": "Retention: Therese M. Stewart — Presiding Justice, First District, Division Two",
+      "kind": "judicial-retention",
+      "scope": "appellate-district",
+      "sourceUrl": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+      "sourcePages": "33–34",
+      "eligibilitySourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf#page=249",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "judicial-6",
+      "title": "Retention: Tara M. Desautels — Associate Justice, First District, Division Two",
+      "kind": "judicial-retention",
+      "scope": "appellate-district",
+      "sourceUrl": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+      "sourcePages": "33–34",
+      "eligibilitySourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf#page=249",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "judicial-7",
+      "title": "Retention: Ioana Petrou — Associate Justice, First District, Division Three",
+      "kind": "judicial-retention",
+      "scope": "appellate-district",
+      "sourceUrl": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+      "sourcePages": "33–34",
+      "eligibilitySourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf#page=249",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "judicial-8",
+      "title": "Retention: Victor A. Rodriguez — Associate Justice, First District, Division Three",
+      "kind": "judicial-retention",
+      "scope": "appellate-district",
+      "sourceUrl": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+      "sourcePages": "33–34",
+      "eligibilitySourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf#page=249",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "judicial-9",
+      "title": "Retention: Tracie L. Brown — Presiding Justice, First District, Division Four",
+      "kind": "judicial-retention",
+      "scope": "appellate-district",
+      "sourceUrl": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+      "sourcePages": "33–34",
+      "eligibilitySourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf#page=249",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "judicial-10",
+      "title": "Retention: Mark Simons — Associate Justice, First District, Division Five",
+      "kind": "judicial-retention",
+      "scope": "appellate-district",
+      "sourceUrl": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+      "sourcePages": "33–34",
+      "eligibilitySourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf#page=249",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "judicial-11",
+      "title": "Retention: Danny Y. Chou — Associate Justice, First District, Division Five",
+      "kind": "judicial-retention",
+      "scope": "appellate-district",
+      "sourceUrl": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+      "sourcePages": "33–34",
+      "eligibilitySourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf#page=249",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
+    },
+    {
+      "id": "judicial-12",
+      "title": "Retention: Gordon Burns — Associate Justice, First District, Division Five",
+      "kind": "judicial-retention",
+      "scope": "appellate-district",
+      "sourceUrl": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+      "sourcePages": "33–34",
+      "eligibilitySourceUrl": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf#page=249",
+      "options": [
+        {
+          "id": "0",
+          "label": "Yes",
+          "votes": null
+        },
+        {
+          "id": "1",
+          "label": "No",
+          "votes": null
+        }
+      ],
+      "regions": [],
+      "call": "uncalled"
     }
   ]
 }

@@ -14,7 +14,7 @@ const seed = JSON.parse(
 test('verified ballot has 25 measures and no invented counts or geography', () => {
   validateSnapshot(seed);
   assert.equal(seed.contests.filter((c) => c.kind === 'measure').length, 25);
-  assert.equal(seed.ballotSource.candidateRosterComplete, false);
+  assert.equal(seed.ballotSource.candidateRosterComplete, true);
   assert.ok(
     seed.contests.every((c) => c.options.every((o) => o.votes === null) && c.regions.length === 0),
   );
@@ -58,14 +58,14 @@ test('official parser fails closed for challenge, wrong election and unverified 
     assert.throws(() => parseOfficialReport(html));
 });
 
-test('displayed rosters include candidates without pamphlet statements without claiming full ballot coverage', () => {
+test('displayed rosters include candidates without pamphlet statements and verified statewide candidates', () => {
   assert.equal(seed.ballotSource.displayedCandidateContestsComplete, true);
-  assert.equal(seed.ballotSource.candidateRosterComplete, false);
+  assert.equal(seed.ballotSource.candidateRosterComplete, true);
   const candidates = seed.contests.filter((c) => c.kind === 'candidate');
-  assert.equal(candidates.length, 15);
+  assert.equal(candidates.length, 24);
   assert.equal(
     candidates.reduce((sum, c) => sum + c.options.length, 0),
-    51,
+    69,
   );
   for (const name of [
     'Charles Hoelter',
@@ -93,4 +93,13 @@ test('a deployed pending ballot cannot erase newly verified candidates', () => {
   reported.lastSuccessfulFetchAt = '2026-11-04T04:47:00Z';
   reported.contests[0].options[0].votes = 123;
   assert.equal(chooseSnapshotSeed(seed, reported).contests[0].options[0].votes, 123);
+});
+
+test('judicial retention includes only San Francisco-eligible courts', () => {
+  const judicial = seed.contests.filter((c) => c.kind === 'judicial-retention');
+  assert.equal(judicial.length, 13);
+  assert.equal(seed.contests.length, 62);
+  assert.ok(judicial.every((c) => /Supreme Court|First District/.test(c.title)));
+  assert.ok(judicial.every((c) => c.options.map((o) => o.label).join(',') === 'Yes,No'));
+  assert.match(seed.ballotSource.candidateRosterScope, /write-in/);
 });

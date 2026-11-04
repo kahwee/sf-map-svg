@@ -188,7 +188,15 @@ supply candidate statement names. The official roster at
 https://www.sf.gov/candidates-november-3-2026-general-election was verified
 on November 4 UTC to complete the 15 displayed candidate contests, adding
 Charles Hoelter, Manuel Noris-Barrera, Philip Louis Wing, Nicholas Berg and
-Jamo Muhammad. Statewide candidate and judicial contests remain outside coverage.
+Jamo Muhammad. The California Secretary of State certified list, downloaded
+November 4 UTC from
+https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf
+(certified August 27, 2026; SHA-256 in the feed), supplies nine additional
+state/Board of Equalization contests on printed pages 1–2 and 13 Supreme Court
+and First Appellate District retention contests on pages 33–34. The latter
+explicitly includes San Francisco County and matches SF pamphlet pp. 246–247.
+Other appellate districts are excluded. Printed candidate coverage does not
+assert independently verified late statewide write-in qualifications.
 The November results endpoint
 https://www.sfelections.org/results/20261103w/index.html returned HTTP 403;
 no November vote totals, report time, winners or geographic results are asserted.
