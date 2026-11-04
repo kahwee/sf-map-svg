@@ -33,7 +33,7 @@ export function createContestView(contest, chartState = {}) {
   article.dataset.contestId = contest.id;
   const meta = Object.assign(document.createElement('p'), {
     className: 'contest-meta',
-    textContent: `${contest.kind === 'measure' ? (contest.id === 'RTM' ? 'Regional measure' : `Proposition ${contest.id.split('-').at(-1)}`) : 'Ballot contest'} · ${scopeName(contest)} · ${contest.mediaUpdate ? 'Preliminary' : 'Uncalled'}`,
+    textContent: `${contest.kind === 'measure' ? (contest.id === 'RTM' ? 'Regional measure' : `Proposition ${contest.id.split('-').at(-1)}`) : 'Ballot contest'} · ${contest.resultStatus || contest.mediaUpdate ? '' : `${scopeName(contest)} · `}${contest.mediaUpdate ? 'Preliminary' : 'Uncalled'}`,
   });
   const title = Object.assign(document.createElement('h2'), {
     textContent: contest.shortTitle || contest.title,
@@ -81,13 +81,6 @@ export function createContestView(contest, chartState = {}) {
     row.append(name, votes);
     list.append(row);
   }
-  if (contest.resultHistory?.length)
-    totals.append(
-      Object.assign(document.createElement('p'), {
-        className: 'result-note',
-        textContent: 'Latest reported totals',
-      }),
-    );
   totals.append(list);
   if (!reported && media) {
     const attribution = document.createElement('p');
@@ -98,7 +91,7 @@ export function createContestView(contest, chartState = {}) {
         href: media.sourceUrl,
         textContent: `${media.sourceName} preliminary tally`,
       }),
-      ` · ${mediaReportTime(media, formatTime)}.${media.sourceUpdatedAt === null ? ` Observed ${formatTime(media.observedAt)}.` : ''}`,
+      ` · ${media.sourceUpdatedAt === null ? mediaReportTime(media, formatTime) : `Publisher updated ${formatTime(media.sourceUpdatedAt)}`}.${media.sourceUpdatedAt === null ? ` Observed ${formatTime(media.observedAt)}.` : ''}`,
     );
     totals.append(attribution);
   }
@@ -106,8 +99,8 @@ export function createContestView(contest, chartState = {}) {
     ? `SF county votes only · ${reported ? 'Unofficial' : 'Awaiting votes; source has a zero/pre-election report'}.`
     : media
       ? media.resultGeography
-        ? `Full five-county contest: ${media.resultGeography.counties.join(', ')}. Shares are of reported votes, not ballot completion.`
-        : 'Shares of reported Yes/No votes; not ballot completion.'
+        ? 'Full five-county contest · shares of reported Yes/No votes, not ballot completion.'
+        : 'SF citywide · shares of reported Yes/No votes, not ballot completion.'
       : 'Local results unavailable. Pending means unknown, not zero.';
   totals.append(
     Object.assign(document.createElement('p'), {
@@ -125,17 +118,15 @@ export function createContestView(contest, chartState = {}) {
   });
   details.append(source);
   if (contest.resultStatus) {
-    details.append(
-      Object.assign(document.createElement('p'), {
-        textContent: `SOS report: ${contest.sourceReportTime}. Fetched: ${formatTime(contest.resultsFetchedAt)}.`,
-      }),
-    );
-    details.append(
+    const report = Object.assign(document.createElement('p'), { className: 'result-note' });
+    report.append(
       Object.assign(document.createElement('a'), {
         href: contest.resultSourceUrl,
-        textContent: 'Official SF county count',
+        textContent: 'California SOS',
       }),
+      ` · Report: ${contest.sourceReportTime}.`,
     );
+    totals.append(report);
   }
   totals.append(details);
   const dataGrid = document.createElement('div');
@@ -150,11 +141,8 @@ export function createContestView(contest, chartState = {}) {
     const explanation = document.createElement('section');
     explanation.className = 'contest-explanation';
     explanation.setAttribute('aria-label', 'What this measure does');
-    explanation.append(
-      Object.assign(document.createElement('h3'), { textContent: 'What this measure does' }),
-      summary,
-    );
-    dataGrid.append(explanation);
+    explanation.append(summary);
+    article.insertBefore(explanation, dataGrid);
   }
   return article;
 }

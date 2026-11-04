@@ -16,7 +16,7 @@ function renderStatus() {
       ? 'Awaiting official results'
       : 'Unofficial · uncalled';
   $('check-status').textContent =
-    `${state === 'stale' ? 'Stale check · ' : ''}${snapshot.checkedAt ? `Checked ${formatTime(snapshot.checkedAt)}` : 'Not checked yet'} · ${snapshot.checkStatus === 'not-checked' ? 'Source check pending' : snapshot.checkStatus === 'partial' || snapshot.checkStatus === 'error' ? 'Official check incomplete' : 'Official sources'}`;
+    `${state === 'stale' ? 'Stale check · ' : ''}${snapshot.checkedAt ? `Official sources checked ${formatTime(snapshot.checkedAt)}` : 'Official sources not checked yet'}`;
   $('report-time').textContent = `Local SF report: ${formatTime(snapshot.sourceReportTimestamp)}.`;
   const local = snapshot.sourceChecks?.find((source) => source.id === 'sf-local');
   $('source-detail').textContent =

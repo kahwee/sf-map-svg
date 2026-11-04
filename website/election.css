@@ -305,14 +305,7 @@
   opacity: 0.55;
 }
 .contest-explanation {
-  grid-column: 1 / -1;
-  border-top: 1px solid var(--rule);
-  margin-top: 0;
-  padding-top: 16px;
-}
-.contest-explanation h3 {
-  font-size: 0.85rem;
-  margin: 0 0 6px;
+  margin: 0 0 16px;
 }
 .contest-explanation .contest-summary {
   max-width: 90ch;
@@ -355,11 +348,6 @@
   background: var(--ink);
   color: var(--paper);
 }
-.trend-selected-source {
-  font-size: 0.75rem;
-  color: var(--muted);
-  line-height: 1.5;
-}
 .trend-panel svg {
   max-height: 210px;
 }
@@ -391,9 +379,6 @@
 }
 .trend-legend small {
   font-weight: normal;
-}
-.trend-selected-source p {
-  margin: 0.3rem 0;
 }
 .chart-point-target {
   cursor: pointer;

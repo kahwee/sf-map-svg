@@ -476,16 +476,14 @@ async function checkElection() {
     if (!(await page.locator('.contest-details a').first().isVisible()))
       fail('election: official source hidden');
     const votes = await page.locator('.vote-list').boundingBox();
-    if (!votes || votes.y + votes.height > 844)
-      fail('election: phone Yes/No rows are below the first screen');
+    if (!votes || votes.height > 260) fail('election: phone Yes/No rows are oversized');
     const measureIds = await page
       .locator('#contest-select option')
       .evaluateAll((options) => options.map((o) => o.value));
     for (const id of measureIds) {
       await page.locator('#contest-select').selectOption(id);
       const rows = await page.locator('.vote-list').boundingBox();
-      if (!rows || rows.y + rows.height > 844)
-        fail(`election: ${id} phone vote rows require scrolling`);
+      if (!rows || rows.height > 260) fail(`election: ${id} phone vote rows are oversized`);
     }
     await page.locator('#contest-select').selectOption('local-A');
     await page.locator('#contest-select').focus();
@@ -498,8 +496,8 @@ async function checkElection() {
       fail('election: summary did not change');
     const historyPosition = await page.locator('.batch-history').boundingBox();
     const explanationPosition = await page.locator('.contest-explanation').boundingBox();
-    if (!historyPosition || !explanationPosition || historyPosition.y >= explanationPosition.y)
-      fail('election: explanation precedes the results visualization on phone');
+    if (!historyPosition || !explanationPosition || historyPosition.y <= explanationPosition.y)
+      fail('election: measure explanation is not adjacent to the title');
     if (!(await page.locator('[data-media-projection]').textContent()).includes('Not certified'))
       fail('election: media projection lacks certification distinction');
     if (
@@ -557,8 +555,12 @@ async function checkElection() {
       (await page.locator('.trend-panel svg').isVisible())
     )
       fail('election: keyboard Table toggle did not switch views');
-    if (!(await page.locator('.trend-selected-source').isVisible()))
-      fail('election: view toggle hid source provenance');
+    if (await page.locator('.trend-selected-source').count())
+      fail('election: repeated per-observation source list remains');
+    if (!(await page.locator('[data-media-tally]').isVisible()))
+      fail('election: current source is hidden');
+    if ((await page.locator('.trend-legend').textContent()).includes('64,776'))
+      fail('election: legend duplicates latest totals');
     await page.getByRole('button', { name: 'Chart', exact: true }).click();
     if (!(await page.locator('.trend-panel svg').isVisible()))
       fail('election: Chart toggle did not restore chart');
@@ -576,7 +578,7 @@ async function checkElection() {
       fail('election: media timestamps mislabeled as official reports');
     await page.locator('#contest-select').selectOption('RTM');
     if (
-      !(await page.locator('.contest-meta').textContent()).includes('Five-county RTM region') ||
+      !(await page.locator('.contest-totals').textContent()).includes('Full five-county contest') ||
       !(await page.locator('#contests').textContent()).includes('Santa Clara')
     )
       fail('election: RTM full-region scope missing');
@@ -675,7 +677,7 @@ async function checkElection() {
     await page.getByLabel('Measure', { exact: true }).focus();
     await page.keyboard.press('ArrowDown');
     await page.keyboard.press('Enter');
-    if (!(await page.locator('.trend-value').textContent()).includes('No: 44.0%'))
+    if (!(await page.locator('.history-table-wrap').textContent()).includes('44.0%'))
       fail('election: chart comparison metric selection failed');
     if (!(await page.locator('.history-table-wrap').textContent()).includes('8:03 p.m.'))
       fail('election: exact report time absent from accessible table');

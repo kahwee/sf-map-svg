@@ -141,7 +141,7 @@ export function createTrend(contest, state = {}) {
         : `${points.length} ${units}`;
     const headline = make('div', '', 'trend-value trend-legend');
     for (const s of series) {
-      const item = make('span', `${s.label}: ${format(s.values.at(-1))}`);
+      const item = make('span', s.label);
       item.style.setProperty('--series-color', s.color);
       headline.append(item);
     }
@@ -156,9 +156,7 @@ export function createTrend(contest, state = {}) {
     ).documentElement;
     const note = make(
       'p',
-      media
-        ? `${contest.mediaUpdate?.resultGeography?.name || 'SF citywide'} · newsroom observations from the linked publishers. Steps compare cumulative published tallies, not newly cast ballots. Publisher update times are not official report times.`
-        : 'SF county only · equally spaced reports and revisions. Changes are cumulative tally updates, not newly cast ballots. Share is of reported votes, not turnout.',
+      'Steps connect observed cumulative tallies, including corrections—not newly cast ballots.',
       'result-note',
     );
     const tableHost = createHistoryTable({
@@ -175,21 +173,13 @@ export function createTrend(contest, state = {}) {
     svg.hidden = tableView;
     if (tableView) svg.setAttribute('style', 'display:none');
     tableHost.hidden = !tableView;
-    const source = make('div', '', 'trend-selected-source');
-    points.forEach((p, i) => {
-      const row = make('p');
-      const link = make('a', `${i + 1} · ${p.sourceReportTime}`);
-      link.href = p.resultSourceUrl;
-      row.append(link, document.createTextNode(` · Observed ${observedTime(p.observedAt)}`));
-      source.append(row);
-    });
     const popover = attachPointPopover(svg, series, points, {
       share,
       media,
       scope: media ? contest.mediaUpdate?.resultGeography?.name || 'SF citywide' : 'SF county only',
     });
     panel.replaceChildren(headline, svg, tableHost, popover);
-    evidence.replaceChildren(source, note);
+    evidence.replaceChildren(note);
   }
   optionSelect.addEventListener('change', draw);
   metricSelect.addEventListener('change', draw);
