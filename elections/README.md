@@ -110,4 +110,27 @@ That observation was held and never published. A normal visible-page reload at
 November 4, 2026” (08:59:00Z). Only this later verified observation is appended;
 its corrected source clock is not backdated onto the earlier observation.
 
+MTC RTM compilation (prepared from the public district page observed
+2026-11-04T19:03:28Z): the existing secondary `mediaHistory` accepts only the exact
+Metropolitan Transportation Commission district URL for RTM with
+`sourceKind: "agency-compilation"`, `sourceUpdatedAt: null` and bounded literal
+`sourceUpdatedAtText: "Last updated 8:50 a.m., November 4"`. The publisher supplies
+no timezone, so this is not converted to an ISO report time. The sixth observation
+is 714,460 Yes / 446,326 No across the full five-county contest. Earlier newsroom
+observations and the original named Chronicle projection remain unchanged.
+Mixed history is described as published observations, ordered by `observedAt`;
+this compilation never enters direct official `resultHistory` or SF district maps.
+
+The offline-tested MTC adapter candidate parses the public HTML table, requiring the 2026 election
+identity, preliminary/unofficial status, all five unique counties, valid counts,
+and exact row and regional reconciliation. It ignores displayed percentages.
+Repeated identical cumulative counts do not append observations. Same-clock increases can append, but decreases or reversions to known earlier
+MTC counts require review. A later publisher wall clock can support a correction.
+These are observations, not inferred ballot batches. Retrieval/validation failures retain the last observation.
+Automatic MTC fetching is disabled: the production updater does not import this
+adapter. Its tested HTTP 401/403 marker is durable only after successful feed
+deployment, so it is not sufficient for automatic polling activation. A reviewed
+fail-closed recovery design is required before activation. Raw publisher clocks are
+currently limited to November 4–30 in this election; another format fails closed.
+
 Precinct-level official counts are separate from this feed: `data/elections/precincts-index.json` lists dated snapshots (`precincts-<YYYY-MM-DD-HHmmss>.json`, newest in `latest`; see `SOURCES.md`) that aggregate the department's cast vote record export per precinct and reconciles with its summary report. Boundaries are `data/precincts-2022.json`. Do not color or imply winners from first-choice counts in ranked-choice contests.
