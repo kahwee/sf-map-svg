@@ -32,11 +32,12 @@ function renderStatus() {
     snapshot.status === 'pending' ? 'Awaiting results' : 'Unofficial · uncalled';
   $('check-status').textContent =
     `${state === 'stale' ? 'Stale check · ' : ''}${snapshot.checkedAt ? `Checked ${time(snapshot.checkedAt)}` : 'Not checked yet'} · ${snapshot.checkStatus === 'not-checked' ? 'Source check pending' : snapshot.checkStatus === 'partial' || snapshot.checkStatus === 'error' ? 'Local source unavailable' : 'Official sources'}`;
-  $('report-time').textContent =
-    `SF Department report time: ${time(snapshot.sourceReportTimestamp)}. Last successful results fetch: ${time(snapshot.lastSuccessfulFetchAt)}.`;
-  $('fetch-time').textContent =
-    `Last check: ${time(snapshot.checkedAt)}. Feed generated: ${time(snapshot.generatedAt)}.`;
-  $('source-detail').textContent = snapshot.message;
+  $('report-time').textContent = `Local SF report: ${time(snapshot.sourceReportTimestamp)}.`;
+  const local = snapshot.sourceChecks?.find((source) => source.id === 'sf-local');
+  $('source-detail').textContent =
+    local?.status === 'error'
+      ? `Local source unavailable${local.message?.match(/HTTP \d{3}/)?.[0] ? ` (${local.message.match(/HTTP \d{3}/)[0]})` : ''}. County counts cannot decide statewide or regional outcomes.`
+      : 'County counts cannot decide statewide or regional outcomes.';
   if (feedFailed)
     $('check-status').textContent =
       'Feed unavailable · showing last loaded data, which may be stale.';
@@ -91,23 +92,19 @@ function renderContest(c) {
       textContent: `${note}${c.resultCheckStatus && c.resultCheckStatus !== 'ok' ? ' Latest source check failed; retained counts may be stale.' : ''}${c.countingMethod === 'ranked-choice-first-choice' ? ' Ranked-choice: first choices do not determine the final winner.' : ''}`,
     }),
   );
-  const details = document.createElement('details');
+  const details = document.createElement('div');
   details.className = 'contest-details';
-  details.append(
-    Object.assign(document.createElement('summary'), { textContent: 'Official wording & sources' }),
-  );
-  details.append(Object.assign(document.createElement('p'), { textContent: c.title }));
   const source = Object.assign(document.createElement('a'), {
     href: c.summarySource?.url || c.sourceUrl,
     textContent: c.summarySource
-      ? `Official voter guide · printed page ${c.summarySource.pages}`
+      ? `Official guide · printed page ${c.summarySource.pages}`
       : 'Official ballot source',
   });
   details.append(source);
   if (c.resultStatus) {
     details.append(
       Object.assign(document.createElement('p'), {
-        textContent: `SOS report: ${c.sourceReportTime} (as published). Fetched: ${time(c.resultsFetchedAt)}. ${c.reporting || ''}`,
+        textContent: `SOS report: ${c.sourceReportTime}. Fetched: ${time(c.resultsFetchedAt)}.`,
       }),
     );
     details.append(

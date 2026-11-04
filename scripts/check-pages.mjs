@@ -463,6 +463,10 @@ async function checkElection() {
     await page.locator('#contests article').first().waitFor();
     if ((await page.locator('#contests article').count()) !== 1)
       fail('election: more than one active contest');
+    if ((await page.locator('main details').count()) !== 0)
+      fail('election: content hidden behind disclosures');
+    if (!(await page.locator('.contest-details a').first().isVisible()))
+      fail('election: official source hidden');
     const votes = await page.locator('.vote-list').boundingBox();
     if (!votes || votes.y + votes.height > 844)
       fail('election: phone Yes/No rows are below the first screen');

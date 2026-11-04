@@ -133,13 +133,10 @@
   margin: 12px 0 0;
 }
 .contest-details {
-  margin-top: 16px;
+  margin-top: 12px;
   font-size: 0.8rem;
 }
-.election-shell summary {
-  cursor: pointer;
-  padding-block: 6px;
-}
+
 #region-status {
   font-size: 0.85rem;
   margin: 0 0 8px;
