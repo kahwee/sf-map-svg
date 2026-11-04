@@ -12,15 +12,15 @@ See [interactive state ownership](docs/state-ownership.md) for state and disposa
 | ----------------- | ------------------------------------------------------- |
 | `src/api.ts`, `src/map.ts`, `src/static.ts` | Data-free exports, controller ownership, static rendering |
 | `src/configuration.ts`, `src/controller-types.ts` | Grouped API validation and public controller contracts |
-| `src/explorer-core.ts` | Interactive composition, camera, district updates and presentation transactions |
+| `src/interactive/map-engine.ts` | Interactive composition, camera, district updates and presentation transactions |
 | `src/neighborhood-layer.ts` | Source-scoped lookup, prepared neighborhood geometry, selection revisions and hover lifecycle |
-| `src/explorer-shell.ts`, `src/explorer-controls.ts`, `src/explorer-sidebar.ts` | Injectable map/explorer shells, toolbar/form behavior and optional sidebar download ownership |
+| `src/interactive/map-shell.ts`, `src/interactive/map-controls.ts`, `src/interactive/explorer-sidebar.ts` | Injectable map/explorer shells, toolbar/form behavior and optional sidebar download ownership |
 | `src/cluster-layer.ts`, `src/overlay-layer.ts` | Cluster and overlay nodes with replaceable event scopes |
 | `src/full-data.ts` | Explicit complete geographic preset (`/data/full`) |
 | `src/static-data.ts` | Explicit static geographic preset (`/data/static`) |
 | `src/geometry.ts` | Mercator projection, GeoJSON paths, bounds, and polygon queries         |
 | `src/district-style.ts`, `src/district-layer.ts`, `src/district-transition.ts` | Prepared district styles, interaction appearance, and cancellable year fades |
-| `src/label-renderer.ts`, `src/marker-layer.ts` | Reusable label nodes/metrics and marker visual/entrance ownership |
+| `src/interactive/label-renderer.ts`, `src/interactive/marker-renderer.ts` | Reusable label nodes/metrics and marker visual/entrance ownership |
 | `src/marker-catalog.ts`, `src/cluster-renderer.ts` | Prepared marker/picker reconciliation and cluster cache, viewport mounting, listener ownership |
 | `src/frame-scheduler.ts` | Shared camera and dependent screen-space render frame |
 | `src/data.ts`     | Internal adapter over canonical JSON geometry           |
@@ -86,8 +86,8 @@ Dependabot proposes weekly npm and GitHub Actions updates, grouping Storybook, V
 - `data/*.json`: canonical GeoJSON, source definitions, names, aliases, and rendering anchors; no duplicate geometry in JavaScript.
 - `pnpm data:check` validates the GeoJSON collections and generated guide geometry before the typed JSON import adapters are trusted. Keep these validators in `scripts/`; they are build-time checks and must not enter browser bundles.
 - `data/index.ts` and `data/types.ts`: immutable data helpers and typed name lookup, separate from the map renderer.
-- `src/layers.ts`: small layer renderers; drawing order remains explicit in `src/map-core.ts`.
-- `src/svg.ts`: shared XML escaping, numeric formatting, and stroke attributes.
+- `src/rendering/svg-layers.ts`: small layer renderers; drawing order remains explicit in `src/rendering/svg-map-renderer.ts`.
+- `src/rendering/svg-primitives.ts`: shared XML escaping, numeric formatting, and stroke attributes.
 - `scripts/build-data-catalog.mjs`: deterministic metadata-only catalog generator. Run `pnpm data:catalog`; `pnpm check` rejects a stale catalog.
 - `stories/NeighborhoodData.stories.ts`: source-aware neighborhood lookup and projection example.
 

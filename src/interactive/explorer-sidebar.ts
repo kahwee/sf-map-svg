@@ -1,8 +1,8 @@
-import type { NeighborhoodFeature, NeighborhoodSource } from '../data/types.js';
-import { element } from './dom.js';
-import type { InteractiveSFMapData } from './explorer-data.js';
-import type { createExplorerShell } from './explorer-shell.js';
-import type { DistrictYear, ExplorerMode } from './types.js';
+import type { NeighborhoodFeature, NeighborhoodSource } from '../../data/types.js';
+import { element } from '../dom.js';
+import type { InteractiveSFMapData } from '../explorer-data.js';
+import type { DistrictYear, ExplorerMode } from '../types.js';
+import type { createExplorerShell } from './map-shell.js';
 
 interface SidebarState {
   mode: ExplorerMode;
@@ -42,7 +42,7 @@ export function createExplorerSidebar(
     link.download = filename;
     return link;
   }
-  function updateDetail({ mode, year, source, selected }: SidebarState) {
+  function updateSelectionDetail({ mode, year, source, selected }: SidebarState) {
     releaseDownloads();
     if (chrome === 'map') return;
     detail.replaceChildren();
@@ -103,7 +103,7 @@ export function createExplorerSidebar(
     );
     detail.append(provenance);
   }
-  function updateResults({ source, selected }: SidebarState) {
+  function updateNeighborhoodResults({ source, selected }: SidebarState) {
     if (chrome === 'map') return;
     const activeElement = document.activeElement;
     const focusedId =
@@ -132,5 +132,5 @@ export function createExplorerSidebar(
         ),
       );
   }
-  return { updateDetail, updateResults, destroy: releaseDownloads };
+  return { updateSelectionDetail, updateNeighborhoodResults, destroy: releaseDownloads };
 }

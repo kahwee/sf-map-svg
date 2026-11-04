@@ -1,8 +1,8 @@
 import { expandMapOptions, prepareConfiguration } from './configuration.js';
 import type { MapController, MapOptions } from './controller-types.js';
-import { createNeighborhoodExplorerCore } from './explorer-core.js';
-import { createMapShell } from './explorer-shell.js';
 import { guideMapData } from './guide-data.js';
+import { createMapEngine } from './interactive/map-engine.js';
+import { createMapShell } from './interactive/map-shell.js';
 import { createMap } from './map.js';
 import { guideOptions } from './presets.js';
 import type {
@@ -79,7 +79,7 @@ function mountFrame(frame: Element, map: HTMLElement) {
 /** Element-based compatibility API. Prefer createGuideController for new integrations. */
 export function createGuideMap(options: InteractiveSFMapOptions = {}): InteractiveSFMapElement {
   validateExplorerOptions(options);
-  return createNeighborhoodExplorerCore(
+  return createMapEngine(
     {
       mode: 'neighborhoods',
       ...options,

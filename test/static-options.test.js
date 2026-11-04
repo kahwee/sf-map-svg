@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { DOMParser } from '@xmldom/xmldom';
 import { fullMapData } from '../dist/src/full-data.js';
-import { resolveMapColors } from '../dist/src/map-core.js';
+import { resolveMapColors } from '../dist/src/rendering/svg-map-renderer.js';
 import { getLayerPaths, renderMap } from '../dist/src/static.js';
 
 const description = (svg) =>

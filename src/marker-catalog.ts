@@ -1,11 +1,11 @@
 import { element } from './dom.js';
-import type { createMarkerLayer, MarkerItem } from './marker-layer.js';
+import type { createMarkerRenderer, MarkerItem } from './interactive/marker-renderer.js';
 import type { MapMarker } from './types.js';
 import { validateMarkers } from './validation.js';
 
 /** Own ordered records and picker reconciliation; prepare before committing DOM changes. */
 export function createMarkerCatalog(
-  renderer: ReturnType<typeof createMarkerLayer>,
+  renderer: ReturnType<typeof createMarkerRenderer>,
   picker: HTMLSelectElement,
   project: (point: import('../data/types.js').Position) => [number, number],
 ) {

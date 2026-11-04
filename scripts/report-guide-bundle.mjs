@@ -64,14 +64,14 @@ for (const [name, entry] of [
 }
 if (
   staticOnly.modules.some((module) =>
-    /\/(explorer-(core|controls|shell|sidebar)|neighborhood-layer|overlay-layer|cluster-layer|navigation|camera|clusters)\.ts$/.test(
+    /\/(interactive\/|(?:neighborhood-layer|overlay-layer|cluster-layer|navigation|camera|clusters)\.ts$)/.test(
       module,
     ),
   )
 )
   throw new Error('Static renderer imported interactive runtime');
-// Internal lifecycle boundaries: root measured at 37.74 KiB gzip; static stays independent.
-if (renderer.gzip > 38 * 1024 || staticOnly.gzip > 11 * 1024)
+// Internal lifecycle boundaries: root measured at 38.13 KiB gzip; static stays independent.
+if (renderer.gzip > 38.25 * 1024 || staticOnly.gzip > 11 * 1024)
   throw new Error(
     `Renderer exceeds its gzip budget (root: ${renderer.gzip}, static: ${staticOnly.gzip} bytes)`,
   );

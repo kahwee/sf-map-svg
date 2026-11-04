@@ -1,6 +1,6 @@
-import { svgElement } from './dom.js';
-import type { normalizeFeatures } from './features.js';
-import type { MapMarker } from './types.js';
+import { svgElement } from '../dom.js';
+import type { normalizeFeatures } from '../features.js';
+import type { MapMarker } from '../types.js';
 
 export interface MarkerVisual {
   node: SVGGElement;
@@ -19,7 +19,7 @@ export interface MarkerItem {
 }
 
 /** Own marker visuals and entrances; selection/events remain with the controller. */
-export function createMarkerLayer() {
+export function createMarkerRenderer() {
   const records = new Set<MarkerItem>();
   const animations = new Map<SVGGElement, Animation>();
   function cancelEntrances() {

@@ -1,11 +1,11 @@
-import { element } from './dom.js';
-import type { createExplorerShell } from './explorer-shell.js';
-import { attachNavigation } from './navigation.js';
+import { element } from '../dom.js';
+import { attachNavigation } from '../navigation.js';
 import type {
   MapViewport,
   NeighborhoodExplorerElement,
   NeighborhoodExplorerOptions,
-} from './types.js';
+} from '../types.js';
+import type { createExplorerShell } from './map-shell.js';
 
 type Controls = NonNullable<NeighborhoodExplorerOptions['controls']>;
 type Shell = Pick<
@@ -41,14 +41,14 @@ type Commands = Pick<
   getLabels(): boolean;
   moveView(view: MapViewport): void;
   setView(view: MapViewport): void;
-  updateResults(): void;
+  updateNeighborhoodResults(): void;
   search(query: string): string | undefined;
 };
 
 /** Own toolbar and form events, touch navigation and control visibility.
  * Commands read current map state; all listeners share the map's disposal signal.
  */
-export function createExplorerControls(
+export function createMapControls(
   {
     root,
     toolbar,
@@ -79,7 +79,7 @@ export function createExplorerControls(
     setSource,
     selectNeighborhood,
     selectMarker,
-    updateResults,
+    updateNeighborhoodResults,
     search: findNeighborhood,
   }: Commands,
 ) {
@@ -169,7 +169,7 @@ export function createExplorerControls(
     const next = modeSelect.value;
     if (next === 'neighborhoods' || next === 'districts' || next === 'basemap') setMode(next);
   });
-  listen(search, 'input', updateResults);
+  listen(search, 'input', updateNeighborhoodResults);
   listen(search, 'keydown', (event) => {
     if (event.key === 'Enter') {
       const match = findNeighborhood(search.value);

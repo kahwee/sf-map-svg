@@ -3,8 +3,8 @@ import { interiorAnchor, layoutLabels, projectedBounds } from './explorer-layout
 import type { Project } from './geometry.js';
 import { labelCandidates, styleLabels } from './label-candidates.js';
 import { spreadLabels } from './label-spread.js';
-import type { SFMapData } from './map-core.js';
-import { escapeXml, number } from './svg.js';
+import type { SFMapData } from './rendering/svg-map-renderer.js';
+import { escapeXml, number } from './rendering/svg-primitives.js';
 import type { SFMapOptions } from './types.js';
 
 /** Conservative portable metrics; the browser refines these with its actual font. */

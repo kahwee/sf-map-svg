@@ -1,5 +1,5 @@
-import type { DistrictRowData } from './map-core.js';
-import { districtColors } from './map-core.js';
+import type { DistrictRowData } from './rendering/svg-map-renderer.js';
+import { districtColors } from './rendering/svg-map-renderer.js';
 import type { DistrictStyle, DistrictYear, SFMapOptions } from './types.js';
 
 /** Apply prepared styles and interaction state without invoking consumer callbacks. */

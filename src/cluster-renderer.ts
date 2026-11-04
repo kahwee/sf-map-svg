@@ -1,7 +1,7 @@
 import { clusterPoints } from './clusters.js';
 import { setAttributeIfChanged, svgElement } from './dom.js';
 import type { normalizeFeatures } from './features.js';
-import type { MarkerItem, MarkerVisual } from './marker-layer.js';
+import type { MarkerItem, MarkerVisual } from './interactive/marker-renderer.js';
 import type { createMarkerNavigation } from './marker-navigation.js';
 import type { MapViewport } from './types.js';
 

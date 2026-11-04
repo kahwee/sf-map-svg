@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/html-vite';
 import { expect } from 'storybook/test';
-import { createNeighborhoodExplorerCore } from '../src/explorer-core.js';
-import { createMapShell } from '../src/explorer-shell.js';
 import { fullMapData } from '../src/full-data.js';
+import { createMapEngine } from '../src/interactive/map-engine.js';
+import { createMapShell } from '../src/interactive/map-shell.js';
 
 const meta = {
   title: 'Checks/Configuration transactions',
@@ -13,7 +13,7 @@ type Story = StoryObj<typeof meta>;
 
 export const PreparedUpdatesCommitOnce: Story = {
   play: async ({ canvasElement }) => {
-    const engine = createNeighborhoodExplorerCore({ mode: 'districts' }, fullMapData, {
+    const engine = createMapEngine({ mode: 'districts' }, fullMapData, {
       createShell: createMapShell,
     });
     canvasElement.append(engine);
@@ -58,7 +58,7 @@ export const PreparedUpdatesCommitOnce: Story = {
 
 export const DistrictUpdatesInvalidatePreparation: Story = {
   play: async ({ canvasElement }) => {
-    const engine = createNeighborhoodExplorerCore({ mode: 'districts' }, fullMapData, {
+    const engine = createMapEngine({ mode: 'districts' }, fullMapData, {
       createShell: createMapShell,
     });
     canvasElement.append(engine);

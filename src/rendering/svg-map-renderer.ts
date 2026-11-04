@@ -1,14 +1,14 @@
-import type { Geometry, Position } from '../data/types.js';
-import type { DistrictYear, SFMapOptions } from './types.js';
-import { validateMarkers, validateOverlays } from './validation.js';
+import type { Geometry, Position } from '../../data/types.js';
+import type { DistrictYear, SFMapOptions } from '../types.js';
+import { validateMarkers, validateOverlays } from '../validation.js';
 
-export type { DistrictYear, MapMarker, MapOverlay, SFMapOptions } from './types.js';
+export type { DistrictYear, MapMarker, MapOverlay, SFMapOptions } from '../types.js';
 
-import { prepareDistrictStyles } from './district-style.js';
-import { geometryPath, type Project, positions, rawProject } from './geometry.js';
-import * as layers from './layers.js';
-import { normalizeStaticAnimation, staticAnimationStyle } from './static-animation.js';
-import { escapeXml, stroke } from './svg.js';
+import { prepareDistrictStyles } from '../district-style.js';
+import { geometryPath, type Project, positions, rawProject } from '../geometry.js';
+import { normalizeStaticAnimation, staticAnimationStyle } from '../static-animation.js';
+import * as layers from './svg-layers.js';
+import { escapeXml, stroke } from './svg-primitives.js';
 
 export interface SFMapData {
   coast: Geometry;

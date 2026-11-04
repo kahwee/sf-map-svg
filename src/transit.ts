@@ -9,8 +9,8 @@ import type {
   LandmarkProperties,
   PointFeatureCollection,
 } from '../data/types.js';
-import type { SFMapData } from './map-core.js';
-import { createSFMapWithData } from './map-core.js';
+import type { SFMapData } from './rendering/svg-map-renderer.js';
+import { createSFMapWithData } from './rendering/svg-map-renderer.js';
 import type { TransitAnimationElement } from './types.js';
 
 const districtData = districts as unknown as FeatureCollection<DistrictProperties>;

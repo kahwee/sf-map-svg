@@ -4,7 +4,7 @@ import type {
   NeighborhoodProperties,
   NeighborhoodSource,
 } from '../data/types.js';
-import type { SFMapData } from './map-core.js';
+import type { SFMapData } from './rendering/svg-map-renderer.js';
 import type { DistrictYear } from './types.js';
 
 /** Geographic inputs for the data-injected interactive map entry point. */

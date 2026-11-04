@@ -1,7 +1,11 @@
 import { prepareAppearance } from './appearance.js';
 import type { InteractiveSFMapData } from './explorer-data.js';
 import { validateSwitchPatch } from './features.js';
-import { createSFMapWithData, getLayerPathsWithData, type SFMapData } from './map-core.js';
+import {
+  createSFMapWithData,
+  getLayerPathsWithData,
+  type SFMapData,
+} from './rendering/svg-map-renderer.js';
 import { normalizeStaticAnimation } from './static-animation.js';
 import { staticLabels } from './static-labels.js';
 import type { SFMapOptions } from './types.js';
@@ -10,7 +14,7 @@ import { assertOptions, validateMarkers, validateOverlays } from './validation.j
 /** Either compact static geography or the same source-aware geography used by createMap. */
 export type StaticMapInput = SFMapData | InteractiveSFMapData;
 
-export type { DistrictRowData, SFMapData as StaticMapData } from './map-core.js';
+export type { DistrictRowData, SFMapData as StaticMapData } from './rendering/svg-map-renderer.js';
 export type {
   DistrictStyle,
   DistrictYear,

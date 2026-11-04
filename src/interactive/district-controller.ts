@@ -1,20 +1,20 @@
-import type { Geometry, Position } from '../data/types.js';
-import { validateCameraOptions } from './camera.js';
-import { renderDistrictAppearance } from './district-layer.js';
-import { createDistrictMorph } from './district-morph.js';
-import { prepareDistrictStyles } from './district-style.js';
-import { createDistrictTransition } from './district-transition.js';
-import { svgElement } from './dom.js';
-import type { InteractiveSFMapData } from './explorer-data.js';
-import type { normalizeFeatures } from './features.js';
-import type { LabelItem } from './label-candidates.js';
-import { getLayerPathsWithData } from './map-core.js';
+import type { Geometry, Position } from '../../data/types.js';
+import { validateCameraOptions } from '../camera.js';
+import { renderDistrictAppearance } from '../district-layer.js';
+import { createDistrictMorph } from '../district-morph.js';
+import { prepareDistrictStyles } from '../district-style.js';
+import { createDistrictTransition } from '../district-transition.js';
+import { svgElement } from '../dom.js';
+import type { InteractiveSFMapData } from '../explorer-data.js';
+import type { normalizeFeatures } from '../features.js';
+import type { LabelItem } from '../label-candidates.js';
+import { getLayerPathsWithData } from '../rendering/svg-map-renderer.js';
 import type {
   CameraOptions,
   DistrictSelection,
   DistrictYear,
   NeighborhoodExplorerOptions,
-} from './types.js';
+} from '../types.js';
 
 type Host = {
   root: HTMLElement;
@@ -35,7 +35,7 @@ type Host = {
   fitGeometry(geometry: Geometry, padding: undefined, options: CameraOptions): void;
   project(point: Position): [number, number];
   setLabels(items: LabelItem[]): void;
-  updateComposition(): void;
+  syncLayerComposition(): void;
   scheduleLabels(): void;
 };
 
@@ -53,7 +53,7 @@ export function createDistrictController(
     reducedMotion,
     enabled,
     fitGeometry,
-    updateComposition,
+    syncLayerComposition,
     scheduleLabels,
   } = host;
   const districtMorph = createDistrictMorph();
@@ -214,7 +214,7 @@ export function createDistrictController(
     if (selectedDistrict !== null && !districtRow(selectedDistrict)) selectedDistrict = null;
     if (selectedDistrict === null) delete root.dataset.selectedDistrict;
     updateDistrictAppearance();
-    updateComposition();
+    syncLayerComposition();
     if (morph && lineLayer && previousOutlines)
       districtMorph.start(lineLayer, previousOutlines, {
         duration: morph.duration,

@@ -409,9 +409,9 @@ export const NeighborhoodSourceLifecycle: Story = {
 
 export const SidebarDownloadLifecycle: Story = {
   play: async () => {
-    const { createNeighborhoodExplorerCore } = await import('../src/explorer-core.js');
-    const { createExplorerShell } = await import('../src/explorer-shell.js');
-    const { createExplorerSidebar } = await import('../src/explorer-sidebar.js');
+    const { createMapEngine } = await import('../src/interactive/map-engine.js');
+    const { createExplorerShell } = await import('../src/interactive/map-shell.js');
+    const { createExplorerSidebar } = await import('../src/interactive/explorer-sidebar.js');
     const createURL = URL.createObjectURL;
     const revokeURL = URL.revokeObjectURL;
     const created = new Set<string>();
@@ -427,7 +427,7 @@ export const SidebarDownloadLifecycle: Story = {
       revokeURL(url);
     };
     try {
-      other = createNeighborhoodExplorerCore({}, guideMapData, {
+      other = createMapEngine({}, guideMapData, {
         createShell: createExplorerShell,
         createSidebar: createExplorerSidebar,
       });

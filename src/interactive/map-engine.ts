@@ -1,41 +1,33 @@
-import type { NeighborhoodSource, Position } from '../data/types.js';
-import { copyAppearance } from './appearance.js';
-import { createCamera, validateCameraOptions } from './camera.js';
-import { createClusterLayer } from './cluster-layer.js';
-import { clusterPoints } from './clusters.js';
-import type { PreparedPresentation } from './configuration-controller.js';
-import type { MapAppearance, MapConfiguration } from './controller-types.js';
-import { createDistrictController } from './district-controller.js';
-import { prepareDistrictStyles } from './district-style.js';
-import { element, svgElement } from './dom.js';
-import { createExplorerControls } from './explorer-controls.js';
-import type { InteractiveSFMapData } from './explorer-data.js';
-import type { View } from './explorer-layout.js';
-import { fitBounds, projectedBounds } from './explorer-layout.js';
-import type { createMapShell } from './explorer-shell.js';
-import type { createExplorerSidebar } from './explorer-sidebar.js';
-import { controlKeys, layerKeys, normalizeFeatures, validateSwitchPatch } from './features.js';
-import { createFrameScheduler } from './frame-scheduler.js';
-import type { LabelItem } from './label-candidates.js';
-import { createLabelCoordinator } from './label-coordinator.js';
-import { createLayerTransitions } from './layer-transition.js';
+import type { NeighborhoodSource, Position } from '../../data/types.js';
+import { copyAppearance } from '../appearance.js';
+import { createCamera, validateCameraOptions } from '../camera.js';
+import { createClusterLayer } from '../cluster-layer.js';
+import { clusterPoints } from '../clusters.js';
+import type { MapAppearance, MapConfiguration } from '../controller-types.js';
+import { prepareDistrictStyles } from '../district-style.js';
+import { element, svgElement } from '../dom.js';
+import type { InteractiveSFMapData } from '../explorer-data.js';
+import type { View } from '../explorer-layout.js';
+import { fitBounds, projectedBounds } from '../explorer-layout.js';
+import { controlKeys, layerKeys, normalizeFeatures, validateSwitchPatch } from '../features.js';
+import { createFrameScheduler } from '../frame-scheduler.js';
+import type { LabelItem } from '../label-candidates.js';
+import { createLayerTransitions } from '../layer-transition.js';
+import { createMarkerCatalog } from '../marker-catalog.js';
+import { createMarkerChooser } from '../marker-chooser.js';
+import { createMarkerNavigation } from '../marker-navigation.js';
+import {
+  createNeighborhoodLayer,
+  createNeighborhoodLookup,
+  formatSourceLabel,
+} from '../neighborhood-layer.js';
+import { createOverlayLayer } from '../overlay-layer.js';
 import {
   createSFMapWithData,
   districtColors,
   getLayerPathsWithData,
   resolveMapColors,
-} from './map-core.js';
-import { createMarkerCatalog } from './marker-catalog.js';
-import { createMarkerChooser } from './marker-chooser.js';
-import { createMarkerController } from './marker-controller.js';
-import { createMarkerLayer, type MarkerItem, type MarkerVisual } from './marker-layer.js';
-import { createMarkerNavigation } from './marker-navigation.js';
-import {
-  createNeighborhoodLayer,
-  createNeighborhoodLookup,
-  formatSourceLabel,
-} from './neighborhood-layer.js';
-import { createOverlayLayer } from './overlay-layer.js';
+} from '../rendering/svg-map-renderer.js';
 import type {
   CameraOptions,
   DistrictYear,
@@ -45,15 +37,23 @@ import type {
   MapViewport,
   NeighborhoodExplorerElement,
   NeighborhoodExplorerOptions,
-} from './types.js';
-import { validateExplorerOptions } from './validation.js';
-import { fitViewport, validateViewport } from './viewport.js';
+} from '../types.js';
+import { validateExplorerOptions } from '../validation.js';
+import { fitViewport, validateViewport } from '../viewport.js';
+import type { PreparedPresentation } from './configuration-controller.js';
+import { createDistrictController } from './district-controller.js';
+import type { createExplorerSidebar } from './explorer-sidebar.js';
+import { createLabelCoordinator } from './label-coordinator.js';
+import { createMapControls } from './map-controls.js';
+import type { createMapShell } from './map-shell.js';
+import { createMarkerController } from './marker-controller.js';
+import { createMarkerRenderer, type MarkerItem, type MarkerVisual } from './marker-renderer.js';
 
 export type {
   ExplorerMode,
   NeighborhoodExplorerElement,
   NeighborhoodExplorerOptions,
-} from './types.js';
+} from '../types.js';
 
 /** Private bridge between the renderer and its public lifecycle controller. */
 type MapEngineElement = NeighborhoodExplorerElement & {
@@ -67,7 +67,7 @@ type MapEngineElement = NeighborhoodExplorerElement & {
 };
 
 /** Create an offline, browser-only neighborhood explorer. Call destroy() before disposal. */
-export function createNeighborhoodExplorerCore(
+export function createMapEngine(
   options: NeighborhoodExplorerOptions = {},
   data: InteractiveSFMapData,
   ui: {
@@ -321,7 +321,7 @@ export function createNeighborhoodExplorerCore(
       reducedMotion,
       enabled,
       fitGeometry,
-      updateComposition,
+      syncLayerComposition,
       scheduleLabels,
       get year() {
         return year;
@@ -377,7 +377,7 @@ export function createNeighborhoodExplorerCore(
     cancel: (id) => cancelAnimationFrame(id),
     render: drawLabels,
   });
-  const markerRenderer = createMarkerLayer();
+  const markerRenderer = createMarkerRenderer();
   const cancelEntrances = markerRenderer.cancelEntrances;
   const camera = createCamera({
     read: getViewport,
@@ -421,13 +421,13 @@ export function createNeighborhoodExplorerCore(
     refresh: {
       selection() {
         scheduleLabels();
-        updateResults();
-        updateDetail();
+        updateNeighborhoodResults();
+        updateSelectionDetail();
       },
       source() {
-        updateResults();
-        updateDetail();
-        updateComposition();
+        updateNeighborhoodResults();
+        updateSelectionDetail();
+        syncLayerComposition();
       },
     },
     moveView,
@@ -627,7 +627,7 @@ export function createNeighborhoodExplorerCore(
     isDestroyed: () => destroyed,
   });
   const setOverlays = overlays.set;
-  const mapControls = createExplorerControls(shell, {
+  const mapControls = createMapControls(shell, {
     svg,
     signal: controller.signal,
     strings,
@@ -644,7 +644,7 @@ export function createNeighborhoodExplorerCore(
     setSource,
     selectNeighborhood,
     selectMarker,
-    updateResults,
+    updateNeighborhoodResults,
     search(query) {
       const exact = getNeighborhood(query, neighborhoods.source);
       const matches = searchNeighborhoods(query, neighborhoods.source);
@@ -665,7 +665,7 @@ export function createNeighborhoodExplorerCore(
     return [...view];
   }
   function fitGeometry(
-    geometry: import('../data/types.js').Geometry,
+    geometry: import('../../data/types.js').Geometry,
     padding = fitPadding,
     options: CameraOptions = {},
   ) {
@@ -771,16 +771,16 @@ export function createNeighborhoodExplorerCore(
     strings.emptyResults,
     searchNeighborhoods,
   );
-  function updateDetail() {
-    sidebar?.updateDetail({
+  function updateSelectionDetail() {
+    sidebar?.updateSelectionDetail({
       mode,
       year,
       source: neighborhoods.source,
       selected: neighborhoods.selected,
     });
   }
-  function updateResults() {
-    sidebar?.updateResults({
+  function updateNeighborhoodResults() {
+    sidebar?.updateNeighborhoodResults({
       mode,
       year,
       source: neighborhoods.source,
@@ -795,9 +795,9 @@ export function createNeighborhoodExplorerCore(
     validateSwitchPatch(patch, layerKeys);
     const next = { ...layers, ...patch };
     layers = next;
-    updateComposition();
+    syncLayerComposition();
   }
-  function updateComposition() {
+  function syncLayerComposition() {
     for (const [name, key] of [
       ['landmarks', 'landmarks'],
       ['highways', 'highways'],
@@ -883,7 +883,7 @@ export function createNeighborhoodExplorerCore(
     controls = next;
     mapControls.update(controls);
     markerLabel.hidden = !markerCatalog.items.length || controls.markerPicker === false;
-    updateComposition();
+    syncLayerComposition();
   }
   function setMode(next: ExplorerMode, reset = true) {
     if (destroyed) return;
@@ -903,8 +903,8 @@ export function createNeighborhoodExplorerCore(
     );
     const districts = mode !== 'neighborhoods';
     for (const node of [sourceLabel, searchLabel, count, results]) node.hidden = districts;
-    updateComposition();
-    updateDetail();
+    syncLayerComposition();
+    updateSelectionDetail();
     status.textContent =
       mode === 'basemap'
         ? 'San Francisco basemap.'
@@ -921,7 +921,7 @@ export function createNeighborhoodExplorerCore(
     labels = visible;
     mapControls.updateLabels(labels);
     root.dataset.labels = String(labels);
-    updateComposition();
+    syncLayerComposition();
     if (!labels) {
       labelLayer.replaceChildren();
       root.dataset.visibleLabels = '0';

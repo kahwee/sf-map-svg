@@ -1,8 +1,8 @@
-import type { Geometry } from '../data/types.js';
-import type { DistrictRow } from './data.js';
-import type { Project } from './geometry.js';
-import type { BartStation, KeyRoad, Landmark } from './overlays.js';
-import type { MapMarker, SFMapOptions } from './types.js';
+import type { Geometry } from '../../data/types.js';
+import type { DistrictRow } from '../data.js';
+import type { Project } from '../geometry.js';
+import type { BartStation, KeyRoad, Landmark } from '../overlays.js';
+import type { MapMarker, SFMapOptions } from '../types.js';
 
 interface LayerContext {
   labels: boolean;
@@ -22,7 +22,7 @@ interface DistrictPath {
   opacity?: number;
 }
 
-import { escapeXml, number, overlayLabel, stroke } from './svg.js';
+import { escapeXml, number, overlayLabel, stroke } from './svg-primitives.js';
 
 /** Custom JavaScript/JSON rows must not introduce markup or CSS through numeric IDs. */
 function districtId(id: number): number {

@@ -1,7 +1,6 @@
 import { copyAppearance } from './appearance.js';
 import { validateCameraOptions } from './camera.js';
 import { configurationPatch, expandMapOptions, prepareConfiguration } from './configuration.js';
-import { createConfigurationController } from './configuration-controller.js';
 import type {
   MapCapabilities,
   MapController,
@@ -10,10 +9,11 @@ import type {
   MapSelectionChange,
   ResolvedMapConfiguration,
 } from './controller-types.js';
-import { createNeighborhoodExplorerCore } from './explorer-core.js';
 import type { InteractiveSFMapData } from './explorer-data.js';
-import { createMapShell } from './explorer-shell.js';
 import { layerKeys } from './features.js';
+import { createConfigurationController } from './interactive/configuration-controller.js';
+import { createMapEngine } from './interactive/map-engine.js';
+import { createMapShell } from './interactive/map-shell.js';
 import { assertOptions } from './validation.js';
 
 export type * from './controller-types.js';
@@ -46,7 +46,7 @@ export function createMap(data: InteractiveSFMapData, options: MapOptions = {}):
       appearance: options.appearance,
     },
   );
-  const element = createNeighborhoodExplorerCore(
+  const element = createMapEngine(
     {
       mode: 'basemap',
       ...expanded,

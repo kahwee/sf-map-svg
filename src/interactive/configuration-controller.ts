@@ -1,7 +1,7 @@
-import { prepareConfiguration } from './configuration.js';
-import type { MapConfiguration } from './controller-types.js';
-import { controlKeys, layerKeys } from './features.js';
-import type { NeighborhoodExplorerElement } from './types.js';
+import { prepareConfiguration } from '../configuration.js';
+import type { MapConfiguration } from '../controller-types.js';
+import { controlKeys, layerKeys } from '../features.js';
+import type { NeighborhoodExplorerElement } from '../types.js';
 
 /** A prepared engine update may commit once, only while all revisions remain current. */
 export interface PreparedPresentation {

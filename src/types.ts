@@ -13,7 +13,7 @@ export type DistrictYear = 2002 | 2012 | 2022;
 export interface DistrictSelection {
   id: number;
   year: DistrictYear;
-  district: import('./map-core.js').DistrictRowData;
+  district: import('./rendering/svg-map-renderer.js').DistrictRowData;
 }
 export interface DistrictStyle {
   fill?: string;
@@ -59,7 +59,9 @@ export interface SFMapOptions {
   neighborhoodLabels?: boolean;
   districtFills?: boolean;
   /** Evaluated once per district at construction/style/year updates; call setDistrictStyle again when external data changes. */
-  districtStyle?: (district: import('./map-core.js').DistrictRowData) => DistrictStyle;
+  districtStyle?: (
+    district: import('./rendering/svg-map-renderer.js').DistrictRowData,
+  ) => DistrictStyle;
   districtLabels?: boolean;
   /** Hide all visible text labels while retaining geographic symbols and accessible titles. */
   labels?: boolean;

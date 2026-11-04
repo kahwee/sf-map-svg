@@ -4,6 +4,10 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+## 5.1.4 — 2026-11-05
+
+- Group internal browser controllers, renderers and shells under `src/interactive`, and SVG generation under `src/rendering`. Rename the general map engine, controls and marker renderer to match their responsibilities; clarify selection-detail, neighborhood-results and layer-composition operations. Keep public package entry points unchanged.
+
 ## 5.1.3 — 2026-11-05
 
 - Give configuration snapshots and revisions a dedicated internal owner. Split presentation preparation from a guarded, single-use commit, rejecting stale or disposed updates before mutating presentation. Preserve public configuration and reset behavior.

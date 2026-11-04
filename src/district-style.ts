@@ -1,4 +1,4 @@
-import type { DistrictRowData } from './map-core.js';
+import type { DistrictRowData } from './rendering/svg-map-renderer.js';
 import type { DistrictStyle, SFMapOptions } from './types.js';
 
 /** Evaluate user code once and copy its result before changing the map. */
