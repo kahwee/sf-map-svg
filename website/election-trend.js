@@ -7,6 +7,47 @@ const make = (tag, text, className) =>
   });
 const observedTime = (iso) =>
   new Date(iso).toLocaleString('en-US', { timeZone: 'America/Los_Angeles', timeZoneName: 'short' });
+function createHistoryTable({ points, values, selectedLabel, media, unit, share, batch, format }) {
+  const tableHost = make('div', '', 'history-table-wrap');
+  tableHost.tabIndex = 0;
+  tableHost.setAttribute('role', 'region');
+  tableHost.setAttribute(
+    'aria-label',
+    `${unit} data; scroll to see earlier and later observations`,
+  );
+  const table = document.createElement('table');
+  table.append(
+    make('caption', `${selectedLabel} — exact ${media ? 'newsroom' : 'batch'} observations`),
+  );
+  const head = document.createElement('thead');
+  const header = document.createElement('tr');
+  for (const text of [
+    media ? 'Publisher page updated (Pacific)' : 'Official report time',
+    'First observed (Pacific)',
+    share ? 'Vote share' : 'Votes',
+  ]) {
+    const th = make('th', text);
+    th.scope = 'col';
+    header.append(th);
+  }
+  head.append(header);
+  table.append(head);
+  const body = document.createElement('tbody');
+  points.forEach((p, i) => {
+    const row = document.createElement('tr');
+    if (i === batch) row.setAttribute('aria-current', 'true');
+    const report = document.createElement('td');
+    const link = make('a', p.sourceReportTime);
+    link.href = p.resultSourceUrl;
+    report.append(link);
+    row.append(report, make('td', observedTime(p.observedAt)), make('td', format(values[i])));
+    body.append(row);
+  });
+  table.append(body);
+  tableHost.append(table);
+  return tableHost;
+}
+
 export function createTrend(contest, state = {}) {
   const section = make('section', '', 'batch-history');
   const media = !contest.resultHistory?.length && !!contest.mediaHistory?.length;
@@ -153,43 +194,16 @@ export function createTrend(contest, state = {}) {
         : 'SF county only · equally spaced reports and revisions. Changes are cumulative tally updates, not newly cast ballots. Share is of reported votes, not turnout.',
       'result-note',
     );
-    const tableHost = make('div', '', 'history-table-wrap');
-    tableHost.tabIndex = 0;
-    tableHost.setAttribute('role', 'region');
-    tableHost.setAttribute(
-      'aria-label',
-      `${unit} data; scroll to see earlier and later observations`,
-    );
-    const table = document.createElement('table');
-    table.append(
-      make('caption', `${selected.label} — exact ${media ? 'newsroom' : 'batch'} observations`),
-    );
-    const head = document.createElement('thead');
-    const header = document.createElement('tr');
-    for (const text of [
-      media ? 'Publisher page updated (Pacific)' : 'Official report time',
-      'First observed (Pacific)',
-      share ? 'Vote share' : 'Votes',
-    ]) {
-      const th = make('th', text);
-      th.scope = 'col';
-      header.append(th);
-    }
-    head.append(header);
-    table.append(head);
-    const body = document.createElement('tbody');
-    points.forEach((p, i) => {
-      const row = document.createElement('tr');
-      if (i === batch) row.setAttribute('aria-current', 'true');
-      const report = document.createElement('td');
-      const link = make('a', p.sourceReportTime);
-      link.href = p.resultSourceUrl;
-      report.append(link);
-      row.append(report, make('td', observedTime(p.observedAt)), make('td', format(values[i])));
-      body.append(row);
+    const tableHost = createHistoryTable({
+      points,
+      values,
+      selectedLabel: selected.label,
+      media,
+      unit,
+      share,
+      batch,
+      format,
     });
-    table.append(body);
-    tableHost.append(table);
     const tableView = state.view === 'table';
     chartButton.setAttribute('aria-pressed', String(!tableView));
     tableButton.setAttribute('aria-pressed', String(tableView));

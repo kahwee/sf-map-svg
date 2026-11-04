@@ -84,3 +84,19 @@ page budgets are unchanged. Charts use discrete cumulative steps and exact sourc
 observations. TanStack is a development dependency for the website bundle, not a
 runtime dependency of the published map package. Release API reference:
 https://github.com/TanStack/charts/tree/v1.2.1/docs .
+
+Election code responsibilities:
+
+- `website/election.js` owns page state, filtering, refresh events and map selection.
+- `website/election-view.js` builds contest presentation, labels, tallies and source text.
+- `website/election-trend.js` owns observation controls and the exact-value table;
+  `website/election-chart.js` renders the TanStack SVG without owning feed state.
+- `website/election-model.js`, `election-history.js` and `election-media.js` validate
+  and reconcile snapshots, official history and newsroom observations separately.
+- `scripts/update-election.mjs` orchestrates checks; `scripts/lib/sos-county-results.mjs`
+  parses official county reports, and `previous-election.mjs` guards deployed recovery.
+
+Keep presentation-only adapters out of persisted history. Browser regressions in
+`scripts/check-pages.mjs` cover contest switching, chart/table selection, keyboard
+controls, failed/stale refreshes and phone layout; `test/election-*.test.mjs` covers
+validation, history recovery, refresh coordination and chart geometry.

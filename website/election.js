@@ -1,7 +1,7 @@
 import { createDistrictMap } from './district-map.js';
 import { freshness, validateSnapshot } from './election-model.js';
 import { createRefreshController, isOlderSnapshot } from './election-refresh.js';
-import { createTrend } from './election-trend.js';
+import { contestLabel, createContestView, formatTime } from './election-view.js';
 
 const $ = (id) => document.getElementById(id);
 let snapshot;
@@ -9,27 +9,6 @@ let map;
 let feedFailed = false;
 const chartStates = new Map();
 let selectedId = new URLSearchParams(location.search).get('contest') || 'local-A';
-const time = (value) =>
-  value
-    ? new Date(value).toLocaleString('en-US', {
-        timeZone: 'America/Los_Angeles',
-        timeZoneName: 'short',
-      })
-    : 'not yet verified';
-const scopeName = (c) =>
-  c.mediaUpdate?.resultGeography?.name ||
-  {
-    citywide: 'San Francisco',
-    statewide: 'California',
-    regional: 'Bay Area',
-    district: 'District contest',
-    'appellate-district': 'First Appellate District',
-  }[c.scope] ||
-  c.scope;
-const label = (c) =>
-  c.shortTitle
-    ? `${c.id === 'RTM' ? 'RTM' : `Prop ${c.id.split('-').at(-1)}`} · ${c.shortTitle}`
-    : c.title;
 for (let id = 1; id <= 11; id++) $('region').add(new Option(`District ${id}`, String(id)));
 function renderStatus() {
   const state = freshness(snapshot);
@@ -39,8 +18,8 @@ function renderStatus() {
       ? 'Awaiting official results'
       : 'Unofficial · uncalled';
   $('check-status').textContent =
-    `${state === 'stale' ? 'Stale check · ' : ''}${snapshot.checkedAt ? `Checked ${time(snapshot.checkedAt)}` : 'Not checked yet'} · ${snapshot.checkStatus === 'not-checked' ? 'Source check pending' : snapshot.checkStatus === 'partial' || snapshot.checkStatus === 'error' ? 'Official check incomplete' : 'Official sources'}`;
-  $('report-time').textContent = `Local SF report: ${time(snapshot.sourceReportTimestamp)}.`;
+    `${state === 'stale' ? 'Stale check · ' : ''}${snapshot.checkedAt ? `Checked ${formatTime(snapshot.checkedAt)}` : 'Not checked yet'} · ${snapshot.checkStatus === 'not-checked' ? 'Source check pending' : snapshot.checkStatus === 'partial' || snapshot.checkStatus === 'error' ? 'Official check incomplete' : 'Official sources'}`;
+  $('report-time').textContent = `Local SF report: ${formatTime(snapshot.sourceReportTimestamp)}.`;
   const local = snapshot.sourceChecks?.find((source) => source.id === 'sf-local');
   $('source-detail').textContent =
     local?.status === 'error'
@@ -50,152 +29,11 @@ function renderStatus() {
     $('check-status').textContent =
       'Feed unavailable · showing last loaded data, which may be stale.';
 }
-function renderContest(c) {
+function renderContest(contest) {
   const host = $('contests');
   host.classList.remove('is-loading');
-  if (!c) {
-    host.replaceChildren(
-      Object.assign(document.createElement('p'), {
-        textContent: 'No matching contests. Change the search or filter.',
-      }),
-    );
-    return;
-  }
-  const article = document.createElement('article');
-  article.dataset.contestId = c.id;
-  const meta = Object.assign(document.createElement('p'), {
-    className: 'contest-meta',
-    textContent: `${c.kind === 'measure' ? (c.id === 'RTM' ? 'Regional measure' : `Proposition ${c.id.split('-').at(-1)}`) : 'Ballot contest'} · ${scopeName(c)} · ${c.mediaUpdate ? 'Preliminary' : 'Uncalled'}`,
-  });
-  const title = Object.assign(document.createElement('h2'), {
-    textContent: c.shortTitle || c.title,
-  });
-  article.append(meta, title);
-  if (c.summary)
-    article.append(
-      Object.assign(document.createElement('p'), {
-        className: 'contest-summary',
-        textContent: c.summary,
-      }),
-    );
-  const reported = c.options.some((o) => o.votes !== null);
-  const media = c.mediaUpdate;
-  if (media?.projection) {
-    const update = document.createElement('p');
-    update.className = 'result-note';
-    update.dataset.mediaProjection = 'true';
-    const projection = Object.assign(document.createElement('a'), {
-      href: media.projection.sourceUrl,
-      textContent: `Chronicle projects: ${media.projection.outcome}. Not certified.`,
-    });
-    update.append(projection);
-    article.append(update);
-  }
-  const list = document.createElement('ul');
-  list.className = 'vote-list';
-  list.setAttribute(
-    'aria-label',
-    !reported && media ? `${media.sourceName} preliminary vote totals` : 'Official vote totals',
-  );
-  const displayedOptions = !reported && media ? media.options : c.options;
-  const total = displayedOptions.reduce((sum, option) => sum + (option.votes || 0), 0);
-  for (const option of displayedOptions) {
-    const row = document.createElement('li');
-    const name = Object.assign(document.createElement('span'), { textContent: option.label });
-    const votes = Object.assign(document.createElement('span'), {
-      className: 'vote-count',
-      textContent: option.votes === null ? 'Pending' : option.votes.toLocaleString('en-US'),
-    });
-    if (c.kind === 'measure' && option.votes !== null && total > 0) {
-      const share = (option.votes / total) * 100;
-      votes.textContent += ` · ${share.toFixed(1)}%`;
-      const bar = document.createElement('span');
-      bar.className = 'vote-share';
-      bar.style.width = `${share}%`;
-      bar.setAttribute('aria-hidden', 'true');
-      row.append(bar);
-    }
-    row.append(name, votes);
-    list.append(row);
-  }
-  if (c.resultHistory?.length)
-    article.append(
-      Object.assign(document.createElement('p'), {
-        className: 'result-note',
-        textContent: 'Latest reported totals',
-      }),
-    );
-  article.append(list);
-  if (!reported && media) {
-    const attribution = document.createElement('p');
-    attribution.className = 'result-note';
-    attribution.dataset.mediaTally = 'true';
-    attribution.append(
-      Object.assign(document.createElement('a'), {
-        href: media.sourceUrl,
-        textContent: `${media.sourceName} preliminary tally`,
-      }),
-      ` · Updated ${time(media.sourceUpdatedAt)}.`,
-    );
-    article.append(attribution);
-  }
-  const note = c.resultStatus
-    ? `SF county votes only · ${reported ? 'Unofficial' : 'Awaiting votes; source has a zero/pre-election report'}.`
-    : media
-      ? media.resultGeography
-        ? `Full five-county contest: ${media.resultGeography.counties.join(', ')}. Shares are of reported votes, not ballot completion.`
-        : 'Shares of reported Yes/No votes; not ballot completion.'
-      : 'Local results unavailable. Pending means unknown, not zero.';
-  article.append(
-    Object.assign(document.createElement('p'), {
-      className: 'result-note',
-      textContent: `${note}${c.resultCheckStatus && c.resultCheckStatus !== 'ok' ? ' Latest source check failed; retained counts may be stale.' : ''}${c.countingMethod === 'ranked-choice-first-choice' ? ' Ranked-choice: first choices do not determine the final winner.' : ''}`,
-    }),
-  );
-  const details = document.createElement('div');
-  details.className = 'contest-details';
-  const source = Object.assign(document.createElement('a'), {
-    href: c.summarySource?.url || c.sourceUrl,
-    textContent: c.summarySource
-      ? `Official guide · printed page ${c.summarySource.pages}`
-      : 'Official ballot source',
-  });
-  details.append(source);
-  if (c.resultStatus) {
-    details.append(
-      Object.assign(document.createElement('p'), {
-        textContent: `SOS report: ${c.sourceReportTime}. Fetched: ${time(c.resultsFetchedAt)}.`,
-      }),
-    );
-    details.append(
-      Object.assign(document.createElement('a'), {
-        href: c.resultSourceUrl,
-        textContent: 'Official SF county count',
-      }),
-    );
-  }
-  article.append(details);
-  const summary = article.querySelector('.contest-summary');
-  summary?.remove();
-  const dataGrid = document.createElement('div');
-  dataGrid.className = 'contest-data-grid';
-  const totals = document.createElement('div');
-  totals.className = 'contest-totals';
-  totals.append(...Array.from(article.children).slice(2));
-  if (!chartStates.has(c.id)) chartStates.set(c.id, {});
-  dataGrid.append(totals, createTrend(c, chartStates.get(c.id)));
-  article.append(dataGrid);
-  if (summary) {
-    const explanation = document.createElement('section');
-    explanation.className = 'contest-explanation';
-    explanation.setAttribute('aria-label', 'What this measure does');
-    explanation.append(
-      Object.assign(document.createElement('h3'), { textContent: 'What this measure does' }),
-      summary,
-    );
-    dataGrid.append(explanation);
-  }
-  host.replaceChildren(article);
+  if (contest && !chartStates.has(contest.id)) chartStates.set(contest.id, {});
+  host.replaceChildren(createContestView(contest, chartStates.get(contest?.id)));
 }
 function render() {
   if (!snapshot) return;
@@ -207,14 +45,14 @@ function render() {
     (c) =>
       (kind === 'all' || c.kind === kind) &&
       (!district || !c.supervisorialDistrict || c.supervisorialDistrict === district) &&
-      `${label(c)} ${c.title} ${c.shortTitle || ''} ${c.summary || ''} ${c.options.map((o) => o.label).join(' ')}`
+      `${contestLabel(c)} ${c.title} ${c.shortTitle || ''} ${c.summary || ''} ${c.options.map((o) => o.label).join(' ')}`
         .toLocaleLowerCase()
         .includes(query),
   );
   if (!contests.some((c) => c.id === selectedId)) selectedId = contests[0]?.id || '';
   const picker = $('contest-select');
   picker.replaceChildren(
-    ...contests.map((c) => new Option(label(c), c.id, false, c.id === selectedId)),
+    ...contests.map((c) => new Option(contestLabel(c), c.id, false, c.id === selectedId)),
   );
   picker.disabled = !contests.length;
   if (!contests.length) picker.add(new Option('No matches', ''));
