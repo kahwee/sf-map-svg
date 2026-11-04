@@ -13,3 +13,7 @@ test-results/
 dist/
 
 pages-dist/
+
+test/fixtures/sfelections/*.zip
+test/fixtures/sfelections/summary*.xml
+!test/fixtures/sfelections/summary-report-4.xml

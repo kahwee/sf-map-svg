@@ -1,0 +1,133 @@
+#!/usr/bin/env node
+// Aggregates an official San Francisco Dominion CVR export to per-precinct, per-contest
+// first-choice counts. Ballot-level records are ingestion input only and are never written.
+//
+//   node scripts/import-cvr-precincts.mjs --zip CVR_Export_20261103231904.zip \
+//     --report-time "11/3/2026 11:04:21 PM" --out data/elections/precincts-2026-11-03.json
+//
+// `--dir <extracted dir>` may replace `--zip`. Counts use the current record of each ballot
+// card (`Modified` when adjudicated, otherwise `Original`); ranked-choice contests count a
+// single rank-1 mark only (first-round counts).
+import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+
+const args = Object.fromEntries(
+  process.argv.slice(2).reduce((pairs, arg, i, all) => {
+    if (arg.startsWith('--')) pairs.push([arg.slice(2), all[i + 1]]);
+    return pairs;
+  }, []),
+);
+const need = (name) => {
+  if (!args[name]) throw new Error(`Missing --${name}`);
+  return args[name];
+};
+const reportTime = need('report-time');
+const out = need('out');
+let dir = args.dir;
+let zipSha256 = null;
+let cleanup = null;
+if (!dir) {
+  const zip = need('zip');
+  zipSha256 = createHash('sha256').update(fs.readFileSync(zip)).digest('hex');
+  dir = fs.mkdtempSync(path.join(os.tmpdir(), 'sf-cvr-'));
+  cleanup = dir;
+  execFileSync('unzip', ['-q', zip, '-d', dir]);
+}
+
+const read = (file) => JSON.parse(fs.readFileSync(path.join(dir, file), 'utf8'));
+const contests = read('ContestManifest.json').List;
+const candidates = new Map(read('CandidateManifest.json').List.map((c) => [c.Id, c]));
+const portions = new Map(read('PrecinctPortionManifest.json').List.map((p) => [p.Id, p]));
+const election = read('ElectionEventManifest.json').List[0];
+const contestById = new Map(contests.map((c) => [c.Id, c]));
+
+// Option order per contest is the manifest order, so each precinct stores a plain count array.
+const optionsByContest = new Map();
+for (const candidate of candidates.values()) {
+  if (!optionsByContest.has(candidate.ContestId)) optionsByContest.set(candidate.ContestId, []);
+  if (!candidate.Disabled) optionsByContest.get(candidate.ContestId).push(candidate);
+}
+const optionIndex = new Map();
+for (const list of optionsByContest.values())
+  for (const [i, candidate] of list.entries()) optionIndex.set(candidate.Id, i);
+
+const precincts = {};
+const turnout = {};
+let cards = 0;
+for (const file of fs.readdirSync(dir).filter((f) => f.startsWith('CvrExport_'))) {
+  for (const session of read(file).Sessions) {
+    const record = session.Modified?.IsCurrent ? session.Modified : session.Original;
+    if (!record?.IsCurrent)
+      throw new Error(`No current record for ballot ${session.CastVoteRecordId}`);
+    const precinct = portions.get(record.PrecinctPortionId)?.ExternalId;
+    if (!precinct) throw new Error(`Unknown precinct portion ${record.PrecinctPortionId}`);
+    const id = precinct.split('-')[0];
+    cards++;
+    turnout[id] = (turnout[id] ?? 0) + 1;
+    for (const card of record.Cards)
+      for (const contest of card.Contests) {
+        const manifest = contestById.get(contest.Id);
+        const options = optionsByContest.get(contest.Id) ?? [];
+        precincts[id] ??= {};
+        precincts[id][manifest.Description] ??= {
+          votes: options.map(() => 0),
+          under: 0,
+          over: 0,
+        };
+        const cell = precincts[id][manifest.Description];
+        cell.under += contest.Undervotes;
+        cell.over += contest.Overvotes;
+        const marks = contest.Marks.filter((m) => m.IsVote);
+        if (manifest.NumOfRanks > 0) {
+          // Ranked choice: only a single mark at rank 1 is a first-round vote; an overvote at
+          // rank 1 counts for no candidate and a skipped rank 1 is not promoted.
+          const top = marks.filter((m) => m.Rank === 1);
+          if (top.length === 1) cell.votes[optionIndex.get(top[0].CandidateId)]++;
+        } else for (const mark of marks) cell.votes[optionIndex.get(mark.CandidateId)]++;
+      }
+  }
+}
+
+const result = {
+  schemaVersion: 1,
+  electionDate: '2026-11-03',
+  source: {
+    name: 'San Francisco Department of Elections cast vote record export',
+    exportFile: args.zip ? path.basename(args.zip) : null,
+    exportSha256: zipSha256,
+    electionName: election.Description,
+    sourceReportTime: reportTime,
+    note: 'Report time as supplied from the department; no timezone conversion applied.',
+  },
+  geography: {
+    type: 'precinct',
+    boundaryYear: 2022,
+    boundaries: 'data/precincts-2022.json',
+    precinctsInManifest: portions.size,
+    precinctsWithBallots: Object.keys(turnout).length,
+  },
+  method:
+    'Votes per precinct from the current ballot-card record; ranked-choice contests count a single rank-1 mark only. Ranked-choice contests are not tabulated here and no winners are inferred.',
+  ballotCards: cards,
+  contests: contests.map((c) => ({
+    id: c.Description,
+    externalId: c.ExternalId,
+    type: c.Type,
+    voteFor: c.VoteFor,
+    ranks: c.NumOfRanks,
+    options: (optionsByContest.get(c.Id) ?? []).map((o) => o.Description.trim()),
+  })),
+  precincts: Object.fromEntries(
+    Object.entries(precincts)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([id, byContest]) => [id, { cards: turnout[id], contests: byContest }]),
+  ),
+};
+fs.writeFileSync(out, `${JSON.stringify(result)}\n`);
+if (cleanup) fs.rmSync(cleanup, { recursive: true, force: true });
+console.log(
+  `${out}: ${cards} ballot cards, ${result.geography.precinctsWithBallots} precincts with ballots`,
+);

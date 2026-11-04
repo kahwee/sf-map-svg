@@ -132,3 +132,5 @@ adapter. Its tested HTTP 401/403 marker is durable only after successful feed
 deployment, so it is not sufficient for automatic polling activation. A reviewed
 fail-closed recovery design is required before activation. Raw publisher clocks are
 currently limited to November 4–30 in this election; another format fails closed.
+
+Precinct-level official counts are separate from this feed: `data/elections/precincts-2026-11-03.json` (see `SOURCES.md`) aggregates the department's cast vote record export per precinct and reconciles with its summary report. Boundaries are `data/precincts-2022.json`. Do not color or imply winners from first-choice counts in ranked-choice contests.
