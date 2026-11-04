@@ -522,7 +522,9 @@ async function checkElection() {
       fail('election: history table should be hidden in default Chart view');
     if ((await page.locator('.trend-panel .ts-chart__grid line').count()) < 4)
       fail('election: chart guide lines missing');
-    const targets = page.locator('.chart-point-target');
+    const targets = page.getByRole('button', { name: /^(Yes|No),.*newsroom observation/ });
+    if ((await targets.count()) !== 8)
+      fail('election: point controls are hidden from assistive technology');
     await targets.first().focus();
     await page.keyboard.press('Enter');
     if (

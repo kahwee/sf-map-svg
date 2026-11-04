@@ -65,6 +65,9 @@ export function attachPointPopover(svg, series, points, { share, media, scope })
         open();
       }
     });
+    // Static TanStack mark groups are hidden from assistive technology.
+    // Expose this group now that it contains labeled interactive controls.
+    dot.parentNode.removeAttribute('aria-hidden');
     dot.parentNode.append(hit);
   });
   // Native auto-popover supplies outside-click and Escape dismissal without
