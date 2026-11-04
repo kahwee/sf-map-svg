@@ -2,7 +2,7 @@ import { writeFile } from 'node:fs/promises';
 import { guideMapData } from '../dist/src/guide-data.js';
 import { createGuideSVG } from '../dist/src/guide-static.js';
 import { mapPalettes } from '../dist/src/presets.js';
-import { escapeXml } from '../dist/src/svg.js';
+import { escapeXml } from '../dist/src/rendering/svg-primitives.js';
 
 // Use the existing geographic catalog, not copied consumer coordinates or content.
 const places = guideMapData.map.landmarks
