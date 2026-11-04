@@ -5,7 +5,7 @@ import { labelCandidates, styleLabels } from './label-candidates.js';
 import { spreadLabels } from './label-spread.js';
 import type { SFMapData } from './rendering/svg-map-renderer.js';
 import { escapeXml, number } from './rendering/svg-primitives.js';
-import type { SFMapOptions } from './types.js';
+import type { SvgRenderOptions } from './types.js';
 
 /** Conservative portable metrics; the browser refines these with its actual font. */
 export function estimateLabelWidth(text: string, fontSize: number) {
@@ -29,7 +29,7 @@ export function estimateLabelWidth(text: string, fontSize: number) {
 }
 
 /** Interactive overview rules, expressed entirely in screen pixels before serialization. */
-export function staticLabels(data: SFMapData, options: SFMapOptions, project: Project): string {
+export function staticLabels(data: SFMapData, options: SvgRenderOptions, project: Project): string {
   if (options.labelLayout?.compact) {
     const { compact, ...layout } = options.labelLayout;
     const wide = staticLabels(data, { ...options, labelLayout: layout }, project);
@@ -126,7 +126,7 @@ export function staticLabels(data: SFMapData, options: SFMapOptions, project: Pr
       : []),
     ...markers.map((item): Bounds => {
       const [x, y] = point(item.position);
-      // Also cover the legacy SVG marker when it is larger than its interactive counterpart.
+      // Also cover the static SVG marker when it is larger than its interactive counterpart.
       const radius =
         Math.max(item.radius ?? 6, (item.radius ?? (item.selected ? 8 : 5)) / unit) + 3;
       return [x - radius, y - radius, x + radius, y + radius];

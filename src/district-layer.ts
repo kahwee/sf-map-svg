@@ -1,6 +1,6 @@
 import type { DistrictRowData } from './rendering/svg-map-renderer.js';
 import { districtColors } from './rendering/svg-map-renderer.js';
-import type { DistrictStyle, DistrictYear, SFMapOptions } from './types.js';
+import type { DistrictStyle, DistrictYear, SvgRenderOptions } from './types.js';
 
 /** Apply prepared styles and interaction state without invoking consumer callbacks. */
 export function renderDistrictAppearance({
@@ -21,8 +21,8 @@ export function renderDistrictAppearance({
   selectedDistrict: number | null;
   hoveredDistrict: number | null;
   year: DistrictYear;
-  theme: SFMapOptions['theme'];
-  colors: NonNullable<SFMapOptions['colors']>;
+  theme: SvgRenderOptions['theme'];
+  colors: NonNullable<SvgRenderOptions['colors']>;
   fills: boolean;
   lines: boolean;
 }) {

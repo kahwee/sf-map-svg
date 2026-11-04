@@ -62,7 +62,7 @@
               <tr><td><code>/data</code></td><td>coast, districtMaps, neighborhoodCollections, neighborhoodSources, getNeighborhood, searchNeighborhoods, catalog, …</td><td>Datasets and lookup helpers.</td></tr>
               <tr><td><code>/data/coast</code>, <code>/data/districts</code>, <code>/data/realtor</code>, <code>/data/sf-find</code>, <code>/data/analysis</code>, <code>/data/landmarks</code>, <code>/data/highways</code>, <code>/data/roads</code>, <code>/data/stations</code>, <code>/data/lookup</code>, <code>/data/catalog</code></td><td>one dataset each</td><td>Compose your own geography.</td></tr>
               <tr><td><code>/geometry</code></td><td>rawProject, geometryPath, positions; geometryBounds, geometryContainsPoint</td><td>DOM-free projection, paths, and geographic queries. Includes Bounds, Geometry, and Position types in v5.</td></tr>
-              <tr><td><code>/guide</code>, <code>/guide/map</code>, <code>/guide/data</code>, <code>/guide/static</code>, <code>/guide/detailed</code></td><td>createGuideController, mountGuideController, createGuideMap, mountGuideMap, guideMapData, createGuideSVG, createGuideShell, loadGuideDetailedData</td><td>Lightweight guide presets.</td></tr>
+              <tr><td><code>/guide</code>, <code>/guide/map</code>, <code>/guide/data</code>, <code>/guide/static</code>, <code>/guide/detailed</code></td><td>createGuideController, mountGuideController, guideMapData, createGuideSVG, createGuideShell, loadGuideDetailedData</td><td>Lightweight guide presets.</td></tr>
               <tr><td><code>/presets</code></td><td>guideOptions</td><td>Guide configuration without data.</td></tr>
               <tr><td><code>/transit</code></td><td>createTransitAnimation</td><td>The schematic BART animation.</td></tr>
             </tbody>
@@ -80,23 +80,23 @@
               <!--static-presentation-->
               <!--static-source-->
               <tr><td><code>year</code></td><td>2002 | 2012 | 2022 · 2022</td><td>District map year.</td></tr>
-              <tr><td><code>theme</code></td><td>'districts' | 'transit' · 'districts'</td><td>Soft district palette or quiet transit palette.</td></tr>
+              <tr><td><code>appearance.theme</code></td><td>'districts' | 'transit' · 'districts'</td><td>Soft district palette or quiet transit palette.</td></tr>
               <tr><td><code>width</code>, <code>height</code></td><td>number · 800</td><td>SVG size and view box.</td></tr>
               <tr><td><code>padding</code></td><td>number · 28</td><td>Space around the fitted city.</td></tr>
-              <tr><td><code>districtFills</code></td><td>boolean · true</td><td>Colored district areas.</td></tr>
-              <tr><td><code>districtLines</code></td><td>boolean · true</td><td>District outlines.</td></tr>
-              <tr><td><code>districtLabels</code></td><td>boolean · true</td><td>District number badges.</td></tr>
-              <tr><td><code>districtStyle</code></td><td>(district) =&gt; { fill?, stroke?, opacity? }</td><td>Per-district style, evaluated once per district.</td></tr>
-              <tr><td><code>neighborhoodLines</code></td><td>boolean · false</td><td>Dashed outlines of <code>data.neighborhoods</code> (SFAR in the presets).</td></tr>
-              <tr><td><code>landmarks</code></td><td>boolean · false</td><td>Park boundaries and names.</td></tr>
-              <tr><td><code>highways</code></td><td>boolean · false</td><td>Highway lines.</td></tr>
-              <tr><td><code>keyRoads</code></td><td>boolean · false</td><td>Selected road corridors.</td></tr>
-              <tr><td><code>roadLabels</code></td><td>boolean · same as keyRoads</td><td>Road names.</td></tr>
-              <tr><td><code>bartStations</code></td><td>boolean · false</td><td>The eight BART stations in the city.</td></tr>
+              <tr><td><code>layers.districtFills</code></td><td>boolean · true</td><td>Colored district areas.</td></tr>
+              <tr><td><code>layers.districtLines</code></td><td>boolean · true</td><td>District outlines.</td></tr>
+              <tr><td><code>layers.districtLabels</code></td><td>boolean · true</td><td>District number badges.</td></tr>
+              <tr><td><code>appearance.districtStyle</code></td><td>(district) =&gt; { fill?, stroke?, opacity? }</td><td>Per-district style, evaluated once per district.</td></tr>
+              <tr><td><code>layers.neighborhoodLines</code></td><td>boolean · false</td><td>Dashed outlines of <code>data.neighborhoods</code> (SFAR in the presets).</td></tr>
+              <tr><td><code>layers.landmarks</code></td><td>boolean · false</td><td>Park boundaries and names.</td></tr>
+              <tr><td><code>layers.highways</code></td><td>boolean · false</td><td>Highway lines.</td></tr>
+              <tr><td><code>layers.keyRoads</code></td><td>boolean · false</td><td>Selected road corridors.</td></tr>
+              <tr><td><code>layers.roadLabels</code></td><td>boolean · same as keyRoads</td><td>Road names.</td></tr>
+              <tr><td><code>layers.bartStations</code></td><td>boolean · false</td><td>The eight BART stations in the city.</td></tr>
               <tr><td><code>labels</code></td><td>boolean · true</td><td>Hide every visible label while keeping titles.</td></tr>
               <tr><td><code>markers</code></td><td>%STATIC_MARKERS_TYPE% · []</td><td>Points drawn above everything else.</td></tr>
               <tr><td><code>overlays</code></td><td>readonly MapOverlay[] · []</td><td>Your own lines and polygons.</td></tr>
-              <tr><td><code>colors</code></td><td>Partial&lt;Record&lt;ColorKey, string&gt;&gt;</td><td>water, land, district, neighborhood, highway, road, park, landmark, bart, label, marker, selected.</td></tr>
+              <tr><td><code>appearance.colors</code></td><td>Partial&lt;Record&lt;ColorKey, string&gt;&gt;</td><td>water, land, district, neighborhood, highway, road, park, landmark, bart, label, marker, selected.</td></tr>
               <tr><td><code>animation</code></td><td>boolean | { duration?, delay? } · false</td><td>Self-contained draw-in. <code>duration</code> defaults to 2400 ms and scales the sequence.</td></tr>
               <tr><td><code>title</code></td><td>string · 'San Francisco map'</td><td>Accessible title.</td></tr>
               <tr><td><code>idPrefix</code></td><td>string · generated</td><td>Prefix for element ids and animation scope.</td></tr>

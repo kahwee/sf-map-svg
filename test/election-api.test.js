@@ -22,13 +22,15 @@ test('district style callback runs once per row and escapes SVG attributes', () 
   const visited = [];
   const svg = renderMap(data, {
     year: 2022,
-    districtStyle: (district) => {
-      visited.push(district.id);
-      return {
-        fill: district.id === 1 ? 'red" onload="alert(1)' : '#abc',
-        stroke: '#123',
-        opacity: 0.6,
-      };
+    appearance: {
+      districtStyle: (district) => {
+        visited.push(district.id);
+        return {
+          fill: district.id === 1 ? 'red" onload="alert(1)' : '#abc',
+          stroke: '#123',
+          opacity: 0.6,
+        };
+      },
     },
   }).svg;
   assert.deepEqual(
@@ -40,8 +42,14 @@ test('district style callback runs once per row and escapes SVG attributes', () 
   assert.match(svg, /stroke="#123"/);
   assert.match(svg, /fill-opacity="0.6"/);
   assert.match(svg, /stroke-opacity="0.6"/);
-  assert.throws(() => renderMap(data, { districtStyle: () => ({ opacity: NaN }) }), RangeError);
-  assert.throws(() => renderMap(data, { districtStyle: () => ({ invalid: true }) }), TypeError);
+  assert.throws(
+    () => renderMap(data, { appearance: { districtStyle: () => ({ opacity: NaN }) } }),
+    RangeError,
+  );
+  assert.throws(
+    () => renderMap(data, { appearance: { districtStyle: () => ({ invalid: true }) } }),
+    TypeError,
+  );
 });
 
 test('prepared district styles own snapshots even when the callback reuses its object', () => {

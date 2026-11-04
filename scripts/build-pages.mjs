@@ -7,7 +7,6 @@ import { build } from 'vite';
 import { candidateInks, diverging, sequential } from '../website/palette.js';
 import { buildLlmDocs } from './build-llm-docs.mjs';
 import { checkPlaygroundCode } from './check-playground-code.mjs';
-import { getMapCapabilities } from './map-capabilities.mjs';
 import { simplifySvg } from './simplify-svg.mjs';
 import { simplifyDataset } from './site-data.mjs';
 
@@ -228,9 +227,10 @@ try {
     await readFile(join(packageRoot, 'package.json'), 'utf8'),
   );
   if (!/^\d+\.\d+\.\d+$/.test(version)) throw new Error('Expected a stable package version');
+  if (Number(version.split('.')[0]) < 6)
+    throw new Error('This site requires sf-map-svg 6 or newer.');
   const releaseLabel = released ? `v${version} · on npm` : `v${version} · local preview`;
-  const capabilities = await getMapCapabilities(packageRoot);
-  await checkPlaygroundCode(packageRoot, capabilities);
+  await checkPlaygroundCode(packageRoot);
   const referenceStatus = `<p class="shell reference-version" role="note">This reference describes <code>@kahwee/sf-map-svg ${version}</code>${released ? ', the version used throughout this site' : ' from the local working tree'}. Examples and options below match this version.</p>`;
   const boot = await readFile('website/boot.js', 'utf8');
   await build({
@@ -249,16 +249,6 @@ try {
     },
     plugins: [
       {
-        name: 'package-capabilities',
-        transform(_code, id) {
-          if (id === resolve('website/site-capabilities.js'))
-            return {
-              code: `export const mapCapabilities = ${JSON.stringify(capabilities)};`,
-              map: null,
-            };
-        },
-      },
-      {
         name: 'site-chrome',
         transformIndexHtml: {
           order: 'pre',
@@ -270,87 +260,51 @@ try {
         transformIndexHtml: (html) =>
           html
             .replaceAll('%MAP_VERSION%', version)
-            .replaceAll(
-              '%STATIC_INPUT_TYPE%',
-              capabilities.sourceAwareStatic ? 'StaticMapInput' : 'StaticMapData',
-            )
+            .replaceAll('%STATIC_INPUT_TYPE%', 'StaticMapInput')
             .replaceAll(
               '<!--static-source-->',
-              capabilities.sourceAwareStatic
-                ? '<tr><td><code>source</code></td><td>NeighborhoodSource</td><td>Select a supplied definition when using source-aware MapData (including fullMapData). SFAR is preferred by default; unavailable sources fail. Compact StaticMapData already chooses its neighborhoods.</td></tr>'
-                : '',
+              '<tr><td><code>source</code></td><td>NeighborhoodSource</td><td>Select a supplied definition when using source-aware MapData (including fullMapData). SFAR is preferred by default; unavailable sources fail. Compact StaticMapData already chooses its neighborhoods.</td></tr>',
             )
             .replaceAll(
               '<!--feature-selection-->',
-              capabilities.featureSelection
-                ? '<tr><td><code>selectFeature</code></td><td>(reference, options?) → boolean</td><td>Typed kind/ID with neighborhood source or district year. Select only in current geography; mismatches return false without switching. A null ID clears that kind.</td></tr>'
-                : '',
+              '<tr><td><code>selectFeature</code></td><td>(reference, options?) → boolean</td><td>Typed kind/ID with neighborhood source or district year. Select only in current geography; mismatches return false without switching. A null ID clears that kind.</td></tr>',
             )
             .replaceAll('%RELEASE_LABEL%', releaseLabel)
-            .replaceAll(
-              '%STATIC_MARKERS_TYPE%',
-              capabilities.staticPresentation ? 'readonly MapMarker[]' : 'MapMarker[]',
-            )
+            .replaceAll('%STATIC_MARKERS_TYPE%', 'readonly MapMarker[]')
             .replaceAll('<!--reference-version-->', referenceStatus)
-            .replaceAll(
-              '%APPEARANCE_SHORT%',
-              capabilities.runtimeAppearance
-                ? 'Update live with configure.'
-                : 'Set at construction.',
-            )
+            .replaceAll('%APPEARANCE_SHORT%', 'Update live with configure.')
             .replaceAll(
               '%APPEARANCE_HELP%',
-              capabilities.runtimeAppearance
-                ? 'Update with <code>map.configure({ appearance })</code> while preserving camera, selection and focus. Token objects merge by key; use <code>map.resetConfiguration([&quot;appearance&quot;])</code> to reset the group.'
-                : 'Appearance is set at construction. Recreate the map to change its palette and typography.',
+              'Update with <code>map.configure({ appearance })</code> while preserving camera, selection and focus. Token objects merge by key; use <code>map.resetConfiguration([&quot;appearance&quot;])</code> to reset the group.',
             )
             .replaceAll(
               '%CONFIGURATION_KEYS%',
-              capabilities.runtimeAppearance
-                ? 'features?, layers?, controls?, appearance?, mode?, source?, year?, labels?'
-                : 'features?, layers?, controls?',
+              'features?, layers?, controls?, appearance?, mode?, source?, year?, labels?',
             )
             .replaceAll(
               '%CONFIGURATION_SNAPSHOT%',
-              capabilities.completeConfiguration
-                ? 'Current mode/source/year/labels plus detached presentation overrides. Camera and selection are separate. Styling callbacks keep their identity.'
-                : capabilities.runtimeAppearance
-                  ? 'Detached feature, layer, control and appearance overrides. Styling callbacks keep their identity.'
-                  : 'Detached copy of features, layers and controls.',
+              'Current mode/source/year/labels plus detached presentation overrides. Camera and selection are separate. Styling callbacks keep their identity.',
             )
-            .replaceAll(
-              '%VIEW_UPDATE_ARGUMENT%',
-              capabilities.viewUpdateOptions ? ', options?' : '',
-            )
+            .replaceAll('%VIEW_UPDATE_ARGUMENT%', '')
             .replaceAll(
               '%VIEW_UPDATE_HELP%',
-              capabilities.viewUpdateOptions
-                ? 'Pass <code>{ resetView: false }</code> to preserve the camera. Setters share the atomic configuration path.'
-                : 'Use <code>camera.reset()</code> or <code>camera.fit()</code> for explicit movement.',
+              'Use <code>camera.reset()</code> or <code>camera.fit()</code> for explicit movement.',
             )
             .replaceAll(
               '%RUNTIME_HELP%',
-              capabilities.runtimeAppearance
-                ? 'Update <code>layers</code>, <code>controls</code>, <code>features</code>, <code>appearance</code>, mode, source, year and labels with <code>map.configure()</code>. Live appearance retains camera, selection and focus. Try it in the <a href="./playground.html">map design playground</a>.'
-                : 'Options are grouped: <code>layers</code>, <code>controls</code> and <code>features</code> can change with <code>map.configure()</code>; appearance is set at construction. Explore palettes in the <a href="./playground.html">map design playground</a>.',
+              'Update <code>layers</code>, <code>controls</code>, <code>features</code>, <code>appearance</code>, mode, source, year and labels with <code>map.configure()</code>. Live appearance retains camera, selection and focus. Try it in the <a href="./playground.html">map design playground</a>.',
             )
             .replaceAll(
               '<!--static-presentation-->',
-              capabilities.staticPresentation
-                ? '<tr><td><code>layers</code>, <code>appearance</code></td><td>StaticMapLayers, StaticMapAppearance</td><td>Shared presentation vocabulary. Grouped keys override flat keys; static appearance supports theme, colors and districtStyle. Neighborhood labels remain browser-only.</td></tr>'
-                : '',
+              '<tr><td><code>layers</code>, <code>appearance</code></td><td>StaticMapLayers, StaticMapAppearance</td><td>Shared presentation vocabulary. Presentation uses grouped keys; static appearance supports theme, colors and districtStyle. Neighborhood labels use the optional static labelLayout.</td></tr>',
             )
             .replaceAll(
               '<!--configuration-inspection-->',
-              capabilities.runtimeAppearance
-                ? '<tr><td><code>getResolvedConfiguration</code></td><td>() → ResolvedMapConfiguration</td><td>Current mode/source/year/labels and effective layer switches; label collision and zoom rules still apply.</td></tr><tr><td><code>getCapabilities</code></td><td>() → MapCapabilities</td><td>Supplied sources, years and layer data availability, independent of visibility.</td></tr>'
-                : '',
+              '<tr><td><code>getResolvedConfiguration</code></td><td>() → ResolvedMapConfiguration</td><td>Current mode/source/year/labels and effective layer switches; label collision and zoom rules still apply.</td></tr><tr><td><code>getCapabilities</code></td><td>() → MapCapabilities</td><td>Supplied sources, years and layer data availability, independent of visibility.</td></tr>',
             )
             .replaceAll(
               '<!--selection-envelope-->',
-              capabilities.runtimeAppearance
-                ? '<tr><td><code>selectionchange</code></td><td>{ kind, current, previous }</td><td>Common detached envelope for marker, neighborhood and district selection; null clears. Existing change events retain their payloads.</td></tr>'
-                : '',
+              '<tr><td><code>selectionchange</code></td><td>{ kind, current, previous }</td><td>Common detached envelope for marker, neighborhood and district selection; null clears. Existing change events retain their payloads.</td></tr>',
             )
             .replace(/<table class="api-table">[\s\S]*?<\/table>/g, (table) =>
               table
@@ -395,15 +349,17 @@ try {
     'districts-2012': { year: 2012 },
     'districts-2022': { year: 2022 },
     transit: {
-      theme: 'transit',
-      keyRoads: true,
-      districtLines: false,
-      districtLabels: false,
-      landmarks: true,
-      bartStations: true,
-      highways: true,
+      appearance: { theme: 'transit' },
+      layers: {
+        keyRoads: true,
+        districtLines: false,
+        districtLabels: false,
+        landmarks: true,
+        bartStations: true,
+        highways: true,
+      },
     },
-    neighborhoods: { neighborhoodLines: true },
+    neighborhoods: { layers: { neighborhoodLines: true } },
   })) {
     const svg = renderMap(fullMapData.map, { ...options, idPrefix: name }).svg;
     await writeFile(`pages-dist/maps/${name}.svg`, svg);
@@ -423,10 +379,7 @@ try {
     plate({
       idPrefix: 'plate-hero',
       animation: { duration: 3600, delay: 200 },
-      neighborhoodLines: true,
-      landmarks: true,
-      highways: true,
-      bartStations: true,
+      layers: { neighborhoodLines: true, landmarks: true, highways: true, bartStations: true },
       labels: false,
       title: 'San Francisco: coast, districts, SFAR neighborhoods, parks, highways and BART',
     }),
@@ -437,8 +390,8 @@ try {
       plate({
         idPrefix: `plate-${name}`,
         year,
-        districtStyle: style,
-        districtLabels: false,
+        appearance: { districtStyle: style },
+        layers: { districtLabels: false },
         animation: { duration: 2200 },
         title: `${name} example map`,
       }),
@@ -452,28 +405,22 @@ try {
     }));
   const bare = { districtFills: false, districtLines: false, districtLabels: false };
   const figures = {
-    coast: { ...bare },
-    'districts-2002': { year: 2002, districtLabels: false },
-    'districts-2012': { year: 2012, districtLabels: false },
-    'districts-2022': { year: 2022, districtLabels: false },
-    realtor: {
-      ...bare,
-      neighborhoodLines: true,
-      map: { neighborhoods: neighborhoodsFrom('realtor') },
-    },
-    'sf-find': {
-      ...bare,
-      neighborhoodLines: true,
-      map: { neighborhoods: neighborhoodsFrom('sf-find') },
-    },
-    analysis: {
-      ...bare,
-      neighborhoodLines: true,
-      map: { neighborhoods: neighborhoodsFrom('analysis') },
-    },
-    parks: { ...bare, landmarks: true, labels: false },
-    roads: { ...bare, highways: true, keyRoads: true, labels: false },
-    bart: { ...bare, bartStations: true, labels: false },
+    coast: { layers: bare },
+    'districts-2002': { year: 2002, layers: { districtLabels: false } },
+    'districts-2012': { year: 2012, layers: { districtLabels: false } },
+    'districts-2022': { year: 2022, layers: { districtLabels: false } },
+    ...Object.fromEntries(
+      ['realtor', 'sf-find', 'analysis'].map((source) => [
+        source,
+        {
+          layers: { ...bare, neighborhoodLines: true },
+          map: { neighborhoods: neighborhoodsFrom(source) },
+        },
+      ]),
+    ),
+    parks: { layers: { ...bare, landmarks: true }, labels: false },
+    roads: { layers: { ...bare, highways: true, keyRoads: true }, labels: false },
+    bart: { layers: { ...bare, bartStations: true }, labels: false },
   };
   for (const [name, { map: overrides, ...options }] of Object.entries(figures)) {
     const svg = simplifySvg(

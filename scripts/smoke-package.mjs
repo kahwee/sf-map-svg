@@ -6,7 +6,6 @@ import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { checkPlaygroundCode } from './check-playground-code.mjs';
-import { getMapCapabilities } from './map-capabilities.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const temp = await mkdtemp(join(tmpdir(), 'sf-map-package-'));
@@ -96,14 +95,15 @@ import { neighborhoods, getNeighborhood } from '@kahwee/sf-map-svg/data';
 import * as geometry from '@kahwee/sf-map-svg/geometry';
 import { bindMapCards } from '@kahwee/sf-map-svg/cards';
 import { mapPalettes } from '@kahwee/sf-map-svg/presets';
-import { createGuideMap, createGuideController, mountGuideController, guideMapData, loadGuideDetailedData } from '@kahwee/sf-map-svg/guide';
+import { createGuideController, mountGuideController, guideMapData, loadGuideDetailedData } from '@kahwee/sf-map-svg/guide';
+import * as guideExports from '@kahwee/sf-map-svg/guide';
 import { createGuideSVG, createGuideShell } from '@kahwee/sf-map-svg/guide/static';
 import realtor from '@kahwee/sf-map-svg/data/neighborhoods-realtor.json' with { type: 'json' };
 import candidates from '@kahwee/sf-map-svg/data/candidates/2024-11-05.json' with { type: 'json' };
 assert.equal(typeof createMap, 'function');
 assert.equal(typeof bindMapCards, 'function');
 assert.ok(Object.isFrozen(mapPalettes.nightForest.colors));
-assert.match(renderMap(fullMapData.map, { landmarks: true, bartStations: true }).svg, /<svg/);
+assert.match(renderMap(fullMapData.map, { layers: { landmarks: true, bartStations: true } }).svg, /<svg/);
 assert.equal(
   renderMap(staticMapData, { idPrefix: 'smoke-static' }).svg,
   renderMap(fullMapData.map, { idPrefix: 'smoke-static' }).svg,
@@ -115,8 +115,9 @@ assert.equal(realtor.features.length, 92);
 assert.equal(candidates.contests.length, 9);
 assert.equal(getNeighborhood('NoPa').properties.canonicalName, 'North Panhandle');
 assert(Object.keys(geometry).length > 0);
-assert.equal(typeof createGuideMap, 'function');
 assert.equal(typeof createGuideController, 'function');
+assert.ok(!('createGuideMap' in guideExports));
+assert.ok(!('mountGuideMap' in guideExports));
 assert.equal(typeof mountGuideController, 'function');
 assert.equal(typeof loadGuideDetailedData, 'function');
 assert.equal(guideMapData.neighborhoods.realtor.features.length, 92);
@@ -131,10 +132,14 @@ import { createMap, renderMap, type MapOptions, type StaticMapOptions } from '@k
 import { fullMapData } from '@kahwee/sf-map-svg/data/full';
 import { staticMapData } from '@kahwee/sf-map-svg/data/static';
 import { getNeighborhood, type NeighborhoodSource } from '@kahwee/sf-map-svg/data';
-import { createGuideMap, createGuideController, mountGuideController, guideMapData, loadGuideDetailedData } from '@kahwee/sf-map-svg/guide';
+import { createGuideController, mountGuideController, guideMapData, loadGuideDetailedData } from '@kahwee/sf-map-svg/guide';
 import * as geometry from '@kahwee/sf-map-svg/geometry';
 import { bindMapCards } from '@kahwee/sf-map-svg/cards';
 import { mapPalettes } from '@kahwee/sf-map-svg/presets';
+// @ts-expect-error v6 removes flat static presentation
+const removedFlat: StaticMapOptions = { theme: 'transit' };
+// @ts-expect-error v6 removes the element-based guide factory
+import { createGuideMap } from '@kahwee/sf-map-svg/guide';
 const options: MapOptions = { features: { motion: true }, appearance: { colors: { water: '#fff' } } };
 const controller = () => createMap(fullMapData, options);
 const cardsContract = (root: HTMLElement) => {
@@ -155,12 +160,12 @@ const liveContract = () => {
   });
 };
 const shellController = (shell: HTMLElement) => mountGuideController(shell, options);
-const staticOptions: StaticMapOptions = { layers: { bartStations: true }, appearance: { colors: { water: '#123456' } }, markers: [{ id: 'readonly', position: [-122.4, 37.76 ]}] as const, width: 390, landmarks: true, bartStations: true, overlays: [{ id: 'route', geometry: { type: 'LineString', coordinates: [[-122.4, 37.7], [-122.41, 37.71]] } }] };
+const staticOptions: StaticMapOptions = { layers: { bartStations: true }, appearance: { colors: { water: '#123456' } }, markers: [{ id: 'readonly', position: [-122.4, 37.76 ]}] as const, width: 390, overlays: [{ id: 'route', geometry: { type: 'LineString', coordinates: [[-122.4, 37.7], [-122.41, 37.71]] } }] };
 const svg: string = renderMap(fullMapData.map, staticOptions).svg;
 const staticSvg: string = renderMap(staticMapData).svg;
 const source: NeighborhoodSource = 'realtor';
 const name: string | undefined = getNeighborhood('NoPa', { source })?.properties.canonicalName;
-void [cardsContract, controller, liveContract, svg, staticSvg, name, geometry, createGuideMap, loadGuideDetailedData, guideMapData];
+void [cardsContract, controller, liveContract, svg, staticSvg, name, geometry, loadGuideDetailedData, guideMapData];
 `,
   );
   execFileSync(
@@ -179,7 +184,7 @@ void [cardsContract, controller, liveContract, svg, staticSvg, name, geometry, c
     { cwd: temp, stdio: 'inherit' },
   );
   console.log('Installed package TypeScript declarations passed.');
-  await checkPlaygroundCode(installed, await getMapCapabilities(installed));
+  await checkPlaygroundCode(installed);
 } finally {
   await rm(temp, { recursive: true, force: true });
 }

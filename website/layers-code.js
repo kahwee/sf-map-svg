@@ -7,12 +7,8 @@ export function interactiveOptions(state) {
     labels: state.labels,
     layers: { ...state.layers },
     features: {
-      ...(state.supportedFeatures?.layerTransitions === false
-        ? {}
-        : { layerTransitions: state.features.layerTransitions && { duration: 480 } }),
-      ...(state.supportedFeatures?.districtMorph === false
-        ? {}
-        : { districtMorph: state.features.districtMorph && { duration: 1300 } }),
+      layerTransitions: state.features.layerTransitions && { duration: 480 },
+      districtMorph: state.features.districtMorph && { duration: 1300 },
       motion: state.features.motion && { duration: 600 },
     },
     attribution: 'compact',
@@ -47,25 +43,17 @@ document.querySelector('#map').append(map.element);`;
 }
 
 export function staticOptions(state) {
-  return {
-    year: state.year,
-    districtFills: state.layers.districtFills,
-    districtLines: state.layers.districtLines,
-    districtLabels: state.layers.districtLabels,
-    neighborhoodLines: state.layers.neighborhoodLines,
-    landmarks: state.layers.landmarks,
-    highways: state.layers.highways,
-    keyRoads: state.layers.keyRoads,
-    roadLabels: state.layers.roadLabels,
-    bartStations: state.layers.bartStations,
-    labels: state.labels,
-  };
+  const { neighborhoodLabels: _labels, ...layers } = state.layers;
+  return { year: state.year, labels: state.labels, layers };
 }
 
 export function staticCode(state) {
   const options = Object.entries(staticOptions(state));
   const lines = [
-    ...options.map(([key, value]) => `  ${key}: ${literal(value)},`),
+    ...options.map(
+      ([key, value]) =>
+        `  ${key}: ${typeof value === 'object' ? objectCode(Object.entries(value)) : literal(value)},`,
+    ),
     ...(state.animation === false ? [] : ['  animation: true,']),
   ];
   const needsSource = state.layers.neighborhoodLines && state.source !== 'realtor';

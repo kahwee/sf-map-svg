@@ -28,7 +28,7 @@ unbounded geographic data can never fail.
 | Label metrics and camera movement | Reuse screen-space text measurements and nodes across frames. Font loading invalidates measurements; hidden or removed candidates do not remain in the visible layer. |
 | Marker replacement | Reconcile stable IDs, preserve retained nodes/picker options and entrance animations, cancel removed entrances, and restore focus after reordering. Identical ordered values do not mutate the DOM or restart work. |
 | Camera and label scheduling | A shared frame advances the camera before rendering dependent labels, marker sizes, and clusters. State/events remain synchronous; cancellation preserves pending layout, and destruction cancels both kinds of work. |
-| Guide controllers and compatibility factories | `createGuideController`/`mountGuideController` share grouped options and lifecycle with `createMap`. Existing element factories retain flat options and their return types. |
+| Guide controllers | `createGuideController`/`mountGuideController` share grouped options and lifecycle with `createMap`. Element compatibility factories were removed in v6. |
 | Layer hidden and bundle cost | Visibility never unloads imported geography. Use narrow entrypoints or data injection to save bytes. |
 
 Live appearance patches prepare values, district styles and source replacement before committing; token objects merge by key. Styling callbacks that issue a newer presentation update supersede the pending patch. Resolved layer reads distinguish visibility settings from data availability and from zoom/collision label filtering. The additive selection envelope preserves existing event contracts.
@@ -58,8 +58,8 @@ exceptions are not transactional validation errors and do not roll back an alrea
 committed change. Direct mutation of the returned DOM can invalidate invariants;
 use the public methods and `overlayElement` extension point.
 
-Static flat and grouped options reject unknown keys and invalid values before
-rendering. Grouped options take precedence over flat compatibility options;
+Static grouped options reject unknown keys and invalid values before
+rendering. Flat presentation keys were removed in v6;
 static and interactive schemas retain their documented differences. Host layout, delayed images, fonts, and application cards need their
 own CLS tests. The scale bar is an approximate local Mercator scale, not survey
 instrumentation. Coincident locations use a place chooser rather than spiderfying. Geographic

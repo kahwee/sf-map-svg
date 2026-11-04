@@ -42,10 +42,7 @@ export interface MapOverlay {
   visible?: boolean;
   label?: string;
 }
-export interface SFMapOptions {
-  /** Grouped presentation; supplied keys take precedence over flat compatibility options. */
-  layers?: StaticMapLayers;
-  appearance?: StaticMapAppearance;
+export interface SvgRenderOptions {
   theme?: 'districts' | 'transit';
   width?: number;
   height?: number;
@@ -112,7 +109,16 @@ export interface SFMapOptions {
 
 /** Presentation supported by both the static and interactive renderers. */
 export type StaticMapLayers = InteractiveLayers;
-export type StaticMapAppearance = Pick<SFMapOptions, 'theme' | 'colors' | 'districtStyle'>;
+export type StaticMapAppearance = Pick<SvgRenderOptions, 'theme' | 'colors' | 'districtStyle'>;
+
+/** Public static presentation uses the same grouped vocabulary as the map controller. */
+export type StaticMapOptions = Omit<
+  SvgRenderOptions,
+  keyof StaticMapLayers | keyof StaticMapAppearance
+> & {
+  layers?: StaticMapLayers;
+  appearance?: StaticMapAppearance;
+};
 
 /** Serializable viewport in the interactive map's fixed 800 × 800 projected space. */
 export type MapViewport = readonly [x: number, y: number, size: number];
@@ -168,8 +174,8 @@ export interface NeighborhoodExplorerOptions extends MapFeatures {
   source?: NeighborhoodSource;
   neighborhood?: string;
   year?: DistrictYear;
-  theme?: SFMapOptions['theme'];
-  colors?: SFMapOptions['colors'];
+  theme?: SvgRenderOptions['theme'];
+  colors?: SvgRenderOptions['colors'];
   labelStyle?: { fontFamily?: string; fontWeight?: number; haloColor?: string };
   areaStyle?: {
     selectedFill?: string;
@@ -177,7 +183,7 @@ export interface NeighborhoodExplorerOptions extends MapFeatures {
     hoverFill?: string;
     hoverStroke?: string;
   };
-  districtStyle?: SFMapOptions['districtStyle'];
+  districtStyle?: SvgRenderOptions['districtStyle'];
   legend?: {
     builtins?: boolean;
     hidden?: readonly ('bart' | 'park' | 'highway' | 'road')[];
@@ -267,7 +273,7 @@ export interface NeighborhoodExplorerElement extends HTMLElement {
   selectDistrict(id: number | null, options?: { fit?: boolean } & CameraOptions): boolean;
   getSelectedDistrict(): DistrictSelection | null;
   setDistrictYear(year: DistrictYear, options?: CameraOptions): void;
-  setDistrictStyle(style: SFMapOptions['districtStyle']): void;
+  setDistrictStyle(style: SvgRenderOptions['districtStyle']): void;
   setSource(source: NeighborhoodSource): void;
   setMode(mode: ExplorerMode): void;
   setLabels(visible: boolean): void;

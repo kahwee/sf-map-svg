@@ -61,9 +61,15 @@ for (const width of [800, 390]) {
 
 test('overview priorities respond to width and layer switches', () => {
   const names = (options) => labels(createGuideSVG(options).svg).map((node) => node.textContent);
-  assert.ok(names({ labelLayout: { width: 800 }, neighborhoodLabels: false }).includes('Presidio'));
+  assert.ok(
+    names({ labelLayout: { width: 800 }, layers: { neighborhoodLabels: false } }).includes(
+      'Presidio',
+    ),
+  );
   assert.equal(
-    names({ labelLayout: { width: 390 }, neighborhoodLabels: false }).includes('Presidio'),
+    names({ labelLayout: { width: 390 }, layers: { neighborhoodLabels: false } }).includes(
+      'Presidio',
+    ),
     false,
   );
   assert.deepEqual(names({ labelLayout: { width: 390 }, labels: false }), []);
@@ -74,7 +80,7 @@ test('overview priorities respond to width and layer switches', () => {
     }),
     [],
   );
-  assert.equal(labels(createGuideSVG().svg).length, 0, 'legacy rendering stays the default');
+  assert.equal(labels(createGuideSVG().svg).length, 0, 'overview label layout stays opt-in');
 });
 
 test('static layout escapes names and validates before user callbacks', () => {
@@ -102,9 +108,11 @@ test('static layout escapes names and validates before user callbacks', () => {
     assert.throws(() =>
       renderMap(guideMapData, {
         labelLayout,
-        districtStyle: () => {
-          called = true;
-          return {};
+        appearance: {
+          districtStyle: () => {
+            called = true;
+            return {};
+          },
         },
       }),
     );

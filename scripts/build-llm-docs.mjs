@@ -9,6 +9,7 @@ const documents = [
   ['docs/API.md', 'api-options.md', 'API options and lifecycle'],
   ['docs/EXAMPLES.md', 'examples.md', 'Worked examples'],
   ['docs/consumer-integration.md', 'consumer-integration.md', 'Consumer integration'],
+  ['docs/migration-v6.md', 'migration-v6.md', 'Migration to v6'],
   ['docs/migration-v5.md', 'migration-v5.md', 'Migration to v5'],
   ['docs/migration-v3.md', 'migration-v3.md', 'Migration from removed APIs'],
   ['SOURCES.md', 'sources.md', 'Geographic sources'],
@@ -23,12 +24,7 @@ export async function buildLlmDocs(packageRoot, { released = false } = {}) {
   const files = new Map();
   const entries = [];
   for (const [source, target, title] of documents) {
-    const markdown = await readFile(join(packageRoot, source), 'utf8').catch((error) => {
-      // Older releases may not contain newly introduced guides. Never borrow main's docs.
-      if (released && error.code === 'ENOENT') return null;
-      throw error;
-    });
-    if (markdown === null) continue;
+    const markdown = await readFile(join(packageRoot, source), 'utf8');
     const linked = markdown.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, href) => {
       if (/^(?:[a-z][a-z\d+.-]*:|\/\/|#)/i.test(href)) return match;
       return `[${text}](${repository}${join(dirname(source), href)})`;
@@ -37,9 +33,6 @@ export async function buildLlmDocs(packageRoot, { released = false } = {}) {
     entries.push({ target, title });
   }
 
-  if (!files.has('developer-guide.md')) {
-    files.set('developer-guide.md', files.get('consumer-integration.md') ?? files.get('index.md'));
-  }
   const contracts = [];
   const seen = new Set();
   async function declaration(path) {

@@ -2,13 +2,12 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { DOMParser } from '@xmldom/xmldom';
 import { fullMapData } from '../dist/src/full-data.js';
-import { resolveMapColors } from '../dist/src/rendering/svg-map-renderer.js';
 import { getLayerPaths, renderMap } from '../dist/src/static.js';
 
 const description = (svg) =>
   new DOMParser().parseFromString(svg, 'image/svg+xml').getElementsByTagName('desc')[0].textContent;
 
-test('static entry points reject typo keys and invalid flat values before styling callbacks', () => {
+test('static entry points reject typo keys and invalid grouped values before styling callbacks', () => {
   const switches = [
     'districtFills',
     'districtLines',
@@ -24,16 +23,20 @@ test('static entry points reject typo keys and invalid flat values before stylin
   ];
   const invalid = [
     { landmark: true },
-    { theme: 'unknown' },
-    { colors: null },
-    { colors: { ocean: 'red' } },
-    { colors: { water: 42 } },
+    { appearance: { theme: 'unknown' } },
+    { appearance: { colors: null } },
+    { appearance: { colors: { ocean: 'red' } } },
+    { appearance: { colors: { water: 42 } } },
     { title: 123 },
     { idPrefix: 123 },
     { animation: { duration: -1 } },
     { markers: null },
     { overlays: null },
-    ...switches.flatMap((key) => ['false', 1, null].map((value) => ({ [key]: value }))),
+    ...switches.flatMap((key) =>
+      ['false', 1, null].map((value) =>
+        key === 'labels' ? { labels: value } : { layers: { [key]: value } },
+      ),
+    ),
   ];
   let calls = 0;
   for (const operation of [renderMap, getLayerPaths])
@@ -41,9 +44,12 @@ test('static entry points reject typo keys and invalid flat values before stylin
       assert.throws(() =>
         operation(fullMapData, {
           ...options,
-          districtStyle: () => {
-            calls++;
-            return {};
+          appearance: {
+            ...options.appearance,
+            districtStyle: () => {
+              calls++;
+              return {};
+            },
           },
         }),
       );
@@ -52,33 +58,20 @@ test('static entry points reject typo keys and invalid flat values before stylin
     assert.throws(() => operation(fullMapData, { districtStyle: 'red' }), TypeError);
 });
 
-test('undefined flat color tokens retain theme defaults and grouped precedence', () => {
+test('undefined grouped color tokens retain theme defaults', () => {
   for (const theme of ['districts', 'transit']) {
-    const defaults = resolveMapColors(theme);
-    assert.deepEqual(resolveMapColors(theme, { water: undefined }), defaults);
-    const base = { idPrefix: 'color-defaults', theme };
-    const expected = renderMap(fullMapData, base).svg;
-    for (const options of [
-      { colors: { water: undefined } },
-      { appearance: { colors: { water: undefined } } },
-      { colors: undefined, layers: { landmarks: undefined }, labels: undefined },
-    ])
-      assert.equal(renderMap(fullMapData, { ...base, ...options }).svg, expected);
-    const svg = renderMap(fullMapData, {
-      ...base,
-      colors: { water: '#123456', land: undefined },
-      appearance: { colors: { water: '#abcdef' } },
-    }).svg;
-    assert.match(svg, /fill="#abcdef"/);
-    assert.doesNotMatch(svg, /fill="undefined"|fill="#123456"/);
+    const options = { idPrefix: 'colors', appearance: { theme } };
+    const expected = renderMap(fullMapData, options).svg;
     assert.equal(
-      renderMap(fullMapData, {
-        ...base,
-        colors: { water: '#123456' },
-        appearance: { colors: undefined },
-      }).svg,
-      renderMap(fullMapData, { ...base, colors: { water: '#123456' } }).svg,
+      renderMap(fullMapData, { ...options, appearance: { theme, colors: { water: undefined } } })
+        .svg,
+      expected,
     );
+    const svg = renderMap(fullMapData, {
+      ...options,
+      appearance: { theme, colors: { water: '#abcdef' } },
+    }).svg;
+    assert.ok(svg.includes('#abcdef'));
   }
 });
 
@@ -98,15 +91,21 @@ test('source-aware SVG descriptions identify explicit and default neighborhood d
       ...fullMapData,
       neighborhoods: { [source]: fullMapData.neighborhoods[source] },
     };
-    assert.ok(description(renderMap(fallback, { neighborhoodLines: true }).svg).includes(name));
+    assert.ok(
+      description(renderMap(fallback, { layers: { neighborhoodLines: true } }).svg).includes(name),
+    );
   }
-  const compact = description(renderMap(fullMapData.map, { neighborhoodLines: true }).svg);
+  const compact = description(
+    renderMap(fullMapData.map, { layers: { neighborhoodLines: true } }).svg,
+  );
   assert.ok(compact.includes('the supplied neighborhood areas'));
   assert.ok(!compact.includes('SFAR'));
 });
 
 test('SVG descriptions follow supplied data, actual counts, and enabled layers', () => {
-  const options = { neighborhoodLines: true, landmarks: true, bartStations: true, keyRoads: true };
+  const options = {
+    layers: { neighborhoodLines: true, landmarks: true, bartStations: true, keyRoads: true },
+  };
   const coastOnly = { coast: fullMapData.map.coast };
   const empty = description(renderMap(coastOnly, options).svg);
   assert.equal(empty, 'San Francisco map. See SOURCES.md for geographic sources.');
@@ -123,16 +122,21 @@ test('SVG descriptions follow supplied data, actual counts, and enabled layers',
   assert.ok(!text.includes('road corridors'));
   const disabled = description(
     renderMap(fullMapData, {
-      districtFills: false,
-      districtLines: false,
-      districtLabels: false,
-      layers: { landmarks: false, bartStations: false },
+      layers: {
+        districtFills: false,
+        districtLines: false,
+        districtLabels: false,
+        ...{ landmarks: false, bartStations: false },
+      },
     }).svg,
   );
   assert.equal(disabled, empty);
   assert.ok(
     !description(
-      renderMap(fullMapData, { districtFills: false, districtLines: false, labels: false }).svg,
+      renderMap(fullMapData, {
+        labels: false,
+        layers: { districtFills: false, districtLines: false },
+      }).svg,
     ).includes('district boundaries'),
   );
 });

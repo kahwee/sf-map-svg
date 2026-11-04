@@ -20,18 +20,13 @@ import { writeFile } from 'node:fs/promises';
 import { renderMap } from '@kahwee/sf-map-svg';
 import { staticMapData } from '@kahwee/sf-map-svg/data/static';
 
-const svg = renderMap(staticMapData, {
-  year: 2022,
-  landmarks: true,
-  bartStations: true,
-  idPrefix: 'example',
-}).svg;
+const svg = renderMap(staticMapData, { year: 2022, idPrefix: 'example', layers: { landmarks: true, bartStations: true } }).svg;
 await writeFile('districts.svg', svg);
 ```
 
 The static preset includes the packaged map layers without interactive lookup collections. For smaller bundles, pass selected data to the root or `/static` renderer. See the [static recipe](../README.md#static-svg).
 
-For an election choropleth, use `renderMap(data, { year, districtStyle })` or
+For an election choropleth, use `renderMap(data, { year, appearance: { districtStyle } })` or
 `createMap({ map: data, districts: districtMaps, neighborhoods: {} }, options)`.
 The controller exposes `setDistrictYear`, `setDistrictStyle`, `selectDistrict`, and typed
 district events; `getLayerPaths(data, { year })` returns fitted paths without SVG markup.

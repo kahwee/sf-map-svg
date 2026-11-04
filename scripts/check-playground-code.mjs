@@ -5,7 +5,7 @@ import { join, resolve } from 'node:path';
 import { initialState, playgroundCode, setMode } from '../website/playground-model.ts';
 
 /** Compile the exact copyable examples against the package this build actually uses. */
-export async function checkPlaygroundCode(packageRoot, capabilities) {
+export async function checkPlaygroundCode(packageRoot) {
   const temporary = await mkdtemp(join(tmpdir(), 'sf-playground-code-'));
   try {
     const manifest = JSON.parse(await readFile(join(packageRoot, 'package.json'), 'utf8'));
@@ -16,7 +16,7 @@ export async function checkPlaygroundCode(packageRoot, capabilities) {
           const state = initialState();
           Object.assign(state, { render, source, pins: true, route: true });
           setMode(state, 'neighborhoods');
-          const code = playgroundCode(state, capabilities, language).replace(
+          const code = playgroundCode(state, language).replace(
             /'(@kahwee\/sf-map-svg(?:\/data(?:\/full|\/static)?)?)'/g,
             (_match, name) => {
               const entry = name.replace('@kahwee/sf-map-svg', '.') || '.';

@@ -22,10 +22,6 @@ export const ResponsiveNightAtlas: Story = {
         haloColor: palette.haloColor,
         compact: { width: 480, maxLabels: 4 },
       },
-      colors: palette.colors,
-      districtLabels: false,
-      roadLabels: false,
-      bartStations: false,
       markers: [
         {
           id: 'park',
@@ -34,6 +30,8 @@ export const ResponsiveNightAtlas: Story = {
           color: palette.markerColor,
         },
       ],
+      layers: { districtLabels: false, roadLabels: false, bartStations: false },
+      appearance: { colors: palette.colors },
     });
     const image = document.createElement('img');
     image.src = `data:image/svg+xml,${encodeURIComponent(svg)}`;

@@ -21,7 +21,7 @@ test('neighborhood layer is optional and contains every named area', () => {
   assert.ok(neighborhoodNames.includes('Inner Mission'));
   assert.ok(neighborhoodNames.includes('Outer Mission'));
   assert.ok(neighborhoodNames.includes('North Panhandle'));
-  const svg = render({ neighborhoodLines: true, districtLines: false });
+  const svg = render({ layers: { neighborhoodLines: true, districtLines: false } });
   assert.equal((svg.match(/data-neighborhood=/g) ?? []).length, 92);
   assert.ok(!svg.includes('data-layer="district-lines"'));
   assert.ok(svg.includes('the supplied neighborhood areas'));
@@ -61,7 +61,7 @@ test('data-injected renderer needs no bundled geographic collection', () => {
   };
   const result = renderMap(
     { coast },
-    { districtFills: false, districtLines: false, districtLabels: false },
+    { layers: { districtFills: false, districtLines: false, districtLabels: false } },
   );
   assert.match(result.svg, /data-layer="coast"/);
   assert.doesNotMatch(result.svg, /data-layer="district-fills"/);
@@ -90,7 +90,10 @@ test('map overlays reject invalid numeric SVG attributes', () => {
   const render = (overlay) =>
     renderMap(
       { coast },
-      { districtFills: false, districtLines: false, districtLabels: false, overlays: [overlay] },
+      {
+        overlays: [overlay],
+        layers: { districtFills: false, districtLines: false, districtLabels: false },
+      },
     );
   assert.throws(
     () => render({ id: 'bad-width', geometry: line, strokeWidth: '1" onload="x' }),
@@ -107,12 +110,9 @@ test('combined layers produce valid XML with resolvable clip paths for every dis
       const errors = [];
       const svg = render({
         year,
-        neighborhoodLines,
-        highways: true,
-        landmarks: true,
-        bartStations: true,
         title: 'Park\u0000 & <city>',
         markers: [{ id: 'a"<&', position: [-122.4, 37.77], label: '<hello> & friends' }],
+        layers: { neighborhoodLines, highways: true, landmarks: true, bartStations: true },
       });
       const document = new DOMParser({
         onError: (level, message) => errors.push({ level, message }),
@@ -132,7 +132,7 @@ test('landmarks and BART are independent optional geographic overlays', () => {
   const baseline = render();
   assert.ok(!baseline.includes('data-layer="landmarks"'));
   assert.ok(!baseline.includes('data-layer="bart-stations"'));
-  const parks = render({ landmarks: true });
+  const parks = render({ layers: { landmarks: true } });
   assert.equal((parks.match(/data-landmark=/g) ?? []).length, 6);
   assert.ok(parks.includes('Golden Gate Park'));
   const document = new DOMParser().parseFromString(parks, 'image/svg+xml');
@@ -145,7 +145,10 @@ test('landmarks and BART are independent optional geographic overlays', () => {
     assert.ok(!/NaN|Infinity/.test(park.getAttribute('d')));
   }
   assert.ok(!parks.includes('data-layer="bart-stations"'));
-  const map = create({ bartStations: true, colors: { bart: '#123456' } });
+  const map = create({
+    layers: { bartStations: true },
+    appearance: { colors: { bart: '#123456' } },
+  });
   assert.equal((map.svg.match(/data-bart-station=/g) ?? []).length, 8);
   assert.ok(!map.svg.includes('data-layer="landmarks"'));
   assert.ok(!map.svg.includes('Daly City'));
@@ -170,9 +173,11 @@ test('rejects invalid marker coordinates before running renderer callbacks', () 
     () =>
       render({
         markers: [{ id: 'bad', position: [-122.4, 90] }],
-        districtStyle: () => {
-          styleCalls++;
-          return {};
+        appearance: {
+          districtStyle: () => {
+            styleCalls++;
+            return {};
+          },
         },
       }),
     /Marker coordinates/,
@@ -185,16 +190,16 @@ test('rejects invalid marker coordinates before running renderer callbacks', () 
 });
 
 test('optional layers work independently and preserve unique district IDs', () => {
-  const options = {
+  const layerNames = {
     neighborhoodLines: 'neighborhood-lines',
     highways: 'highways',
     landmarks: 'landmarks',
     bartStations: 'bart-stations',
   };
-  for (const [option, layer] of Object.entries(options)) {
-    const svg = render({ [option]: true });
+  for (const [option, layer] of Object.entries(layerNames)) {
+    const svg = render({ layers: { [option]: true } });
     assert.ok(svg.includes(`data-layer="${layer}"`));
-    for (const [otherOption, otherLayer] of Object.entries(options)) {
+    for (const [otherOption, otherLayer] of Object.entries(layerNames)) {
       if (otherOption !== option) assert.ok(!svg.includes(`data-layer="${otherLayer}"`));
     }
   }
@@ -217,7 +222,7 @@ test('optional layers work independently and preserve unique district IDs', () =
 test('transit custom land color cannot inject SVG attributes', () => {
   const color = 'red" onpointerover="alert(1)';
   const document = new DOMParser().parseFromString(
-    render({ theme: 'transit', colors: { land: color } }),
+    render({ appearance: { theme: 'transit', colors: { land: color } } }),
     'image/svg+xml',
   );
   const fills = Array.from(document.getElementsByTagName('path')).filter(
@@ -232,7 +237,7 @@ test('transit custom land color cannot inject SVG attributes', () => {
 
 test('key roads are an optional layer independent of highways', () => {
   assert.ok(!render().includes('data-layer="key-roads"'));
-  const svg = render({ keyRoads: true, colors: { road: '#123456' } });
+  const svg = render({ layers: { keyRoads: true }, appearance: { colors: { road: '#123456' } } });
   const document = new DOMParser().parseFromString(svg, 'image/svg+xml');
   const roads = Array.from(document.getElementsByTagName('path')).filter((p) =>
     p.hasAttribute('data-key-road'),
@@ -246,10 +251,10 @@ test('key roads are an optional layer independent of highways', () => {
   assert.ok(svg.includes('Market St'));
   assert.ok(svg.includes('The Embarcadero'));
   assert.ok(!svg.includes('data-layer="highways"'));
-  const geometryWithoutLabels = render({ keyRoads: true, roadLabels: false });
+  const geometryWithoutLabels = render({ layers: { keyRoads: true, roadLabels: false } });
   assert.ok(geometryWithoutLabels.includes('data-layer="key-roads"'));
   assert.ok(!geometryWithoutLabels.includes('data-layer="key-road-labels"'));
-  const labelsWithoutGeometry = render({ keyRoads: false, roadLabels: true });
+  const labelsWithoutGeometry = render({ layers: { keyRoads: false, roadLabels: true } });
   assert.ok(!labelsWithoutGeometry.includes('data-layer="key-roads"'));
   assert.ok(labelsWithoutGeometry.includes('data-layer="key-road-labels"'));
 });
@@ -287,7 +292,7 @@ test('custom road hierarchy cannot inject SVG attributes', () => {
         },
       ],
     },
-    { districtFills: false, districtLines: false, keyRoads: true, roadLabels: false },
+    { layers: { districtFills: false, districtLines: false, keyRoads: true, roadLabels: false } },
   ).svg;
   assert.match(svg, /data-key-road-level="primary"/);
   assert.doesNotMatch(svg, /onload=/);
@@ -295,7 +300,7 @@ test('custom road hierarchy cannot inject SVG attributes', () => {
 
 test('master label switch hides text without removing map symbols or accessible titles', () => {
   const document = new DOMParser().parseFromString(
-    render({ labels: false, landmarks: true, bartStations: true, keyRoads: true }),
+    render({ labels: false, layers: { landmarks: true, bartStations: true, keyRoads: true } }),
     'image/svg+xml',
   );
   assert.equal(document.getElementsByTagName('text').length, 0);
@@ -316,11 +321,8 @@ test('static animation is opt-in, scoped, and leaves default output unchanged', 
   const svg = render({
     idPrefix: 'intro',
     animation: true,
-    neighborhoodLines: true,
-    highways: true,
-    keyRoads: true,
-    bartStations: true,
     markers: [{ id: 'pin', position: [-122.42, 37.76] }],
+    layers: { neighborhoodLines: true, highways: true, keyRoads: true, bartStations: true },
   });
   assert.ok(svg.includes('data-sf-animate="intro"'));
   assert.equal((svg.match(/<style>/g) ?? []).length, 1);

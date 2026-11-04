@@ -80,7 +80,7 @@ function disposeGuide() {
 
 Compact attribution is required for an existing shell. Invalid configuration leaves its static frame intact. `destroy()` disposes listeners and animation work; your application owns removal of the containing view. Motion is opt-in and follows reduced-motion preferences.
 
-For a new browser-only guide, use `createGuideController()` and mount its `.element` as shown in the developer guide. Existing `createGuideMap()` and `mountGuideMap()` retain their augmented-element return types and flat options for compatibility.
+For a new browser-only guide, use `createGuideController()` and mount its `.element` as shown in the developer guide. Both guide factories return controllers; mount `map.element` and dispose with `map.destroy()`.
 
 ## Choose the data boundary
 

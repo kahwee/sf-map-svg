@@ -97,14 +97,14 @@ test('lookup handles aliases without conflating Mission and Outer Mission or sou
   assert.ok(searchNeighborhoods('', { source: 'analysis' }).every((r) => r.source === 'analysis'));
 });
 test('public helper data is immutable and cannot alter subsequent renders', () => {
-  const before = create({ idPrefix: 'immutable', neighborhoodLines: true }).svg;
+  const before = create({ idPrefix: 'immutable', layers: { neighborhoodLines: true } }).svg;
   assert.throws(() => {
     getNeighborhood('Inner Mission').geometry.coordinates[0][0][0][0] = 0;
   }, TypeError);
   assert.throws(() => {
     districtMaps[2022].features[0].properties.labelPoints[0][0] = 0;
   }, TypeError);
-  assert.equal(create({ idPrefix: 'immutable', neighborhoodLines: true }).svg, before);
+  assert.equal(create({ idPrefix: 'immutable', layers: { neighborhoodLines: true } }).svg, before);
 });
 test('every JSON asset is exported, finite, and matches its catalog count', async () => {
   for (const dataset of catalog.datasets) {

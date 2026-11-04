@@ -54,9 +54,9 @@ const { svg } = renderMap(staticMapData, presentation);
 const map = createMap(fullMapData, presentation);
 ```
 
-Static `layers` supports every interactive layer switch. `neighborhoodLabels` applies to the opt-in `labelLayout` described below. Static `appearance` supports `theme`, `colors`, and `districtStyle`; browser typography, area interaction styles, and screen-space marker sizing remain interactive settings. Unknown keys and invalid values are rejected for both flat and grouped options. Supplied grouped keys override flat compatibility keys; omitted or `undefined` grouped keys preserve the flat value or renderer default. Undefined color tokens use the theme default instead of entering SVG attributes. The two renderers retain their existing defaults. Marker arrays accept readonly inputs.
+Static `layers` supports every interactive layer switch. `neighborhoodLabels` applies to the opt-in `labelLayout` described below. Static `appearance` supports `theme`, `colors`, and `districtStyle`; browser typography, area interaction styles, and screen-space marker sizing remain interactive settings. Unknown keys and invalid values are rejected. Presentation belongs under `layers` and `appearance`; flat presentation keys are rejected. Omitted or `undefined` grouped keys preserve renderer defaults. Undefined color tokens use the theme default instead of entering SVG attributes. The two renderers retain their existing defaults. Marker arrays accept readonly inputs.
 
-Flat compatibility options include `theme`, `width`, `height`, `padding`, `year` (2002, 2012, 2022), `districtLines`, `districtFills`, `districtStyle`, `districtLabels`, `neighborhoodLines`, `neighborhoodLabels`, `labels`, `labelLayout`, `highways`, `keyRoads`, `roadLabels`, `landmarks`, `bartStations`, `markers`, `overlays`, `title`, `idPrefix`, `colors`, and `animation`. Each optional layer is independent. User-supplied text and attributes are escaped in SVG output.
+Top-level static options are `width`, `height`, `padding`, `year`, `source`, `labels`, `labelLayout`, `markers`, `overlays`, `title`, `idPrefix`, and `animation`, alongside `layers` and `appearance`. Each optional layer is independent. User-supplied text and attributes are escaped in SVG output.
 
 Custom district IDs must be finite numbers. An empty `labelPoints` array uses the district's primary `label` position.
 
@@ -64,22 +64,18 @@ The SVG description names the selected neighborhood source for source-aware data
 
 `animation: true` (or `{ duration, delay }`) makes a static map draw itself with self-contained, scoped CSS: land fades in, the coast and lines draw, districts grow, then labels and points appear. It plays when the SVG is inserted into a page or loaded as an image, needs no JavaScript, and stays still under `prefers-reduced-motion`. Re-insert the markup to replay it. Default output is unchanged.
 
-Static `labelLayout: { width: 390 }` opts into shared interactive **overview** label priorities, sizes, anchors and collision rules. `width` must be a positive finite CSS canvas width; it does not alter the SVG viewBox. Set `neighborhoodLabels: true` (flat or under `layers`) to add area names in this layout. Guide SVGs and shells enable neighborhood names by default only when opting into `labelLayout`. `labels: false` remains the master switch. Default static output is unchanged.
+Static `labelLayout: { width: 390 }` opts into shared interactive **overview** label priorities, sizes, anchors and collision rules. `width` must be a positive finite CSS canvas width; it does not alter the SVG viewBox. Set `layers: { neighborhoodLabels: true }` to add area names in this layout. Guide SVGs and shells enable neighborhood names by default only when opting into `labelLayout`. `labels: false` remains the master switch. Default static output is unchanged.
 
 For editorial previews, `labelLayout` also accepts `maxLabels` (a nonnegative safe integer), `haloColor` (an SVG color string), and `compact: { width, maxLabels }`. The compact width must be positive, finite, and smaller than the main layout width. Each layout places labels around pins independently, then chooses up to its budget for spatial coverage and nearby-pin context (selected marker first when it fits). Without a budget the existing overview order is unchanged. Equal spatial scores retain the original priority order. A zero budget hides text, never pins. The default halo remains white; use the land color for a quieter dark map.
 
 Compact mode embeds two label groups and a media query in the same SVG. At or below the compact width it shows the compact group; above it shows the main group. In an `<img>` or standalone SVG, the breakpoint follows the SVG viewport. In inline SVG it follows the document viewport, so use `<img>` for cards whose width differs from the page. No JavaScript, duplicated geometry, external fonts, or extra image requests are needed. The compact width is also its font-layout hint; very narrow images still scale the text. The interactive renderer continues to use its live collision layout after enhancement.
 
 ```js
-createGuideSVG({
-  labelLayout: {
+createGuideSVG({ labelLayout: {
     width: 800,
     haloColor: '#1b2c28',
     compact: { width: 480, maxLabels: 4 },
-  },
-  colors: { water: '#0a1412', land: '#1b2c28', label: '#d5e3e8' },
-  markers: places,
-});
+  }, markers: places, appearance: { colors: { water: '#0a1412', land: '#1b2c28', label: '#d5e3e8' } } });
 ```
 
 See the [field-guide preview recipe](consumer-integration.md#editorial-map-previews) for a complete build-time example.
@@ -110,9 +106,9 @@ Visible markers and clusters share one tab stop. Use `[` and `]` to move focus, 
 
 Activating coincident pins opens a place chooser, including when compact embeds hide the native marker picker. Clusters zoom when their members can separate at maximum zoom; otherwise they open the chooser. Escape or Close returns focus to the originating pin or cluster when it remains visible. Choosing a place selects its marker; replacing markers or destroying the map closes the chooser. `clusteractivate` still reports the activated cluster's markers.
 
-For a small guide, import `guideMapData` from `/guide/data` and pass it to `createMap`. The optional `/guide` entry also provides `createGuideMap`, `mountGuideMap`, and detailed-data loading for existing guide layouts. `/transit` provides the standalone schematic transit animation. See [examples](EXAMPLES.md) and [consumer integration](consumer-integration.md).
+For a small guide, import `guideMapData` from `/guide/data` and pass it to `createMap`. The optional `/guide` entry also provides `createGuideController`, `mountGuideController`, and detailed-data loading for existing guide layouts. `/transit` provides the standalone schematic transit animation. See [examples](EXAMPLES.md) and [consumer integration](consumer-integration.md).
 
-For the guide preset with the same controller API, use `createGuideController(options)` from `/guide` (or `/guide/map`). It accepts grouped `MapOptions` and returns `MapController`; `mountGuideController(shell, options)` enhances a `createGuideShell()` container. Both use the lightweight guide geography. Existing `createGuideMap` and `mountGuideMap` calls retain their element-based API.
+For the guide preset with the same controller API, use `createGuideController(options)` from `/guide` (or `/guide/map`). It accepts grouped `MapOptions` and returns `MapController`; `mountGuideController(shell, options)` enhances a `createGuideShell()` container. Both use the lightweight guide geography. See [migration to v6](migration-v6.md) for removed compatibility APIs.
 
 Two opt-in features animate the map's lines and layers. `features.layerTransitions` fades layers as `configure({ layers })` and `setMode()` switch them, crossfades neighborhood boundaries when `setSource()` changes the definition, and crossfades district fills on `setDistrictStyle()`. `features.districtMorph` moves district outlines from one map year to the next on `setDistrictYear()`, then settles on the exact published geometry; pass `{ animate: false }` for an instant change. Both default off, own and cancel their animations, and yield to reduced motion.
 

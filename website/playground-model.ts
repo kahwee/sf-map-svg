@@ -7,13 +7,6 @@ import type {
   StaticMapOptions,
 } from '../dist/src/api.js';
 
-export interface PreviewCapabilities {
-  runtimeAppearance?: boolean;
-  staticPresentation?: boolean;
-  animation?: boolean;
-  layerTransitions?: boolean;
-  districtMorph?: boolean;
-}
 export type CodeLanguage = 'javascript' | 'typescript';
 export interface PlaygroundState {
   palette: string;
@@ -26,7 +19,7 @@ export interface PlaygroundState {
   layerOverrides: Partial<Record<keyof typeof layerNames, boolean>>;
   features: Record<keyof typeof featureNames, boolean>;
   colors: Record<keyof typeof colorNames, string>;
-  theme: NonNullable<StaticMapOptions['theme']>;
+  theme: NonNullable<NonNullable<StaticMapOptions['appearance']>['theme']>;
   font: string;
   weight: number;
   size: number;
@@ -269,13 +262,9 @@ export function initialState(): PlaygroundState {
     animation: false,
   };
 }
-export function interactiveOptions(
-  state: PlaygroundState,
-  capabilities: PreviewCapabilities,
-): MapOptions {
+export function interactiveOptions(state: PlaygroundState): MapOptions {
   const features: MapOptions['features'] = { ...state.features };
-  if (!capabilities.layerTransitions) delete features.layerTransitions;
-  if (!capabilities.districtMorph) delete features.districtMorph;
+
   return {
     mode: state.mode,
     source: state.source,
@@ -311,10 +300,7 @@ export function interactiveOptions(
     },
   };
 }
-export function staticOptions(
-  state: PlaygroundState,
-  capabilities: PreviewCapabilities,
-): StaticMapOptions {
+export function staticOptions(state: PlaygroundState): StaticMapOptions {
   const { neighborhoodLabels: _unsupported, ...layers } = state.layers;
   const appearance = { theme: state.theme, colors: { ...state.colors } };
   return {
@@ -323,8 +309,9 @@ export function staticOptions(
     title: state.title,
     markers: state.pins ? sampleMarkers : [],
     overlays: state.route ? sampleOverlays : [],
-    ...(capabilities.animation ? { animation: state.animation } : {}),
-    ...(capabilities.staticPresentation ? { layers, appearance } : { ...layers, ...appearance }),
+    animation: state.animation,
+    layers,
+    appearance,
   };
 }
 export function staticData(data: MapData, source: NeighborhoodSource) {
@@ -339,15 +326,9 @@ export function staticData(data: MapData, source: NeighborhoodSource) {
     })),
   };
 }
-export function playgroundCode(
-  state: PlaygroundState,
-  capabilities: PreviewCapabilities,
-  language: CodeLanguage = 'javascript',
-) {
+export function playgroundCode(state: PlaygroundState, language: CodeLanguage = 'javascript') {
   const interactive = state.render === 'interactive';
-  const options = interactive
-    ? interactiveOptions(state, capabilities)
-    : staticOptions(state, capabilities);
+  const options = interactive ? interactiveOptions(state) : staticOptions(state);
   let imports = `import { ${interactive ? 'createMap' : 'renderMap'} } from '@kahwee/sf-map-svg';\nimport { ${interactive ? 'fullMapData' : 'staticMapData'} } from '@kahwee/sf-map-svg/data/${interactive ? 'full' : 'static'}';`;
   const type = interactive ? 'MapOptions' : 'StaticMapOptions';
   if (language === 'typescript') imports += `\nimport type { ${type} } from '@kahwee/sf-map-svg';`;
@@ -361,14 +342,13 @@ export function playgroundCode(
   }
   return `${imports}\n\n${jsdoc}const options${annotation} = ${JSON.stringify(options, null, 2)};\n\n${interactive ? `const map = createMap(${data}, options);\nconst host = document.querySelector('#map');\nif (!host) throw new Error('Add a #map container before mounting.');\nhost.append(map.element);\n\n// In your view's cleanup hook:\n// map.destroy();\n// map.element.remove();` : `const { svg } = renderMap(${data}, options);\n// Save svg as a file, or insert it into your page.`}`;
 }
-/** Share links carry bounded settings only. Version 1 also accepts older unversioned links. */
+/** Share links carry bounded settings only. Version 1 is required. */
 export function readState(hash: string): PlaygroundState {
   const state = initialState();
   if (!hash) return state;
   if (!hash.startsWith('#design=') || hash.length > 12000) throw new Error('Invalid design link.');
   const value: unknown = JSON.parse(decodeURIComponent(hash.slice(8)));
-  if (!isRecord(value) || (value.version !== undefined && value.version !== 1))
-    throw new Error('Invalid design link version.');
+  if (!isRecord(value) || value.version !== 1) throw new Error('Invalid design link version.');
   const enums = {
     palette: palettes.map((p) => p.id),
     render: ['interactive', 'static'],

@@ -31,9 +31,8 @@ function clear() {
 function svg() {
   return renderMap(fullMapData, {
     year,
-    landmarks: true,
-    bartStations: true,
     title: `San Francisco districts ${year}`,
+    layers: { landmarks: true, bartStations: true },
   }).svg;
 }
 document.querySelectorAll('[data-year]').forEach((button) => {

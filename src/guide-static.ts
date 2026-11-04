@@ -1,27 +1,30 @@
 import { guideMapData } from './guide-data.js';
 import { guideShellCSS } from './guide-shell.js';
 import { renderMap } from './static.js';
-import type { SFMapOptions } from './types.js';
+import type { StaticMapOptions } from './types.js';
 
 /** Server-safe overview using exactly the guide browser geography. */
-export function createGuideSVG(options: SFMapOptions = {}) {
+export function createGuideSVG(options: StaticMapOptions = {}) {
   return renderMap(guideMapData.map, {
-    theme: 'transit',
-    districtFills: false,
-    districtLines: false,
-    districtLabels: false,
-    neighborhoodLines: true,
-    neighborhoodLabels: options.labelLayout !== undefined,
-    landmarks: true,
-    highways: true,
-    keyRoads: true,
-    bartStations: true,
     ...options,
+    appearance: { theme: 'transit', ...options.appearance },
+    layers: {
+      districtFills: false,
+      districtLines: false,
+      districtLabels: false,
+      neighborhoodLines: true,
+      neighborhoodLabels: options.labelLayout !== undefined,
+      landmarks: true,
+      highways: true,
+      keyRoads: true,
+      bartStations: true,
+      ...options.layers,
+    },
   });
 }
 
-/** Stable compact frame, progressively enhanced with mountGuideMap(). No browser globals. */
-export function createGuideShell(options: SFMapOptions = {}): string {
+/** Stable compact frame, progressively enhanced with mountGuideController(). No browser globals. */
+export function createGuideShell(options: StaticMapOptions = {}): string {
   if (
     (options.width !== undefined && options.width !== 800) ||
     (options.height !== undefined && options.height !== 800) ||

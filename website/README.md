@@ -44,4 +44,4 @@ Static previews render without creating an interactive controller. Mobile previe
 scroll with the page so controls cannot be covered by a tall pinned map.
 
 Pages references and snippets describe the package used by that build. Released
-builds adapt unsupported grouped static options to the published flat API.
+builds require v6 or newer and use grouped static options directly.

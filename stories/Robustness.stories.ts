@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/html-vite';
 import { expect, waitFor } from 'storybook/test';
 import { guideMapData } from '../src/guide-data.js';
-import { createGuideMap } from '../src/guide-map.js';
 import { createMap } from '../src/map.js';
 import type {
   NeighborhoodExplorerElement as InteractiveSFMapElement,
   MapFeatures,
 } from '../src/types.js';
+import { createGuideTestEngine } from './engine-fixture.js';
 
 const pins = [
   { id: 'a', position: [-122.4269, 37.7596] as const, label: 'First place' },
@@ -18,7 +18,7 @@ const meta = {
   parameters: { layout: 'padded' },
   beforeEach: () => () => map?.destroy(),
   render: () => {
-    map = createGuideMap({
+    map = createGuideTestEngine({
       markers: pins,
       layers: {
         landmarks: false,
@@ -128,7 +128,7 @@ export const FailedUpdatesAreAtomic: Story = {
 export const OverlayReplacementAndDisposal: Story = {
   play: async () => {
     let activations = 0;
-    const other = createGuideMap({ onOverlayActivate: () => activations++ });
+    const other = createGuideTestEngine({ onOverlayActivate: () => activations++ });
     map.after(other);
     try {
       const overlay = {
@@ -285,12 +285,12 @@ export const FailedObserverConstruction: Story = {
     }
     try {
       window.ResizeObserver = FailingObserver;
-      expect(() => createGuideMap()).toThrow('Observer setup failed');
+      expect(() => createGuideTestEngine()).toThrow('Observer setup failed');
       expect(disconnected).toBe(1);
     } finally {
       window.ResizeObserver = Original;
     }
-    const recovered = createGuideMap();
+    const recovered = createGuideTestEngine();
     recovered.destroy();
     recovered.destroy();
   },
@@ -314,7 +314,7 @@ export const StaleClusterActivation: Story = {
 
 export const ReentrantOverlayReplacement: Story = {
   play: async () => {
-    const other = createGuideMap({ onOverlayActivate: () => other.setOverlays([]) });
+    const other = createGuideTestEngine({ onOverlayActivate: () => other.setOverlays([]) });
     map.after(other);
     try {
       let events = 0;

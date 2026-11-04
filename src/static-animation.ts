@@ -1,4 +1,4 @@
-import type { SFMapOptions } from './types.js';
+import type { SvgRenderOptions } from './types.js';
 import { assertOptions } from './validation.js';
 
 /** Reference choreography length; `duration` rescales every step proportionally. */
@@ -10,7 +10,9 @@ export interface StaticAnimation {
 }
 
 /** Validate `animation` and return timings, or null when animation is off. */
-export function normalizeStaticAnimation(value: SFMapOptions['animation']): StaticAnimation | null {
+export function normalizeStaticAnimation(
+  value: SvgRenderOptions['animation'],
+): StaticAnimation | null {
   if (value === undefined || value === false) return null;
   if (value === true) return { duration: REFERENCE, delay: 0 };
   assertOptions(value, 'animation', ['duration', 'delay']);

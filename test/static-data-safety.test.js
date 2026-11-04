@@ -33,14 +33,12 @@ test('custom district IDs cannot inject SVG attributes, label markup, or animate
     { toString: () => '1" onload="alert(1)' },
   ];
   const layers = [
-    { districtFills: true, districtLines: false, districtLabels: false },
-    { districtFills: false, districtLines: true, districtLabels: false },
-    { districtFills: false, districtLines: false, districtLabels: true },
+    { layers: { districtFills: true, districtLines: false, districtLabels: false } },
+    { layers: { districtFills: false, districtLines: true, districtLabels: false } },
+    { layers: { districtFills: false, districtLines: false, districtLabels: true } },
     {
-      districtFills: false,
-      districtLines: false,
-      districtLabels: true,
       labelLayout: { width: 390 },
+      layers: { districtFills: false, districtLines: false, districtLabels: true },
     },
   ];
   for (const id of invalidIds)
@@ -51,7 +49,7 @@ test('custom district IDs cannot inject SVG attributes, label markup, or animate
             renderMap(data(id), {
               ...options,
               animation,
-              districtStyle: () => ({ fill: '#fff' }),
+              appearance: { districtStyle: () => ({ fill: '#fff' }) },
             }),
           { name: 'TypeError', message: 'District IDs must be finite numbers.' },
         );

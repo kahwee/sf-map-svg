@@ -1,8 +1,8 @@
 import type { Geometry, Position } from '../../data/types.js';
-import type { DistrictYear, SFMapOptions } from '../types.js';
+import type { DistrictYear, SvgRenderOptions } from '../types.js';
 import { validateMarkers, validateOverlays } from '../validation.js';
 
-export type { DistrictYear, MapMarker, MapOverlay, SFMapOptions } from '../types.js';
+export type { DistrictYear, MapMarker, MapOverlay, SvgRenderOptions } from '../types.js';
 
 import { prepareDistrictStyles } from '../district-style.js';
 import { geometryPath, type Project, positions, rawProject } from '../geometry.js';
@@ -64,7 +64,7 @@ export const districtColors = Object.freeze([
   '#dfddc9',
 ]);
 /** Canonical geometry in the same fitted coordinate space used by renderMap. */
-export function getLayerPathsWithData(options: SFMapOptions, data: SFMapData, complete = true) {
+export function getLayerPathsWithData(options: SvgRenderOptions, data: SFMapData, complete = true) {
   const { width = 800, height = 800, padding = 28, year = 2022 } = options;
   if (
     ![width, height, padding].every(Number.isFinite) ||
@@ -159,8 +159,8 @@ const transitColors = {
   selected: '#0073ae',
 };
 export function resolveMapColors(
-  theme: SFMapOptions['theme'],
-  colors: SFMapOptions['colors'] = {},
+  theme: SvgRenderOptions['theme'],
+  colors: SvgRenderOptions['colors'] = {},
 ) {
   const supplied = Object.fromEntries(
     Object.entries(colors).filter(([, value]) => value !== undefined),
@@ -171,7 +171,7 @@ let sequence = 0;
 
 /** Make an offline SVG and the matching longitude/latitude projection. */
 export function createSFMapWithData(
-  options: SFMapOptions,
+  options: SvgRenderOptions,
   data: SFMapData,
   renderLabels?: (project: Project) => string,
 ) {

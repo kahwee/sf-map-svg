@@ -210,23 +210,18 @@ test('static entry points reject misspelled options before reading data or invok
   assert.equal(callbacks, 0);
 });
 
-test('static validation retains flat options, grouped precedence and null-prototype records', async () => {
+test('static grouped options support null-prototype records without a compatibility path', async () => {
   const { staticMapData } = await import('../dist/src/static-data.js');
-  const flat = { idPrefix: 'validated', districtLabels: false, theme: 'transit', width: 640 };
-  const grouped = {
-    ...flat,
-    districtLabels: true,
-    theme: 'districts',
+  const options = {
+    idPrefix: 'validated',
+    width: 640,
     layers: { districtLabels: false },
     appearance: { theme: 'transit' },
   };
-  assert.equal(api.renderMap(staticMapData, flat).svg, api.renderMap(staticMapData, grouped).svg);
-  assert.equal(
-    api.renderMap(staticMapData, Object.assign(Object.create(null), flat)).svg,
-    api.renderMap(staticMapData, flat).svg,
-  );
-  const { project: flatProject, ...flatPaths } = api.getLayerPaths(staticMapData, flat);
-  const { project: groupedProject, ...groupedPaths } = api.getLayerPaths(staticMapData, grouped);
-  assert.deepEqual(flatPaths, groupedPaths);
-  assert.deepEqual(flatProject([-122.42, 37.76]), groupedProject([-122.42, 37.76]));
+  const record = Object.assign(Object.create(null), options);
+  assert.equal(api.renderMap(staticMapData, options).svg, api.renderMap(staticMapData, record).svg);
+  const { project: a, ...pathsA } = api.getLayerPaths(staticMapData, options);
+  const { project: b, ...pathsB } = api.getLayerPaths(staticMapData, record);
+  assert.deepEqual(pathsA, pathsB);
+  assert.deepEqual(a([-122.42, 37.76]), b([-122.42, 37.76]));
 });

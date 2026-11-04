@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/html-vite';
 import { expect } from 'storybook/test';
-import { createGuideMap } from '../src/guide.ts';
 import type { NeighborhoodExplorerElement as InteractiveSFMapElement } from '../src/types.ts';
+import { createGuideTestEngine } from './engine-fixture.js';
 
 let currentMap: InteractiveSFMapElement | undefined;
 
@@ -10,7 +10,7 @@ const meta = {
   parameters: { layout: 'padded' },
   beforeEach: () => () => currentMap?.destroy(),
   render: () => {
-    currentMap = createGuideMap({
+    currentMap = createGuideTestEngine({
       markers: [
         { id: 'first', label: 'First place', position: [-122.4269, 37.7596] as const },
         { id: 'second', label: 'Second place', position: [-122.4269, 37.7596] as const },

@@ -2,7 +2,6 @@ import { createMap } from '@kahwee/sf-map-svg';
 import { enhanceDropdowns } from './dropdown.js';
 import { prefersReducedMotion, whenVisible } from './motion-kit.js';
 import { mountPlates } from './plates.js';
-import { mapCapabilities } from './site-capabilities.js';
 import { loadSiteMapData, neighborhoodSources } from './site-map-data.js';
 import { copyText, enhanceCode, segmented } from './ui.js';
 
@@ -222,8 +221,8 @@ async function start() {
         motion: { duration: 900 },
         markerEntrance: { duration: 520, stagger: 110 },
         selectedMarkerRing: true,
-        ...(mapCapabilities.layerTransitions ? { layerTransitions: { duration: 560 } } : {}),
-        ...(mapCapabilities.districtMorph ? { districtMorph: { duration: 1500 } } : {}),
+        layerTransitions: { duration: 560 },
+        districtMorph: { duration: 1500 },
       },
     });
   } catch (error) {

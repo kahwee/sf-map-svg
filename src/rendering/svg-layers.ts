@@ -2,15 +2,15 @@ import type { Geometry } from '../../data/types.js';
 import type { DistrictRow } from '../data.js';
 import type { Project } from '../geometry.js';
 import type { BartStation, KeyRoad, Landmark } from '../overlays.js';
-import type { MapMarker, SFMapOptions } from '../types.js';
+import type { MapMarker, SvgRenderOptions } from '../types.js';
 
 interface LayerContext {
   labels: boolean;
   /** Animated static maps index items for staggering and measure lines for drawing. */
   animated?: boolean;
-  theme: NonNullable<SFMapOptions['theme']>;
+  theme: NonNullable<SvgRenderOptions['theme']>;
   idPrefix: string;
-  colors: Required<NonNullable<SFMapOptions['colors']>>;
+  colors: Required<NonNullable<SvgRenderOptions['colors']>>;
   project: Project;
   path: (geometry: Geometry | null | undefined) => string;
 }

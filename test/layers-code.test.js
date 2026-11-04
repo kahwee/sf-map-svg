@@ -88,12 +88,9 @@ test('copied static examples render the selected source and layers with the publ
   }
 });
 
-test('released studio snippets omit unsupported feature and animation options', () => {
-  const input = state({
-    animation: false,
-    supportedFeatures: { layerTransitions: false, districtMorph: false },
-  });
-  const options = copiedOptions(input);
-  assert.deepEqual(options.features, { motion: { duration: 600 } });
+test('studio snippets include supported features and respect animation choice', () => {
+  const input = state({ animation: false });
+  assert.ok(copiedOptions(input).features.layerTransitions);
+  assert.ok(copiedOptions(input).features.districtMorph);
   assert.doesNotMatch(staticCode(input), /animation:/);
 });

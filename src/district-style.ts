@@ -1,10 +1,10 @@
 import type { DistrictRowData } from './rendering/svg-map-renderer.js';
-import type { DistrictStyle, SFMapOptions } from './types.js';
+import type { DistrictStyle, SvgRenderOptions } from './types.js';
 
 /** Evaluate user code once and copy its result before changing the map. */
 export function prepareDistrictStyles(
   rows: readonly DistrictRowData[],
-  callback: SFMapOptions['districtStyle'],
+  callback: SvgRenderOptions['districtStyle'],
 ): ReadonlyMap<number, DistrictStyle> {
   if (callback !== undefined && typeof callback !== 'function')
     throw new TypeError('districtStyle must be a function.');

@@ -68,14 +68,16 @@ export function mountSpotExplorer(host, { data, point: initialPoint } = {}) {
         forYear,
         renderMap(data.map, {
           year: forYear,
-          districtFills: false,
-          districtLines: true,
-          districtLabels: false,
-          landmarks: true,
-          keyRoads: true,
-          roadLabels: false,
           idPrefix: `spot-${forYear}`,
           title: `San Francisco map, ${forYear} district boundaries`,
+          layers: {
+            districtFills: false,
+            districtLines: true,
+            districtLabels: false,
+            landmarks: true,
+            keyRoads: true,
+            roadLabels: false,
+          },
         }),
       );
     return bases.get(forYear);

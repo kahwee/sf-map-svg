@@ -29,8 +29,8 @@ for (const [name, palette] of Object.entries(mapPalettes)) {
       );
     }
     const svg = createGuideSVG({
-      colors: palette.colors,
       labelLayout: { width: 800, haloColor: palette.haloColor },
+      appearance: { colors: palette.colors },
     }).svg;
     assert.ok(svg.includes(`stroke="${palette.haloColor}"`));
     assert.ok(svg.includes(`fill="${palette.colors.water}"`));

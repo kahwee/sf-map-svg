@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { guideMapData } from '../dist/src/guide-data.js';
 import { loadGuideDetailedData } from '../dist/src/guide-detailed.js';
-import { createGuideMap } from '../dist/src/guide-map.js';
+import { createGuideController } from '../dist/src/guide-map.js';
 import { createGuideSVG } from '../dist/src/guide-static.js';
 
 test('public construction rejects malformed and conflicting-value options before touching the browser', () => {
@@ -21,7 +21,7 @@ test('public construction rejects malformed and conflicting-value options before
     { colors: { ocean: 'red' } },
   ])
     assert.throws(
-      () => createGuideMap(options),
+      () => createGuideController(options),
       (error) => !/browser document/.test(error.message),
     );
 });

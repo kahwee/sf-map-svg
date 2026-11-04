@@ -3,7 +3,11 @@ import { createMap, renderMap } from '../dist/src/api.js';
 import { staticMapData } from '../dist/src/static-data.js';
 
 assert.equal(typeof createMap, 'function');
-const options = { year: 2022, landmarks: true, bartStations: true, idPrefix: 'bun-smoke' };
+const options = {
+  year: 2022,
+  idPrefix: 'bun-smoke',
+  layers: { landmarks: true, bartStations: true },
+};
 const result = renderMap(staticMapData, options);
 assert.match(result.svg, /<svg\b/);
 assert.match(result.svg, /data-layer="landmarks"/);

@@ -15,7 +15,10 @@ const places = guideMapData.map.landmarks
     radius: 5,
   }));
 const colors = mapPalettes.nightForest.colors;
-const base = { colors, districtLabels: false, roadLabels: false, bartStations: false };
+const base = {
+  layers: { districtLabels: false, roadLabels: false, bartStations: false },
+  appearance: { colors },
+};
 const target = new URL('./generated/', import.meta.url);
 await writeFile(
   new URL('field-guide.svg', target),

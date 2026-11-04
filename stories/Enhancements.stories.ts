@@ -1,10 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/html-vite';
 import { expect, waitFor } from 'storybook/test';
-import { createGuideMap, mountGuideMap } from '../src/guide-map.js';
+import type { MapController, MapOptions } from '../src/controller-types.js';
+import { mountGuideController } from '../src/guide-map.js';
 import { createGuideShell } from '../src/guide-static.js';
 import type { NeighborhoodExplorerElement as InteractiveSFMapElement } from '../src/types.js';
+import { createGuideTestEngine } from './engine-fixture.js';
 
 let map: InteractiveSFMapElement;
+const owners = new Set<MapController>();
+function mountTestGuide(shell: HTMLElement, options: MapOptions = {}) {
+  const controller = mountGuideController(shell, options);
+  owners.add(controller);
+  return controller.element as InteractiveSFMapElement;
+}
 function required<T extends Element>(host: Element, selector: string): T {
   const node = host.querySelector<T>(selector);
   if (!node) throw new Error(`Missing ${selector}`);
@@ -18,9 +26,13 @@ const markers = [
 const meta = {
   title: 'Checks/Consumer API',
   parameters: { layout: 'padded' },
-  beforeEach: () => () => map?.destroy(),
+  beforeEach: () => () => {
+    map?.destroy();
+    for (const owner of owners) owner.destroy();
+    owners.clear();
+  },
   render: () => {
-    map = createGuideMap({
+    map = createGuideTestEngine({
       markers,
       motion: { duration: 180 },
       markerEntrance: true,
@@ -131,9 +143,9 @@ export const ProgressiveShell: Story = {
     const shell = canvasElement.querySelector<HTMLElement>('.sf-guide-shell');
     if (!shell) throw new Error('Missing shell');
     const before = shell.getBoundingClientRect().height;
-    expect(() => mountGuideMap(shell, { attribution: 'full' })).toThrow('compact attribution');
+    expect(() => mountTestGuide(shell, { attribution: 'full' })).toThrow('compact attribution');
     expect(shell.querySelector('.sf-guide-frame')?.classList.contains('sf-explorer')).toBe(false);
-    map = mountGuideMap(shell, {
+    map = mountTestGuide(shell, {
       markers,
       labels: false,
       strings: { touchNavigation: 'Touch pan' },
@@ -154,7 +166,7 @@ export const ReducedMotion: Story = {
       return media;
     }) as typeof window.matchMedia;
     try {
-      const reduced = createGuideMap({ motion: true, markerEntrance: true, markers });
+      const reduced = createGuideTestEngine({ motion: true, markerEntrance: true, markers });
       map.after(reduced);
       reduced.setViewport([100, 100, 400]);
       expect(reduced.getViewport()).toEqual([100, 100, 400]);
@@ -172,9 +184,9 @@ export const CoincidentPinsInCompactShell: Story = {
     const host = document.createElement('div');
     host.style.maxWidth = '390px';
     host.innerHTML = createGuideShell({ markers, labels: false });
-    map = mountGuideMap(required<HTMLElement>(host, '.sf-guide-shell'), {
+    map = mountTestGuide(required<HTMLElement>(host, '.sf-guide-shell'), {
       markers,
-      clustering: true,
+      features: { clustering: true },
     });
     return host;
   },
@@ -211,7 +223,7 @@ export const CoincidentPinsInCompactShell: Story = {
 
 export const MarkerKeyboardNavigation: Story = {
   render: () => {
-    map = createGuideMap({
+    map = createGuideTestEngine({
       markers: markers.map((marker, index) => ({
         ...marker,
         position: [marker.position[0] + index * 0.002, marker.position[1]] as const,
@@ -260,7 +272,7 @@ export const CoincidentChooserOpen: Story = {
 
 export const ZoomableClusters: Story = {
   render: () => {
-    map = createGuideMap({
+    map = createGuideTestEngine({
       markers: [
         markers[0],
         {

@@ -27,11 +27,7 @@ Upgrading from v3 to v4: update your Node runtime to 24 or newer. The map API, b
 import { renderMap } from '@kahwee/sf-map-svg';
 import { staticMapData } from '@kahwee/sf-map-svg/data/static';
 
-const { svg, project, viewBox } = renderMap(staticMapData, {
-  year: 2022,
-  landmarks: true,
-  bartStations: true,
-});
+const { svg, project, viewBox } = renderMap(staticMapData, { year: 2022, layers: { landmarks: true, bartStations: true } });
 ```
 
 `renderMap(data, options)` returns SVG markup and matching projection helpers. `/data/static` includes the complete static map without interactive lookup collections. Small maps can compose selected JSON exports from `/data/*` and pass them as `StaticMapData`. `getLayerPaths(data, options)` returns fitted geographic paths without SVG markup.

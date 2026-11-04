@@ -1,15 +1,8 @@
 import { expandMapOptions, prepareConfiguration } from './configuration.js';
 import type { MapController, MapOptions } from './controller-types.js';
 import { guideMapData } from './guide-data.js';
-import { createMapEngine } from './interactive/map-engine.js';
-import { createMapShell } from './interactive/map-shell.js';
 import { createMap } from './map.js';
 import { guideOptions } from './presets.js';
-import type {
-  NeighborhoodExplorerElement as InteractiveSFMapElement,
-  NeighborhoodExplorerOptions as InteractiveSFMapOptions,
-} from './types.js';
-import { validateExplorerOptions } from './validation.js';
 
 function controllerOptions(options: MapOptions): MapOptions {
   expandMapOptions(options);
@@ -57,7 +50,7 @@ const shellControls = {
   legend: true,
 };
 
-function shellFrame(shell: HTMLElement, attribution: InteractiveSFMapOptions['attribution']) {
+function shellFrame(shell: HTMLElement, attribution: MapOptions['attribution']) {
   if (attribution === 'full')
     throw new TypeError(
       'The guide shell requires compact attribution; use createGuideController for full attribution.',
@@ -74,43 +67,4 @@ function mountFrame(frame: Element, map: HTMLElement) {
   map.classList.add('sf-guide-frame');
   map.querySelector('.sf-explorer-map-column > details')?.classList.add('sf-guide-sources');
   frame.replaceWith(map);
-}
-
-/** Element-based compatibility API. Prefer createGuideController for new integrations. */
-export function createGuideMap(options: InteractiveSFMapOptions = {}): InteractiveSFMapElement {
-  validateExplorerOptions(options);
-  return createMapEngine(
-    {
-      mode: 'neighborhoods',
-      ...options,
-      layers: {
-        ...guideOptions.layers,
-        ...options.layers,
-      },
-      interface: 'map',
-    },
-    guideMapData,
-    { createShell: createMapShell },
-  );
-}
-
-/** Enhance createGuideShell() in place with a fixed compact chrome layout.
- * Keep an accessible external place list when hiding the native pickers.
- */
-export function mountGuideMap(
-  shell: HTMLElement,
-  options: InteractiveSFMapOptions = {},
-): InteractiveSFMapElement {
-  validateExplorerOptions(options);
-  const frame = shellFrame(shell, options.attribution);
-  const map = createGuideMap({
-    ...options,
-    attribution: 'compact',
-    controls: {
-      ...shellControls,
-      ...options.controls,
-    },
-  });
-  mountFrame(frame, map);
-  return map;
 }

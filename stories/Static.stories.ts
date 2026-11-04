@@ -27,15 +27,17 @@ const meta = {
     const { svg } = renderMap(guideMapData.map, {
       width: 800,
       height: 800,
-      districtFills: false,
-      districtLines: false,
-      districtLabels: false,
-      neighborhoodLines: true,
-      landmarks: parks,
-      bartStations: stations,
-      highways: roads,
-      keyRoads: roads,
       idPrefix: `storybook-static-${++renderCount}`,
+      layers: {
+        districtFills: false,
+        districtLines: false,
+        districtLabels: false,
+        neighborhoodLines: true,
+        landmarks: parks,
+        bartStations: stations,
+        highways: roads,
+        keyRoads: roads,
+      },
     });
     const frame = document.createElement('div');
     frame.style.cssText = 'width:100%;max-width:800px;margin:auto';
@@ -142,12 +144,14 @@ export const AnimatedDrawIn: Story = {
     const draw = () => {
       stage.innerHTML = renderMap(guideMapData.map, {
         animation: true,
-        neighborhoodLines: true,
-        highways: true,
-        keyRoads: true,
-        landmarks: true,
-        bartStations: true,
         idPrefix: `storybook-animated-${++renderCount}`,
+        layers: {
+          neighborhoodLines: true,
+          highways: true,
+          keyRoads: true,
+          landmarks: true,
+          bartStations: true,
+        },
       }).svg;
     };
     replay.addEventListener('click', draw);

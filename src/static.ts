@@ -8,7 +8,7 @@ import {
 } from './rendering/svg-map-renderer.js';
 import { normalizeStaticAnimation } from './static-animation.js';
 import { staticLabels } from './static-labels.js';
-import type { SFMapOptions } from './types.js';
+import type { StaticMapOptions, SvgRenderOptions } from './types.js';
 import { assertOptions, validateMarkers, validateOverlays } from './validation.js';
 
 /** Either compact static geography or the same source-aware geography used by createMap. */
@@ -18,12 +18,12 @@ export type { DistrictRowData, SFMapData as StaticMapData } from './rendering/sv
 export type {
   DistrictStyle,
   DistrictYear,
-  SFMapOptions as StaticMapOptions,
   StaticMapAppearance,
   StaticMapLayers,
+  StaticMapOptions,
 } from './types.js';
 /** Server-safe SVG rendering with explicit data; returns SVG plus projection helpers. */
-export function renderMap(data: StaticMapInput, options: SFMapOptions = {}) {
+export function renderMap(data: StaticMapInput, options: StaticMapOptions = {}) {
   const prepared = expandStaticOptions(options);
   const { map, source } = staticInput(data, prepared);
   return createSFMapWithData(
@@ -33,13 +33,13 @@ export function renderMap(data: StaticMapInput, options: SFMapOptions = {}) {
   );
 }
 /** Project canonical layer geometry without constructing an SVG string. */
-export function getLayerPaths(data: StaticMapInput, options: SFMapOptions = {}) {
+export function getLayerPaths(data: StaticMapInput, options: StaticMapOptions = {}) {
   const prepared = expandStaticOptions(options);
   return getLayerPathsWithData(prepared, staticInput(data, prepared).map);
 }
 
 /** Borrow immutable geometry, deriving only the renderer's lightweight neighborhood rows. */
-function staticInput(data: StaticMapInput, options: SFMapOptions) {
+function staticInput(data: StaticMapInput, options: SvgRenderOptions) {
   if (options.source !== undefined && !['realtor', 'sf-find', 'analysis'].includes(options.source))
     throw new RangeError('Unknown neighborhood source.');
   if (!('map' in data)) {
@@ -81,17 +81,13 @@ const staticLayerKeys = [
   'highways',
   'keyRoads',
   'roadLabels',
-] as const satisfies readonly (keyof SFMapOptions)[];
+] as const satisfies readonly (keyof SvgRenderOptions)[];
 
-/** Grouped keys override flat compatibility keys; omitted keys preserve renderer defaults. */
-function expandStaticOptions(options: SFMapOptions): SFMapOptions {
+/** Validate the public grouped contract before preparing internal renderer options. */
+function expandStaticOptions(options: StaticMapOptions): SvgRenderOptions {
   assertOptions(options, 'static map', [
-    ...staticLayerKeys,
     'layers',
     'appearance',
-    'theme',
-    'colors',
-    'districtStyle',
     'width',
     'height',
     'padding',
@@ -104,8 +100,8 @@ function expandStaticOptions(options: SFMapOptions): SFMapOptions {
     'title',
     'idPrefix',
     'animation',
-  ] satisfies readonly (keyof SFMapOptions)[]);
-  for (const key of [...staticLayerKeys, 'labels'] as const)
+  ] satisfies readonly (keyof StaticMapOptions)[]);
+  for (const key of ['labels'] as const)
     if (options[key] !== undefined && typeof options[key] !== 'boolean')
       throw new TypeError(`${key} must be boolean.`);
   for (const key of ['title', 'idPrefix'] as const)
@@ -144,12 +140,11 @@ function expandStaticOptions(options: SFMapOptions): SFMapOptions {
   if (options.appearance !== undefined) {
     assertOptions(options.appearance, 'static appearance', ['theme', 'colors', 'districtStyle']);
   }
-  const { layers, appearance, theme, colors, districtStyle, ...flat } = options;
+  const { layers, appearance, ...flat } = options;
   const supplied = (group: object = {}) =>
     Object.fromEntries(Object.entries(group).filter(([, value]) => value !== undefined));
   return {
     ...flat,
-    ...prepareAppearance({}, { theme, colors, districtStyle }),
     ...supplied(layers),
     ...supplied(appearance === undefined ? undefined : prepareAppearance({}, appearance)),
   };

@@ -1,9 +1,9 @@
 import { deepFreeze } from './immutable.js';
-import type { SFMapOptions } from './types.js';
+import type { SvgRenderOptions } from './types.js';
 
 /** Shared tokens for static SVGs, interactive maps, and consumer-owned place cards. */
 export interface MapPalette {
-  readonly colors: NonNullable<SFMapOptions['colors']>;
+  readonly colors: NonNullable<SvgRenderOptions['colors']>;
   readonly haloColor: string;
   readonly markerColor: string;
   readonly selectedMarkerColor: string;

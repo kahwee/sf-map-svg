@@ -2,13 +2,13 @@
 
 > Offline San Francisco SVG maps with explicit geographic imports, no runtime dependencies, static rendering, and a browser controller.
 
-@kahwee/sf-map-svg 5.1.4 · local working tree. Node >=24.0.0 for server rendering; browsers need a DOM and a JSON-capable bundler.
+@kahwee/sf-map-svg 6.0.0 · local working tree. Node >=24.0.0 for server rendering; browsers need a DOM and a JSON-capable bundler.
 
 These are working-tree docs. Unreleased changelog entries may describe APIs absent from npm; verify the installed version before copying them.
 
 Use renderMap(data, options) for SVG strings; createMap(data, options) returns a controller. Mount map.element and destroy it on unmount. Choose mode explicitly: createMap defaults to basemap. Geography is separate; staticMapData and fullMapData have different shapes.
 
-<!-- Generated from README.md; @kahwee/sf-map-svg 5.1.4 · local working tree. -->
+<!-- Generated from README.md; @kahwee/sf-map-svg 6.0.0 · local working tree. -->
 
 # SF Map SVG
 
@@ -39,11 +39,7 @@ Upgrading from v3 to v4: update your Node runtime to 24 or newer. The map API, b
 import { renderMap } from '@kahwee/sf-map-svg';
 import { staticMapData } from '@kahwee/sf-map-svg/data/static';
 
-const { svg, project, viewBox } = renderMap(staticMapData, {
-  year: 2022,
-  landmarks: true,
-  bartStations: true,
-});
+const { svg, project, viewBox } = renderMap(staticMapData, { year: 2022, layers: { landmarks: true, bartStations: true } });
 ```
 
 `renderMap(data, options)` returns SVG markup and matching projection helpers. `/data/static` includes the complete static map without interactive lookup collections. Small maps can compose selected JSON exports from `/data/*` and pass them as `StaticMapData`. `getLayerPaths(data, options)` returns fitted geographic paths without SVG markup.
@@ -267,7 +263,7 @@ for raw samples, output-equivalence checks, and reproducible commands.
 
 ---
 
-<!-- Generated from docs/developer-guide.md; @kahwee/sf-map-svg 5.1.4 · local working tree. -->
+<!-- Generated from docs/developer-guide.md; @kahwee/sf-map-svg 6.0.0 · local working tree. -->
 
 # Developer guide
 
@@ -293,12 +289,7 @@ import { writeFile } from 'node:fs/promises';
 import { renderMap } from '@kahwee/sf-map-svg/static';
 import { staticMapData } from '@kahwee/sf-map-svg/data/static';
 
-const { svg } = renderMap(staticMapData, {
-  year: 2022,
-  landmarks: true,
-  bartStations: true,
-  title: 'San Francisco districts, 2022',
-});
+const { svg } = renderMap(staticMapData, { year: 2022, title: 'San Francisco districts, 2022', layers: { landmarks: true, bartStations: true } });
 await writeFile('san-francisco.svg', svg);
 ```
 
@@ -433,7 +424,7 @@ See [API options](https://github.com/kahwee/sf-map-svg/blob/main/docs/API.md), [
 
 ---
 
-<!-- Generated from docs/API.md; @kahwee/sf-map-svg 5.1.4 · local working tree. -->
+<!-- Generated from docs/API.md; @kahwee/sf-map-svg 6.0.0 · local working tree. -->
 
 # Map options and lifecycle
 
@@ -491,9 +482,9 @@ const { svg } = renderMap(staticMapData, presentation);
 const map = createMap(fullMapData, presentation);
 ```
 
-Static `layers` supports every interactive layer switch. `neighborhoodLabels` applies to the opt-in `labelLayout` described below. Static `appearance` supports `theme`, `colors`, and `districtStyle`; browser typography, area interaction styles, and screen-space marker sizing remain interactive settings. Unknown keys and invalid values are rejected for both flat and grouped options. Supplied grouped keys override flat compatibility keys; omitted or `undefined` grouped keys preserve the flat value or renderer default. Undefined color tokens use the theme default instead of entering SVG attributes. The two renderers retain their existing defaults. Marker arrays accept readonly inputs.
+Static `layers` supports every interactive layer switch. `neighborhoodLabels` applies to the opt-in `labelLayout` described below. Static `appearance` supports `theme`, `colors`, and `districtStyle`; browser typography, area interaction styles, and screen-space marker sizing remain interactive settings. Unknown keys and invalid values are rejected. Presentation belongs under `layers` and `appearance`; flat presentation keys are rejected. Omitted or `undefined` grouped keys preserve renderer defaults. Undefined color tokens use the theme default instead of entering SVG attributes. The two renderers retain their existing defaults. Marker arrays accept readonly inputs.
 
-Flat compatibility options include `theme`, `width`, `height`, `padding`, `year` (2002, 2012, 2022), `districtLines`, `districtFills`, `districtStyle`, `districtLabels`, `neighborhoodLines`, `neighborhoodLabels`, `labels`, `labelLayout`, `highways`, `keyRoads`, `roadLabels`, `landmarks`, `bartStations`, `markers`, `overlays`, `title`, `idPrefix`, `colors`, and `animation`. Each optional layer is independent. User-supplied text and attributes are escaped in SVG output.
+Top-level static options are `width`, `height`, `padding`, `year`, `source`, `labels`, `labelLayout`, `markers`, `overlays`, `title`, `idPrefix`, and `animation`, alongside `layers` and `appearance`. Each optional layer is independent. User-supplied text and attributes are escaped in SVG output.
 
 Custom district IDs must be finite numbers. An empty `labelPoints` array uses the district's primary `label` position.
 
@@ -501,22 +492,18 @@ The SVG description names the selected neighborhood source for source-aware data
 
 `animation: true` (or `{ duration, delay }`) makes a static map draw itself with self-contained, scoped CSS: land fades in, the coast and lines draw, districts grow, then labels and points appear. It plays when the SVG is inserted into a page or loaded as an image, needs no JavaScript, and stays still under `prefers-reduced-motion`. Re-insert the markup to replay it. Default output is unchanged.
 
-Static `labelLayout: { width: 390 }` opts into shared interactive **overview** label priorities, sizes, anchors and collision rules. `width` must be a positive finite CSS canvas width; it does not alter the SVG viewBox. Set `neighborhoodLabels: true` (flat or under `layers`) to add area names in this layout. Guide SVGs and shells enable neighborhood names by default only when opting into `labelLayout`. `labels: false` remains the master switch. Default static output is unchanged.
+Static `labelLayout: { width: 390 }` opts into shared interactive **overview** label priorities, sizes, anchors and collision rules. `width` must be a positive finite CSS canvas width; it does not alter the SVG viewBox. Set `layers: { neighborhoodLabels: true }` to add area names in this layout. Guide SVGs and shells enable neighborhood names by default only when opting into `labelLayout`. `labels: false` remains the master switch. Default static output is unchanged.
 
 For editorial previews, `labelLayout` also accepts `maxLabels` (a nonnegative safe integer), `haloColor` (an SVG color string), and `compact: { width, maxLabels }`. The compact width must be positive, finite, and smaller than the main layout width. Each layout places labels around pins independently, then chooses up to its budget for spatial coverage and nearby-pin context (selected marker first when it fits). Without a budget the existing overview order is unchanged. Equal spatial scores retain the original priority order. A zero budget hides text, never pins. The default halo remains white; use the land color for a quieter dark map.
 
 Compact mode embeds two label groups and a media query in the same SVG. At or below the compact width it shows the compact group; above it shows the main group. In an `<img>` or standalone SVG, the breakpoint follows the SVG viewport. In inline SVG it follows the document viewport, so use `<img>` for cards whose width differs from the page. No JavaScript, duplicated geometry, external fonts, or extra image requests are needed. The compact width is also its font-layout hint; very narrow images still scale the text. The interactive renderer continues to use its live collision layout after enhancement.
 
 ```js
-createGuideSVG({
-  labelLayout: {
+createGuideSVG({ labelLayout: {
     width: 800,
     haloColor: '#1b2c28',
     compact: { width: 480, maxLabels: 4 },
-  },
-  colors: { water: '#0a1412', land: '#1b2c28', label: '#d5e3e8' },
-  markers: places,
-});
+  }, markers: places, appearance: { colors: { water: '#0a1412', land: '#1b2c28', label: '#d5e3e8' } } });
 ```
 
 See the [field-guide preview recipe](https://github.com/kahwee/sf-map-svg/blob/main/docs/consumer-integration.md#editorial-map-previews) for a complete build-time example.
@@ -547,9 +534,9 @@ Visible markers and clusters share one tab stop. Use `[` and `]` to move focus, 
 
 Activating coincident pins opens a place chooser, including when compact embeds hide the native marker picker. Clusters zoom when their members can separate at maximum zoom; otherwise they open the chooser. Escape or Close returns focus to the originating pin or cluster when it remains visible. Choosing a place selects its marker; replacing markers or destroying the map closes the chooser. `clusteractivate` still reports the activated cluster's markers.
 
-For a small guide, import `guideMapData` from `/guide/data` and pass it to `createMap`. The optional `/guide` entry also provides `createGuideMap`, `mountGuideMap`, and detailed-data loading for existing guide layouts. `/transit` provides the standalone schematic transit animation. See [examples](https://github.com/kahwee/sf-map-svg/blob/main/docs/EXAMPLES.md) and [consumer integration](https://github.com/kahwee/sf-map-svg/blob/main/docs/consumer-integration.md).
+For a small guide, import `guideMapData` from `/guide/data` and pass it to `createMap`. The optional `/guide` entry also provides `createGuideController`, `mountGuideController`, and detailed-data loading for existing guide layouts. `/transit` provides the standalone schematic transit animation. See [examples](https://github.com/kahwee/sf-map-svg/blob/main/docs/EXAMPLES.md) and [consumer integration](https://github.com/kahwee/sf-map-svg/blob/main/docs/consumer-integration.md).
 
-For the guide preset with the same controller API, use `createGuideController(options)` from `/guide` (or `/guide/map`). It accepts grouped `MapOptions` and returns `MapController`; `mountGuideController(shell, options)` enhances a `createGuideShell()` container. Both use the lightweight guide geography. Existing `createGuideMap` and `mountGuideMap` calls retain their element-based API.
+For the guide preset with the same controller API, use `createGuideController(options)` from `/guide` (or `/guide/map`). It accepts grouped `MapOptions` and returns `MapController`; `mountGuideController(shell, options)` enhances a `createGuideShell()` container. Both use the lightweight guide geography. See [migration to v6](https://github.com/kahwee/sf-map-svg/blob/main/docs/migration-v6.md) for removed compatibility APIs.
 
 Two opt-in features animate the map's lines and layers. `features.layerTransitions` fades layers as `configure({ layers })` and `setMode()` switch them, crossfades neighborhood boundaries when `setSource()` changes the definition, and crossfades district fills on `setDistrictStyle()`. `features.districtMorph` moves district outlines from one map year to the next on `setDistrictYear()`, then settles on the exact published geometry; pass `{ animate: false }` for an instant change. Both default off, own and cancel their animations, and yield to reduced motion.
 
@@ -619,7 +606,7 @@ Call `binding.setMarkers(next)` after `map.setMarkers(next)` when the catalog ch
 
 ---
 
-<!-- Generated from docs/EXAMPLES.md; @kahwee/sf-map-svg 5.1.4 · local working tree. -->
+<!-- Generated from docs/EXAMPLES.md; @kahwee/sf-map-svg 6.0.0 · local working tree. -->
 
 # Examples
 
@@ -643,18 +630,13 @@ import { writeFile } from 'node:fs/promises';
 import { renderMap } from '@kahwee/sf-map-svg';
 import { staticMapData } from '@kahwee/sf-map-svg/data/static';
 
-const svg = renderMap(staticMapData, {
-  year: 2022,
-  landmarks: true,
-  bartStations: true,
-  idPrefix: 'example',
-}).svg;
+const svg = renderMap(staticMapData, { year: 2022, idPrefix: 'example', layers: { landmarks: true, bartStations: true } }).svg;
 await writeFile('districts.svg', svg);
 ```
 
 The static preset includes the packaged map layers without interactive lookup collections. For smaller bundles, pass selected data to the root or `/static` renderer. See the [static recipe](https://github.com/kahwee/sf-map-svg/blob/main/README.md#static-svg).
 
-For an election choropleth, use `renderMap(data, { year, districtStyle })` or
+For an election choropleth, use `renderMap(data, { year, appearance: { districtStyle } })` or
 `createMap({ map: data, districts: districtMaps, neighborhoods: {} }, options)`.
 The controller exposes `setDistrictYear`, `setDistrictStyle`, `selectDistrict`, and typed
 district events; `getLayerPaths(data, { year })` returns fitted paths without SVG markup.
@@ -760,7 +742,7 @@ See [query semantics and limitations](https://github.com/kahwee/sf-map-svg/blob/
 
 ---
 
-<!-- Generated from docs/consumer-integration.md; @kahwee/sf-map-svg 5.1.4 · local working tree. -->
+<!-- Generated from docs/consumer-integration.md; @kahwee/sf-map-svg 6.0.0 · local working tree. -->
 
 # Embedding and progressive enhancement
 
@@ -844,7 +826,7 @@ function disposeGuide() {
 
 Compact attribution is required for an existing shell. Invalid configuration leaves its static frame intact. `destroy()` disposes listeners and animation work; your application owns removal of the containing view. Motion is opt-in and follows reduced-motion preferences.
 
-For a new browser-only guide, use `createGuideController()` and mount its `.element` as shown in the developer guide. Existing `createGuideMap()` and `mountGuideMap()` retain their augmented-element return types and flat options for compatibility.
+For a new browser-only guide, use `createGuideController()` and mount its `.element` as shown in the developer guide. Both guide factories return controllers; mount `map.element` and dispose with `map.destroy()`.
 
 ## Choose the data boundary
 
@@ -938,7 +920,69 @@ keyboard, focus, and dismissal behavior. See [coordinates and units](https://git
 
 ---
 
-<!-- Generated from docs/migration-v5.md; @kahwee/sf-map-svg 5.1.4 · local working tree. -->
+<!-- Generated from docs/migration-v6.md; @kahwee/sf-map-svg 6.0.0 · local working tree. -->
+
+# Migrating to v6
+
+Version 6 removes the remaining compatibility APIs. Geographic datasets, coordinate
+conventions, defaults and rendering precision are unchanged.
+
+## Static presentation
+
+Move flat geographic switches into `layers`, and `theme`, `colors` and
+`districtStyle` into `appearance`. Flat presentation keys now throw.
+
+```js
+const { svg } = renderMap(staticMapData, {
+  width: 800,
+  labels: true,
+  layers: { landmarks: true, bartStations: true, districtFills: false },
+  appearance: { theme: 'transit', colors: { water: '#e7f0f3' } },
+});
+```
+
+The same contract applies to `getLayerPaths`, `createGuideSVG` and
+`createGuideShell`. Dimensions, year, source, master labels, label layout,
+markers, overlays, title, ID prefix and animation remain top-level options.
+
+## Guide controllers
+
+Replace `createGuideMap` with `createGuideController`, and `mountGuideMap` with
+`mountGuideController`. Both return `MapController`; DOM methods live on `.element`.
+The `InteractiveSFMapElement` and `InteractiveSFMapOptions` guide aliases are removed.
+Use `MapController` and `MapOptions`.
+
+```js
+import { createGuideController } from '@kahwee/sf-map-svg/guide';
+const map = createGuideController({
+  features: { motion: true, clustering: true },
+  appearance: { colors: { water: '#e7f0f3' } },
+});
+document.querySelector('#map').append(map.element);
+map.configure({ layers: { landmarks: false } });
+map.camera.reset();
+map.on('markerchange', ({ marker }) => console.log(marker));
+// On unmount:
+map.destroy();
+map.element.remove();
+```
+
+Use `configure` for feature, layer, control and appearance changes; use `camera`
+for viewport operations. Replace construction callbacks with `map.on` subscriptions.
+For static-shell enhancement, call `mountGuideController(shell, options)` and keep
+the returned controller for disposal.
+
+## Site integrations
+
+Pages builds require a v6-or-newer package and generate examples directly for that
+contract. Older-package feature detection and flat-option fallback generation are
+removed. Playground links must include `version: 1` in their design payload;
+links produced by the current Share control already include it. Unversioned
+handwritten links must add that field.
+
+---
+
+<!-- Generated from docs/migration-v5.md; @kahwee/sf-map-svg 6.0.0 · local working tree. -->
 
 # Migrating to v5
 
@@ -1043,7 +1087,7 @@ collections. Shared edges can match more than one feature. See the
 
 ---
 
-<!-- Generated from docs/migration-v3.md; @kahwee/sf-map-svg 5.1.4 · local working tree. -->
+<!-- Generated from docs/migration-v3.md; @kahwee/sf-map-svg 6.0.0 · local working tree. -->
 
 # Migrate to version 3
 
@@ -1084,7 +1128,7 @@ District styles are now prepared once per district on construction and style/yea
 
 ---
 
-<!-- Generated from SOURCES.md; @kahwee/sf-map-svg 5.1.4 · local working tree. -->
+<!-- Generated from SOURCES.md; @kahwee/sf-map-svg 6.0.0 · local working tree. -->
 
 # Geometry and provenance
 
@@ -1321,13 +1365,19 @@ Report-history points preserve only actual validated source counts and their dis
 
 ---
 
-<!-- Generated from CHANGELOG.md; @kahwee/sf-map-svg 5.1.4 · local working tree. -->
+<!-- Generated from CHANGELOG.md; @kahwee/sf-map-svg 6.0.0 · local working tree. -->
 
 # Changelog
 
 User-visible changes are recorded here. Unreleased entries describe changes on `main` that are not part of a tagged package release.
 
 ## Unreleased
+
+## 6.0.0 — 2026-11-05
+
+- Breaking: remove flat static presentation options. Use `layers` for geographic switches and `appearance` for theme, colors and district styles.
+- Breaking: remove element-based `createGuideMap` and `mountGuideMap` factories and their option/element aliases. Use `createGuideController` and `mountGuideController`, mount `.element`, and dispose the controller.
+- Remove older-package capability adapters from the site and snippet generator; require v6 or newer for Pages builds and versioned playground share links. Add a v6 migration guide and rejection coverage for removed contracts.
 
 ## 5.1.4 — 2026-11-05
 
@@ -1729,7 +1779,7 @@ consistent home, and makes animation and subscription ownership predictable.
 
 # Published type contracts
 
-@kahwee/sf-map-svg 5.1.4 · local working tree. These declarations are generated by TypeScript. Use package export paths, not the internal filenames below. Imported relative contracts are included for context, not as additional public entry points.
+@kahwee/sf-map-svg 6.0.0 · local working tree. These declarations are generated by TypeScript. Use package export paths, not the internal filenames below. Imported relative contracts are included for context, not as additional public entry points.
 
 | Public import | Declaration |
 | --- | --- |
@@ -2143,10 +2193,7 @@ export interface MapOverlay {
     visible?: boolean;
     label?: string;
 }
-export interface SFMapOptions {
-    /** Grouped presentation; supplied keys take precedence over flat compatibility options. */
-    layers?: StaticMapLayers;
-    appearance?: StaticMapAppearance;
+export interface SvgRenderOptions {
     theme?: 'districts' | 'transit';
     width?: number;
     height?: number;
@@ -2200,7 +2247,12 @@ export interface SFMapOptions {
 }
 /** Presentation supported by both the static and interactive renderers. */
 export type StaticMapLayers = InteractiveLayers;
-export type StaticMapAppearance = Pick<SFMapOptions, 'theme' | 'colors' | 'districtStyle'>;
+export type StaticMapAppearance = Pick<SvgRenderOptions, 'theme' | 'colors' | 'districtStyle'>;
+/** Public static presentation uses the same grouped vocabulary as the map controller. */
+export type StaticMapOptions = Omit<SvgRenderOptions, keyof StaticMapLayers | keyof StaticMapAppearance> & {
+    layers?: StaticMapLayers;
+    appearance?: StaticMapAppearance;
+};
 /** Serializable viewport in the interactive map's fixed 800 × 800 projected space. */
 export type MapViewport = readonly [x: number, y: number, size: number];
 export type ExplorerMode = 'neighborhoods' | 'districts' | 'basemap';
@@ -2270,8 +2322,8 @@ export interface NeighborhoodExplorerOptions extends MapFeatures {
     source?: NeighborhoodSource;
     neighborhood?: string;
     year?: DistrictYear;
-    theme?: SFMapOptions['theme'];
-    colors?: SFMapOptions['colors'];
+    theme?: SvgRenderOptions['theme'];
+    colors?: SvgRenderOptions['colors'];
     labelStyle?: {
         fontFamily?: string;
         fontWeight?: number;
@@ -2283,7 +2335,7 @@ export interface NeighborhoodExplorerOptions extends MapFeatures {
         hoverFill?: string;
         hoverStroke?: string;
     };
-    districtStyle?: SFMapOptions['districtStyle'];
+    districtStyle?: SvgRenderOptions['districtStyle'];
     legend?: {
         builtins?: boolean;
         hidden?: readonly ('bart' | 'park' | 'highway' | 'road')[];
@@ -2349,7 +2401,7 @@ export interface NeighborhoodExplorerElement extends HTMLElement {
     } & CameraOptions): boolean;
     getSelectedDistrict(): DistrictSelection | null;
     setDistrictYear(year: DistrictYear, options?: CameraOptions): void;
-    setDistrictStyle(style: SFMapOptions['districtStyle']): void;
+    setDistrictStyle(style: SvgRenderOptions['districtStyle']): void;
     setSource(source: NeighborhoodSource): void;
     setMode(mode: ExplorerMode): void;
     setLabels(visible: boolean): void;
@@ -2396,8 +2448,8 @@ export interface InteractiveSFMapData {
 
 ```ts
 import type { Geometry, Position } from '../../data/types.js';
-import type { DistrictYear, SFMapOptions } from '../types.js';
-export type { DistrictYear, MapMarker, MapOverlay, SFMapOptions } from '../types.js';
+import type { DistrictYear, SvgRenderOptions } from '../types.js';
+export type { DistrictYear, MapMarker, MapOverlay, SvgRenderOptions } from '../types.js';
 import { type Project } from '../geometry.js';
 export interface SFMapData {
     coast: Geometry;
@@ -2447,7 +2499,7 @@ export interface BartStationData {
 export declare const districtYears: readonly DistrictYear[];
 export declare const districtColors: readonly string[];
 /** Canonical geometry in the same fitted coordinate space used by renderMap. */
-export declare function getLayerPathsWithData(options: SFMapOptions, data: SFMapData, complete?: boolean): {
+export declare function getLayerPathsWithData(options: SvgRenderOptions, data: SFMapData, complete?: boolean): {
     year: DistrictYear;
     viewBox: [number, number, number, number];
     project: (coordinates: Position) => [number, number];
@@ -2479,7 +2531,7 @@ export declare function getLayerPathsWithData(options: SFMapOptions, data: SFMap
         point: [number, number];
     }[];
 };
-export declare function resolveMapColors(theme: SFMapOptions['theme'], colors?: SFMapOptions['colors']): {
+export declare function resolveMapColors(theme: SvgRenderOptions['theme'], colors?: SvgRenderOptions['colors']): {
     water: string;
     land: string;
     district: string;
@@ -2494,7 +2546,7 @@ export declare function resolveMapColors(theme: SFMapOptions['theme'], colors?: 
     selected: string;
 };
 /** Make an offline SVG and the matching longitude/latitude projection. */
-export declare function createSFMapWithData(options: SFMapOptions, data: SFMapData, renderLabels?: (project: Project) => string): {
+export declare function createSFMapWithData(options: SvgRenderOptions, data: SFMapData, renderLabels?: (project: Project) => string): {
     svg: string;
     project: (coordinates: Position) => [number, number];
     viewBox: [number, number, number, number];
@@ -2521,19 +2573,19 @@ export declare function geometryContainsPoint(geometry: Geometry | null | undefi
 ```ts
 import type { InteractiveSFMapData } from './explorer-data.js';
 import { type SFMapData } from './rendering/svg-map-renderer.js';
-import type { SFMapOptions } from './types.js';
+import type { StaticMapOptions } from './types.js';
 /** Either compact static geography or the same source-aware geography used by createMap. */
 export type StaticMapInput = SFMapData | InteractiveSFMapData;
 export type { DistrictRowData, SFMapData as StaticMapData } from './rendering/svg-map-renderer.js';
-export type { DistrictStyle, DistrictYear, SFMapOptions as StaticMapOptions, StaticMapAppearance, StaticMapLayers, } from './types.js';
+export type { DistrictStyle, DistrictYear, StaticMapAppearance, StaticMapLayers, StaticMapOptions, } from './types.js';
 /** Server-safe SVG rendering with explicit data; returns SVG plus projection helpers. */
-export declare function renderMap(data: StaticMapInput, options?: SFMapOptions): {
+export declare function renderMap(data: StaticMapInput, options?: StaticMapOptions): {
     svg: string;
     project: (coordinates: import("./geometry.js").Position) => [number, number];
     viewBox: [number, number, number, number];
 };
 /** Project canonical layer geometry without constructing an SVG string. */
-export declare function getLayerPaths(data: StaticMapInput, options?: SFMapOptions): {
+export declare function getLayerPaths(data: StaticMapInput, options?: StaticMapOptions): {
     year: import("./types.js").DistrictYear;
     viewBox: [number, number, number, number];
     project: (coordinates: import("./geometry.js").Position) => [number, number];
@@ -2707,8 +2759,8 @@ export type { MapController, MapOptions } from './controller-types.js';
 export type { InteractiveSFMapData } from './explorer-data.js';
 export { guideMapData } from './guide-data.js';
 export { loadGuideDetailedData } from './guide-detailed.js';
-export { createGuideController, createGuideMap, mountGuideController, mountGuideMap, } from './guide-map.js';
-export type { CameraOptions, MapFeatures, MapMarker, NeighborhoodExplorerElement as InteractiveSFMapElement, NeighborhoodExplorerOptions as InteractiveSFMapOptions, } from './types.js';
+export { createGuideController, mountGuideController, } from './guide-map.js';
+export type { CameraOptions, MapFeatures, MapMarker, } from './types.js';
 ```
 
 ### dist/src/guide-data.d.ts
@@ -2731,17 +2783,10 @@ export declare function loadGuideDetailedData(): Promise<InteractiveSFMapData>;
 
 ```ts
 import type { MapController, MapOptions } from './controller-types.js';
-import type { NeighborhoodExplorerElement as InteractiveSFMapElement, NeighborhoodExplorerOptions as InteractiveSFMapOptions } from './types.js';
 /** Preferred guide API: the same grouped options, events, camera and lifecycle as createMap. */
 export declare function createGuideController(options?: MapOptions): MapController;
 /** Enhance a static guide shell and return its owning controller. */
 export declare function mountGuideController(shell: HTMLElement, options?: MapOptions): MapController;
-/** Element-based compatibility API. Prefer createGuideController for new integrations. */
-export declare function createGuideMap(options?: InteractiveSFMapOptions): InteractiveSFMapElement;
-/** Enhance createGuideShell() in place with a fixed compact chrome layout.
- * Keep an accessible external place list when hiding the native pickers.
- */
-export declare function mountGuideMap(shell: HTMLElement, options?: InteractiveSFMapOptions): InteractiveSFMapElement;
 ```
 
 ### ./dist/src/transit.d.ts
@@ -2755,15 +2800,15 @@ export declare function createTransitAnimation(): TransitAnimationElement;
 ### ./dist/src/guide-static.d.ts
 
 ```ts
-import type { SFMapOptions } from './types.js';
+import type { StaticMapOptions } from './types.js';
 /** Server-safe overview using exactly the guide browser geography. */
-export declare function createGuideSVG(options?: SFMapOptions): {
+export declare function createGuideSVG(options?: StaticMapOptions): {
     svg: string;
     project: (coordinates: import("./geometry.js").Position) => [number, number];
     viewBox: [number, number, number, number];
 };
-/** Stable compact frame, progressively enhanced with mountGuideMap(). No browser globals. */
-export declare function createGuideShell(options?: SFMapOptions): string;
+/** Stable compact frame, progressively enhanced with mountGuideController(). No browser globals. */
+export declare function createGuideShell(options?: StaticMapOptions): string;
 ```
 
 ### ./dist/src/presets.d.ts
@@ -2778,10 +2823,10 @@ export { type MapPalette, mapPalettes } from './palettes.js';
 ### dist/src/palettes.d.ts
 
 ```ts
-import type { SFMapOptions } from './types.js';
+import type { SvgRenderOptions } from './types.js';
 /** Shared tokens for static SVGs, interactive maps, and consumer-owned place cards. */
 export interface MapPalette {
-    readonly colors: NonNullable<SFMapOptions['colors']>;
+    readonly colors: NonNullable<SvgRenderOptions['colors']>;
     readonly haloColor: string;
     readonly markerColor: string;
     readonly selectedMarkerColor: string;

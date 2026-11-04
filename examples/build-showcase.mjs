@@ -21,8 +21,7 @@ const svgs = years.map(
       height: 800,
       title: `San Francisco supervisorial districts, ${year}`,
       idPrefix: `showcase-${year}`,
-      landmarks: true,
-      bartStations: true,
+      layers: { landmarks: true, bartStations: true },
     }).svg,
 );
 for (let i = 0; i < years.length; i++) await writeFile(`${dir}/districts-${years[i]}.svg`, svgs[i]);

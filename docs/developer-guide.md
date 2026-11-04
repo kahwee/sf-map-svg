@@ -22,12 +22,7 @@ import { writeFile } from 'node:fs/promises';
 import { renderMap } from '@kahwee/sf-map-svg/static';
 import { staticMapData } from '@kahwee/sf-map-svg/data/static';
 
-const { svg } = renderMap(staticMapData, {
-  year: 2022,
-  landmarks: true,
-  bartStations: true,
-  title: 'San Francisco districts, 2022',
-});
+const { svg } = renderMap(staticMapData, { year: 2022, title: 'San Francisco districts, 2022', layers: { landmarks: true, bartStations: true } });
 await writeFile('san-francisco.svg', svg);
 ```
 

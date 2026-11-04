@@ -2,7 +2,6 @@ import { createMap } from '@kahwee/sf-map-svg';
 import { renderMap } from '@kahwee/sf-map-svg/static';
 import { enhanceDropdowns } from './dropdown.js';
 import { interactiveCode, interactiveOptions, staticCode, staticOptions } from './layers-code.js';
-import { mapCapabilities } from './site-capabilities.js';
 import { loadSiteMapData, neighborhoodSources } from './site-map-data.js';
 import { element, segmented, setCode } from './ui.js';
 
@@ -32,8 +31,7 @@ const state = {
   source: 'realtor',
   year: 2022,
   render: 'interactive',
-  animation: mapCapabilities.animation,
-  supportedFeatures: mapCapabilities,
+  animation: true,
   labels: true,
   features: { layerTransitions: true, districtMorph: true, motion: true },
   layers: {
@@ -66,7 +64,7 @@ function setDataReady(ready) {
   if (ready) {
     checkboxes.get('neighborhoodLabels').disabled = state.render === 'static';
     for (const key of ['layerTransitions', 'districtMorph', 'motion'])
-      checkboxes.get(key).disabled = state.render === 'static' || mapCapabilities[key] === false;
+      checkboxes.get(key).disabled = state.render === 'static';
   }
   $('download').disabled = !ready;
   $('replay').disabled = !ready;
@@ -252,11 +250,7 @@ function buildControls() {
         map?.configure({ features: { [key]: interactiveOptions(state).features[key] } });
       }),
     );
-    if (mapCapabilities[key] === false) {
-      state.features[key] = false;
-      box.checked = false;
-      box.disabled = true;
-    }
+
     checkboxes.set(key, box);
     row.append(box, element('span', label));
     $('feature-control').append(row);
@@ -274,7 +268,7 @@ function buildControls() {
       $('replay').hidden = render !== 'static' || !state.animation;
       checkboxes.get('neighborhoodLabels').disabled = render === 'static';
       for (const key of ['layerTransitions', 'districtMorph', 'motion'])
-        checkboxes.get(key).disabled = render === 'static' || mapCapabilities[key] === false;
+        checkboxes.get(key).disabled = render === 'static';
       map?.destroy();
       map = undefined;
       if (data) {

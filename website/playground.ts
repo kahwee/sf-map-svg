@@ -24,7 +24,6 @@ import {
   staticData,
   staticOptions,
 } from './playground-model.ts';
-import { mapCapabilities } from './site-capabilities.js';
 import { loadSiteMapData } from './site-map-data.js';
 import { copyText, element, highlight } from './ui.js';
 
@@ -218,7 +217,7 @@ control('design-language').addEventListener('change', () => {
   if (ready) updateCode();
 });
 function updateCode() {
-  code = playgroundCode(state, mapCapabilities, language);
+  code = playgroundCode(state, language);
   $('design-code').innerHTML = highlight(code);
 }
 function syncControls() {
@@ -237,13 +236,10 @@ function syncControls() {
     $(`${key}-value`).textContent = `${state[key]}${key === 'weight' ? '' : ' px'}`;
   const staticPreview = state.render === 'static';
   requiredInput('neighborhoodLabels').disabled = staticPreview;
-  for (const key of keys(featureNames))
-    requiredInput(key).disabled =
-      staticPreview ||
-      ((key === 'layerTransitions' || key === 'districtMorph') && !mapCapabilities[key]);
+  for (const key of keys(featureNames)) requiredInput(key).disabled = staticPreview;
   for (const key of ['font', 'weight', 'size', 'radius', 'chrome'])
     control(`design-${key}`).disabled = staticPreview;
-  control('design-animation').disabled = !staticPreview || !mapCapabilities.animation;
+  control('design-animation').disabled = !staticPreview;
   control('design-title').disabled = !staticPreview;
   $('preview-interactive').setAttribute('aria-pressed', String(!staticPreview));
   $('preview-static').setAttribute('aria-pressed', String(staticPreview));
@@ -290,7 +286,7 @@ function mountBrowser(options: MapOptions): MapController {
         : 'Pin selection cleared.';
     });
     restoreBrowserView(map);
-  } else if (mapCapabilities.runtimeAppearance) {
+  } else {
     const {
       appearance,
       mode,
@@ -323,27 +319,6 @@ function mountBrowser(options: MapOptions): MapController {
       map.setMarkers(markers ?? []);
     if (JSON.stringify(overlays) !== JSON.stringify(lastOptions?.overlays))
       map.setOverlays(overlays ?? []);
-  } else {
-    const viewport = map.camera.get();
-    const marker = map.getSelectedMarker(),
-      district = map.getSelectedDistrict(),
-      neighborhood = map.getSelectedNeighborhood();
-    // Prepare a replacement first so a failed construction leaves the current preview usable.
-    const previous = map;
-    map = undefined;
-    let replacement: MapController;
-    try {
-      replacement = mountBrowser(options);
-    } catch (error) {
-      map = previous;
-      throw error;
-    }
-    previous.destroy();
-    replacement.camera.set(viewport, { animate: false });
-    if (marker) replacement.selectMarker(marker.id, { fit: false });
-    if (district) replacement.selectDistrict(district.id, { fit: false });
-    if (neighborhood && neighborhood.source === state.source)
-      replacement.selectNeighborhood(neighborhood.id, { fit: false });
   }
   lastOptions = structuredClone(options);
   if (!map) throw new Error('Interactive preview could not be created.');
@@ -352,13 +327,11 @@ function mountBrowser(options: MapOptions): MapController {
 
 function paint() {
   try {
-    $('design-map').dataset.updateStrategy = mapCapabilities.runtimeAppearance
-      ? 'configure'
-      : 'reconstruct';
+    $('design-map').dataset.updateStrategy = 'configure';
     if (state.render === 'static') {
       $('design-map').innerHTML = renderMap(
         staticData(data, state.source),
-        staticOptions(state, mapCapabilities),
+        staticOptions(state),
       ).svg;
       if (map) rememberBrowserView(map);
       map?.destroy();
@@ -366,7 +339,7 @@ function paint() {
       lastOptions = undefined;
       $('design-selection').textContent = 'Self-contained SVG · full city extent';
     } else {
-      const controller = mountBrowser(interactiveOptions(state, mapCapabilities));
+      const controller = mountBrowser(interactiveOptions(state));
       if ($('design-map').firstElementChild !== controller.element) {
         $('design-map').replaceChildren(controller.element);
         $('design-selection').textContent = state.pins
@@ -476,10 +449,7 @@ $('design-download').addEventListener('click', async () => {
   exportButton.textContent = 'Preparing SVG…';
   try {
     const fullData = await loadExportData();
-    const { svg } = renderMap(
-      staticData(fullData, design.source),
-      staticOptions(design, mapCapabilities),
-    );
+    const { svg } = renderMap(staticData(fullData, design.source), staticOptions(design));
     const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
     const link = element('a');
     link.href = url;
