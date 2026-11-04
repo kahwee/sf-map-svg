@@ -476,14 +476,16 @@ async function checkElection() {
     if (!(await page.locator('.contest-details a').first().isVisible()))
       fail('election: official source hidden');
     const votes = await page.locator('.vote-list').boundingBox();
-    if (!votes || votes.height > 260) fail('election: phone Yes/No rows are oversized');
+    if (!votes || votes.y + votes.height > 844)
+      fail('election: phone Yes/No rows are below the first screen');
     const measureIds = await page
       .locator('#contest-select option')
       .evaluateAll((options) => options.map((o) => o.value));
     for (const id of measureIds) {
       await page.locator('#contest-select').selectOption(id);
       const rows = await page.locator('.vote-list').boundingBox();
-      if (!rows || rows.height > 260) fail(`election: ${id} phone vote rows are oversized`);
+      if (!rows || rows.y + rows.height > 844)
+        fail(`election: ${id} phone vote rows require scrolling`);
     }
     await page.locator('#contest-select').selectOption('local-A');
     await page.locator('#contest-select').focus();
