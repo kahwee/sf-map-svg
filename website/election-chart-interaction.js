@@ -54,8 +54,8 @@ export function attachPointPopover(svg, series, points, { share, media, scope })
       popover.showPopover();
       const anchor = hit.getBoundingClientRect();
       const box = popover.getBoundingClientRect();
-      popover.style.left = `${Math.max(8, Math.min(innerWidth - box.width - 8, anchor.left))}px`;
-      popover.style.top = `${Math.max(8, Math.min(innerHeight - box.height - 8, anchor.bottom + 6))}px`;
+      popover.style.left = `${Math.max(8, Math.min(document.documentElement.clientWidth - box.width - 8, anchor.left))}px`;
+      popover.style.top = `${Math.max(8, Math.min(document.documentElement.clientHeight - box.height - 8, anchor.bottom + 6))}px`;
       close.focus({ preventScroll: true });
     };
     hit.addEventListener('click', open);

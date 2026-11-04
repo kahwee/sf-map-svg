@@ -715,6 +715,65 @@ async function checkElection() {
   }
 }
 
+async function checkPopoverViewport() {
+  // Playwright normally hides scrollbars; keep a real gutter so innerWidth
+  // cannot accidentally satisfy the usable-viewport assertion.
+  const gutterBrowser = await chromium.launch({ ignoreDefaultArgs: ['--hide-scrollbars'] });
+  try {
+    for (const width of [1180, 390, 320]) {
+      const context = await gutterBrowser.newContext({
+        viewport: { width, height: 844 },
+        hasTouch: width < 500,
+      });
+      try {
+        const page = await context.newPage();
+        await page.goto(`${origin}${base}election.html?contest=RTM`);
+        await page.locator('.chart-point-target').first().waitFor();
+        await page.addStyleTag({
+          content:
+            'html { overflow-y: scroll; scrollbar-gutter: stable; } ::-webkit-scrollbar { width: 15px; }',
+        });
+        const viewport = await page.evaluate(() => ({
+          width: document.documentElement.clientWidth,
+          height: document.documentElement.clientHeight,
+          outerWidth: window.innerWidth,
+        }));
+        if (viewport.width >= viewport.outerWidth)
+          fail(`popover: ${width}px test did not reserve a real scrollbar gutter`);
+        const targets = page.locator('.chart-point-target');
+        const half = (await targets.count()) / 2;
+        for (const index of [0, half - 1, half, half * 2 - 1]) {
+          const target = targets.nth(index);
+          await target.scrollIntoViewIfNeeded();
+          await target.focus();
+          await page.keyboard.press('Enter');
+          const popup = page.locator('.chart-point-popover');
+          const box = await popup.boundingBox();
+          if (
+            !box ||
+            box.x < 8 ||
+            box.y < 8 ||
+            box.x + box.width > viewport.width - 8 + 0.5 ||
+            box.y + box.height > viewport.height - 8 + 0.5
+          )
+            fail(
+              `popover: ${width}px point ${index} exceeds usable viewport ${JSON.stringify({ viewport, box })}`,
+            );
+          await popup.getByRole('button', { name: 'Close', exact: true }).click();
+          if (!(await target.evaluate((node) => document.activeElement === node)))
+            fail('popover: Close did not restore point focus');
+        }
+      } finally {
+        await context.close();
+      }
+    }
+  } catch (error) {
+    fail(`popover viewport: ${error.stack}`);
+  } finally {
+    await gutterBrowser.close();
+  }
+}
+
 async function checkUnknownMediaTime() {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
@@ -841,6 +900,7 @@ try {
   await checkElection();
   await checkElectionLifecycle();
   await checkUnknownMediaTime();
+  await checkPopoverViewport();
   await checkStudioLoading();
   await checkPlayground();
   for (const path of pages) {
