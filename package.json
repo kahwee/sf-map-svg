@@ -50,6 +50,10 @@
       "types": "./dist/data/lookup.d.ts",
       "import": "./dist/data/lookup.js"
     },
+    "./data/precincts": {
+      "types": "./dist/data/precincts.d.ts",
+      "import": "./dist/data/precincts.js"
+    },
     "./data/realtor": {
       "types": "./dist/data/realtor.d.ts",
       "import": "./dist/data/realtor.js"

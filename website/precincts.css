@@ -1,0 +1,84 @@
+.precinct-status {
+  margin: 8px 0 16px;
+  color: var(--ink-2);
+  font-size: 0.85rem;
+}
+.precinct-workspace {
+  display: grid;
+  gap: 20px;
+  margin-top: 16px;
+}
+@media (min-width: 900px) {
+  .precinct-workspace {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    align-items: start;
+  }
+}
+.precinct-figure {
+  margin: 0;
+}
+.precinct-map svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 78vh;
+}
+.precinct-map path {
+  stroke: var(--rule);
+  stroke-width: 0.6;
+  vector-effect: non-scaling-stroke;
+  cursor: pointer;
+}
+.precinct-map path:hover,
+.precinct-map path:focus-visible,
+.precinct-map path[aria-current='true'] {
+  stroke: var(--ink);
+  stroke-width: 2;
+  outline: none;
+}
+.precinct-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: var(--ink-2);
+}
+.precinct-ramp {
+  flex: 1;
+  height: 10px;
+  max-width: 280px;
+  border-radius: 5px;
+}
+.precinct-detail h2 {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+}
+.precinct-detail table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.precinct-detail th,
+.precinct-detail td {
+  padding: 4px 0;
+  text-align: left;
+  border-bottom: 1px solid var(--rule);
+  font-weight: 400;
+}
+.precinct-detail td:last-child {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.precinct-status {
+  min-height: 2.6em;
+}
+.precinct-map {
+  aspect-ratio: 1.0034 / 1;
+}
+.precinct-legend {
+  min-height: 1.6em;
+}
+.precinct-detail {
+  min-height: 9em;
+}

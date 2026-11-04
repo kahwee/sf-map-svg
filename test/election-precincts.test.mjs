@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
+import { precinctMaps } from '@kahwee/sf-map-svg/data/precincts';
 
 const json = async (path) => JSON.parse(await readFile(new URL(path, import.meta.url), 'utf8'));
 const index = await json('../data/elections/precincts-index.json');
@@ -66,4 +67,15 @@ test('precinct sums reconcile with the official summary report for every contest
       else assert.equal(total, 0, `${name} / ${option} is absent from the summary`);
     });
   }
+});
+
+test('the package exports the frozen 2022 precinct boundaries', () => {
+  const collection = precinctMaps[2022];
+  assert.equal(collection.features.length, 514);
+  assert.ok(Object.isFrozen(collection));
+  assert.deepEqual(
+    collection.features.map((f) => f.properties.precinct),
+    boundaries.features.map((f) => f.properties.precinct),
+  );
+  assert.ok(collection.features.every((f) => f.id === `precinct-${f.properties.precinct}`));
 });

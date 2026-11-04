@@ -86,6 +86,11 @@ export interface DistrictProperties {
   readonly labelPoints: readonly Position[];
   readonly displayExtras: Geometry | null;
 }
+export interface PrecinctProperties {
+  /** Four-digit Department of Elections precinct number, such as "1101". */
+  readonly precinct: string;
+  readonly year: 2022;
+}
 export interface Catalog {
   readonly schemaVersion: 1;
   readonly description: string;

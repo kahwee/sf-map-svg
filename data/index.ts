@@ -4,6 +4,7 @@ export { districtMaps } from './districts.js';
 export { highways } from './highways.js';
 export { landmarks } from './landmarks.js';
 export { getNeighborhood, neighborhoodCollections, neighborhoodSources } from './lookup.js';
+export { precinctMaps } from './precincts.js';
 export { getRealtorNeighborhood, neighborhoods } from './realtor.js';
 export { keyRoads } from './roads.js';
 export { bartStations } from './stations.js';

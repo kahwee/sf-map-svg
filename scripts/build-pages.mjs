@@ -29,6 +29,7 @@ const darkWater = (svg) =>
 const pages = [
   { file: 'index.html', section: 'atlas' },
   { file: 'election.html', section: 'election' },
+  { file: 'precincts.html', section: 'election' },
   { file: 'layers.html', section: 'layers' },
   { file: 'playground.html', section: 'playground' },
   { file: 'examples.html', section: 'examples' },
@@ -485,6 +486,7 @@ try {
 
   await cp('elections', 'pages-dist/elections', { recursive: true });
   await cp('data/elections', 'pages-dist/data/elections', { recursive: true });
+  await cp('data/precincts-2022.json', 'pages-dist/data/precincts-2022.json');
   await cp('data/propositions', 'pages-dist/data/propositions', { recursive: true });
   await cp('data/candidates', 'pages-dist/data/candidates', { recursive: true });
   await cp('docs/map-preview.png', 'pages-dist/social-preview.png');

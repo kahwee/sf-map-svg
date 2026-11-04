@@ -14,6 +14,7 @@ const base = '/sf-map-svg/';
 const pages = [
   '',
   'election.html',
+  'precincts.html',
   'layers.html',
   'playground.html',
   'examples.html',

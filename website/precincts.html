@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Results by precinct · November 3, 2026 · San Francisco votes</title>
+<meta name="description" content="Official San Francisco precinct results for the November 3, 2026 election, aggregated from the Department of Elections cast vote record export and reconciled with its summary report.">
+<link rel="canonical" href="https://kahwee.github.io/sf-map-svg/precincts.html">
+<link rel="stylesheet" href="./examples.css"><link rel="stylesheet" href="./election.css"><link rel="stylesheet" href="./precincts.css">
+</head>
+<body><!--site-header-->
+<main id="content" class="shell election-shell">
+<header class="election-head"><div><p class="eyebrow">November 3, 2026</p><h1>Results by precinct</h1></div></header>
+<p id="precinct-status" class="precinct-status" role="status">Loading precinct results…</p>
+<section class="contest-picker" aria-label="Choose a contest">
+<label for="precinct-contest">Contest<select id="precinct-contest"><option>Loading…</option></select></label>
+<label for="precinct-option">Shade by<select id="precinct-option"></select></label>
+<label id="precinct-report-label" for="precinct-report" hidden>Report time<select id="precinct-report"></select></label>
+</section>
+<div class="precinct-workspace">
+<figure class="precinct-figure"><div id="precinct-map" class="precinct-map" aria-label="Map of San Francisco election precincts"></div><figcaption id="precinct-legend" class="precinct-legend"></figcaption></figure>
+<aside class="precinct-detail" aria-live="polite"><h2 id="precinct-title">Choose a precinct</h2><div id="precinct-body"><p>Select a precinct on the map to see its votes.</p></div></aside>
+</div>
+<section class="election-sources" aria-label="Sources"><p id="precinct-source"></p><p>Counts are first-round votes in each precinct. In ranked-choice contests they are not winners. Precincts with fewer than 10 votes in a contest are not shaded. Alcatraz and one Bay Bridge precinct are not drawn. <a href="./election.html">Citywide results</a> · <a href="https://github.com/kahwee/sf-map-svg/blob/main/SOURCES.md">Sources</a></p></section>
+<noscript><p>Enable JavaScript to explore precinct results.</p></noscript>
+</main><script type="module" src="./boot.js"></script><script type="module" src="./precincts.js"></script></body></html>

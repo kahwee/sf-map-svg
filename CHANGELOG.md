@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Add official November 2026 precinct aggregates (`data/elections/precincts-<report time>.json` with a time-ordered `precincts-index.json`) and the 2022 precinct boundaries (`data/precincts-2022.json`), reconciled with the department's summary report. Only aggregates are committed, never the ballot-level export.
+- Add official November 2026 precinct aggregates (`data/elections/precincts-<report time>.json` with a time-ordered `precincts-index.json`) and the 2022 precinct boundaries (`data/precincts-2022.json`), reconciled with the department's summary report. Only aggregates are committed, never the ballot-level export. Export the boundaries as `precinctMaps` from `@kahwee/sf-map-svg/data` and `@kahwee/sf-map-svg/data/precincts`; results snapshots stay Pages data.
 - Update Biome to 2.6.3 and the aligned Storybook packages to 10.6.4.
 
 - Gate library output replacement on Bun source checking, then emit JavaScript, declarations, and JSON with TypeScript `--noCheck`; install pinned Bun in every build job.
