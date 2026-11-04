@@ -184,7 +184,11 @@ Downloaded November 4, 2026 UTC (November 3 Pacific):
 https://media.api.sf.gov/documents/N26_EN_VIP.pdf .
 `elections/2026-11-03.json` records its SHA-256 and verification time. Printed
 page 248 lists all 14 state, one regional and ten local measures. Pages 24–51
-supply candidate statement names, explicitly not a complete candidate roster.
+supply candidate statement names. The official roster at
+https://www.sf.gov/candidates-november-3-2026-general-election was verified
+on November 4 UTC to complete the 15 displayed candidate contests, adding
+Charles Hoelter, Manuel Noris-Barrera, Philip Louis Wing, Nicholas Berg and
+Jamo Muhammad. Statewide candidate and judicial contests remain outside coverage.
 The November results endpoint
 https://www.sfelections.org/results/20261103w/index.html returned HTTP 403;
 no November vote totals, report time, winners or geographic results are asserted.

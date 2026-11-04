@@ -9,9 +9,9 @@ Schema version 1. This feed is owned by sf-map-svg; YorkSF can fetch it without 
 - `sourceUrl`: official SF results page. `sourceReportTimestamp`: the actual report time, nullable; never synthesized from a fetch.
 - `checkedAt`: latest attempt; `lastSuccessfulFetchAt`: last verified results import; `generatedAt`: feed generation; `buildCommit`: GitHub SHA.
 - `checkStatus`: `not-checked`, `ok`, or `error`; `message`: diagnostic. Consumers should flag checks older than 30 minutes as stale and retain a prior validated snapshot on fetch failure.
-- `ballotSource`: official pamphlet URL, SHA-256, verification time and printed page numbers. All 25 measure titles are included. Candidate options cover pamphlet statements only, **not the complete candidate roster**. Judicial contests and statewide candidate names are not covered.
+- `ballotSource`: official pamphlet URL, SHA-256, verification time and printed page numbers. All 25 measure titles are included. Candidate options for the 15 displayed contests are checked against the official candidate roster (`candidateRosterSourceUrl`, `displayedCandidateContestsComplete: true`). Overall `candidateRosterComplete` remains false: judicial contests and statewide candidate names are not covered.
 - `contests[]`: stable election-scoped ID, title, kind, scope, source URL, options (`id`, `label`, nullable nonnegative integer `votes`), `call: uncalled`, and `regions`.
-- `supervisorialDistrict`, when present, identifies supervisor ballot eligibility only. It does not allocate citywide votes to districts. `countingMethod` distinguishes ranked-choice first-choice totals from ordinary votes.
+- `rosterStatus: verified-official-roster` identifies the 15 verified displayed candidate rosters. `supervisorialDistrict`, when present, identifies supervisor ballot eligibility only. It does not allocate citywide votes to districts. `countingMethod` distinguishes ranked-choice first-choice totals from ordinary votes.
 - `geography: {type: "none", boundaryYear: null}` and empty `regions` mean no geographic results have been imported. Districts, precincts, neighborhoods and BART districts are not interchangeable.
 
 ## Current limitation

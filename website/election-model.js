@@ -65,3 +65,12 @@ export function parseOfficialReport(html) {
     'Official November report format requires verification before importing vote totals',
   );
 }
+
+export function chooseSnapshotSeed(seed, deployed) {
+  validateSnapshot(seed);
+  validateSnapshot(deployed);
+  // Pending snapshots carry no results to preserve. New verified ballot corrections win.
+  // Preserve actual last-good results wholesale until a verified results adapter can
+  // reconcile changed roster IDs; never discard real counts just to refresh metadata.
+  return deployed.status === 'pending' ? seed : deployed;
+}

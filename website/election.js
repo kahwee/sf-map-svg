@@ -54,7 +54,10 @@ function render() {
       article.append(title, status, list);
       if (c.rosterStatus) {
         const note = document.createElement('p');
-        note.textContent = 'Pamphlet statement names only; roster may be incomplete.';
+        note.textContent =
+          c.rosterStatus === 'verified-official-roster'
+            ? 'Candidates verified against the official roster.'
+            : 'Pamphlet statement names only; roster may be incomplete.';
         article.append(note);
       }
       return article;

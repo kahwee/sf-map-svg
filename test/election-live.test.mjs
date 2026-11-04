@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
-import { freshness, parseOfficialReport, validateSnapshot } from '../website/election-model.js';
+import {
+  chooseSnapshotSeed,
+  freshness,
+  parseOfficialReport,
+  validateSnapshot,
+} from '../website/election-model.js';
 
 const seed = JSON.parse(
   await readFile(new URL('../elections/2026-11-03.json', import.meta.url), 'utf8'),
@@ -51,4 +56,41 @@ test('distinguishes stale checks, source errors and successful checks', () => {
 test('official parser fails closed for challenge, wrong election and unverified format', () => {
   for (const html of ['403 ERROR', 'June 2, 2026', 'November 3, 2026 — unknown format'])
     assert.throws(() => parseOfficialReport(html));
+});
+
+test('displayed rosters include candidates without pamphlet statements without claiming full ballot coverage', () => {
+  assert.equal(seed.ballotSource.displayedCandidateContestsComplete, true);
+  assert.equal(seed.ballotSource.candidateRosterComplete, false);
+  const candidates = seed.contests.filter((c) => c.kind === 'candidate');
+  assert.equal(candidates.length, 15);
+  assert.equal(
+    candidates.reduce((sum, c) => sum + c.options.length, 0),
+    51,
+  );
+  for (const name of [
+    'Charles Hoelter',
+    'Manuel Noris-Barrera',
+    'Philip Louis Wing',
+    'Nicholas Berg',
+    'Jamo Muhammad',
+  ])
+    assert.ok(candidates.some((c) => c.options.some((o) => o.label === name)));
+});
+
+test('a deployed pending ballot cannot erase newly verified candidates', () => {
+  const previous = structuredClone(seed);
+  previous.contests.find((c) => c.title === 'Board of Supervisors, District 2').options.pop();
+  previous.ballotSource.displayedCandidateContestsComplete = false;
+  const selected = chooseSnapshotSeed(seed, previous);
+  assert.equal(selected.ballotSource.displayedCandidateContestsComplete, true);
+  assert.equal(
+    selected.contests.find((c) => c.title === 'Board of Supervisors, District 2').options.length,
+    4,
+  );
+  const reported = structuredClone(previous);
+  reported.status = 'unofficial';
+  reported.sourceReportTimestamp = '2026-11-04T04:45:00Z';
+  reported.lastSuccessfulFetchAt = '2026-11-04T04:47:00Z';
+  reported.contests[0].options[0].votes = 123;
+  assert.equal(chooseSnapshotSeed(seed, reported).contests[0].options[0].votes, 123);
 });
