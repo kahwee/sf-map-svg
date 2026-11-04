@@ -58,11 +58,13 @@ export function sourceTimeOrder(text) {
     +minute > 59
   )
     throw new Error('Invalid SOS report time');
-  return (
-    (month === 'November' ? 11 : 12) * 1_000_000 +
-    +day * 10_000 +
-    ((+hour % 12) + (half === 'p' ? 12 : 0)) * 100 +
-    +minute
+  // Compare local clock values only; never publish this as a UTC report timestamp.
+  return Date.UTC(
+    2026,
+    month === 'November' ? 10 : 11,
+    +day,
+    (+hour % 12) + (half === 'p' ? 12 : 0),
+    +minute,
   );
 }
 export function parseSosCounty(rows, mapping, contest, index, now = Date.now()) {
@@ -92,6 +94,21 @@ export function parseSosCounty(rows, mapping, contest, index, now = Date.now()) 
   if (matches.length !== 1) throw new Error(`Expected exactly one ${title}`);
   const row = matches[0];
   const reportOrder = sourceTimeOrder(row.ReportingTime);
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Los_Angeles',
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      hourCycle: 'h23',
+    })
+      .formatToParts(now)
+      .map((p) => [p.type, p.value]),
+  );
+  const localNow = Date.UTC(+parts.year, +parts.month - 1, +parts.day, +parts.hour, +parts.minute);
+  if (reportOrder > localNow) throw new Error('SOS report time is in the future');
   const reporting = /^(\d+(?:\.\d+)?)% \(([\d,]+) of ([\d,]+)\) precincts reporting$/.exec(
     row.Reporting,
   );
@@ -118,7 +135,7 @@ export function parseSosCounty(rows, mapping, contest, index, now = Date.now()) 
   }
   const total = options.reduce((sum, option) => sum + option.votes, 0);
   if (!Number.isSafeInteger(total)) throw new Error('Unsafe SOS total');
-  const beforeElectionReport = reportOrder < 11_032_000;
+  const beforeElectionReport = reportOrder < Date.UTC(2026, 10, 3, 20);
   if (beforeElectionReport && total > 0) throw new Error('Nonzero pre-election SOS report');
   const pending = beforeElectionReport || total === 0 || now < Date.parse('2026-11-04T04:00:00Z');
   return {
@@ -147,4 +164,16 @@ export function retainLastGood(current, incoming) {
   )
     return current;
   return incoming;
+}
+
+export function markSosFailure(snapshot, checkedAt) {
+  const ids = new Set(sosMappings.map((mapping) => mapping.id));
+  return {
+    ...snapshot,
+    contests: snapshot.contests.map((contest) =>
+      ids.has(contest.id)
+        ? { ...contest, resultCheckStatus: 'error', resultCheckedAt: checkedAt }
+        : contest,
+    ),
+  };
 }

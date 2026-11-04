@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
-import { parseSosCounty, retainLastGood, sosMappings } from '../scripts/lib/sos-county-results.mjs';
+import {
+  markSosFailure,
+  parseSosCounty,
+  retainLastGood,
+  sosMappings,
+} from '../scripts/lib/sos-county-results.mjs';
 import { validateSnapshot } from '../website/election-model.js';
 
 const seed = JSON.parse(
@@ -78,9 +83,13 @@ test('rejects wrong election, wrong county, duplicate rows, changed names and ma
 });
 test('pre-poll execution and reset/older reports cannot publish or erase votes', () => {
   const incoming = parseSosCounty(reported(), mapping, contest, index, now);
+  assert.throws(
+    () => parseSosCounty(reported(), mapping, contest, index, Date.parse('2026-11-04T02:00:00Z')),
+    /future/,
+  );
   assert.ok(
     parseSosCounty(
-      reported(),
+      zero(),
       mapping,
       contest,
       index,
@@ -130,4 +139,24 @@ test('propositions and eligible judicial retention use exact identities and Yes/
     assert.throws(() => parseSosCounty(rows, m, c, index, now));
   }
   assert.equal(sosMappings.length, 40);
+});
+
+test('future report clocks fail closed even when counts are zero', () => {
+  for (const time of ['November 3, 2026, 9:01 p.m.', 'December 1, 2026, 6:28 p.m.']) {
+    const rows = zero();
+    rows.find((r) => r.raceTitle.includes('San Francisco')).ReportingTime = time;
+    assert.throws(() => parseSosCounty(rows, mapping, contest, index, now), /future/);
+  }
+});
+test('a total SOS outage marks every supported contest failed without erasing last-good counts', () => {
+  const data = structuredClone(seed);
+  const result = parseSosCounty(reported(), mapping, contest, index, now);
+  data.contests[data.contests.findIndex((c) => c.id === result.id)] = result;
+  const failed = markSosFailure(data, new Date(now + 600000).toISOString());
+  const retained = failed.contests.find((c) => c.id === result.id);
+  assert.deepEqual(retained.options, result.options);
+  assert.equal(retained.sourceReportTime, result.sourceReportTime);
+  assert.equal(retained.resultsFetchedAt, result.resultsFetchedAt);
+  assert.equal(failed.contests.filter((c) => c.resultCheckStatus === 'error').length, 40);
+  assert.equal(failed.contests.find((c) => c.id === 'local-A').resultCheckStatus, undefined);
 });

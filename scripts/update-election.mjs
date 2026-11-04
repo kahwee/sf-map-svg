@@ -7,6 +7,7 @@ import {
 } from '../website/election-model.js';
 
 import {
+  markSosFailure,
   parseSosCounty,
   retainLastGood,
   sosIndexUrl,
@@ -117,6 +118,7 @@ try {
     next.message = `Verified SOS county reports for ${verified} state/federal and judicial contests. Zero/pre-election reports remain pending. Local SF and district/precinct results are unavailable. All counts are SF county portions; all contests remain uncalled.`;
   }
 } catch (error) {
+  next = markSosFailure(next, new Date().toISOString());
   next.sourceChecks.push({
     id: 'ca-sos',
     sourceUrl: sosIndexUrl,
