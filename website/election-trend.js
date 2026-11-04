@@ -12,7 +12,7 @@ const svgElement = (tag, attrs, text) => {
 };
 const observedTime = (iso) =>
   new Date(iso).toLocaleString('en-US', { timeZone: 'America/Los_Angeles', timeZoneName: 'short' });
-export function createTrend(contest) {
+export function createTrend(contest, state = {}) {
   const section = make('section', '', 'batch-history');
   const media = !contest.resultHistory?.length && !!contest.mediaHistory?.length;
   const unit = media ? 'Observation' : 'Batch';
@@ -45,15 +45,28 @@ export function createTrend(contest) {
   const optionSelect = document.createElement('select');
   optionSelect.setAttribute('aria-label', 'View option');
   for (const option of contest.options) optionSelect.add(new Option(option.label, option.id));
+  if (contest.options.some((o) => o.id === state.optionId)) optionSelect.value = state.optionId;
   optionLabel.append(optionSelect);
   const metricLabel = make('label', 'Measure');
   const metricSelect = document.createElement('select');
   metricSelect.setAttribute('aria-label', 'Measure');
   metricSelect.add(new Option('Reported votes', 'votes'));
   metricSelect.add(new Option('Reported vote share', 'share'));
+  metricSelect.value = state.metric === 'share' ? 'share' : 'votes';
   metricLabel.append(metricSelect);
   controls.append(optionLabel, metricLabel);
-  let batch = points.length - 1;
+  const pointKey = (point) =>
+    JSON.stringify([
+      media ? 'media' : 'official',
+      point.observedAt,
+      point.sourceReportTime,
+      point.resultSourceUrl,
+      point.options,
+    ]);
+  const savedBatch = state.atLatest
+    ? -1
+    : points.findIndex((point) => pointKey(point) === state.observationKey);
+  let batch = savedBatch < 0 ? points.length - 1 : savedBatch;
   const navigation = make('div', '', 'batch-navigation');
   const previous = make('button', '← Previous');
   previous.type = 'button';
@@ -80,6 +93,10 @@ export function createTrend(contest) {
   function draw() {
     const selected = contest.options.find((o) => o.id === optionSelect.value);
     const share = metricSelect.value === 'share';
+    state.optionId = selected.id;
+    state.metric = metricSelect.value;
+    state.observationKey = pointKey(points[batch]);
+    state.atLatest = batch === points.length - 1;
     const values = points.map((p) => {
       const votes = p.options.find((o) => o.id === selected.id).votes;
       return share ? (100 * votes) / p.options.reduce((sum, o) => sum + o.votes, 0) : votes;

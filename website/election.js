@@ -1,11 +1,13 @@
 import { createDistrictMap } from './district-map.js';
 import { freshness, validateSnapshot } from './election-model.js';
+import { createRefreshController, isOlderSnapshot } from './election-refresh.js';
 import { createTrend } from './election-trend.js';
 
 const $ = (id) => document.getElementById(id);
 let snapshot;
 let map;
 let feedFailed = false;
+const chartStates = new Map();
 let selectedId = new URLSearchParams(location.search).get('contest') || 'local-A';
 const time = (value) =>
   value
@@ -176,7 +178,8 @@ function renderContest(c) {
   const totals = document.createElement('div');
   totals.className = 'contest-totals';
   totals.append(...Array.from(article.children).slice(2));
-  dataGrid.append(totals, createTrend(c));
+  if (!chartStates.has(c.id)) chartStates.set(c.id, {});
+  dataGrid.append(totals, createTrend(c, chartStates.get(c.id)));
   article.append(dataGrid);
   if (summary) {
     const explanation = document.createElement('section');
@@ -227,7 +230,9 @@ async function refresh() {
     });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const first = !snapshot;
-    snapshot = validateSnapshot(await response.json());
+    const incoming = validateSnapshot(await response.json());
+    if (isOlderSnapshot(snapshot, incoming)) throw new Error('Older cached feed');
+    snapshot = incoming;
     feedFailed = false;
     if (first && location.search) {
       const requested = snapshot.contests.find((c) => c.id === selectedId);
@@ -243,7 +248,8 @@ async function refresh() {
     $('refresh').disabled = false;
   }
 }
-$('refresh').addEventListener('click', refresh);
+const refreshController = createRefreshController(refresh);
+$('refresh').addEventListener('click', refreshController.run);
 $('region').addEventListener('change', render);
 $('ballot-search').addEventListener('input', render);
 $('contest-kind').addEventListener('change', render);
@@ -272,8 +278,11 @@ createDistrictMap($('election-map'), {
   .catch(() => {
     $('election-map').textContent = 'Map unavailable. Use the district selector.';
   });
-refresh();
-setInterval(refresh, 10 * 60_000);
+refreshController.run();
+setInterval(() => refreshController.ifDue(!document.hidden), 60_000);
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) refreshController.ifDue();
+});
 setInterval(() => {
   if (snapshot) renderStatus();
 }, 60_000);

@@ -536,7 +536,7 @@ async function checkElection() {
     stale.checkedAt = '2026-11-03T00:00:00Z';
     stale.checkStatus = 'error';
     await page.route('**/elections/2026-11-03.json', (route) => route.fulfill({ json: stale }));
-    await page.locator('#refresh').click();
+    await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() =>
       document.querySelector('#check-status').textContent.includes('Stale check'),
     );
@@ -623,8 +623,79 @@ async function checkElection() {
   }
 }
 
+async function checkElectionLifecycle() {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const page = await context.newPage();
+  let release;
+  const held = new Promise((resolve) => {
+    release = resolve;
+  });
+  let requests = 0;
+  const data = JSON.parse(await readFile('elections/2026-11-03.json', 'utf8'));
+  data.checkedAt = '2026-11-04T06:30:00Z';
+  try {
+    await page.clock.install({ time: new Date('2026-11-04T06:30:00Z') });
+    await page.route('**/elections/2026-11-03.json', async (route) => {
+      requests++;
+      const response = structuredClone(data);
+      if (requests === 2) {
+        await held;
+        response.checkedAt = '2026-11-04T06:40:00Z';
+      }
+      if (requests >= 3) {
+        response.checkedAt = '2026-11-04T06:20:00Z';
+        response.contests.find((c) => c.id === 'local-G').shortTitle = 'Older cached title';
+      }
+      await route.fulfill({ json: response });
+    });
+    await page.goto(`${origin}${base}election.html?contest=local-G`);
+    await page.locator('#contests article').waitFor();
+    await page.locator('select[aria-label="View option"]').selectOption('1');
+    await page.locator('select[aria-label="Measure"]').selectOption('share');
+    await page.getByRole('button', { name: '← Previous', exact: true }).click();
+    await page.evaluate(() =>
+      Object.defineProperty(document, 'hidden', { configurable: true, value: true }),
+    );
+    await page.clock.fastForward(10 * 60_000);
+    if (requests !== 1) fail('election lifecycle: hidden timer fetched');
+    await page.evaluate(() => {
+      Object.defineProperty(document, 'hidden', { configurable: true, value: false });
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    await page.waitForFunction(() => document.getElementById('refresh').disabled);
+    await page.evaluate(() => {
+      document.getElementById('refresh').dispatchEvent(new Event('click'));
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    if (requests > 2) fail('election lifecycle: overlapping fetches');
+    release();
+    await page.waitForFunction(() => !document.getElementById('refresh').disabled);
+    if (requests !== 2) fail('election lifecycle: due visibility refresh missing');
+    if (
+      (await page.locator('select[aria-label="View option"]').inputValue()) !== '1' ||
+      (await page.locator('select[aria-label="Measure"]').inputValue()) !== 'share' ||
+      (await page.locator('input[type="range"]').inputValue()) !== '0'
+    )
+      fail('election lifecycle: automatic refresh reset chart selection');
+    await page.locator('#refresh').click();
+    await page.waitForFunction(() =>
+      document.getElementById('check-status').textContent.includes('Feed unavailable'),
+    );
+    if ((await page.locator('#contests h2').textContent()).includes('Older cached title'))
+      fail('election lifecycle: older snapshot replaced newer data');
+    if ((await page.locator('input[type="range"]').inputValue()) !== '0')
+      fail('election lifecycle: rejected response reset observation');
+  } catch (error) {
+    fail(`election lifecycle: ${error.stack}`);
+  } finally {
+    release();
+    await context.close();
+  }
+}
+
 try {
   await checkElection();
+  await checkElectionLifecycle();
   await checkStudioLoading();
   await checkPlayground();
   for (const path of pages) {
