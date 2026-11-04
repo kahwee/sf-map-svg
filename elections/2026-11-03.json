@@ -60,20 +60,20 @@
       },
       "resultHistory": [],
       "mediaUpdate": {
-        "observedAt": "2026-11-04T05:53:30Z",
-        "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+        "observedAt": "2026-11-04T06:51:51Z",
+        "sourceUpdatedAt": "2026-11-04T06:50:00Z",
         "sourceName": "San Francisco Chronicle",
         "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
         "options": [
           {
             "id": "0",
             "label": "Yes",
-            "votes": 110647
+            "votes": 122062
           },
           {
             "id": "1",
             "label": "No",
-            "votes": 43330
+            "votes": 50703
           }
         ]
       },
@@ -113,6 +113,24 @@
               "votes": 43330
             }
           ]
+        },
+        {
+          "observedAt": "2026-11-04T06:51:51Z",
+          "sourceUpdatedAt": "2026-11-04T06:50:00Z",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 122062
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 50703
+            }
+          ]
         }
       ]
     },
@@ -144,20 +162,20 @@
       },
       "resultHistory": [],
       "mediaUpdate": {
-        "observedAt": "2026-11-04T05:53:30Z",
-        "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+        "observedAt": "2026-11-04T06:51:51Z",
+        "sourceUpdatedAt": "2026-11-04T06:50:00Z",
         "sourceName": "San Francisco Chronicle",
         "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
         "options": [
           {
             "id": "0",
             "label": "Yes",
-            "votes": 74576
+            "votes": 85032
           },
           {
             "id": "1",
             "label": "No",
-            "votes": 77493
+            "votes": 85674
           }
         ]
       },
@@ -197,6 +215,24 @@
               "votes": 77493
             }
           ]
+        },
+        {
+          "observedAt": "2026-11-04T06:51:51Z",
+          "sourceUpdatedAt": "2026-11-04T06:50:00Z",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 85032
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 85674
+            }
+          ]
         }
       ]
     },
@@ -228,20 +264,20 @@
       },
       "resultHistory": [],
       "mediaUpdate": {
-        "observedAt": "2026-11-04T05:53:30Z",
-        "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+        "observedAt": "2026-11-04T06:51:51Z",
+        "sourceUpdatedAt": "2026-11-04T06:50:00Z",
         "sourceName": "San Francisco Chronicle",
         "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
         "options": [
           {
             "id": "0",
             "label": "Yes",
-            "votes": 123099
+            "votes": 137939
           },
           {
             "id": "1",
             "label": "No",
-            "votes": 30676
+            "votes": 34792
           }
         ]
       },
@@ -281,6 +317,24 @@
               "votes": 30676
             }
           ]
+        },
+        {
+          "observedAt": "2026-11-04T06:51:51Z",
+          "sourceUpdatedAt": "2026-11-04T06:50:00Z",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 137939
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 34792
+            }
+          ]
         }
       ]
     },
@@ -312,20 +366,20 @@
       },
       "resultHistory": [],
       "mediaUpdate": {
-        "observedAt": "2026-11-04T05:53:30Z",
-        "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+        "observedAt": "2026-11-04T06:51:51Z",
+        "sourceUpdatedAt": "2026-11-04T06:50:00Z",
         "sourceName": "San Francisco Chronicle",
         "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
         "options": [
           {
             "id": "0",
             "label": "Yes",
-            "votes": 91968
+            "votes": 100925
           },
           {
             "id": "1",
             "label": "No",
-            "votes": 63641
+            "votes": 73801
           }
         ]
       },
@@ -365,6 +419,24 @@
               "votes": 63641
             }
           ]
+        },
+        {
+          "observedAt": "2026-11-04T06:51:51Z",
+          "sourceUpdatedAt": "2026-11-04T06:50:00Z",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 100925
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 73801
+            }
+          ]
         }
       ]
     },
@@ -396,20 +468,20 @@
       },
       "resultHistory": [],
       "mediaUpdate": {
-        "observedAt": "2026-11-04T05:53:30Z",
-        "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+        "observedAt": "2026-11-04T06:51:51Z",
+        "sourceUpdatedAt": "2026-11-04T06:50:00Z",
         "sourceName": "San Francisco Chronicle",
         "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
         "options": [
           {
             "id": "0",
             "label": "Yes",
-            "votes": 104890
+            "votes": 115722
           },
           {
             "id": "1",
             "label": "No",
-            "votes": 49282
+            "votes": 57280
           }
         ]
       },
@@ -449,6 +521,24 @@
               "votes": 49282
             }
           ]
+        },
+        {
+          "observedAt": "2026-11-04T06:51:51Z",
+          "sourceUpdatedAt": "2026-11-04T06:50:00Z",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 115722
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 57280
+            }
+          ]
         }
       ]
     },
@@ -480,20 +570,20 @@
       },
       "resultHistory": [],
       "mediaUpdate": {
-        "observedAt": "2026-11-04T05:53:30Z",
-        "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+        "observedAt": "2026-11-04T06:51:51Z",
+        "sourceUpdatedAt": "2026-11-04T06:50:00Z",
         "sourceName": "San Francisco Chronicle",
         "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
         "options": [
           {
             "id": "0",
             "label": "Yes",
-            "votes": 98953
+            "votes": 109173
           },
           {
             "id": "1",
             "label": "No",
-            "votes": 55672
+            "votes": 64467
           }
         ]
       },
@@ -533,6 +623,24 @@
               "votes": 55672
             }
           ]
+        },
+        {
+          "observedAt": "2026-11-04T06:51:51Z",
+          "sourceUpdatedAt": "2026-11-04T06:50:00Z",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 109173
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 64467
+            }
+          ]
         }
       ]
     },
@@ -564,20 +672,20 @@
       },
       "resultHistory": [],
       "mediaUpdate": {
-        "observedAt": "2026-11-04T05:53:30Z",
-        "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+        "observedAt": "2026-11-04T06:51:51Z",
+        "sourceUpdatedAt": "2026-11-04T06:50:00Z",
         "sourceName": "San Francisco Chronicle",
         "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
         "options": [
           {
             "id": "0",
             "label": "Yes",
-            "votes": 57242
+            "votes": 64656
           },
           {
             "id": "1",
             "label": "No",
-            "votes": 97369
+            "votes": 109160
           }
         ],
         "projection": {
@@ -635,6 +743,30 @@
             "sourceUrl": "https://www.sfchronicle.com/election/article/california-polls-prop-40-governor-live-updates-22499351.php#a-victory-for-sunset-dunes-park-as-upper-great-highway-ballot-measure-is-voted-down-045404",
             "publishedAt": "2026-11-04T04:54:04Z"
           }
+        },
+        {
+          "observedAt": "2026-11-04T06:51:51Z",
+          "sourceUpdatedAt": "2026-11-04T06:50:00Z",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 64656
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 109160
+            }
+          ],
+          "projection": {
+            "outcome": "rejected",
+            "sourceName": "San Francisco Chronicle",
+            "sourceUrl": "https://www.sfchronicle.com/election/article/california-polls-prop-40-governor-live-updates-22499351.php#a-victory-for-sunset-dunes-park-as-upper-great-highway-ballot-measure-is-voted-down-045404",
+            "publishedAt": "2026-11-04T04:54:04Z"
+          }
         }
       ]
     },
@@ -666,20 +798,20 @@
       },
       "resultHistory": [],
       "mediaUpdate": {
-        "observedAt": "2026-11-04T05:53:30Z",
-        "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+        "observedAt": "2026-11-04T06:51:51Z",
+        "sourceUpdatedAt": "2026-11-04T06:50:00Z",
         "sourceName": "San Francisco Chronicle",
         "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
         "options": [
           {
             "id": "0",
             "label": "Yes",
-            "votes": 112181
+            "votes": 125989
           },
           {
             "id": "1",
             "label": "No",
-            "votes": 42533
+            "votes": 47906
           }
         ]
       },
@@ -719,6 +851,24 @@
               "votes": 42533
             }
           ]
+        },
+        {
+          "observedAt": "2026-11-04T06:51:51Z",
+          "sourceUpdatedAt": "2026-11-04T06:50:00Z",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 125989
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 47906
+            }
+          ]
         }
       ]
     },
@@ -750,20 +900,20 @@
       },
       "resultHistory": [],
       "mediaUpdate": {
-        "observedAt": "2026-11-04T05:53:30Z",
-        "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+        "observedAt": "2026-11-04T06:51:51Z",
+        "sourceUpdatedAt": "2026-11-04T06:50:00Z",
         "sourceName": "San Francisco Chronicle",
         "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
         "options": [
           {
             "id": "0",
             "label": "Yes",
-            "votes": 66907
+            "votes": 76803
           },
           {
             "id": "1",
             "label": "No",
-            "votes": 85026
+            "votes": 93785
           }
         ]
       },
@@ -803,6 +953,24 @@
               "votes": 85026
             }
           ]
+        },
+        {
+          "observedAt": "2026-11-04T06:51:51Z",
+          "sourceUpdatedAt": "2026-11-04T06:50:00Z",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 76803
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 93785
+            }
+          ]
         }
       ]
     },
@@ -834,20 +1002,20 @@
       },
       "resultHistory": [],
       "mediaUpdate": {
-        "observedAt": "2026-11-04T05:53:30Z",
-        "sourceUpdatedAt": "2026-11-04T05:52:00Z",
+        "observedAt": "2026-11-04T06:51:51Z",
+        "sourceUpdatedAt": "2026-11-04T06:50:00Z",
         "sourceName": "San Francisco Chronicle",
         "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
         "options": [
           {
             "id": "0",
             "label": "Yes",
-            "votes": 120907
+            "votes": 134938
           },
           {
             "id": "1",
             "label": "No",
-            "votes": 31088
+            "votes": 35719
           }
         ]
       },
@@ -887,6 +1055,24 @@
               "votes": 31088
             }
           ]
+        },
+        {
+          "observedAt": "2026-11-04T06:51:51Z",
+          "sourceUpdatedAt": "2026-11-04T06:50:00Z",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 134938
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 35719
+            }
+          ]
         }
       ]
     },
@@ -918,20 +1104,20 @@
       },
       "resultHistory": [],
       "mediaUpdate": {
-        "observedAt": "2026-11-04T06:39:42Z",
-        "sourceUpdatedAt": "2026-11-04T06:36:00Z",
+        "observedAt": "2026-11-04T06:51:51Z",
+        "sourceUpdatedAt": "2026-11-04T06:50:00Z",
         "sourceName": "San Francisco Chronicle",
         "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
         "options": [
           {
             "id": "0",
             "label": "Yes",
-            "votes": 650366
+            "votes": 671876
           },
           {
             "id": "1",
             "label": "No",
-            "votes": 410598
+            "votes": 420043
           }
         ],
         "resultGeography": {
@@ -963,6 +1149,36 @@
               "id": "1",
               "label": "No",
               "votes": 410598
+            }
+          ],
+          "resultGeography": {
+            "type": "regional",
+            "scope": "full-contest",
+            "name": "Five-county RTM region",
+            "counties": ["Alameda", "Contra Costa", "San Francisco", "San Mateo", "Santa Clara"]
+          },
+          "projection": {
+            "outcome": "passed",
+            "sourceName": "San Francisco Chronicle",
+            "sourceUrl": "https://www.sfchronicle.com/election/article/live-results-bay-area-regional-transit-measure-22487820.php",
+            "observedAt": "2026-11-04T06:39:42Z"
+          }
+        },
+        {
+          "observedAt": "2026-11-04T06:51:51Z",
+          "sourceUpdatedAt": "2026-11-04T06:50:00Z",
+          "sourceName": "San Francisco Chronicle",
+          "sourceUrl": "https://www.sfchronicle.com/projects/2026/election-results/san-francisco/",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 671876
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 420043
             }
           ],
           "resultGeography": {

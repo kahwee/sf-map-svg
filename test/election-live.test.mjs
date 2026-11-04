@@ -157,7 +157,7 @@ test('news tallies stay separate from official results and history', () => {
   const g = updates.find((c) => c.id === 'local-G');
   assert.deepEqual(
     g.mediaUpdate.options.map((o) => o.votes),
-    [57242, 97369],
+    [64656, 109160],
   );
   assert.equal(g.mediaUpdate.projection.outcome, 'rejected');
   assert.equal(updates.filter((c) => c.mediaUpdate.projection).length, 1);
@@ -196,7 +196,7 @@ test('recovery preserves newer newsroom updates without creating official result
 });
 test('newsroom history preserves publisher observations separately from official batches', () => {
   for (const c of seed.contests.filter((c) => c.mediaHistory && c.id !== 'RTM')) {
-    assert.equal(c.mediaHistory.length, 2);
+    assert.equal(c.mediaHistory.length, 3);
     assert.equal(c.mediaHistory[0].sourceName, 'KQED');
     assert.equal(c.mediaHistory[1].sourceName, 'San Francisco Chronicle');
     assert.deepEqual(c.mediaUpdate, c.mediaHistory.at(-1));
@@ -208,9 +208,9 @@ test('newsroom history preserves publisher observations separately from official
     delete c.mediaHistory;
   }
   const merged = chooseSnapshotSeed(seed, prior);
-  assert.equal(merged.contests.find((c) => c.id === 'local-G').mediaHistory.length, 2);
+  assert.equal(merged.contests.find((c) => c.id === 'local-G').mediaHistory.length, 3);
   const recovered = chooseSnapshotSeed(prior, seed);
-  assert.equal(recovered.contests.find((c) => c.id === 'local-G').mediaHistory.length, 2);
+  assert.equal(recovered.contests.find((c) => c.id === 'local-G').mediaHistory.length, 3);
   const bad = structuredClone(seed);
   bad.contests.find((c) => c.id === 'local-G').mediaHistory.reverse();
   assert.throws(() => validateSnapshot(bad), /media/);
@@ -220,13 +220,13 @@ test('RTM newsroom totals retain full five-county scope and observed projection 
   const c = seed.contests.find((c) => c.id === 'RTM');
   assert.deepEqual(
     c.mediaUpdate.options.map((o) => o.votes),
-    [650366, 410598],
+    [671876, 420043],
   );
   assert.equal(c.mediaUpdate.resultGeography.scope, 'full-contest');
   assert.equal(c.mediaUpdate.resultGeography.counties.length, 5);
   assert.equal(c.mediaUpdate.projection.publishedAt, undefined);
   assert.equal(c.mediaUpdate.projection.observedAt, '2026-11-04T06:39:42Z');
-  assert.equal(c.mediaHistory.length, 1);
+  assert.equal(c.mediaHistory.length, 2);
   assert.deepEqual(c.resultHistory, []);
   assert.ok(c.options.every((o) => o.votes === null));
   assert.equal(c.call, 'uncalled');
@@ -247,5 +247,33 @@ test('RTM newsroom totals retain full five-county scope and observed projection 
     const bad = structuredClone(seed);
     mutate(bad.contests.find((c) => c.id === 'RTM'));
     assert.throws(() => validateSnapshot(bad), /media/);
+  }
+});
+
+test('10:50 p.m. newsroom observation retains every prior release and exact tallies', () => {
+  const counts = [
+    [122062, 50703],
+    [85032, 85674],
+    [137939, 34792],
+    [100925, 73801],
+    [115722, 57280],
+    [109173, 64467],
+    [64656, 109160],
+    [125989, 47906],
+    [76803, 93785],
+    [134938, 35719],
+    [671876, 420043],
+  ];
+  const ids = [...'ABCDEFGHIJ'].map((letter) => `local-${letter}`).concat('RTM');
+  for (const [index, id] of ids.entries()) {
+    const contest = seed.contests.find((c) => c.id === id);
+    assert.deepEqual(
+      contest.mediaUpdate.options.map((o) => o.votes),
+      counts[index],
+    );
+    assert.equal(contest.mediaUpdate.sourceUpdatedAt, '2026-11-04T06:50:00Z');
+    assert.equal(contest.mediaUpdate.observedAt, '2026-11-04T06:51:51Z');
+    assert.deepEqual(contest.mediaUpdate.projection, contest.mediaHistory[0].projection);
+    assert.deepEqual(contest.mediaUpdate.resultGeography, contest.mediaHistory[0].resultGeography);
   }
 });

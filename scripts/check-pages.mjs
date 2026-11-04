@@ -497,17 +497,20 @@ async function checkElection() {
     )
       fail('election: media tally lacks attribution');
     if (
-      !(await page.locator('.vote-list').textContent()).includes('63.0%') ||
+      !(await page.locator('.vote-list').textContent()).includes('62.8%') ||
       (await page.locator('.vote-share').count()) !== 2
     )
       fail('election: count-derived shares missing');
-    if (!(await page.locator('.vote-list').textContent()).includes('97,369'))
+    if (!(await page.locator('.vote-list').textContent()).includes('109,160'))
       fail('election: verified media tally missing');
     if (
       !(await page.locator('.batch-history h3').textContent()).includes('Newsroom observations') ||
-      (await page.locator('.trend-panel svg circle').count()) !== 2
+      (await page.locator('.trend-panel svg circle').count()) !== 3
     )
       fail('election: separate newsroom history missing');
+    await page.getByRole('button', { name: '← Previous', exact: true }).click();
+    if (!(await page.locator('.trend-value').textContent()).includes('57,242'))
+      fail('election: second newsroom observation was not preserved');
     await page.getByRole('button', { name: '← Previous', exact: true }).click();
     if (!(await page.locator('.trend-value').textContent()).includes('54,391'))
       fail('election: prior KQED observation was not preserved');
@@ -522,19 +525,17 @@ async function checkElection() {
     )
       fail('election: RTM full-region scope missing');
     if (
-      !(await page.locator('.vote-list').textContent()).includes('650,366') ||
+      !(await page.locator('.vote-list').textContent()).includes('671,876') ||
       !(await page.locator('[data-media-projection]').textContent()).includes(
         'passed. Not certified',
       )
     )
       fail('election: RTM attributed tally/projection missing');
-    if (
-      !(await page.locator('.trend-value').textContent()).includes(
-        'One observation; no trend yet',
-      ) ||
-      (await page.locator('.batch-history svg path').count()) !== 0
-    )
-      fail('election: one RTM observation invented a trend');
+    if ((await page.locator('.trend-panel svg circle').count()) !== 2)
+      fail('election: RTM observations missing');
+    await page.getByRole('button', { name: '← Previous', exact: true }).click();
+    if (!(await page.locator('.trend-value').textContent()).includes('650,366'))
+      fail('election: first RTM observation was not preserved');
     await page.locator('#ballot-search').fill('zzzz-no-match');
     if (!(await page.locator('#contests').textContent()).includes('No matching'))
       fail('election: no-match state failed');
@@ -694,7 +695,7 @@ async function checkElectionLifecycle() {
     if (
       (await page.locator('select[aria-label="View option"]').inputValue()) !== '1' ||
       (await page.locator('select[aria-label="Measure"]').inputValue()) !== 'share' ||
-      (await page.locator('input[type="range"]').inputValue()) !== '0'
+      (await page.locator('input[type="range"]').inputValue()) !== '1'
     )
       fail('election lifecycle: automatic refresh reset chart selection');
     await page.locator('#refresh').click();
@@ -703,7 +704,7 @@ async function checkElectionLifecycle() {
     );
     if ((await page.locator('#contests h2').textContent()).includes('Older cached title'))
       fail('election lifecycle: older snapshot replaced newer data');
-    if ((await page.locator('input[type="range"]').inputValue()) !== '0')
+    if ((await page.locator('input[type="range"]').inputValue()) !== '1')
       fail('election lifecycle: rejected response reset observation');
   } catch (error) {
     fail(`election lifecycle: ${error.stack}`);
