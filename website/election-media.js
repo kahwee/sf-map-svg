@@ -21,6 +21,10 @@ export function validateMediaUpdate(contest) {
             ? ['https://www.kqed.org/elections/results/sanfrancisco/proposition-g']
             : []),
         ].includes(media.sourceUrl)) ||
+      (regional &&
+        media?.sourceName === 'KQED' &&
+        media.sourceUrl ===
+          'https://www.kqed.org/elections/results/california/regional-measure-rtm') ||
       (media?.sourceName === 'San Francisco Chronicle' &&
         media.sourceUrl ===
           'https://www.sfchronicle.com/projects/2026/election-results/san-francisco/')

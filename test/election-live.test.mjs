@@ -307,3 +307,30 @@ test('11:53 p.m. KQED observation appends exact local counts without changing RT
   }
   assert.equal(seed.contests.find((c) => c.id === 'RTM').mediaHistory.length, 2);
 });
+
+test('KQED RTM requires the dedicated regional source and complete five-county scope', () => {
+  const fixture = structuredClone(seed);
+  const contest = fixture.contests.find((c) => c.id === 'RTM');
+  const next = structuredClone(contest.mediaUpdate);
+  Object.assign(next, {
+    sourceName: 'KQED',
+    sourceUrl: 'https://www.kqed.org/elections/results/california/regional-measure-rtm',
+    sourceUpdatedAt: '2026-11-04T07:27:00Z',
+    observedAt: '2026-11-04T08:10:04Z',
+  });
+  next.options[0].votes = 690335;
+  next.options[1].votes = 431242;
+  contest.mediaHistory.push(next);
+  contest.mediaUpdate = next;
+  validateSnapshot(fixture);
+  assert.deepEqual(next.projection, contest.mediaHistory[0].projection);
+  assert.deepEqual(next.resultGeography, contest.mediaHistory[0].resultGeography);
+  for (const url of [
+    'https://www.kqed.org/elections/results/sanfrancisco',
+    'https://www.kqed.org/elections/results/california/unverified',
+  ]) {
+    const bad = structuredClone(fixture);
+    bad.contests.find((c) => c.id === 'RTM').mediaUpdate.sourceUrl = url;
+    assert.throws(() => validateSnapshot(bad), /media/);
+  }
+});
