@@ -29,15 +29,18 @@ const label = (c) =>
 for (let id = 1; id <= 11; id++) $('region').add(new Option(`District ${id}`, String(id)));
 function renderStatus() {
   const state = freshness(snapshot);
-  $('status-title').textContent =
-    snapshot.status === 'pending' ? 'Awaiting official results' : 'Unofficial · uncalled';
+  $('status-title').textContent = snapshot.contests.some((c) => c.mediaUpdate)
+    ? 'Preliminary results'
+    : snapshot.status === 'pending'
+      ? 'Awaiting official results'
+      : 'Unofficial · uncalled';
   $('check-status').textContent =
-    `${state === 'stale' ? 'Stale check · ' : ''}${snapshot.checkedAt ? `Checked ${time(snapshot.checkedAt)}` : 'Not checked yet'} · ${snapshot.checkStatus === 'not-checked' ? 'Source check pending' : snapshot.checkStatus === 'partial' || snapshot.checkStatus === 'error' ? 'Local source unavailable' : 'Official sources'}`;
+    `${state === 'stale' ? 'Stale check · ' : ''}${snapshot.checkedAt ? `Checked ${time(snapshot.checkedAt)}` : 'Not checked yet'} · ${snapshot.checkStatus === 'not-checked' ? 'Source check pending' : snapshot.checkStatus === 'partial' || snapshot.checkStatus === 'error' ? 'Official check incomplete' : 'Official sources'}`;
   $('report-time').textContent = `Local SF report: ${time(snapshot.sourceReportTimestamp)}.`;
   const local = snapshot.sourceChecks?.find((source) => source.id === 'sf-local');
   $('source-detail').textContent =
     local?.status === 'error'
-      ? `Local source unavailable${local.message?.match(/HTTP \d{3}/)?.[0] ? ` (${local.message.match(/HTTP \d{3}/)[0]})` : ''}. County counts cannot decide statewide or regional outcomes.`
+      ? `Official local feed unavailable${local.message?.match(/HTTP \d{3}/)?.[0] ? ` (${local.message.match(/HTTP \d{3}/)[0]})` : ''}. County counts cannot decide statewide or regional outcomes.`
       : 'County counts cannot decide statewide or regional outcomes.';
   if (feedFailed)
     $('check-status').textContent =
@@ -58,7 +61,7 @@ function renderContest(c) {
   article.dataset.contestId = c.id;
   const meta = Object.assign(document.createElement('p'), {
     className: 'contest-meta',
-    textContent: `${c.kind === 'measure' ? (c.id === 'RTM' ? 'Regional measure' : `Proposition ${c.id.split('-').at(-1)}`) : 'Ballot contest'} · ${scopeName(c)} · Official result uncalled`,
+    textContent: `${c.kind === 'measure' ? (c.id === 'RTM' ? 'Regional measure' : `Proposition ${c.id.split('-').at(-1)}`) : 'Ballot contest'} · ${scopeName(c)} · ${c.mediaUpdate ? 'Preliminary' : 'Uncalled'}`,
   });
   const title = Object.assign(document.createElement('h2'), {
     textContent: c.shortTitle || c.title,
@@ -90,13 +93,24 @@ function renderContest(c) {
     'aria-label',
     !reported && media ? 'KQED preliminary vote totals' : 'Official vote totals',
   );
-  for (const option of !reported && media ? media.options : c.options) {
+  const displayedOptions = !reported && media ? media.options : c.options;
+  const total = displayedOptions.reduce((sum, option) => sum + (option.votes || 0), 0);
+  for (const option of displayedOptions) {
     const row = document.createElement('li');
     const name = Object.assign(document.createElement('span'), { textContent: option.label });
     const votes = Object.assign(document.createElement('span'), {
       className: 'vote-count',
       textContent: option.votes === null ? 'Pending' : option.votes.toLocaleString('en-US'),
     });
+    if (c.kind === 'measure' && option.votes !== null && total > 0) {
+      const share = (option.votes / total) * 100;
+      votes.textContent += ` · ${share.toFixed(1)}%`;
+      const bar = document.createElement('span');
+      bar.className = 'vote-share';
+      bar.style.width = `${share}%`;
+      bar.setAttribute('aria-hidden', 'true');
+      row.append(bar);
+    }
     row.append(name, votes);
     list.append(row);
   }
@@ -117,14 +131,14 @@ function renderContest(c) {
         href: media.sourceUrl,
         textContent: `${media.sourceName} preliminary tally`,
       }),
-      ` · Updated ${time(media.sourceUpdatedAt)}. Media update time, not an official report timestamp.`,
+      ` · Updated ${time(media.sourceUpdatedAt)}.`,
     );
     article.append(attribution);
   }
   const note = c.resultStatus
     ? `SF county votes only · ${reported ? 'Unofficial' : 'Awaiting votes; source has a zero/pre-election report'}.`
     : media
-      ? 'Official local feed unavailable. Newsroom totals shown above.'
+      ? 'Shares of reported Yes/No votes; not ballot completion.'
       : 'Local results unavailable. Pending means unknown, not zero.';
   article.append(
     Object.assign(document.createElement('p'), {

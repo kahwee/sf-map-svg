@@ -494,6 +494,11 @@ async function checkElection() {
       !(await page.locator('[data-media-tally]').textContent()).includes('KQED preliminary tally')
     )
       fail('election: media tally lacks attribution');
+    if (
+      !(await page.locator('.vote-list').textContent()).includes('62.7%') ||
+      (await page.locator('.vote-share').count()) !== 2
+    )
+      fail('election: count-derived shares missing');
     if (!(await page.locator('.vote-list').textContent()).includes('91,246'))
       fail('election: verified media tally missing');
     if ((await page.locator('.trend-chart circle').count()) !== 0)

@@ -112,6 +112,7 @@
   margin: 12px 0;
 }
 .vote-list li {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -311,4 +312,14 @@
   #contests.is-loading {
     min-height: 500px;
   }
+}
+
+.vote-share {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: var(--muted);
+  opacity: 0.6;
+  border-radius: 2px;
 }
