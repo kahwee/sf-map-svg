@@ -88,7 +88,7 @@ export function renderElectionChart(values, { share, unit, label }) {
     ariaLabel: label,
     tabIndex: -1,
     ariaDescription:
-      'Discrete cumulative snapshots in release order. Guide lines show the value scale; exact values are available in Table view.',
+      'Discrete cumulative snapshots in observation order. Guide lines show the value scale; exact values are available in Table view.',
     idPrefix: 'election-trend',
   }).replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ');
 }

@@ -28,7 +28,7 @@ export function attachPointPopover(svg, series, points, { share, media, scope })
       tabindex: '0',
       role: 'button',
       'aria-haspopup': 'dialog',
-      'aria-label': `${s.label}, ${format(s.values[observation])}, ${media ? 'newsroom observation' : 'official report'} ${observation + 1}`,
+      'aria-label': `${s.label}, ${format(s.values[observation])}, ${media ? (point.sourceKind === 'agency-compilation' ? 'agency compilation observation' : 'newsroom observation') : 'official report'} ${observation + 1}`,
       class: 'chart-point-target',
     }))
       hit.setAttribute(name, String(value));
@@ -37,7 +37,7 @@ export function attachPointPopover(svg, series, points, { share, media, scope })
       const title = document.createElement('strong');
       title.textContent = `${s.label}: ${format(s.values[observation])}${share ? ' of reported votes' : ' reported votes'}`;
       const context = document.createElement('p');
-      context.textContent = `${scope} · ${media ? 'Newsroom observation' : 'Official report'} ${observation + 1}`;
+      context.textContent = `${scope} · ${media ? (point.sourceKind === 'agency-compilation' ? 'Preliminary governmental compilation' : 'Newsroom observation') : 'Official report'} ${observation + 1}`;
       const link = document.createElement('a');
       link.href = point.resultSourceUrl;
       link.textContent = point.sourceReportTime;

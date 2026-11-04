@@ -221,21 +221,21 @@ test('RTM newsroom totals retain full five-county scope and observed projection 
   const c = seed.contests.find((c) => c.id === 'RTM');
   assert.deepEqual(
     c.mediaUpdate.options.map((o) => o.votes),
-    [708996, 443928],
+    [714460, 446326],
   );
   assert.equal(c.mediaUpdate.resultGeography.scope, 'full-contest');
   assert.equal(c.mediaUpdate.resultGeography.counties.length, 5);
   assert.equal(c.mediaUpdate.projection.publishedAt, undefined);
   assert.equal(c.mediaUpdate.projection.observedAt, '2026-11-04T06:39:42Z');
-  assert.equal(c.mediaHistory.length, 5);
-  assert.equal(c.mediaUpdate.sourceName, 'KQED');
+  assert.equal(c.mediaHistory.length, 6);
+  assert.equal(c.mediaUpdate.sourceName, 'Metropolitan Transportation Commission');
   assert.equal(
     c.mediaUpdate.sourceUrl,
-    'https://www.kqed.org/elections/results/california/regional-measure-rtm',
+    'https://mtc.ca.gov/about-mtc/authorities/public-transit-revenue-measure-district',
   );
-  assert.equal(c.mediaUpdate.sourceUpdatedAt, '2026-11-04T08:59:00Z');
+  assert.equal(c.mediaUpdate.sourceUpdatedAt, null);
   assert.equal(c.mediaHistory[2].sourceUpdatedAt, '2026-11-04T07:27:00Z');
-  assert.equal(c.mediaUpdate.observedAt, '2026-11-04T16:31:33Z');
+  assert.equal(c.mediaUpdate.observedAt, '2026-11-04T19:03:28Z');
   assert.ok(
     c.mediaHistory.slice(0, 2).every((point) => point.sourceName === 'San Francisco Chronicle'),
   );
@@ -354,7 +354,7 @@ test('KQED RTM requires the dedicated regional source and complete five-county s
 test('RTM permits only the documented future-dated publisher issue with unknown report time', () => {
   const fixture = structuredClone(seed);
   const contest = fixture.contests.find((c) => c.id === 'RTM');
-  const point = structuredClone(contest.mediaUpdate);
+  const point = structuredClone(contest.mediaHistory[3]);
   point.sourceUpdatedAt = null;
   point.sourceTimestampIssue = {
     type: 'future-dated',
@@ -401,8 +401,11 @@ test('RTM permits only the documented future-dated publisher issue with unknown 
 });
 
 test('RTM changed counts at the same publisher clock survive recovery as separate observations', () => {
-  const current = seed.contests.find((c) => c.id === 'RTM');
-  const previous = structuredClone(seed);
+  const fixture = structuredClone(seed);
+  const current = fixture.contests.find((c) => c.id === 'RTM');
+  current.mediaHistory = current.mediaHistory.slice(0, 5);
+  current.mediaUpdate = structuredClone(current.mediaHistory.at(-1));
+  const previous = structuredClone(fixture);
   const older = previous.contests.find((c) => c.id === 'RTM');
   older.mediaHistory.pop();
   older.mediaUpdate = structuredClone(older.mediaHistory.at(-1));
@@ -413,8 +416,8 @@ test('RTM changed counts at the same publisher clock survive recovery as separat
   assert.equal(older.mediaUpdate.sourceUpdatedAt, current.mediaUpdate.sourceUpdatedAt);
   assert.notEqual(older.mediaUpdate.observedAt, current.mediaUpdate.observedAt);
   for (const recovered of [
-    chooseSnapshotSeed(seed, previous),
-    chooseSnapshotSeed(previous, seed),
+    chooseSnapshotSeed(fixture, previous),
+    chooseSnapshotSeed(previous, fixture),
   ]) {
     validateSnapshot(recovered);
     const contest = recovered.contests.find((c) => c.id === 'RTM');

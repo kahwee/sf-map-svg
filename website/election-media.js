@@ -1,4 +1,4 @@
-// Newsroom reporting is separate from official counts, calls and batch history.
+// Secondary published reporting is separate from official counts, calls and batch history.
 export function validateMediaUpdate(contest) {
   const media = contest.mediaUpdate;
   if (media === undefined) return;
@@ -6,13 +6,29 @@ export function validateMediaUpdate(contest) {
   const regional = contest.id === 'RTM';
   const projectionTime = regional ? projection?.observedAt : projection?.publishedAt;
   const issue = media?.sourceTimestampIssue;
-  const unknownTime =
+  const governmental =
     regional &&
-    media?.sourceName === 'KQED' &&
+    media?.sourceName === 'Metropolitan Transportation Commission' &&
+    media.sourceKind === 'agency-compilation' &&
+    media.sourceUrl ===
+      'https://mtc.ca.gov/about-mtc/authorities/public-transit-revenue-measure-district';
+  const unspecifiedTimezone =
+    governmental &&
     media.sourceUpdatedAt === null &&
-    issue?.type === 'future-dated' &&
-    issue.rawText === 'Updated at 11:27 PM PT on November 4, 2026' &&
-    Object.keys(issue).length === 2;
+    issue === undefined &&
+    /^Last updated (?:[1-9]|1[0-2]):[0-5][0-9] [ap]\.m\., November (?:[4-9]|[12][0-9]|30)$/.test(
+      media.sourceUpdatedAtText,
+    ) &&
+    typeof media.sourceUpdatedAtText === 'string' &&
+    media.sourceUpdatedAtText.length <= 64;
+  const unknownTime =
+    unspecifiedTimezone ||
+    (regional &&
+      media?.sourceName === 'KQED' &&
+      media.sourceUpdatedAt === null &&
+      issue?.type === 'future-dated' &&
+      issue.rawText === 'Updated at 11:27 PM PT on November 4, 2026' &&
+      Object.keys(issue).length === 2);
   const times = [
     media?.observedAt,
     ...(unknownTime ? [] : [media?.sourceUpdatedAt]),
@@ -21,7 +37,11 @@ export function validateMediaUpdate(contest) {
   if (
     (!/^local-[A-J]$/.test(contest.id) && !regional) ||
     (issue !== undefined && !unknownTime) ||
+    (media?.sourceKind !== undefined && !governmental) ||
+    (media?.sourceUpdatedAtText !== undefined && !governmental) ||
+    (governmental && !unspecifiedTimezone) ||
     !(
+      governmental ||
       (!regional &&
         media?.sourceName === 'KQED' &&
         [
@@ -41,7 +61,11 @@ export function validateMediaUpdate(contest) {
     times.some(
       (value) =>
         typeof value !== 'string' ||
-        !/^2026-11-04T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(value) ||
+        !(
+          governmental
+            ? /^2026-11-(?:0[4-9]|[12][0-9]|30)T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/
+            : /^2026-11-04T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/
+        ).test(value) ||
         !Number.isFinite(Date.parse(value)),
     ) ||
     Date.parse(media.observedAt) < Date.parse(media.sourceUpdatedAt) ||
@@ -124,6 +148,8 @@ export function mergeMediaMetadata(current, previous) {
 
 // A publisher's invalid date is retained verbatim, never inferred from fetch time.
 export function mediaReportTime(media, format) {
+  if (media.sourceKind === 'agency-compilation')
+    return `${media.sourceUpdatedAtText} · timezone unspecified`;
   return media.sourceUpdatedAt === null
     ? `Report time unverified · Source says “${media.sourceTimestampIssue.rawText}”`
     : `Updated ${format(media.sourceUpdatedAt)}`;

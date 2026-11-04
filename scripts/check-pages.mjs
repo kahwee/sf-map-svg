@@ -585,15 +585,30 @@ async function checkElection() {
     )
       fail('election: RTM full-region scope missing');
     if (
-      !(await page.locator('.vote-list').textContent()).includes('708,996') ||
+      !(await page.locator('.vote-list').textContent()).includes('714,460') ||
       !(await page.locator('[data-media-projection]').textContent()).includes(
         'passed. Not certified',
       )
     )
       fail('election: RTM attributed tally/projection missing');
-    if ((await page.locator('.trend-panel svg circle').count()) !== 10)
+    if ((await page.locator('.trend-panel svg circle').count()) !== 12)
       fail('election: RTM observations missing');
-    for (const count of ['671,876', '650,366', '431,242', '702,848', '439,585', '443,928']) {
+    if (
+      !(await page.locator('.batch-history h3').textContent()).includes('Published observations') ||
+      !(await page.locator('[data-media-tally]').textContent()).includes('timezone unspecified') ||
+      !(await page.locator('[data-media-tally]').textContent()).includes('governmental compilation')
+    )
+      fail('election: MTC source kind or literal timezone disclosure missing');
+    for (const count of [
+      '671,876',
+      '650,366',
+      '431,242',
+      '702,848',
+      '439,585',
+      '443,928',
+      '708,996',
+      '446,326',
+    ]) {
       if (!(await page.locator('.history-table-wrap').textContent()).includes(count))
         fail('election: RTM comparison lost prior observations');
     }
@@ -705,7 +720,7 @@ async function checkUnknownMediaTime() {
   const page = await context.newPage();
   const data = JSON.parse(await readFile('elections/2026-11-03.json', 'utf8'));
   const contest = data.contests.find((c) => c.id === 'RTM');
-  const point = structuredClone(contest.mediaUpdate);
+  const point = structuredClone(contest.mediaHistory[3]);
   Object.assign(point, {
     sourceUpdatedAt: null,
     sourceTimestampIssue: {

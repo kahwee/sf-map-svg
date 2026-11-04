@@ -89,9 +89,9 @@ export function createContestView(contest, chartState = {}) {
     attribution.append(
       Object.assign(document.createElement('a'), {
         href: media.sourceUrl,
-        textContent: `${media.sourceName} preliminary tally`,
+        textContent: `${media.sourceName}${media.sourceKind === 'agency-compilation' ? ' · preliminary governmental compilation' : ' preliminary tally'}`,
       }),
-      ` · ${media.sourceUpdatedAt === null ? mediaReportTime(media, formatTime) : `Publisher updated ${formatTime(media.sourceUpdatedAt)}`}.${media.sourceUpdatedAt === null ? ` Observed ${formatTime(media.observedAt)}.` : ''}`,
+      ` · ${media.sourceUpdatedAt === null ? mediaReportTime(media, formatTime) : `Publisher updated ${formatTime(media.sourceUpdatedAt)}`}.${media.sourceUpdatedAt === null ? ` Observed ${formatTime(media.observedAt)}.` : ''}${media.sourceKind === 'agency-compilation' ? ' County election-office results control; counting continues.' : ''}`,
     );
     totals.append(attribution);
   }

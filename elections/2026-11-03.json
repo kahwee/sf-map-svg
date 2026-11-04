@@ -1290,20 +1290,22 @@
       },
       "resultHistory": [],
       "mediaUpdate": {
-        "observedAt": "2026-11-04T16:31:33Z",
-        "sourceUpdatedAt": "2026-11-04T08:59:00Z",
-        "sourceName": "KQED",
-        "sourceUrl": "https://www.kqed.org/elections/results/california/regional-measure-rtm",
+        "sourceName": "Metropolitan Transportation Commission",
+        "sourceKind": "agency-compilation",
+        "sourceUrl": "https://mtc.ca.gov/about-mtc/authorities/public-transit-revenue-measure-district",
+        "sourceUpdatedAt": null,
+        "sourceUpdatedAtText": "Last updated 8:50 a.m., November 4",
+        "observedAt": "2026-11-04T19:03:28Z",
         "options": [
           {
             "id": "0",
             "label": "Yes",
-            "votes": 708996
+            "votes": 714460
           },
           {
             "id": "1",
             "label": "No",
-            "votes": 443928
+            "votes": 446326
           }
         ],
         "resultGeography": {
@@ -1455,6 +1457,38 @@
               "id": "1",
               "label": "No",
               "votes": 443928
+            }
+          ],
+          "resultGeography": {
+            "type": "regional",
+            "scope": "full-contest",
+            "name": "Five-county RTM region",
+            "counties": ["Alameda", "Contra Costa", "San Francisco", "San Mateo", "Santa Clara"]
+          },
+          "projection": {
+            "outcome": "passed",
+            "sourceName": "San Francisco Chronicle",
+            "sourceUrl": "https://www.sfchronicle.com/election/article/live-results-bay-area-regional-transit-measure-22487820.php",
+            "observedAt": "2026-11-04T06:39:42Z"
+          }
+        },
+        {
+          "sourceName": "Metropolitan Transportation Commission",
+          "sourceKind": "agency-compilation",
+          "sourceUrl": "https://mtc.ca.gov/about-mtc/authorities/public-transit-revenue-measure-district",
+          "sourceUpdatedAt": null,
+          "sourceUpdatedAtText": "Last updated 8:50 a.m., November 4",
+          "observedAt": "2026-11-04T19:03:28Z",
+          "options": [
+            {
+              "id": "0",
+              "label": "Yes",
+              "votes": 714460
+            },
+            {
+              "id": "1",
+              "label": "No",
+              "votes": 446326
             }
           ],
           "resultGeography": {

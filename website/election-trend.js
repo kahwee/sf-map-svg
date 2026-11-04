@@ -18,11 +18,11 @@ function createHistoryTable({ points, series, media, unit, share, format }) {
     `${unit} data; scroll to see earlier and later observations`,
   );
   const table = document.createElement('table');
-  table.append(make('caption', `Exact ${media ? 'newsroom' : 'batch'} observations`));
+  table.append(make('caption', `Exact ${media ? 'published' : 'batch'} observations`));
   const head = document.createElement('thead');
   const header = document.createElement('tr');
   for (const text of [
-    media ? 'Publisher page updated (Pacific)' : 'Official report time',
+    media ? 'Publisher page updated (timezone shown)' : 'Official report time',
     'First observed (Pacific)',
     ...series.map((s) => `${s.label} ${share ? '(%)' : '(votes)'}`),
   ]) {
@@ -54,13 +54,23 @@ function createHistoryTable({ points, series, media, unit, share, format }) {
 export function createTrend(contest, state = {}) {
   const section = make('section', '', 'batch-history');
   const media = !contest.resultHistory?.length && !!contest.mediaHistory?.length;
+  const compiled = contest.mediaHistory?.some((p) => p.sourceKind === 'agency-compilation');
   const unit = media ? 'Observation' : 'Batch';
   const units = media ? 'observations' : 'batches';
   section.setAttribute(
     'aria-label',
-    media ? 'Newsroom observation history' : 'Reported batch history',
+    media
+      ? compiled
+        ? 'Published observation history'
+        : 'Newsroom observation history'
+      : 'Reported batch history',
   );
-  section.append(make('h3', media ? 'Newsroom observations' : 'Reported batches'));
+  section.append(
+    make(
+      'h3',
+      media ? (compiled ? 'Published observations' : 'Newsroom observations') : 'Reported batches',
+    ),
+  );
   // Adapt only the presentation; never put newsroom records in resultHistory.
   const points = media
     ? contest.mediaHistory.map((p) => ({
@@ -150,7 +160,7 @@ export function createTrend(contest, state = {}) {
       renderElectionChart(series, {
         share,
         unit,
-        label: `${options.map((o) => o.label).join(' and ')}, ${share ? 'share of reported votes' : 'reported votes'}, ${points.length} ${media ? 'newsroom ' : 'reported '}${points.length === 1 ? unit.toLowerCase() : units}. ${delta}`,
+        label: `${options.map((o) => o.label).join(' and ')}, ${share ? 'share of reported votes' : 'reported votes'}, ${points.length} ${media ? 'published ' : 'reported '}${points.length === 1 ? unit.toLowerCase() : units}. ${delta}`,
       }),
       'image/svg+xml',
     ).documentElement;
