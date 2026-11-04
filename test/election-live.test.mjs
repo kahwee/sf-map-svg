@@ -220,13 +220,24 @@ test('RTM newsroom totals retain full five-county scope and observed projection 
   const c = seed.contests.find((c) => c.id === 'RTM');
   assert.deepEqual(
     c.mediaUpdate.options.map((o) => o.votes),
-    [671876, 420043],
+    [690335, 431242],
   );
   assert.equal(c.mediaUpdate.resultGeography.scope, 'full-contest');
   assert.equal(c.mediaUpdate.resultGeography.counties.length, 5);
   assert.equal(c.mediaUpdate.projection.publishedAt, undefined);
   assert.equal(c.mediaUpdate.projection.observedAt, '2026-11-04T06:39:42Z');
-  assert.equal(c.mediaHistory.length, 2);
+  assert.equal(c.mediaHistory.length, 3);
+  assert.equal(c.mediaUpdate.sourceName, 'KQED');
+  assert.equal(
+    c.mediaUpdate.sourceUrl,
+    'https://www.kqed.org/elections/results/california/regional-measure-rtm',
+  );
+  assert.equal(c.mediaUpdate.sourceUpdatedAt, '2026-11-04T07:27:00Z');
+  assert.equal(c.mediaUpdate.observedAt, '2026-11-04T08:10:04Z');
+  assert.ok(
+    c.mediaHistory.slice(0, 2).every((point) => point.sourceName === 'San Francisco Chronicle'),
+  );
+  assert.deepEqual(c.mediaUpdate.projection, c.mediaHistory[0].projection);
   assert.deepEqual(c.resultHistory, []);
   assert.ok(c.options.every((o) => o.votes === null));
   assert.equal(c.call, 'uncalled');
@@ -241,7 +252,7 @@ test('RTM newsroom totals retain full five-county scope and observed projection 
       c.mediaUpdate.projection.publishedAt = '2026-11-04T06:36:00Z';
     },
     (c) => {
-      c.mediaUpdate.sourceName = 'KQED';
+      c.mediaUpdate.sourceName = 'San Francisco Chronicle';
     },
   ]) {
     const bad = structuredClone(seed);
@@ -305,7 +316,10 @@ test('11:53 p.m. KQED observation appends exact local counts without changing RT
     assert.deepEqual(contest.mediaUpdate.projection, contest.mediaHistory[0].projection);
     assert.deepEqual(contest.resultHistory, []);
   }
-  assert.equal(seed.contests.find((c) => c.id === 'RTM').mediaHistory.length, 2);
+  assert.equal(
+    seed.contests.find((c) => c.id === 'RTM').mediaHistory[1].sourceUpdatedAt,
+    '2026-11-04T06:50:00Z',
+  );
 });
 
 test('KQED RTM requires the dedicated regional source and complete five-county scope', () => {
@@ -320,7 +334,7 @@ test('KQED RTM requires the dedicated regional source and complete five-county s
   });
   next.options[0].votes = 690335;
   next.options[1].votes = 431242;
-  contest.mediaHistory.push(next);
+  contest.mediaHistory = [...contest.mediaHistory.slice(0, 2), next];
   contest.mediaUpdate = next;
   validateSnapshot(fixture);
   assert.deepEqual(next.projection, contest.mediaHistory[0].projection);

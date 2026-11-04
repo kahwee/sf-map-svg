@@ -547,14 +547,17 @@ async function checkElection() {
     )
       fail('election: RTM full-region scope missing');
     if (
-      !(await page.locator('.vote-list').textContent()).includes('671,876') ||
+      !(await page.locator('.vote-list').textContent()).includes('690,335') ||
       !(await page.locator('[data-media-projection]').textContent()).includes(
         'passed. Not certified',
       )
     )
       fail('election: RTM attributed tally/projection missing');
-    if ((await page.locator('.trend-panel svg circle').count()) !== 2)
+    if ((await page.locator('.trend-panel svg circle').count()) !== 3)
       fail('election: RTM observations missing');
+    await page.getByRole('button', { name: '← Previous', exact: true }).click();
+    if (!(await page.locator('.trend-value').textContent()).includes('671,876'))
+      fail('election: second RTM observation was not preserved');
     await page.getByRole('button', { name: '← Previous', exact: true }).click();
     if (!(await page.locator('.trend-value').textContent()).includes('650,366'))
       fail('election: first RTM observation was not preserved');
