@@ -7,7 +7,7 @@ const make = (tag, text, className) =>
   });
 const observedTime = (iso) =>
   new Date(iso).toLocaleString('en-US', { timeZone: 'America/Los_Angeles', timeZoneName: 'short' });
-function createHistoryTable({ points, values, selectedLabel, media, unit, share, batch, format }) {
+function createHistoryTable({ points, series, media, unit, share, format }) {
   const tableHost = make('div', '', 'history-table-wrap');
   tableHost.tabIndex = 0;
   tableHost.setAttribute('role', 'region');
@@ -16,15 +16,13 @@ function createHistoryTable({ points, values, selectedLabel, media, unit, share,
     `${unit} data; scroll to see earlier and later observations`,
   );
   const table = document.createElement('table');
-  table.append(
-    make('caption', `${selectedLabel} — exact ${media ? 'newsroom' : 'batch'} observations`),
-  );
+  table.append(make('caption', `Exact ${media ? 'newsroom' : 'batch'} observations`));
   const head = document.createElement('thead');
   const header = document.createElement('tr');
   for (const text of [
     media ? 'Publisher page updated (Pacific)' : 'Official report time',
     'First observed (Pacific)',
-    share ? 'Vote share' : 'Votes',
+    ...series.map((s) => `${s.label} ${share ? '(%)' : '(votes)'}`),
   ]) {
     const th = make('th', text);
     th.scope = 'col';
@@ -35,12 +33,15 @@ function createHistoryTable({ points, values, selectedLabel, media, unit, share,
   const body = document.createElement('tbody');
   points.forEach((p, i) => {
     const row = document.createElement('tr');
-    if (i === batch) row.setAttribute('aria-current', 'true');
     const report = document.createElement('td');
     const link = make('a', p.sourceReportTime);
     link.href = p.resultSourceUrl;
     report.append(link);
-    row.append(report, make('td', observedTime(p.observedAt)), make('td', format(values[i])));
+    row.append(
+      report,
+      make('td', observedTime(p.observedAt)),
+      ...series.map((s) => make('td', format(s.values[i]))),
+    );
     body.append(row);
   });
   table.append(body);
@@ -90,38 +91,10 @@ export function createTrend(contest, state = {}) {
   metricSelect.add(new Option('Reported vote share', 'share'));
   metricSelect.value = state.metric === 'share' ? 'share' : 'votes';
   metricLabel.append(metricSelect);
-  controls.append(optionLabel, metricLabel);
-  const pointKey = (point) =>
-    JSON.stringify([
-      media ? 'media' : 'official',
-      point.observedAt,
-      point.sourceReportTime,
-      point.resultSourceUrl,
-      point.options,
-    ]);
-  const savedBatch = state.atLatest
-    ? -1
-    : points.findIndex((point) => pointKey(point) === state.observationKey);
-  let batch = savedBatch < 0 ? points.length - 1 : savedBatch;
-  const navigation = make('div', '', 'batch-navigation');
-  const previous = make('button', '← Previous');
-  previous.type = 'button';
-  const next = make('button', 'Next →');
-  next.type = 'button';
-  const position = make('span', '', 'batch-position');
-  navigation.append(previous, position, next);
-  const rangeLabel = make('label', '', 'batch-range-label');
-  const exploreLabel = media ? 'Explore newsroom observations' : 'Explore observed batches';
-  const rangeText = make('span', exploreLabel);
-  const range = document.createElement('input');
-  range.setAttribute('aria-label', exploreLabel);
-  range.type = 'range';
-  range.min = '0';
-  range.max = String(points.length - 1);
-  range.step = '1';
-  range.value = String(batch);
-  range.disabled = points.length < 2;
-  rangeLabel.append(rangeText, range);
+  const compare =
+    contest.kind === 'measure' || contest.options.every((o) => ['Yes', 'No'].includes(o.label));
+  if (!compare) controls.append(optionLabel);
+  controls.append(metricLabel);
   const panel = make('div', '', 'trend-panel');
   panel.setAttribute('aria-live', 'polite');
   const evidence = make('div', '', 'trend-evidence');
@@ -144,46 +117,38 @@ export function createTrend(contest, state = {}) {
   const historyHeader = make('div', '', 'history-heading');
   historyHeader.append(section.querySelector('h3'), viewToggle);
   section.prepend(historyHeader);
-  section.append(panel, controls, navigation, rangeLabel, evidence);
+  section.append(panel, controls, evidence);
   function draw() {
     const selected = contest.options.find((o) => o.id === optionSelect.value);
     const share = metricSelect.value === 'share';
     state.optionId = selected.id;
     state.metric = metricSelect.value;
-    state.observationKey = pointKey(points[batch]);
-    state.atLatest = batch === points.length - 1;
-    const values = points.map((p) => {
-      const votes = p.options.find((o) => o.id === selected.id).votes;
-      return share ? (100 * votes) / p.options.reduce((sum, o) => sum + o.votes, 0) : votes;
-    });
+    const options = compare ? contest.options : [selected];
+    const series = options.map((option, index) => ({
+      label: option.label,
+      color: index === 0 ? 'var(--accent)' : 'var(--comparison)',
+      values: points.map((p) => {
+        const votes = p.options.find((o) => o.id === option.id).votes;
+        return share ? (100 * votes) / p.options.reduce((sum, o) => sum + o.votes, 0) : votes;
+      }),
+    }));
     const format = (v) => (share ? `${v.toFixed(1)}%` : v.toLocaleString('en-US'));
-    const last = values[batch];
-    const change = batch > 0 ? last - values[batch - 1] : null;
-    range.value = String(batch);
-    range.setAttribute(
-      'aria-valuetext',
-      `${unit} ${batch + 1} of ${points.length}; report ${points[batch].sourceReportTime}; first observed ${observedTime(points[batch].observedAt)}`,
-    );
-    position.textContent = `${batch + 1} / ${points.length}`;
-    previous.disabled = batch === 0;
-    next.disabled = batch === points.length - 1;
     const delta =
-      change === null
-        ? points.length === 1
-          ? `One ${unit.toLowerCase()}; no trend yet.`
-          : `First ${unit.toLowerCase()}.`
-        : `Change: ${change > 0 ? '+' : ''}${share ? `${change.toFixed(1)} percentage points` : `${change.toLocaleString('en-US')} votes`}.`;
-    const headline = make(
-      'p',
-      `${unit} ${batch + 1} · ${selected.label}: ${format(last)} · ${delta}`,
-      'trend-value',
-    );
+      points.length === 1
+        ? `One ${unit.toLowerCase()}; no trend yet.`
+        : `${points.length} ${units}`;
+    const headline = make('div', '', 'trend-value trend-legend');
+    for (const s of series) {
+      const item = make('span', `${s.label}: ${format(s.values.at(-1))}`);
+      item.style.setProperty('--series-color', s.color);
+      headline.append(item);
+    }
+    headline.append(make('small', delta));
     const svg = new DOMParser().parseFromString(
-      renderElectionChart(values, {
+      renderElectionChart(series, {
         share,
-        batch,
         unit,
-        label: `${selected.label}, ${share ? 'share of reported votes' : 'reported votes'}, ${points.length} ${media ? 'newsroom ' : 'reported '}${points.length === 1 ? unit.toLowerCase() : units}. ${delta}`,
+        label: `${options.map((o) => o.label).join(' and ')}, ${share ? 'share of reported votes' : 'reported votes'}, ${points.length} ${media ? 'newsroom ' : 'reported '}${points.length === 1 ? unit.toLowerCase() : units}. ${delta}`,
       }),
       'image/svg+xml',
     ).documentElement;
@@ -196,12 +161,10 @@ export function createTrend(contest, state = {}) {
     );
     const tableHost = createHistoryTable({
       points,
-      values,
-      selectedLabel: selected.label,
+      series,
       media,
       unit,
       share,
-      batch,
       format,
     });
     const tableView = state.view === 'table';
@@ -210,35 +173,17 @@ export function createTrend(contest, state = {}) {
     svg.hidden = tableView;
     if (tableView) svg.setAttribute('style', 'display:none');
     tableHost.hidden = !tableView;
-    const source = make('p', '', 'trend-selected-source');
-    const sourceLink = make(
-      'a',
-      `${media ? 'Publisher update' : 'Official report'}: ${points[batch].sourceReportTime}`,
-    );
-    sourceLink.href = points[batch].resultSourceUrl;
-    source.append(
-      sourceLink,
-      document.createTextNode(` · Observed ${observedTime(points[batch].observedAt)}`),
-    );
+    const source = make('div', '', 'trend-selected-source');
+    points.forEach((p, i) => {
+      const row = make('p');
+      const link = make('a', `${i + 1} · ${p.sourceReportTime}`);
+      link.href = p.resultSourceUrl;
+      row.append(link, document.createTextNode(` · Observed ${observedTime(p.observedAt)}`));
+      source.append(row);
+    });
     panel.replaceChildren(headline, svg, tableHost);
     evidence.replaceChildren(source, note);
   }
-  previous.addEventListener('click', () => {
-    if (batch > 0) {
-      batch--;
-      draw();
-    }
-  });
-  next.addEventListener('click', () => {
-    if (batch < points.length - 1) {
-      batch++;
-      draw();
-    }
-  });
-  range.addEventListener('input', () => {
-    batch = Number(range.value);
-    draw();
-  });
   optionSelect.addEventListener('change', draw);
   metricSelect.addEventListener('change', draw);
   draw();

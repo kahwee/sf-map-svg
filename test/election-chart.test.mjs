@@ -22,7 +22,7 @@ test('release chart uses only actual snapshots and horizontal/vertical cumulativ
   assert.equal(doc.getElementsByTagName('circle').length, 3);
   assert.ok(doc.getElementsByTagName('line').length >= 4);
   assert.match(svg, /Reported votes/);
-  assert.match(svg, /release order/);
+  assert.match(svg, /Observation number/);
 });
 test('one report has one point and no fabricated connecting path', () => {
   const svg = renderElectionChart([50], {
@@ -35,4 +35,18 @@ test('one report has one point and no fabricated connecting path', () => {
   assert.equal(doc.getElementsByTagName('circle').length, 1);
   assert.equal(doc.getElementsByTagName('path').length, 0);
   assert.match(svg, /100%/);
+});
+
+test('comparison renders both actual series without extra observations', () => {
+  const svg = renderElectionChart(
+    [
+      { values: [54, 57, 64], color: '#456' },
+      { values: [91, 97, 109], color: '#765' },
+    ],
+    { share: false, unit: 'Observation', label: 'Yes and No reported votes' },
+  );
+  const doc = new DOMParser().parseFromString(svg, 'image/svg+xml');
+  assert.equal(doc.getElementsByTagName('circle').length, 6);
+  assert.equal(doc.getElementsByTagName('path').length, 2);
+  assert.match(svg, /Yes and No/);
 });

@@ -508,7 +508,7 @@ async function checkElection() {
       fail('election: verified media tally missing');
     if (
       !(await page.locator('.batch-history h3').textContent()).includes('Newsroom observations') ||
-      (await page.locator('.trend-panel svg circle').count()) !== 4
+      (await page.locator('.trend-panel svg circle').count()) !== 8
     )
       fail('election: separate newsroom history missing');
     if (await page.locator('.history-table-wrap').isVisible())
@@ -527,15 +527,14 @@ async function checkElection() {
     await page.getByRole('button', { name: 'Chart', exact: true }).click();
     if (!(await page.locator('.trend-panel svg').isVisible()))
       fail('election: Chart toggle did not restore chart');
-    await page.getByRole('button', { name: '← Previous', exact: true }).click();
-    if (!(await page.locator('.trend-value').textContent()).includes('64,656'))
-      fail('election: third newsroom observation was not preserved');
-    await page.getByRole('button', { name: '← Previous', exact: true }).click();
-    if (!(await page.locator('.trend-value').textContent()).includes('57,242'))
-      fail('election: second newsroom observation was not preserved');
-    await page.getByRole('button', { name: '← Previous', exact: true }).click();
-    if (!(await page.locator('.trend-value').textContent()).includes('54,391'))
-      fail('election: prior KQED observation was not preserved');
+    for (const count of ['64,656', '57,242', '54,391', '109,319']) {
+      if (!(await page.locator('.history-table-wrap').textContent()).includes(count))
+        fail('election: comparison table lost a real observation');
+    }
+    if (await page.getByRole('button', { name: '← Previous', exact: true }).count())
+      fail('election: redundant previous navigation remains');
+    if (await page.getByLabel('View option', { exact: true }).count())
+      fail('election: measure comparison requires option selection');
     if (
       !(await page.locator('.history-table-wrap').textContent()).includes('Publisher page updated')
     )
@@ -553,14 +552,12 @@ async function checkElection() {
       )
     )
       fail('election: RTM attributed tally/projection missing');
-    if ((await page.locator('.trend-panel svg circle').count()) !== 3)
+    if ((await page.locator('.trend-panel svg circle').count()) !== 6)
       fail('election: RTM observations missing');
-    await page.getByRole('button', { name: '← Previous', exact: true }).click();
-    if (!(await page.locator('.trend-value').textContent()).includes('671,876'))
-      fail('election: second RTM observation was not preserved');
-    await page.getByRole('button', { name: '← Previous', exact: true }).click();
-    if (!(await page.locator('.trend-value').textContent()).includes('650,366'))
-      fail('election: first RTM observation was not preserved');
+    for (const count of ['671,876', '650,366', '431,242']) {
+      if (!(await page.locator('.history-table-wrap').textContent()).includes(count))
+        fail('election: RTM comparison lost prior observations');
+    }
     await page.locator('#ballot-search').fill('zzzz-no-match');
     if (!(await page.locator('#contests').textContent()).includes('No matching'))
       fail('election: no-match state failed');
@@ -638,19 +635,13 @@ async function checkElection() {
     await page.waitForFunction(
       () => document.querySelectorAll('.history-table-wrap tbody tr').length === 2,
     );
-    await page.getByRole('button', { name: '← Previous', exact: true }).click();
-    if (!(await page.locator('.trend-value').textContent()).includes('Batch 1'))
-      fail('election: previous batch did not select real history');
-    await page.getByLabel('Explore observed batches', { exact: true }).focus();
-    await page.keyboard.press('ArrowRight');
-    if (!(await page.locator('.trend-value').textContent()).includes('Batch 2'))
-      fail('election: keyboard batch slider failed');
-    await page.getByLabel('View option', { exact: true }).selectOption('1');
+    if ((await page.locator('.trend-panel svg circle').count()) !== 4)
+      fail('election: both official series must display both actual reports');
     await page.getByLabel('Measure', { exact: true }).focus();
     await page.keyboard.press('ArrowDown');
     await page.keyboard.press('Enter');
     if (!(await page.locator('.trend-value').textContent()).includes('No: 44.0%'))
-      fail('election: chart option/metric selection failed');
+      fail('election: chart comparison metric selection failed');
     if (!(await page.locator('.history-table-wrap').textContent()).includes('8:03 p.m.'))
       fail('election: exact report time absent from accessible table');
     await page.getByRole('button', { name: 'Table', exact: true }).click();
@@ -697,9 +688,7 @@ async function checkElectionLifecycle() {
     });
     await page.goto(`${origin}${base}election.html?contest=local-G`);
     await page.locator('#contests article').waitFor();
-    await page.locator('select[aria-label="View option"]').selectOption('1');
     await page.locator('select[aria-label="Measure"]').selectOption('share');
-    await page.getByRole('button', { name: '← Previous', exact: true }).click();
     await page.getByRole('button', { name: 'Table', exact: true }).click();
     await page.evaluate(() =>
       Object.defineProperty(document, 'hidden', { configurable: true, value: true }),
@@ -726,11 +715,7 @@ async function checkElectionLifecycle() {
       !(await page.locator('.history-table-wrap').isVisible())
     )
       fail('election lifecycle: refresh reset Table view');
-    if (
-      (await page.locator('select[aria-label="View option"]').inputValue()) !== '1' ||
-      (await page.locator('select[aria-label="Measure"]').inputValue()) !== 'share' ||
-      (await page.locator('input[type="range"]').inputValue()) !== '2'
-    )
+    if ((await page.locator('select[aria-label="Measure"]').inputValue()) !== 'share')
       fail('election lifecycle: automatic refresh reset chart selection');
     await page.locator('#refresh').click();
     await page.waitForFunction(() =>
@@ -738,8 +723,8 @@ async function checkElectionLifecycle() {
     );
     if ((await page.locator('#contests h2').textContent()).includes('Older cached title'))
       fail('election lifecycle: older snapshot replaced newer data');
-    if ((await page.locator('input[type="range"]').inputValue()) !== '2')
-      fail('election lifecycle: rejected response reset observation');
+    if ((await page.locator('select[aria-label="Measure"]').inputValue()) !== 'share')
+      fail('election lifecycle: rejected response reset metric');
   } catch (error) {
     fail(`election lifecycle: ${error.stack}`);
   } finally {

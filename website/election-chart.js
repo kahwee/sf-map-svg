@@ -16,28 +16,27 @@ export const reportSteps = {
   },
 };
 
-export function renderElectionChart(values, { share, batch, unit, label }) {
-  const rows = values.map((value, index) => ({ value, index: String(index + 1) }));
-  const max = share ? 100 : Math.max(1, ...values);
-  const marks = [];
-  if (rows.length > 1)
-    marks.push(
-      lineY(rows, {
-        x: 'index',
-        y: 'value',
-        curve: reportSteps,
-        stroke: 'var(--accent)',
-        strokeWidth: 2,
-      }),
-    );
-  marks.push(
-    dot(rows, {
-      x: 'index',
-      y: 'value',
-      r: (row) => (Number(row.index) - 1 === batch ? 5 : 3),
-      fill: 'var(--accent)',
-    }),
-  );
+export function renderElectionChart(values, { share, unit, label }) {
+  const series = typeof values[0] === 'number' ? [{ values, color: 'var(--accent)' }] : values;
+  const max = share ? 100 : Math.max(1, ...series.flatMap((s) => s.values));
+  const marks = series.flatMap((s) => {
+    const rows = s.values.map((value, index) => ({ value, index: String(index + 1) }));
+    const color = s.color || 'var(--accent)';
+    return [
+      ...(rows.length > 1
+        ? [
+            lineY(rows, {
+              x: 'index',
+              y: 'value',
+              curve: reportSteps,
+              stroke: color,
+              strokeWidth: 2.5,
+            }),
+          ]
+        : []),
+      dot(rows, { x: 'index', y: 'value', r: 4, fill: color }),
+    ];
+  });
   const definition = defineChart({
     marks,
     scales: {
@@ -45,7 +44,7 @@ export function renderElectionChart(values, { share, batch, unit, label }) {
         scale: () => scalePoint().padding(0.15),
         grid: { stroke: 'var(--muted)', strokeOpacity: 0.2, strokeDasharray: '2 4' },
         axis: {
-          label: { text: `${unit} (release order)`, fontSize: 13, opacity: 1 },
+          label: { text: `${unit} number`, fontSize: 13, opacity: 1 },
           ticks: { size: 0 },
           tickLabels: { fontSize: 14, opacity: 1 },
         },
