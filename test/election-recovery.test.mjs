@@ -194,3 +194,105 @@ test('lagging workflow metadata fails closed before reading an older deployed fi
     /preceding workflow/,
   );
 });
+
+test('metadata failure retains only bounded typed response diagnostics and stops recovery', async () => {
+  const allowed = {
+    'x-ratelimit-limit': '60',
+    'x-ratelimit-remaining': '0',
+    'x-ratelimit-used': '60',
+    'x-ratelimit-reset': '1793797200',
+    'retry-after': '120',
+    date: 'Wed, 04 Nov 2026 12:33:52 GMT',
+    'x-ratelimit-resource': 'core',
+  };
+  let requests = 0;
+  const response = {
+    ok: false,
+    status: 403,
+    headers: {
+      get(name) {
+        assert.ok(Object.hasOwn(allowed, name));
+        return allowed[name];
+      },
+    },
+  };
+  for (const name of ['body', 'json', 'text', 'statusText', 'url'])
+    Object.defineProperty(response, name, {
+      get() {
+        assert.fail(`must not read ${name}`);
+      },
+    });
+  await assert.rejects(
+    loadPreviousSnapshot(seed, async () => {
+      requests += 1;
+      return response;
+    }),
+    (error) => {
+      assert.match(error.message, /refusing publication/);
+      assert.equal(
+        error.cause.message,
+        `Public deployment metadata HTTP 403; diagnostics=${JSON.stringify({ request: 'workflow-list', ...allowed })}`,
+      );
+      assert.ok(error.cause.message.length < 600);
+      return true;
+    },
+  );
+  assert.equal(requests, 1, 'no retry or snapshot fetch after metadata failure');
+});
+
+test('metadata diagnostics omit malformed, oversized and sensitive header values', async () => {
+  const values = {
+    'x-ratelimit-limit': 'secret-token',
+    'x-ratelimit-remaining': '-1',
+    'x-ratelimit-used': '1\ninjected',
+    'x-ratelimit-reset': '9'.repeat(1000),
+    'retry-after': 'Wed, 99 Nov 2026 12:33:52 GMT',
+    date: 'Thu, 04 Nov 2026 12:33:52 GMT',
+    'x-ratelimit-resource': 'secret-token',
+    authorization: 'secret-token',
+    'set-cookie': 'secret-token',
+  };
+  await assert.rejects(
+    latestSuccessfulDeployment(async () => ({
+      ok: false,
+      status: 'secret-token',
+      headers: { get: (name) => values[name] },
+    })),
+    { message: 'Public deployment metadata HTTP unknown; diagnostics={"request":"workflow-list"}' },
+  );
+});
+
+test('metadata jobs failure identifies the request and preserves canonical retry dates', async () => {
+  let requests = 0;
+  await assert.rejects(
+    latestSuccessfulDeployment(async () => {
+      requests += 1;
+      if (requests === 1)
+        return {
+          ok: true,
+          json: async () => ({
+            workflow_runs: [
+              {
+                id: 1,
+                head_sha: deployment.headSha,
+                created_at: deployment.createdAt,
+                updated_at: deployment.completedAt,
+              },
+            ],
+          }),
+        };
+      return {
+        ok: false,
+        status: 503,
+        headers: new Headers({
+          'retry-after': 'Wed, 04 Nov 2026 12:35:52 GMT',
+        }),
+      };
+    }),
+    {
+      message:
+        'Public deployment metadata HTTP 503; diagnostics={"request":"run-jobs","retry-after":"Wed, 04 Nov 2026 12:35:52 GMT"}',
+    },
+  );
+  assert.equal(requests, 2, 'no automatic retry of the failed jobs request');
+});
