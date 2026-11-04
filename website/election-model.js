@@ -1,3 +1,4 @@
+import { validateResultHistory } from './election-history.js';
 export const ELECTION_DATE = '2026-11-03';
 export function validateSnapshot(data) {
   if (data?.schemaVersion !== 1 || data.electionDate !== ELECTION_DATE)
@@ -51,6 +52,7 @@ export function validateSnapshot(data) {
       )
         throw new Error('Invalid measure explanation provenance');
     }
+    validateResultHistory(contest);
     ids.add(contest.id);
     const optionIds = new Set();
     for (const option of contest.options) {

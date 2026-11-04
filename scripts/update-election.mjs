@@ -1,10 +1,7 @@
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
-import {
-  chooseSnapshotSeed,
-  parseOfficialReport,
-  validateSnapshot,
-} from '../website/election-model.js';
+import { parseOfficialReport, validateSnapshot } from '../website/election-model.js';
+import { loadPreviousSnapshot } from './lib/previous-election.mjs';
 
 import {
   markSosFailure,
@@ -17,20 +14,7 @@ import {
 
 const output = process.argv[2] || 'pages-dist/elections/2026-11-03.json';
 const seed = validateSnapshot(JSON.parse(await readFile('elections/2026-11-03.json', 'utf8')));
-let previous = seed;
-// The deployed feed is the last-good store; no polling commits or npm releases.
-try {
-  const response = await fetch('https://kahwee.github.io/sf-map-svg/elections/2026-11-03.json', {
-    signal: AbortSignal.timeout(20_000),
-  });
-  if (response.ok) {
-    const deployed = validateSnapshot(await response.json());
-    // A pending deployed ballot must not overwrite newly verified roster corrections.
-    previous = chooseSnapshotSeed(seed, deployed);
-  }
-} catch {
-  console.warn('Previous feed unavailable; retaining the checked-in verified ballot.');
-}
+const previous = await loadPreviousSnapshot(seed);
 const now = new Date().toISOString();
 let next = {
   ...previous,

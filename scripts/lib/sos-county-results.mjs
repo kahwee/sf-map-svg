@@ -1,3 +1,7 @@
+import { appendResultHistory, sourceTimeOrder } from '../../website/election-history.js';
+
+export { sourceTimeOrder } from '../../website/election-history.js';
+
 const base = 'https://media.sos.ca.gov/media/';
 export const sosIndexUrl = `${base}json-endpoints.csv`;
 export const sosMappings = [
@@ -45,27 +49,6 @@ function count(value) {
   const n = Number(value.replaceAll(',', ''));
   if (!Number.isSafeInteger(n) || n < 0) throw new Error('Unsafe SOS count');
   return n;
-}
-export function sourceTimeOrder(text) {
-  const match = /^(November|December) (\d{1,2}), 2026, (\d{1,2}):(\d{2}) (a|p)\.m\.$/.exec(text);
-  if (!match) throw new Error('Unrecognized SOS report time');
-  const [, month, day, hour, minute, half] = match;
-  if (
-    +day < 1 ||
-    +day > (month === 'November' ? 30 : 31) ||
-    +hour < 1 ||
-    +hour > 12 ||
-    +minute > 59
-  )
-    throw new Error('Invalid SOS report time');
-  // Compare local clock values only; never publish this as a UTC report timestamp.
-  return Date.UTC(
-    2026,
-    month === 'November' ? 10 : 11,
-    +day,
-    (+hour % 12) + (half === 'p' ? 12 : 0),
-    +minute,
-  );
 }
 export function parseSosCounty(rows, mapping, contest, index, now = Date.now()) {
   if (
@@ -163,7 +146,7 @@ export function retainLastGood(current, incoming) {
       sourceTimeOrder(incoming.sourceReportTime) < sourceTimeOrder(current.sourceReportTime))
   )
     return current;
-  return incoming;
+  return appendResultHistory(current, incoming);
 }
 
 export function markSosFailure(snapshot, checkedAt) {

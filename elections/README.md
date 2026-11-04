@@ -37,3 +37,24 @@ Actual November 2 zero-report fixtures and extraction provenance are in `test/fi
 Each of the 25 measures includes additive `shortTitle` (string), `summary` (one or two neutral sentences), and `summarySource: {url: string, pages: string}`. `pages` uses **printed** page numbers, not PDF viewer indices. `title` remains the full official title. These are concise explanations, not a substitute for the complete official analysis. State measures cite the November 2026 California voter guide; local and regional measures cite the SF pamphlet. Consumers can fall back to `title` if these optional fields are absent. Verified descriptions merge into prior unofficial snapshots only when stable contest ID, title, kind and option identities match; counts and report provenance remain untouched.
 
 The explorer displays one contest at a time. `?contest=local-G` (or another stable contest ID) opens a specific contest; the selector remains keyboard accessible. Supervisor filtering describes ballot eligibility, not geographic vote allocation.
+
+## Observed report history
+
+Each contest may include `resultHistory` (array; treat absent as `[]`). A point is exactly:
+
+```json
+{
+  "sourceReportTime": "<verbatim official report time>",
+  "observedAt": "<ISO time of the first fetch observing these values>",
+  "resultSourceUrl": "<official SOS JSON URL>",
+  "reporting": "<official precinct reporting string>",
+  "resultGeography": {"type":"county","id":"06075","name":"San Francisco","scope":"county-portion-of-contest"},
+  "options": [{"id":"<stable option ID>","label":"<verified label>","votes":123}]
+}
+```
+
+The sample count above illustrates the schema only; it is not an election result. Only validated unofficial post-poll reports with a positive contest total create points. Zero/pre-election reports create no history. Re-fetching identical report time and counts preserves the original point and `observedAt`; corrected counts at the same report time create an observed revision. Older report times cannot replace newer results. All earlier points are retained. `observedAt` is an observation time, **not** the source’s report timestamp. Never infer ballot completion from precinct-reporting percentages or allocate county totals to districts.
+
+The selected-contest chart uses discrete, equally spaced observations and step changes, with a keyboard-accessible table of exact report and observation times. Previous/Next buttons and a keyboard-operable batch slider select actual stored observations; option and count/share selectors never synthesize intermediate data. A single report is one point, not a trend. Vote share uses the sum of that contest’s reported option counts, not turnout. County changes may include corrections, not just newly counted ballots.
+
+The public deployed feed is the last-good history store. Every update must load and validate it before fetching new counts; failed recovery aborts the build and leaves the current Pages deployment intact. No polling data is committed, and no second storage service or pipeline is used. Verified description updates merge by exact contest and option identity without touching history or counts.

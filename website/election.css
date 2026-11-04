@@ -201,3 +201,114 @@
     max-width: 240px;
   }
 }
+.batch-history {
+  border-top: 1px solid var(--rule);
+  margin-top: 16px;
+  padding-top: 12px;
+}
+.batch-history h3 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+.trend-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+}
+.trend-panel svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 180px;
+  color: var(--accent);
+}
+.trend-value {
+  font-size: 0.85rem;
+  margin: 12px 0 4px;
+}
+.history-table-wrap {
+  max-height: 180px;
+  overflow: auto;
+  margin-top: 12px;
+}
+.history-table-wrap table {
+  width: 100%;
+  font-size: 0.75rem;
+  border-collapse: collapse;
+}
+.history-table-wrap caption {
+  text-align: left;
+  font-weight: 600;
+  padding-bottom: 6px;
+}
+.history-table-wrap td,
+.history-table-wrap th {
+  padding: 7px;
+  text-align: left;
+  border-bottom: 1px solid var(--rule);
+}
+.history-table-wrap th {
+  font-weight: 600;
+}
+.batch-empty {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  padding: 8px 0;
+}
+.batch-empty p {
+  font-size: 0.85rem;
+  margin: 0;
+}
+.batch-empty-mark {
+  font-size: 1.8rem;
+  line-height: 1;
+  color: var(--accent);
+}
+.batch-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+}
+.batch-position {
+  font: 600 0.85rem var(--sans);
+  font-variant-numeric: tabular-nums;
+}
+.election-shell button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.batch-range-label {
+  margin-top: 10px;
+}
+.election-shell input[type="range"] {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  min-height: 28px;
+  accent-color: var(--accent);
+}
+.trend-value {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.history-table-wrap [aria-current="true"] {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.batch-navigation button {
+  transition: background-color 120ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .batch-navigation button {
+    transition: none;
+  }
+}
+@media (max-width: 700px) {
+  #contests.is-loading {
+    min-height: 500px;
+  }
+}

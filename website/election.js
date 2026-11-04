@@ -1,5 +1,6 @@
 import { createDistrictMap } from './district-map.js';
 import { freshness, validateSnapshot } from './election-model.js';
+import { createTrend } from './election-trend.js';
 
 const $ = (id) => document.getElementById(id);
 let snapshot;
@@ -44,6 +45,7 @@ function renderStatus() {
 }
 function renderContest(c) {
   const host = $('contests');
+  host.classList.remove('is-loading');
   if (!c) {
     host.replaceChildren(
       Object.assign(document.createElement('p'), {
@@ -81,6 +83,13 @@ function renderContest(c) {
     row.append(name, votes);
     list.append(row);
   }
+  if (c.resultHistory?.length)
+    article.append(
+      Object.assign(document.createElement('p'), {
+        className: 'result-note',
+        textContent: 'Latest reported totals',
+      }),
+    );
   article.append(list);
   const reported = c.options.some((o) => o.votes !== null);
   const note = c.resultStatus
@@ -114,7 +123,7 @@ function renderContest(c) {
       }),
     );
   }
-  article.append(details);
+  article.append(details, createTrend(c));
   host.replaceChildren(article);
 }
 function render() {

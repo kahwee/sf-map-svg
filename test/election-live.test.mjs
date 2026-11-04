@@ -129,3 +129,16 @@ test('new descriptions merge into unofficial snapshots without changing counts o
   previous.contests[0].options[0].id = 'different-option';
   assert.equal(chooseSnapshotSeed(seed, previous).contests[0].summary, undefined);
 });
+
+test('reviewed summaries retain material conditions without endorsements', () => {
+  const summary = (id) => seed.contests.find((c) => c.id === id).summary;
+  assert.match(summary('local-C'), /increases could be frozen/);
+  assert.match(summary('local-F'), /unless the Board objects/);
+  assert.match(summary('local-E'), /60 days without action/);
+  assert.match(summary('local-H'), /\$129 per year/);
+  assert.match(summary('state-38'), /at least half/);
+  assert.match(summary('state-39'), /free voter ID/);
+  assert.match(summary('state-40'), /administering the tax/);
+  assert.match(summary('state-43'), /increases and extensions/);
+  assert.match(summary('state-45'), /choose new/);
+});

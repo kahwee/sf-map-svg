@@ -515,6 +515,80 @@ async function checkElection() {
     );
     if (!(await page.locator('#report-time').textContent()).includes('not yet verified'))
       fail('election: stale fetch synthesized report time');
+    await page.unroute('**/elections/2026-11-03.json');
+    const historyData = structuredClone(stale);
+    historyData.status = 'unofficial';
+    historyData.checkStatus = 'partial';
+    historyData.lastSuccessfulFetchAt = '2026-11-04T04:04:00Z';
+    const candidate = historyData.contests.find((c) => c.id === 'state-1');
+    Object.assign(candidate, {
+      resultStatus: 'unofficial',
+      resultSourceUrl: 'https://media.sos.ca.gov/media/ballot-measures.json',
+      sourceReportTime: 'November 3, 2026, 8:01 p.m.',
+      resultsFetchedAt: '2026-11-04T04:02:00Z',
+      reporting: '0% (0 of 514) precincts reporting',
+      resultGeography: {
+        type: 'county',
+        id: '06075',
+        name: 'San Francisco',
+        scope: 'county-portion-of-contest',
+      },
+    });
+    candidate.options[0].votes = 123;
+    candidate.options[1].votes = 77;
+    const point = () => ({
+      sourceReportTime: candidate.sourceReportTime,
+      observedAt: candidate.resultsFetchedAt,
+      resultSourceUrl: candidate.resultSourceUrl,
+      reporting: candidate.reporting,
+      resultGeography: structuredClone(candidate.resultGeography),
+      options: structuredClone(candidate.options),
+    });
+    candidate.resultHistory = [point()];
+    await page.route('**/elections/2026-11-03.json', (route) =>
+      route.fulfill({ json: historyData }),
+    );
+    await page.locator('#refresh').click();
+    await page.locator('#ballot-search').fill('');
+    await page.locator('#contest-kind').selectOption('measure');
+    await page.locator('#contest-select').selectOption('state-1');
+    if (!(await page.locator('.trend-value').textContent()).includes('One batch; no trend yet'))
+      fail('election: single report invented a trend');
+    if ((await page.locator('.batch-history svg path').count()) !== 0)
+      fail('election: single report drew a connecting trend');
+    candidate.sourceReportTime = 'November 3, 2026, 8:03 p.m.';
+    candidate.resultsFetchedAt = '2026-11-04T04:04:00Z';
+    candidate.options[0].votes = 140;
+    candidate.options[1].votes = 110;
+    candidate.resultHistory.push(point());
+    await page.locator('#refresh').click();
+    await page.waitForFunction(
+      () => document.querySelectorAll('.history-table-wrap tbody tr').length === 2,
+    );
+    await page.getByRole('button', { name: '← Previous', exact: true }).click();
+    if (!(await page.locator('.trend-value').textContent()).includes('Batch 1'))
+      fail('election: previous batch did not select real history');
+    await page.getByLabel('Explore observed batches', { exact: true }).focus();
+    await page.keyboard.press('ArrowRight');
+    if (!(await page.locator('.trend-value').textContent()).includes('Batch 2'))
+      fail('election: keyboard batch slider failed');
+    await page.getByLabel('View option', { exact: true }).selectOption('1');
+    await page.getByLabel('Measure', { exact: true }).focus();
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Enter');
+    if (!(await page.locator('.trend-value').textContent()).includes('No: 44.0%'))
+      fail('election: chart option/metric selection failed');
+    if (!(await page.locator('.history-table-wrap').textContent()).includes('8:03 p.m.'))
+      fail('election: exact report time absent from accessible table');
+    await page.locator('.history-table-wrap').focus();
+    if (
+      !(await page
+        .locator('.history-table-wrap')
+        .evaluate((node) => node === document.activeElement))
+    )
+      fail('election: history table cannot receive keyboard focus');
+    if ((await page.locator('main details').count()) !== 0)
+      fail('election: history hidden in disclosure');
   } catch (error) {
     fail(`election interaction: ${error.stack}`);
   } finally {

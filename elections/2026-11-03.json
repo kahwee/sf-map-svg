@@ -57,7 +57,8 @@
       "summarySource": {
         "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
         "pages": "64"
-      }
+      },
+      "resultHistory": []
     },
     {
       "id": "local-B",
@@ -84,7 +85,8 @@
       "summarySource": {
         "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
         "pages": "70–71"
-      }
+      },
+      "resultHistory": []
     },
     {
       "id": "local-C",
@@ -107,11 +109,12 @@
       "regions": [],
       "call": "uncalled",
       "shortTitle": "Housing Trust Fund funding",
-      "summary": "Changes the formula for City housing contributions, increases funding and expands eligible housing programs, and extends the fund from 2043 to 2058. Contributions could be paused or reduced under specified budget conditions.",
+      "summary": "Changes the formula for City housing contributions, increases funding and expands eligible housing programs, and extends the fund from 2043 to 2058. Annual funding increases could be frozen, or contributions reduced, under specified budget conditions.",
       "summarySource": {
         "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
-        "pages": "78"
-      }
+        "pages": "78–79"
+      },
+      "resultHistory": []
     },
     {
       "id": "local-D",
@@ -134,11 +137,12 @@
       "regions": [],
       "call": "uncalled",
       "shortTitle": "Rules for putting measures on the ballot",
-      "summary": "Raises the petition threshold from 2% to 8% of registered voters and increases special-election requirements, while allowing initiatives to be withdrawn. The Mayor or a minority of supervisors could no longer place measures on the ballot independently; a Board majority still could.",
+      "summary": "Raises the initiative petition threshold from 2% to 8% of registered voters and increases special-election requirements, while allowing initiatives to be withdrawn. The Mayor or a minority of supervisors could no longer place measures on the ballot independently; a Board majority still could.",
       "summarySource": {
         "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
         "pages": "84"
-      }
+      },
+      "resultHistory": []
     },
     {
       "id": "local-E",
@@ -161,11 +165,12 @@
       "regions": [],
       "call": "uncalled",
       "shortTitle": "City purchasing and administrator powers",
-      "summary": "Centralizes purchasing authority under the City Administrator, raises the contract values requiring supervisors’ approval, and extends the administrator’s term from five to ten years. Supervisors and the Mayor could approve or reject proposed purchasing rules but generally could not amend them.",
+      "summary": "Centralizes purchasing authority under the City Administrator, raises contract values requiring supervisors’ approval, and extends the administrator’s term from five to ten years. Supervisors and the Mayor could approve or reject proposed purchasing rules but generally not amend them; proposals take effect after 60 days without action.",
       "summarySource": {
         "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
         "pages": "94–95"
-      }
+      },
+      "resultHistory": []
     },
     {
       "id": "local-F",
@@ -188,11 +193,12 @@
       "regions": [],
       "call": "uncalled",
       "shortTitle": "Mayor and commission powers",
-      "summary": "Expands the Mayor’s authority to move department responsibilities, hire deputy mayors, and hire some or fire most department heads, with exceptions. Appointing officials could remove most commissioners without cause.",
+      "summary": "Expands the Mayor’s authority to move department responsibilities unless the Board objects, hire deputy mayors, and hire some or fire most department heads, with specified exceptions. Appointing officials could remove most commissioners without cause.",
       "summarySource": {
         "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
         "pages": "100–101"
-      }
+      },
+      "resultHistory": []
     },
     {
       "id": "local-G",
@@ -215,11 +221,12 @@
       "regions": [],
       "call": "uncalled",
       "shortTitle": "Weekday cars on the Great Highway",
-      "summary": "Closes Sunset Dunes Park to reopen the Upper Great Highway to private vehicles from Monday at 4 a.m. to Friday at 6 p.m., except weekday holidays. Reopening would require the necessary government approvals and permits.",
+      "summary": "Closes Sunset Dunes Park from Monday at 4 a.m. to Friday at 6 p.m., except weekday holidays, to reopen the Upper Great Highway to private vehicles. Reopening would require the necessary government approvals and permits.",
       "summarySource": {
         "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
         "pages": "108"
-      }
+      },
+      "resultHistory": []
     },
     {
       "id": "local-H",
@@ -242,11 +249,12 @@
       "regions": [],
       "call": "uncalled",
       "shortTitle": "A parcel tax for Muni",
-      "summary": "Creates a 15-year property parcel tax for Muni starting July 2027, with rates based on property type and size and adjusted for inflation. Single-family homes start at $129; exemptions and senior discounts apply, and the largest parcels can owe up to $400,000.",
+      "summary": "Creates a 15-year annual property parcel tax for Muni starting July 2027, with rates based on property type and size and adjusted for inflation. Single-family homes start at $129 per year; exemptions and senior discounts apply, and the largest parcels can owe up to $400,000.",
       "summarySource": {
         "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
         "pages": "124–125"
-      }
+      },
+      "resultHistory": []
     },
     {
       "id": "local-I",
@@ -269,11 +277,12 @@
       "regions": [],
       "call": "uncalled",
       "shortTitle": "Property transfer taxes for housing",
-      "summary": "Dedicates half of the transfer tax on qualifying real-estate sales of $10 million or more to affordable housing and housing assistance, without raising current combined rates. It exempts certain first sales of newly built multifamily housing from the dedicated portion.",
+      "summary": "Redirects half of the transfer tax on qualifying real-estate sales of $10 million or more to affordable housing and housing assistance, without raising current combined rates. It exempts certain first sales of newly built multifamily housing from the dedicated portion.",
       "summarySource": {
         "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
         "pages": "132–133"
-      }
+      },
+      "resultHistory": []
     },
     {
       "id": "local-J",
@@ -300,7 +309,8 @@
       "summarySource": {
         "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
         "pages": "144"
-      }
+      },
+      "resultHistory": []
     },
     {
       "id": "RTM",
@@ -327,7 +337,8 @@
       "summarySource": {
         "url": "https://media.api.sf.gov/documents/N26_EN_VIP.pdf",
         "pages": "52–53"
-      }
+      },
+      "resultHistory": []
     },
     {
       "id": "state-1",
@@ -353,8 +364,9 @@
       "summary": "Allows $11.25 billion in state borrowing for affordable housing, veterans’ mortgages and homeownership assistance. State repayment costs are estimated at $500 million to $600 million a year for about 25 years.",
       "summarySource": {
         "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
-        "pages": "14"
-      }
+        "pages": "14–17"
+      },
+      "resultHistory": []
     },
     {
       "id": "state-2",
@@ -377,11 +389,12 @@
       "regions": [],
       "call": "uncalled",
       "shortTitle": "A larger state rainy-day fund",
-      "summary": "Raises the state budget reserve cap from 10% to 20% of General Fund revenue and changes rules for savings and debt payments. It requires additional savings when tax revenue is high.",
+      "summary": "Raises the rainy-day fund target from 10% to 20% of General Fund taxes and requires larger deposits when investment-gains tax revenue is very high. It extends extra debt payments through 2040 and counts reserve money toward the state spending limit when withdrawn rather than deposited.",
       "summarySource": {
         "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
-        "pages": "20–23"
-      }
+        "pages": "22–23"
+      },
+      "resultHistory": []
     },
     {
       "id": "state-3",
@@ -408,7 +421,8 @@
       "summarySource": {
         "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
         "pages": "26–27"
-      }
+      },
+      "resultHistory": []
     },
     {
       "id": "state-4",
@@ -434,8 +448,9 @@
       "summary": "Lets state and local governments create public campaign-funding programs for eligible candidates who accept spending limits. It bars using money earmarked for education, transportation or public safety and triples the maximum fine for foreign campaign contributions.",
       "summarySource": {
         "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
-        "pages": "30"
-      }
+        "pages": "30–31"
+      },
+      "resultHistory": []
     },
     {
       "id": "state-5",
@@ -462,7 +477,8 @@
       "summarySource": {
         "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
         "pages": "34–37"
-      }
+      },
+      "resultHistory": []
     },
     {
       "id": "state-37",
@@ -489,7 +505,8 @@
       "summarySource": {
         "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
         "pages": "40–41"
-      }
+      },
+      "resultHistory": []
     },
     {
       "id": "state-38",
@@ -512,11 +529,12 @@
       "regions": [],
       "call": "uncalled",
       "shortTitle": "Bonds for immune-system research",
-      "summary": "Allows $8.4 billion in state borrowing for immune-system research and treatments, with half directed to cancer, heart disease and Alzheimer’s disease. Estimated repayment is $500 million to $600 million annually for about 20 years, potentially offset by research revenue.",
+      "summary": "Allows $8.4 billion in state borrowing for immune-system research and treatments, with at least half directed to cancer, heart disease and Alzheimer’s disease. Estimated repayment is $500 million to $600 million annually for about 20 years, potentially offset by research revenue.",
       "summarySource": {
         "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
-        "pages": "44"
-      }
+        "pages": "44–45"
+      },
+      "resultHistory": []
     },
     {
       "id": "state-39",
@@ -539,11 +557,12 @@
       "regions": [],
       "call": "uncalled",
       "shortTitle": "Identification requirements for voting",
-      "summary": "Requires government-issued identification for in-person voting and matching identification-number digits on mail-ballot envelopes. Election officials would also report annually on how many voters’ citizenship status they have verified.",
+      "summary": "Requires government-issued ID for in-person voting and the last four digits of the ID number selected in a voter’s registration on mail-ballot envelopes. It provides free voter ID cards on request and requires officials to make best efforts to verify voters’ citizenship and report annually.",
       "summarySource": {
         "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
-        "pages": "48–51"
-      }
+        "pages": "50"
+      },
+      "resultHistory": []
     },
     {
       "id": "state-40",
@@ -566,11 +585,12 @@
       "regions": [],
       "call": "uncalled",
       "shortTitle": "A one-time billionaire wealth tax",
-      "summary": "Imposes a one-time tax of up to 5% on covered assets of certain billionaires who were California residents on January 1, 2026, excluding real estate and some retirement assets. It directs 90% of revenue to health care and 10% to food assistance or education-related programs.",
+      "summary": "Imposes a one-time tax of up to 5% on covered assets of certain billionaires who were California residents on January 1, 2026, excluding real estate and some retirement assets. It directs 90% of revenue to health care and the rest to education, food assistance and administering the tax.",
       "summarySource": {
         "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
         "pages": "54–55"
-      }
+      },
+      "resultHistory": []
     },
     {
       "id": "state-41",
@@ -593,11 +613,12 @@
       "regions": [],
       "call": "uncalled",
       "shortTitle": "State tax spending limits and audits",
-      "summary": "Bars new state taxes that exclude their revenue from the state spending limit and requires audits of programs funded by new state special taxes. It could override conflicting measures on this ballot if it receives more Yes votes.",
+      "summary": "Bars new state taxes that exclude their revenue from the state spending limit and requires audits before and after certain new or increased state special taxes are approved. It could override conflicting measures on this ballot if it receives more Yes votes.",
       "summarySource": {
         "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
         "pages": "58–59"
-      }
+      },
+      "resultHistory": []
     },
     {
       "id": "state-42",
@@ -619,12 +640,13 @@
       ],
       "regions": [],
       "call": "uncalled",
-      "shortTitle": "Limits on new state property taxes",
+      "shortTitle": "Limits on property and retroactive taxes",
       "summary": "Bans new state taxes on personal property, including financial assets, and certain taxes based on conduct or status before the tax takes effect. It applies to taxes enacted or taking effect from January 1, 2026, and could override conflicting measures on this ballot if it receives more Yes votes.",
       "summarySource": {
         "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
         "pages": "62–63"
-      }
+      },
+      "resultHistory": []
     },
     {
       "id": "state-43",
@@ -647,11 +669,12 @@
       "regions": [],
       "call": "uncalled",
       "shortTitle": "A two-thirds vote for local special taxes",
-      "summary": "Raises the approval threshold for voter-initiated local taxes dedicated to a specific purpose from a majority to two-thirds. It applies to measures approved after January 1, 2027.",
+      "summary": "Starting January 1, 2027, requires a two-thirds vote instead of a majority for voter-proposed local special taxes, including new taxes, increases and extensions.",
       "summarySource": {
         "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
         "pages": "66–67"
-      }
+      },
+      "resultHistory": []
     },
     {
       "id": "state-44",
@@ -674,11 +697,12 @@
       "regions": [],
       "call": "uncalled",
       "shortTitle": "Community clinic spending rules",
-      "summary": "Requires nonprofit federally qualified health centers to spend at least 90% of revenue on services advancing their charitable purpose, including patient services. It adds penalties and reporting rules, with waivers possible in exceptional circumstances.",
+      "summary": "Requires covered nonprofit community health clinics to spend at least 90% of annual revenue on services advancing their charitable purpose. It adds penalties and reporting rules, with temporary waivers possible for exceptional circumstances or financial hardship.",
       "summarySource": {
         "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
         "pages": "70–71"
-      }
+      },
+      "resultHistory": []
     },
     {
       "id": "state-45",
@@ -700,12 +724,13 @@
       ],
       "regions": [],
       "call": "uncalled",
-      "shortTitle": "Environmental review deadlines",
-      "summary": "Changes environmental review for qualifying housing, infrastructure and other projects by setting agency and court deadlines. It also limits the alternatives agencies must consider and the evidence and remedies available in court challenges.",
+      "shortTitle": "Environmental review rules",
+      "summary": "Lets applicants for qualifying housing, infrastructure and other projects choose new environmental-review procedures with tighter agency and court deadlines. These procedures also limit project alternatives, public-comment periods, and the scope of court challenges and remedies.",
       "summarySource": {
         "url": "https://vig.cdn.sos.ca.gov/2026/general/pdf/complete-vig.pdf",
-        "pages": "74–77"
-      }
+        "pages": "75–76"
+      },
+      "resultHistory": []
     },
     {
       "id": "office-25",
@@ -729,7 +754,8 @@
       "call": "uncalled",
       "rosterStatus": "verified-official-roster",
       "supervisorialDistrict": null,
-      "countingMethod": "votes"
+      "countingMethod": "votes",
+      "resultHistory": []
     },
     {
       "id": "office-26",
@@ -753,7 +779,8 @@
       "call": "uncalled",
       "rosterStatus": "verified-official-roster",
       "supervisorialDistrict": null,
-      "countingMethod": "votes"
+      "countingMethod": "votes",
+      "resultHistory": []
     },
     {
       "id": "office-27",
@@ -777,7 +804,8 @@
       "call": "uncalled",
       "rosterStatus": "verified-official-roster",
       "supervisorialDistrict": null,
-      "countingMethod": "votes"
+      "countingMethod": "votes",
+      "resultHistory": []
     },
     {
       "id": "office-28",
@@ -801,7 +829,8 @@
       "call": "uncalled",
       "rosterStatus": "verified-official-roster",
       "supervisorialDistrict": null,
-      "countingMethod": "votes"
+      "countingMethod": "votes",
+      "resultHistory": []
     },
     {
       "id": "office-29",
@@ -855,7 +884,8 @@
       "call": "uncalled",
       "rosterStatus": "verified-official-roster",
       "supervisorialDistrict": null,
-      "countingMethod": "votes"
+      "countingMethod": "votes",
+      "resultHistory": []
     },
     {
       "id": "office-30",
@@ -909,7 +939,8 @@
       "call": "uncalled",
       "rosterStatus": "verified-official-roster",
       "supervisorialDistrict": null,
-      "countingMethod": "votes"
+      "countingMethod": "votes",
+      "resultHistory": []
     },
     {
       "id": "office-31",
@@ -928,7 +959,8 @@
       "call": "uncalled",
       "rosterStatus": "verified-official-roster",
       "supervisorialDistrict": null,
-      "countingMethod": "votes"
+      "countingMethod": "votes",
+      "resultHistory": []
     },
     {
       "id": "office-32",
@@ -947,7 +979,8 @@
       "call": "uncalled",
       "rosterStatus": "verified-official-roster",
       "supervisorialDistrict": null,
-      "countingMethod": "votes"
+      "countingMethod": "votes",
+      "resultHistory": []
     },
     {
       "id": "office-33",
@@ -966,7 +999,8 @@
       "call": "uncalled",
       "rosterStatus": "verified-official-roster",
       "supervisorialDistrict": null,
-      "countingMethod": "ranked-choice-first-choice"
+      "countingMethod": "ranked-choice-first-choice",
+      "resultHistory": []
     },
     {
       "id": "office-34",
@@ -985,7 +1019,8 @@
       "call": "uncalled",
       "rosterStatus": "verified-official-roster",
       "supervisorialDistrict": null,
-      "countingMethod": "ranked-choice-first-choice"
+      "countingMethod": "ranked-choice-first-choice",
+      "resultHistory": []
     },
     {
       "id": "office-35",
@@ -1019,7 +1054,8 @@
       "call": "uncalled",
       "rosterStatus": "verified-official-roster",
       "supervisorialDistrict": 2,
-      "countingMethod": "ranked-choice-first-choice"
+      "countingMethod": "ranked-choice-first-choice",
+      "resultHistory": []
     },
     {
       "id": "office-36",
@@ -1048,7 +1084,8 @@
       "call": "uncalled",
       "rosterStatus": "verified-official-roster",
       "supervisorialDistrict": 4,
-      "countingMethod": "ranked-choice-first-choice"
+      "countingMethod": "ranked-choice-first-choice",
+      "resultHistory": []
     },
     {
       "id": "office-37",
@@ -1072,7 +1109,8 @@
       "call": "uncalled",
       "rosterStatus": "verified-official-roster",
       "supervisorialDistrict": 6,
-      "countingMethod": "ranked-choice-first-choice"
+      "countingMethod": "ranked-choice-first-choice",
+      "resultHistory": []
     },
     {
       "id": "office-38",
@@ -1106,7 +1144,8 @@
       "call": "uncalled",
       "rosterStatus": "verified-official-roster",
       "supervisorialDistrict": 8,
-      "countingMethod": "ranked-choice-first-choice"
+      "countingMethod": "ranked-choice-first-choice",
+      "resultHistory": []
     },
     {
       "id": "office-39",
@@ -1170,7 +1209,8 @@
       "call": "uncalled",
       "rosterStatus": "verified-official-roster",
       "supervisorialDistrict": 10,
-      "countingMethod": "ranked-choice-first-choice"
+      "countingMethod": "ranked-choice-first-choice",
+      "resultHistory": []
     },
     {
       "id": "state-office-0",
@@ -1194,7 +1234,8 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "resultHistory": []
     },
     {
       "id": "state-office-1",
@@ -1218,7 +1259,8 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "resultHistory": []
     },
     {
       "id": "state-office-2",
@@ -1242,7 +1284,8 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "resultHistory": []
     },
     {
       "id": "state-office-3",
@@ -1266,7 +1309,8 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "resultHistory": []
     },
     {
       "id": "state-office-4",
@@ -1290,7 +1334,8 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "resultHistory": []
     },
     {
       "id": "state-office-5",
@@ -1314,7 +1359,8 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "resultHistory": []
     },
     {
       "id": "state-office-6",
@@ -1338,7 +1384,8 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "resultHistory": []
     },
     {
       "id": "state-office-7",
@@ -1362,7 +1409,8 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "resultHistory": []
     },
     {
       "id": "state-office-8",
@@ -1386,7 +1434,8 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "resultHistory": []
     },
     {
       "id": "judicial-0",
@@ -1409,7 +1458,8 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "resultHistory": []
     },
     {
       "id": "judicial-1",
@@ -1432,7 +1482,8 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "resultHistory": []
     },
     {
       "id": "judicial-2",
@@ -1455,7 +1506,8 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "resultHistory": []
     },
     {
       "id": "judicial-3",
@@ -1478,7 +1530,8 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "resultHistory": []
     },
     {
       "id": "judicial-4",
@@ -1501,7 +1554,8 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "resultHistory": []
     },
     {
       "id": "judicial-5",
@@ -1524,7 +1578,8 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "resultHistory": []
     },
     {
       "id": "judicial-6",
@@ -1547,7 +1602,8 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "resultHistory": []
     },
     {
       "id": "judicial-7",
@@ -1570,7 +1626,8 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "resultHistory": []
     },
     {
       "id": "judicial-8",
@@ -1593,7 +1650,8 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "resultHistory": []
     },
     {
       "id": "judicial-9",
@@ -1616,7 +1674,8 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "resultHistory": []
     },
     {
       "id": "judicial-10",
@@ -1639,7 +1698,8 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "resultHistory": []
     },
     {
       "id": "judicial-11",
@@ -1662,7 +1722,8 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "resultHistory": []
     },
     {
       "id": "judicial-12",
@@ -1685,7 +1746,8 @@
         }
       ],
       "regions": [],
-      "call": "uncalled"
+      "call": "uncalled",
+      "resultHistory": []
     }
   ]
 }
