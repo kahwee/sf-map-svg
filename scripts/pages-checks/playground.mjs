@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises';
 import { createCheckContext } from './context.mjs';
 
 export async function checkPlayground({ browser, origin, base, fail }) {

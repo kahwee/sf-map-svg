@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises';
 import { createCheckContext } from './context.mjs';
 import { stepSelect } from './controls.mjs';
 
