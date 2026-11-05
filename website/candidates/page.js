@@ -1,6 +1,7 @@
 import catalog from '../../data/candidates/catalog.json';
 import { createAsyncCache } from '../shared/async-cache.js';
 import { createDistrictMap } from '../shared/district-map.js';
+import { latestRequest, retryNotice } from '../shared/load-state.js';
 import { countTo, reorderList, whenVisible } from '../shared/motion-kit.js';
 import { candidateInks, mix, sequential } from '../shared/palette.js';
 import { element, enhanceCode, segmented } from '../shared/ui.js';
@@ -221,6 +222,7 @@ function paintMap() {
 }
 
 function render() {
+  if (!election) return;
   if (view === 'share' && (person === undefined || !contest.candidates[person]))
     person = ranking()[0].index;
   const status = `${election.label} · ${titleCase(contest.title)} · ${election.districtYear} supervisorial districts`;
@@ -255,9 +257,30 @@ function select(id) {
   render();
 }
 
+const newestElection = latestRequest();
+let loadNotice;
+let mapRequested = false;
+let mounting = false;
 async function chooseElection(date) {
   const choice = catalog.elections.find((item) => item.date === date) ?? catalog.elections.at(-1);
-  const data = await load(choice.file);
+  const isCurrent = newestElection();
+  let data;
+  try {
+    data = await load(choice.file);
+  } catch (error) {
+    if (!isCurrent()) return;
+    console.error(error);
+    loadNotice?.remove();
+    loadNotice = retryNotice(`Could not load the ${choice.date.slice(0, 4)} results.`, () =>
+      chooseElection(date),
+    );
+    $('election-control').insertAdjacentElement('afterend', loadNotice);
+    return;
+  }
+  // A newer choice was made while this one loaded; it owns the page now.
+  if (!isCurrent()) return;
+  loadNotice?.remove();
+  loadNotice = undefined;
   election = { ...choice, data, districtYear: data.districtYear };
   const contestSelect = $('contest');
   contestSelect.replaceChildren(
@@ -270,6 +293,7 @@ async function chooseElection(date) {
   electionControl.set(choice.date);
   if (map && map.year !== data.districtYear) map.setYear(data.districtYear);
   render();
+  if (mapRequested && !map) mountMap();
 }
 
 const electionControl = segmented($('election-control'), {
@@ -299,8 +323,10 @@ $('contest').addEventListener('change', (event) => {
   person = undefined;
   render();
 });
+$('download-svg').disabled = true;
 $('download-svg').addEventListener('click', () => {
-  const blob = new Blob([map?.snapshot() ?? ''], { type: 'image/svg+xml' });
+  if (!map) return;
+  const blob = new Blob([map.snapshot()], { type: 'image/svg+xml' });
   const link = element('a');
   link.href = URL.createObjectURL(blob);
   link.download = `sf-${election.date}-${contest.id}.svg`;
@@ -309,22 +335,31 @@ $('download-svg').addEventListener('click', () => {
 });
 
 await chooseElection(params.get('election') ?? catalog.elections.at(-1).date);
+async function mountMap() {
+  if (!election || mounting || map) return;
+  mounting = true;
+  try {
+    map = await createDistrictMap($('vote-map'), {
+      year: election.districtYear,
+      idPrefix: 'votes',
+      title: 'Candidate votes in San Francisco',
+      label: labelFor,
+      onSelect: (id) => select(id === district ? 0 : id),
+    });
+    $('download-svg').disabled = false;
+    paintMap();
+  } catch (error) {
+    $('vote-map').replaceChildren(retryNotice('The map could not load.', mountMap));
+    console.error(error);
+  } finally {
+    mounting = false;
+  }
+}
 whenVisible(
   $('vote-map'),
-  async () => {
-    try {
-      map = await createDistrictMap($('vote-map'), {
-        year: election.districtYear,
-        idPrefix: 'votes',
-        title: 'Candidate votes in San Francisco',
-        label: labelFor,
-        onSelect: (id) => select(id === district ? 0 : id),
-      });
-      paintMap();
-    } catch (error) {
-      $('vote-map').textContent = 'The map could not load.';
-      console.error(error);
-    }
+  () => {
+    mapRequested = true;
+    mountMap();
   },
   '300px',
 );

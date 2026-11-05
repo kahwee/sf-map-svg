@@ -1,6 +1,7 @@
 import catalog from '../../data/elections/catalog.json';
 import { createAsyncCache } from '../shared/async-cache.js';
 import { createDistrictMap } from '../shared/district-map.js';
+import { latestRequest, retryNotice } from '../shared/load-state.js';
 import { countTo, reorderList, staggerChildren, whenVisible } from '../shared/motion-kit.js';
 import { diverging, mix, sequential } from '../shared/palette.js';
 import { copyText, element, enhanceCode, segmented } from '../shared/ui.js';
@@ -292,13 +293,37 @@ function render() {
 }
 
 function selectDistrict(id) {
+  if (!view) return;
   view.district = id;
   render();
 }
 
+const newestElection = latestRequest();
+let loadNotice;
+let mapRequested = false;
+let mounting = false;
 async function chooseElection(date, hash = '') {
-  choice = catalog.elections.find((item) => item.date === date) ?? catalog.elections[0];
-  election = await load(choice.data);
+  const next = catalog.elections.find((item) => item.date === date) ?? catalog.elections[0];
+  const isCurrent = newestElection();
+  let data;
+  try {
+    data = await load(next.data);
+  } catch (error) {
+    if (!isCurrent()) return;
+    console.error(error);
+    loadNotice?.remove();
+    loadNotice = retryNotice(`Could not load the ${next.date.slice(0, 4)} results.`, () =>
+      chooseElection(date, hash),
+    );
+    $('election-control').insertAdjacentElement('afterend', loadNotice);
+    return;
+  }
+  // A newer choice was made while this one loaded; it owns the page now.
+  if (!isCurrent()) return;
+  loadNotice?.remove();
+  loadNotice = undefined;
+  choice = next;
+  election = data;
   const ids = election.measures.map((item) => item.id);
   view = readView(hash, ids);
   if (view.mode === 'districts') view.mode = 'yes';
@@ -323,6 +348,7 @@ async function chooseElection(date, hash = '') {
   renderList();
   if (map && map.year !== election.districtYear) map.setYear(election.districtYear);
   render();
+  if (mapRequested && !map) mountMap();
 }
 
 const electionControl = segmented($('election-control'), {
@@ -341,6 +367,7 @@ const modeControl = segmented($('mode-control'), {
   ],
   value: 'yes',
   onChange: (mode) => {
+    if (!view) return;
     view.mode = mode;
     render();
   },
@@ -348,6 +375,7 @@ const modeControl = segmented($('mode-control'), {
 for (let id = 1; id <= 11; id++) $('district').add(new Option(`District ${id}`, String(id)));
 $('district').addEventListener('change', (event) => selectDistrict(Number(event.target.value)));
 $('compare').addEventListener('change', (event) => {
+  if (!view) return;
   view.compare = event.target.value;
   render();
 });
@@ -367,29 +395,40 @@ $('export-csv').addEventListener('click', () =>
     `sf-${choice.date}-measure-${view.measure}.csv`,
   ),
 );
-$('export-svg').addEventListener('click', () =>
-  download(map?.snapshot() ?? '', 'image/svg+xml', `sf-${choice.date}-measure-${view.measure}.svg`),
-);
+$('export-svg').disabled = true;
+$('export-svg').addEventListener('click', () => {
+  if (map)
+    download(map.snapshot(), 'image/svg+xml', `sf-${choice.date}-measure-${view.measure}.svg`);
+});
 $('share-link').addEventListener('click', (event) => copyText(event.currentTarget, location.href));
 
 await chooseElection(initial.get('election') ?? catalog.elections[0].date, location.hash);
+async function mountMap() {
+  if (!election || mounting || map) return;
+  mounting = true;
+  try {
+    map = await createDistrictMap($('measure-map'), {
+      year: election.districtYear,
+      idPrefix: 'measures',
+      title: 'Local ballot measure results in San Francisco',
+      label: (id) =>
+        `District ${id}: ${percent(yesShare(row(measure(), id)))} Yes on Measure ${view.measure}`,
+      onSelect: (id) => selectDistrict(id === view.district ? 0 : id),
+    });
+    $('export-svg').disabled = false;
+    paint();
+  } catch (error) {
+    $('measure-map').replaceChildren(retryNotice('The map could not load.', mountMap));
+    console.error(error);
+  } finally {
+    mounting = false;
+  }
+}
 whenVisible(
   $('measure-map'),
-  async () => {
-    try {
-      map = await createDistrictMap($('measure-map'), {
-        year: election.districtYear,
-        idPrefix: 'measures',
-        title: 'Local ballot measure results in San Francisco',
-        label: (id) =>
-          `District ${id}: ${percent(yesShare(row(measure(), id)))} Yes on Measure ${view.measure}`,
-        onSelect: (id) => selectDistrict(id === view.district ? 0 : id),
-      });
-      paint();
-    } catch (error) {
-      $('measure-map').textContent = 'The map could not load.';
-      console.error(error);
-    }
+  () => {
+    mapRequested = true;
+    mountMap();
   },
   '300px',
 );

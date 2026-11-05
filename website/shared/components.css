@@ -368,3 +368,13 @@ td.num,
 th.num {
   text-align: right;
 }
+.load-retry {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+  margin: 0.75rem 0;
+}
+.load-retry p {
+  margin: 0;
+}

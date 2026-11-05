@@ -7,6 +7,7 @@ import { visit } from './pages/layout.mjs';
 import { checkPlayground } from './pages/playground.mjs';
 import { servePages } from './pages/server.mjs';
 import { checkStudioLoading } from './pages/studio.mjs';
+import { checkVotePages } from './pages/vote-pages.mjs';
 
 const root = 'pages-dist';
 const base = '/sf-map-svg/';
@@ -48,6 +49,7 @@ try {
     ['election popover viewport', checkPopoverViewport],
     ['studio loading and recovery', checkStudioLoading],
     ['playground controls and export', checkPlayground],
+    ['measures and candidates loading, retry and selection', checkVotePages],
   ])
     await scenario(name, () => check(harness));
   for (const path of pages) {

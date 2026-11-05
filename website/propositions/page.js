@@ -2,6 +2,7 @@ import results from '../../data/propositions/2024-11-05.json';
 import { yesShare } from '../measures/model.js';
 import { displayMapCopy } from '../shared/display-map.js';
 import { createDistrictMap } from '../shared/district-map.js';
+import { retryNotice } from '../shared/load-state.js';
 import {
   countTo,
   growMap,
@@ -213,8 +214,10 @@ $('proposition').addEventListener('change', (event) => choose(Number(event.targe
 $('prev-prop').addEventListener('click', () => step(-1));
 $('next-prop').addEventListener('click', () => step(1));
 $('clear-district').addEventListener('click', () => selectDistrict(0));
+$('download-svg').disabled = true;
 $('download-svg').addEventListener('click', () => {
-  const blob = new Blob([map?.snapshot() ?? ''], { type: 'image/svg+xml' });
+  if (!map) return;
+  const blob = new Blob([map.snapshot()], { type: 'image/svg+xml' });
   const link = element('a');
   link.href = URL.createObjectURL(blob);
   link.download = `sf-prop-${proposition.number}-by-district.svg`;
@@ -224,23 +227,26 @@ $('download-svg').addEventListener('click', () => {
 
 buildMultiples();
 render(true);
-whenVisible(
-  $('prop-map'),
-  async () => {
-    try {
-      map = await createDistrictMap($('prop-map'), {
-        year: 2022,
-        idPrefix: 'props',
-        title: 'California proposition votes in San Francisco',
-        label: (id) =>
-          `District ${id}: ${percent(yesShare(districtRow(id)))} Yes on Proposition ${proposition.number}`,
-        onSelect: (id) => selectDistrict(id === district ? 0 : id),
-      });
-      render(true);
-    } catch (error) {
-      $('prop-map').textContent = 'The map could not load.';
-      console.error(error);
-    }
-  },
-  '300px',
-);
+let mounting = false;
+async function mountMap() {
+  if (mounting || map) return;
+  mounting = true;
+  try {
+    map = await createDistrictMap($('prop-map'), {
+      year: 2022,
+      idPrefix: 'props',
+      title: 'California proposition votes in San Francisco',
+      label: (id) =>
+        `District ${id}: ${percent(yesShare(districtRow(id)))} Yes on Proposition ${proposition.number}`,
+      onSelect: (id) => selectDistrict(id === district ? 0 : id),
+    });
+    $('download-svg').disabled = false;
+    render(true);
+  } catch (error) {
+    $('prop-map').replaceChildren(retryNotice('The map could not load.', mountMap));
+    console.error(error);
+  } finally {
+    mounting = false;
+  }
+}
+whenVisible($('prop-map'), mountMap, '300px');
