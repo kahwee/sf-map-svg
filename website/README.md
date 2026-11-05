@@ -36,9 +36,14 @@ Forced-colors mode uses the platform's native arrow for visibility.
 
 ## Playground
 
-`playground.ts` owns the form and preview lifecycle; `playground-model.ts` owns the
-validated design state, API option adapters, versioned share links, and generated
-JavaScript/TypeScript examples. `pnpm typecheck:website` checks both in strict mode.
+`playground.ts` connects form controls and rendering updates. Its focused modules are:
+
+- `playground-preview.ts`: browser/static previews, camera and selection restoration, disposal.
+- `playground-history.ts`: detached undo/redo snapshots, branching and the 60-entry limit.
+- `playground-export.ts`: full-precision geography loading/retry, SVG downloads and share URLs.
+- `playground-model.ts`: validated design state, API adapters, versioned share encoding and generated examples.
+
+`pnpm typecheck:website` checks the entry point and its imported modules in strict mode.
 Mode defaults follow the view while explicit layer overrides survive mode changes.
 Static previews render without creating an interactive controller. Mobile previews
 scroll with the page so controls cannot be covered by a tall pinned map.

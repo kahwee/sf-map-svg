@@ -1373,6 +1373,8 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Separate playground preview lifecycle, undo/redo history and exports from form wiring; keep selection, camera restoration and versioned share links intact.
+
 - Narrow the interactive engine with dedicated presentation transactions, layer composition and appearance rendering; preserve the public API and lifecycle behavior.
 
 - Split Pages validation into focused scenarios with named progress, bounded browser waits, and cleanup after failures.
