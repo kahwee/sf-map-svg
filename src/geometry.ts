@@ -26,15 +26,12 @@ export function rawProject([longitude, latitude]: Position): [number, number] {
 /** Walk collections without recursion or copying their coordinate arrays. */
 function* geometryParts(geometry: Geometry | null | undefined): Generator<Geometry> {
   if (!geometry) return;
-  const stack: Iterator<Geometry>[] = [[geometry][Symbol.iterator]()];
-  while (stack.length) {
-    const next = stack[stack.length - 1].next();
-    if (next.done) {
-      stack.pop();
-    } else if (next.value.type === 'GeometryCollection') {
-      stack.push(next.value.geometries[Symbol.iterator]());
+  const stack = [geometry];
+  for (let part = stack.pop(); part; part = stack.pop()) {
+    if (part.type === 'GeometryCollection') {
+      for (let i = part.geometries.length - 1; i >= 0; i--) stack.push(part.geometries[i]);
     } else {
-      yield next.value;
+      yield part;
     }
   }
 }
@@ -43,6 +40,9 @@ function visitPositions(
   geometry: Geometry | null | undefined,
   visit: (position: Position) => void,
 ): void {
+  const line = (points: readonly Position[]) => {
+    for (const point of points) visit(point);
+  };
   for (const part of geometryParts(geometry)) {
     switch (part.type) {
       case 'Point':
@@ -50,24 +50,36 @@ function visitPositions(
         break;
       case 'LineString':
       case 'MultiPoint':
-        for (const point of part.coordinates) visit(point);
+        line(part.coordinates);
         break;
       case 'Polygon':
       case 'MultiLineString':
-        for (const line of part.coordinates) for (const point of line) visit(point);
+        for (const ring of part.coordinates) line(ring);
         break;
       case 'MultiPolygon':
-        for (const polygon of part.coordinates)
-          for (const ring of polygon) for (const point of ring) visit(point);
+        for (const polygon of part.coordinates) for (const ring of polygon) line(ring);
         break;
     }
   }
 }
 
 export function positions(geometry: Geometry | null | undefined): Position[] {
-  const result: Position[] = [];
-  visitPositions(geometry, (point) => result.push(point));
-  return result;
+  return Array.from(geometryParts(geometry)).flatMap((part) => {
+    switch (part.type) {
+      case 'Point':
+        return [part.coordinates];
+      case 'LineString':
+      case 'MultiPoint':
+        return part.coordinates;
+      case 'Polygon':
+      case 'MultiLineString':
+        return part.coordinates.flat();
+      case 'MultiPolygon':
+        return part.coordinates.flat(2);
+      default:
+        return [];
+    }
+  });
 }
 export function geometryPath(geometry: Geometry | null | undefined, project: Project): string {
   if (!geometry) return '';
