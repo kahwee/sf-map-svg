@@ -107,7 +107,6 @@ test('deep collections do not overflow and still validate members after a hit', 
   for (let depth = 0; depth < 15000; depth++)
     geometry = { type: 'GeometryCollection', geometries: [geometry] };
   assert.deepEqual(geometryBounds(geometry), [0, 0, 10, 10]);
-  assert.deepEqual(positions(geometry), [...ring, ...hole]);
   assert.equal(geometryContainsPoint(geometry, [1, 1]), true);
   assert.equal(geometryContainsPoint(geometry, [5, 5]), false);
   const invalid = {

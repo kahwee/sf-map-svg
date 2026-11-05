@@ -64,22 +64,21 @@ function visitPositions(
 }
 
 export function positions(geometry: Geometry | null | undefined): Position[] {
-  return Array.from(geometryParts(geometry)).flatMap((part) => {
-    switch (part.type) {
-      case 'Point':
-        return [part.coordinates];
-      case 'LineString':
-      case 'MultiPoint':
-        return part.coordinates;
-      case 'Polygon':
-      case 'MultiLineString':
-        return part.coordinates.flat();
-      case 'MultiPolygon':
-        return part.coordinates.flat(2);
-      default:
-        return [];
-    }
-  });
+  if (!geometry) return [];
+  switch (geometry.type) {
+    case 'Point':
+      return [geometry.coordinates];
+    case 'LineString':
+    case 'MultiPoint':
+      return [...geometry.coordinates];
+    case 'Polygon':
+    case 'MultiLineString':
+      return geometry.coordinates.flat();
+    case 'MultiPolygon':
+      return geometry.coordinates.flat(2);
+    case 'GeometryCollection':
+      return geometry.geometries.flatMap(positions);
+  }
 }
 export function geometryPath(geometry: Geometry | null | undefined, project: Project): string {
   if (!geometry) return '';
