@@ -51,6 +51,19 @@ Inspect the generated example page and SVGs when rendering changes. Preserve the
 
 Released Markdown, declarations, snippets and maps must come from that installed package. Do not fill missing release docs with working-tree docs or expose unsupported options as usable. Site-only edits can deploy independently of npm; package-owned documentation changes reach the released Markdown exports with the next package publication. `pages-dist/release.json` records the selected version and source.
 
+## Deployment scheduling
+
+Pages builds run on main updates, successful npm publication, or manual dispatch.
+Automatic runs skip a commit/package pair already recorded in live `release.json`;
+manual dispatch forces validation and deployment. Failed publication does not start a build.
+
+`election-refresh.yml` checks official sources every ten minutes using Node only.
+It requests Pages deployment when validated results or source status change, or after
+24 hours to refresh the published check time. Fetch timestamps alone do not trigger
+builds. The probe preserves the same verified-deployment recovery checks as publication;
+Pages fetches and validates again during its build, so it never publishes an unchecked
+probe artifact. An unchanged feed's displayed check time remains its last published check.
+
 ## Publish a stable release
 
 1. Review compatibility. Use a patch for compatible fixes, a minor for additive API, and a major for breaks, including runtime requirements. Move the complete Unreleased notes into a dated `## <version> — YYYY-MM-DD` section. Align `package.json` and any version-bearing lock metadata.

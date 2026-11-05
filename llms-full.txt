@@ -1373,6 +1373,8 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Separate scheduled election checks from Pages builds; skip unchanged results and duplicate commit/package deployments while retaining daily freshness updates and full deployment validation.
+
 ## 6.0.0 — 2026-11-05
 
 - Breaking: remove flat static presentation options. Use `layers` for geographic switches and `appearance` for theme, colors and district styles.

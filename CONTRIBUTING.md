@@ -105,7 +105,7 @@ The site in `website/` shares one design system (`site.css`, with motion tokens,
 
 Canonical data in `data/` and the full-precision SVGs in `maps/` stay unchanged. Pages built with `--released` use the published package, so a site feature that needs an unreleased library feature must degrade gracefully until the next release. After `pnpm build:pages`, run `pnpm test:pages` to check every page in Chromium for script errors, failed requests, sideways scrolling, layout shift, and compressed size budgets; CI runs it before each deploy. For visual changes, still inspect pages at desktop and 390 px in both themes.
 
-Pages deploys on `main` updates and after a successful npm publishing workflow. Release-triggered builds wait up to five minutes for npm to expose the exact published version. If processing takes longer, rerun the failed Pages workflow.
+Pages deploys on `main` updates and after a successful npm publishing workflow, skipping already-deployed commit/package pairs. A separate lightweight election check requests deployment only for changed results/source status or a daily freshness update. Release-triggered builds wait up to five minutes for npm to expose the exact published version. If processing takes longer, rerun the failed Pages workflow.
 
 Use `pnpm check:types:built` after a current build to run the three Bun project
 checks in parallel. `pnpm check:node` covers Node/package checks; it is only one

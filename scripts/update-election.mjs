@@ -1,6 +1,7 @@
-import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
+import { appendFile, mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { parseOfficialReport, validateSnapshot } from '../website/election-model.js';
+import { needsElectionDeployment } from './lib/election-change.mjs';
 import { loadPreviousSnapshot } from './lib/previous-election.mjs';
 
 import {
@@ -120,3 +121,9 @@ await mkdir(dirname(output), { recursive: true });
 await writeFile(`${output}.tmp`, `${JSON.stringify(next, null, 2)}\n`);
 await rename(`${output}.tmp`, output);
 console.log(`Election check: ${next.checkStatus}; results: ${next.status}; ${now}`);
+
+if (process.env.ELECTION_PROBE === 'true' && process.env.GITHUB_OUTPUT)
+  await appendFile(
+    process.env.GITHUB_OUTPUT,
+    `changed=${needsElectionDeployment(previous, next)}\n`,
+  );

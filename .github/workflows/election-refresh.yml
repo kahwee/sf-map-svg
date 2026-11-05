@@ -1,0 +1,37 @@
+name: Check election updates
+on:
+  schedule:
+    - cron: '7,17,27,37,47,57 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: election-refresh
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '26'
+          package-manager-cache: false
+      - name: Check official sources against the validated deployment
+        id: election
+        env:
+          ELECTION_PROBE: 'true'
+          # This run belongs to election-refresh, not the Pages run sequence.
+          GITHUB_RUN_NUMBER: ''
+        run: node scripts/update-election.mjs "$RUNNER_TEMP/election.json"
+      - name: Deploy changed results or daily freshness update
+        if: steps.election.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref main

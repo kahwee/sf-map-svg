@@ -458,7 +458,7 @@ try {
     await writeFile(join('pages-dist', name), content);
   await writeFile(
     'pages-dist/release.json',
-    `${JSON.stringify({ version, source: released ? 'npm' : 'local' })}\n`,
+    `${JSON.stringify({ version, source: released ? 'npm' : 'local', buildCommit: process.env.GITHUB_SHA ?? null })}\n`,
   );
   console.log(`Pages built with ${releaseLabel}`);
 } finally {
