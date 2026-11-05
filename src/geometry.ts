@@ -64,42 +64,35 @@ function visitPositions(
 }
 
 export function positions(geometry: Geometry | null | undefined): Position[] {
-  if (!geometry) return [];
-  switch (geometry.type) {
-    case 'Point':
-      return [geometry.coordinates];
-    case 'LineString':
-    case 'MultiPoint':
-      return [...geometry.coordinates];
-    case 'Polygon':
-    case 'MultiLineString':
-      return geometry.coordinates.flat();
-    case 'MultiPolygon':
-      return geometry.coordinates.flat(2);
-    case 'GeometryCollection':
-      return geometry.geometries.flatMap(positions);
-  }
+  const result: Position[] = [];
+  visitPositions(geometry, (point) => result.push(point));
+  return result;
 }
 export function geometryPath(geometry: Geometry | null | undefined, project: Project): string {
-  if (!geometry) return '';
-  const line = (ring: readonly Position[]) =>
-    ring.map((p, i) => `${i ? 'L' : 'M'}${project(p).map(number).join(',')}`).join('');
+  const line = (ring: readonly Position[]) => {
+    let path = '';
+    for (let i = 0; i < ring.length; i++) {
+      const [x, y] = project(ring[i]);
+      path += `${i ? 'L' : 'M'}${number(x)},${number(y)}`;
+    }
+    return path;
+  };
   const polygon = (rings: readonly (readonly Position[])[]) =>
-    rings.map((ring) => `${line(ring)}Z`).join('');
-  switch (geometry.type) {
-    case 'Polygon':
-      return polygon(geometry.coordinates);
-    case 'MultiPolygon':
-      return geometry.coordinates.map(polygon).join('');
-    case 'LineString':
-      return line(geometry.coordinates);
-    case 'MultiLineString':
-      return geometry.coordinates.map(line).join('');
-    case 'GeometryCollection':
-      return geometry.geometries.map((g) => geometryPath(g, project)).join('');
-    default:
-      return '';
-  }
+    rings.map((ring) => (ring.length ? `${line(ring)}Z` : '')).join('');
+  return Array.from(geometryParts(geometry), (part) => {
+    switch (part.type) {
+      case 'Polygon':
+        return polygon(part.coordinates);
+      case 'MultiPolygon':
+        return part.coordinates.map(polygon).join('');
+      case 'LineString':
+        return line(part.coordinates);
+      case 'MultiLineString':
+        return part.coordinates.map(line).join('');
+      default:
+        return '';
+    }
+  }).join('');
 }
 
 function validatePosition(point: Position): void {

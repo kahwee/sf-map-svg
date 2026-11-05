@@ -13,12 +13,15 @@ export interface LabelCandidate {
 export type PlacedLabel<T> = T & { left: number; top: number; box: Bounds };
 
 export function projectedBounds(geometry: Geometry, project: Project): Bounds {
-  return positions(geometry)
-    .map(project)
-    .reduce<[number, number, number, number]>(
-      (b, [x, y]) => [Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)],
-      [Infinity, Infinity, -Infinity, -Infinity],
-    );
+  const bounds: [number, number, number, number] = [Infinity, Infinity, -Infinity, -Infinity];
+  for (const point of positions(geometry)) {
+    const [x, y] = project(point);
+    bounds[0] = Math.min(bounds[0], x);
+    bounds[1] = Math.min(bounds[1], y);
+    bounds[2] = Math.max(bounds[2], x);
+    bounds[3] = Math.max(bounds[3], y);
+  }
+  return bounds;
 }
 
 /** Find an interior label anchor using even-odd scanline intervals, including holes. */
@@ -28,10 +31,14 @@ export function interiorAnchor(geometry: Geometry, project: Project): [number, n
   let best: [number, number] | undefined;
   let bestScore = -Infinity;
   for (const polygon of polygons) {
+    if (!polygon[0]?.length) continue;
     const rings = polygon.map((ring) => ring.map(project));
-    const ys = rings[0].map((p) => p[1]);
-    const lo = Math.min(...ys),
-      hi = Math.max(...ys);
+    let lo = Infinity;
+    let hi = -Infinity;
+    for (const [, y] of rings[0]) {
+      lo = Math.min(lo, y);
+      hi = Math.max(hi, y);
+    }
     for (let step = 1; step < 32; step++) {
       const y = lo + ((hi - lo) * step) / 32;
       const intersections = [];
@@ -89,12 +96,9 @@ export function layoutLabels<T extends LabelCandidate>(
     for (const [left, top] of alternatives) {
       const box: Bounds = [left - 3, top - 3, left + textWidth + 3, top + textHeight + 3];
       if (box[0] < 2 || box[1] < 2 || box[2] > width - 2 || box[3] > height - 2) continue;
-      if (
-        [...obstacles, ...placed.map((item) => item.box)].some(
-          (b) => box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1],
-        )
-      )
-        continue;
+      const overlaps = (b: Bounds) =>
+        box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1];
+      if (obstacles.some(overlaps) || placed.some((item) => overlaps(item.box))) continue;
       placed.push({ ...candidate, left, top, box });
       break;
     }

@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { geometryBounds, geometryContainsPoint, positions } from '../../dist/src/geometry.js';
+import {
+  geometryBounds,
+  geometryContainsPoint,
+  geometryPath,
+  positions,
+} from '../../dist/src/geometry.js';
 
 const ring = [
   [0, 0],
@@ -107,6 +112,11 @@ test('deep collections do not overflow and still validate members after a hit', 
   for (let depth = 0; depth < 15000; depth++)
     geometry = { type: 'GeometryCollection', geometries: [geometry] };
   assert.deepEqual(geometryBounds(geometry), [0, 0, 10, 10]);
+  assert.deepEqual(positions(geometry), [...ring, ...hole]);
+  assert.equal(
+    geometryPath(geometry, (p) => p),
+    geometryPath(polygon, (p) => p),
+  );
   assert.equal(geometryContainsPoint(geometry, [1, 1]), true);
   assert.equal(geometryContainsPoint(geometry, [5, 5]), false);
   const invalid = {
@@ -137,4 +147,51 @@ test('coordinate traversal preserves mixed collection order and coordinate refer
   for (let i = 0; i < points.length; i++) assert.equal(result[i], points[i]);
   assert.deepEqual(geometryBounds(geometry), [0, 1, 7, 8]);
   assert.deepEqual(positions(null), []);
+});
+
+test('SVG paths skip empty rings and preserve component order, closure, and rounding', () => {
+  const line = {
+    type: 'LineString',
+    coordinates: [
+      [1.234, 2.345],
+      [3, 4],
+    ],
+  };
+  const area = {
+    type: 'Polygon',
+    coordinates: [
+      [],
+      [
+        [0, 0],
+        [2, 0],
+        [0, 2],
+      ],
+      [],
+    ],
+  };
+  const collection = {
+    type: 'GeometryCollection',
+    geometries: [
+      { type: 'Point', coordinates: [99, 99] },
+      line,
+      {
+        type: 'GeometryCollection',
+        geometries: [area, { type: 'MultiLineString', coordinates: [[], line.coordinates] }],
+      },
+      { type: 'MultiPolygon', coordinates: [[], [[]], area.coordinates] },
+    ],
+  };
+  assert.equal(
+    geometryPath(collection, (p) => p),
+    'M1.23,2.35L3,4M0,0L2,0L0,2ZM1.23,2.35L3,4M0,0L2,0L0,2Z',
+  );
+  for (const geometry of [
+    null,
+    { type: 'Polygon', coordinates: [[]] },
+    { type: 'MultiPolygon', coordinates: [[[]]] },
+  ])
+    assert.equal(
+      geometryPath(geometry, () => assert.fail('empty geometry must not project')),
+      '',
+    );
 });

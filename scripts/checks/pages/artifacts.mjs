@@ -4,8 +4,8 @@ import { gzipSync } from 'node:zlib';
 
 // Initial JavaScript and CSS, gzip KB. Transit embeds the library's animation with its geometry.
 const budgets = {
-  index: 47.75, // Option/cluster boundaries and CSS modules: 47.45 KiB gzip measured.
-  layers: 50.75, // Option/cluster boundaries and CSS modules: 50.55 KiB gzip measured.
+  index: 48, // Iterative geometry and dense-label safety: 47.71 KiB gzip measured.
+  layers: 51, // Iterative geometry and dense-label safety: 50.81 KiB gzip measured.
   playground: 56.5, // Option/cluster boundaries and CSS modules: 56.19 KiB gzip measured.
   // TanStack Charts 1.2.1 adds typed scales, axes and accessible SVG (37.78 KB measured).
   election: 40,

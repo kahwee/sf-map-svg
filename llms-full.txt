@@ -1373,6 +1373,8 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Prevent deep-collection overflows in coordinate extraction and SVG paths, omit empty-ring path commands, and handle dense or empty label polygons without argument-limit errors. Reduce temporary allocations in path generation, projected bounds, and label collision checks.
+
 - Allow failed website data and map loads to retry while sharing in-flight requests; consolidate playground styles, extend checked JavaScript models/loaders, and complete macOS visual baselines.
 
 - Separate initial map option preparation and cluster interaction from engine wiring; organize shared CSS by ownership and check all website TypeScript plus selected JavaScript helpers without changing supported APIs.

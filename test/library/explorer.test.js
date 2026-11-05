@@ -5,6 +5,7 @@ import {
   fitBounds,
   interiorAnchor,
   layoutLabels,
+  projectedBounds,
 } from '../../dist/src/explorer-layout.js';
 import { fullMapData } from '../../dist/src/full-data.js';
 import { createMap } from '../../dist/src/map.js';
@@ -84,4 +85,43 @@ test('labels reserve space around station symbols even when station text is hidd
     labels.map((label) => label.id),
     ['station'],
   );
+});
+
+test('label anchors handle empty polygons and rings beyond the argument-count limit', () => {
+  assert.equal(interiorAnchor({ type: 'Polygon', coordinates: [] }, identity), undefined);
+  assert.equal(interiorAnchor({ type: 'Polygon', coordinates: [[]] }, identity), undefined);
+  const dense = Array.from({ length: 200000 }, (_, i) => {
+    const t = i / 50000;
+    return t < 1
+      ? [10 * t, 0]
+      : t < 2
+        ? [10, 10 * (t - 1)]
+        : t < 3
+          ? [10 * (3 - t), 10]
+          : [0, 10 * (4 - t)];
+  });
+  assert.deepEqual(interiorAnchor({ type: 'Polygon', coordinates: [dense] }, identity), [5, 5]);
+  assert.deepEqual(
+    interiorAnchor({ type: 'MultiPolygon', coordinates: [[], [ring(0, 0, 10, 10)]] }, identity),
+    [5, 5],
+  );
+});
+
+test('projected bounds visit each coordinate once and retain empty bounds', () => {
+  let calls = 0;
+  const geometry = { type: 'Polygon', coordinates: [ring(1, 2, 3, 4)] };
+  assert.deepEqual(
+    projectedBounds(geometry, ([x, y]) => {
+      calls++;
+      return [x * 2, -y];
+    }),
+    [2, -4, 6, -2],
+  );
+  assert.equal(calls, 5);
+  assert.deepEqual(projectedBounds({ type: 'GeometryCollection', geometries: [] }, identity), [
+    Infinity,
+    Infinity,
+    -Infinity,
+    -Infinity,
+  ]);
 });
