@@ -54,8 +54,8 @@ try {
       document.getElementById('download').dispatchEvent(new Event('click'));
       document.getElementById('replay').dispatchEvent(new Event('click'));
     });
-    assert.match(await page.locator('#studio-map').innerText(), /Loading the map/);
-    assert.match(await page.locator('#studio-code').innerText(), /renderMap/);
+    assert.match(await page.locator('#studio-map').textContent(), /Loading the map/);
+    assert.match(await page.locator('#studio-code').textContent(), /renderMap/);
     if (fail) {
       // Error reporting must not assume the initial loading node still exists.
       await page.locator('#studio-map .stage-loading').evaluate((node) => node.remove());
@@ -71,7 +71,7 @@ try {
       // Rendering choices remain safe even after a failed load.
       await page.locator('#render-control button[data-value="interactive"]').click();
       await page.locator('#render-control button[data-value="static"]').click();
-      assert.match(await page.locator('#studio-map').innerText(), /The map could not load/);
+      assert.match(await page.locator('#studio-map').textContent(), /The map could not load/);
     } else {
       await page.locator('#studio-map .studio-static svg').waitFor();
       assert.equal(await page.locator('#studio-map .sf-explorer').count(), 0);
@@ -88,7 +88,7 @@ try {
       assert.match(svg, /data-year="2022"/);
       await page.locator('#render-control button[data-value="interactive"]').click();
       await page.locator('#studio-map .sf-explorer').waitFor();
-      assert.match(await page.locator('#studio-code').innerText(), /createMap/);
+      assert.match(await page.locator('#studio-code').textContent(), /createMap/);
     }
     assert.deepEqual(
       errors,

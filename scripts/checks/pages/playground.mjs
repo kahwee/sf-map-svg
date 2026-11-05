@@ -175,7 +175,7 @@ export async function checkPlayground({ browser, origin, base, fail }) {
       });
     if (contrast < 4.5) fail(`playground: dark picker label contrast is ${contrast.toFixed(2)}:1`);
     await page.locator('#design-language').selectOption('typescript');
-    if (!(await page.locator('#design-code').innerText()).includes('const options: MapOptions'))
+    if (!(await page.locator('#design-code').textContent()).includes('const options: MapOptions'))
       fail('playground: TypeScript selection does not generate typed options');
     await page.unroute('**/data/site-map.json');
     await page.route('**/data/site-map.json', (route) => route.abort());

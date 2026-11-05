@@ -37,7 +37,7 @@ export async function checkStudioLoading({ browser, origin, base, fail }) {
       fail('studio failure: download is enabled');
     await page.getByRole('button', { name: 'Interactive', exact: true }).click();
     await page.getByRole('button', { name: 'Static SVG', exact: true }).click();
-    if (!(await page.locator('#studio-map').innerText()).includes('The map could not load.'))
+    if (!(await page.locator('#studio-map').textContent()).includes('The map could not load.'))
       fail('studio failure: render selection removed the error state');
   } finally {
     releaseData();
