@@ -23,7 +23,7 @@ export default defineConfig({
   },
   projects: [{ name: 'chromium' }],
   webServer: {
-    command: 'node scripts/serve-visual.mjs',
+    command: 'node scripts/checks/serve-visual.mjs',
     url: 'http://127.0.0.1:4174/storybook-static/iframe.html',
     reuseExistingServer: false,
     stderr: 'ignore',

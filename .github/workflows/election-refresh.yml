@@ -27,7 +27,7 @@ jobs:
         id: election
         env:
           ELECTION_PROBE: 'true'
-        run: node scripts/update-election.mjs "$RUNNER_TEMP/election.json"
+        run: node scripts/data/election/update.mjs "$RUNNER_TEMP/election.json"
       - name: Deploy changed results or daily freshness update
         if: steps.election.outputs.changed == 'true'
         env:

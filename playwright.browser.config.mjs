@@ -19,7 +19,7 @@ export default defineConfig({
     })),
   ),
   webServer: {
-    command: 'node scripts/serve-browser-fixture.mjs',
+    command: 'node scripts/checks/serve-browser-fixture.mjs',
     url: 'http://127.0.0.1:4175',
     reuseExistingServer: false,
     timeout: 60_000,

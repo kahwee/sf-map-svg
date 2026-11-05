@@ -1,5 +1,5 @@
 // Shared color scales for the site's maps. Pure functions: used in the browser and by
-// scripts/build-pages.mjs when it pre-renders plates.
+// scripts/build/pages.mjs when it pre-renders plates.
 
 const hex = (value) => {
   const n = Number.parseInt(value.slice(1), 16);

@@ -1,5 +1,5 @@
 // The Pages build writes data/site-map.json: the library's fullMapData with every geometry
-// simplified for display (see scripts/site-data.mjs). It has the exact MapData shape, so it
+// simplified for display (see scripts/build/site-data.mjs). It has the exact MapData shape, so it
 // goes straight into createMap and renderMap.
 let pending;
 

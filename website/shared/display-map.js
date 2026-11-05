@@ -1,4 +1,4 @@
-// Prebuilt district maps for on-screen display. scripts/build-pages.mjs writes
+// Prebuilt district maps for on-screen display. scripts/build/pages.mjs writes
 // them with display-only simplification, so pages avoid bundling raw GeoJSON.
 const cache = new Map();
 

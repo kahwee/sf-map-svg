@@ -27,7 +27,7 @@ See [interactive state ownership](docs/state-ownership.md) for state and disposa
 | `src/interactive/frame-scheduler.ts` | Shared camera and dependent screen-space render frame |
 | `src/data.ts`     | Internal adapter over canonical JSON geometry           |
 | `src/types.ts`  | Public TypeScript declarations                          |
-| `test/`           | Rendering, XML, projection and input validation         |
+| `test/library/`, `test/website/`, `test/tooling/` | Library contracts, site behavior and build/data/release tooling |
 | `examples/`       | Reproducible SVG comparison page                        |
 
 Keep runtime dependencies at zero. Library source is strict TypeScript 7. `pnpm build` checks library source with Bun before replacing output, then uses TypeScript `--noCheck` to emit JavaScript, declarations, and imported JSON to `dist/`; package exports point at that build. Do not maintain parallel handwritten declarations. Tests exercise the compiled output; Storybook imports TypeScript source for live reload.
@@ -43,6 +43,17 @@ DOM helpers, district/neighborhood layers and marker/cluster interaction. Public
 entry modules stay in `src/`; pure geometry, validation and label/layout helpers
 shared with static rendering remain outside `interactive/`. Do not route static
 rendering through browser modules just to share a directory.
+
+## Tooling and test directories
+
+Use the stable pnpm commands from the repository root. `scripts/build/` produces
+artifacts, `scripts/checks/` validates them, `scripts/data/` owns imports and source
+validation, `scripts/release/` owns release notes, and `scripts/benchmarks/` owns
+measurements. Helpers live with their consumers; there is no general `scripts/lib/`.
+
+Node tests live under `test/library/`, `test/website/` and `test/tooling/`.
+`node --test` discovers all three. Shared source fixtures remain in `test/fixtures/`;
+Storybook, browser interactions and visual baselines keep their existing roots.
 
 ## Geographic helper contracts
 
@@ -96,7 +107,7 @@ Dependabot proposes weekly npm and GitHub Actions updates, grouping Storybook, V
 - `data/index.ts` and `data/types.ts`: immutable data helpers and typed name lookup, separate from the map renderer.
 - `src/rendering/svg-layers.ts`: small layer renderers; drawing order remains explicit in `src/rendering/svg-map-renderer.ts`.
 - `src/rendering/svg-primitives.ts`: shared XML escaping, numeric formatting, and stroke attributes.
-- `scripts/build-data-catalog.mjs`: deterministic metadata-only catalog generator. Run `pnpm data:catalog`; `pnpm check` rejects a stale catalog.
+- `scripts/data/catalog.mjs`: deterministic metadata-only catalog generator. Run `pnpm data:catalog`; `pnpm check` rejects a stale catalog.
 - `stories/NeighborhoodData.stories.ts`: source-aware neighborhood lookup and projection example.
 
 Read `data/README.md` before changing schemas or names. Keep canonical names scoped to their definition source, preserve source labels, and cite alias evidence. New geometry requires a source record. Do not merge same-name polygons from different source collections. Tests include pre-migration geometry digests to catch accidental loss of district display extras.
@@ -107,8 +118,8 @@ Read `data/README.md` before changing schemas or names. Keep canonical names sco
 
 The site in `website/` shares one design system (`site.css`, with motion tokens, view transitions, and reduced-motion and print rules). The build injects the masthead and colophon at `<!--site-header-->` and `<!--site-footer-->`, marking the current section. It also writes, with the library itself:
 
-- `data/site-map.json`: `fullMapData` with every geometry simplified for display by `scripts/site-data.mjs`, loaded by the atlas, layers studio and spot pages;
-- `maps/display/` and `maps/thumb/`: district maps and thumbnails (with dark twins) simplified by `scripts/simplify-svg.mjs`, used by the example pages;
+- `data/site-map.json`: `fullMapData` with every geometry simplified for display by `scripts/build/site-data.mjs`, loaded by the atlas, layers studio and spot pages;
+- `maps/display/` and `maps/thumb/`: district maps and thumbnails (with dark twins) simplified by `scripts/build/simplify-svg.mjs`, used by the example pages;
 - `maps/plates/` and `maps/figures/`: animated plates from `renderMap({ animation })` and docs figures, each with a dark twin.
 
 Canonical data in `data/` and the full-precision SVGs in `maps/` stay unchanged. Pages built with `--released` use the published package, so a site feature that needs an unreleased library feature must degrade gracefully until the next release. After `pnpm build:pages`, run `pnpm test:pages` to check every page in Chromium for script errors, failed requests, sideways scrolling, layout shift, and compressed size budgets; CI runs it before each deploy. For visual changes, still inspect pages at desktop and 390 px in both themes.

@@ -48,10 +48,10 @@ Live appearance patches prepare values, district styles and source replacement b
 | Packaging | Clean tarball install exercises entrypoints and emitted declarations, including `LineString` overlays. No runtime dependencies or embedded geographic coordinate blobs were added. |
 | Performance | Production bundle checks enforce the guide and renderer ceilings and inspect dataset inclusion. Viewport culling, focus, reattachment, and cluster reuse have 2,000-marker regressions across three engines and two widths; millions of markers are outside this guide-oriented design. |
 
-Regression sources: `test/api-contract.test.js`, `test/camera.test.js`,
-`test/viewport.test.js`, `stories/Robustness.stories.ts`,
+Regression sources: `test/library/api-contract.test.js`, `test/library/camera.test.js`,
+`test/library/viewport.test.js`, `stories/Robustness.stories.ts`,
 `stories/Enhancements.stories.ts`, `stories/Motion.stories.ts`,
-`stories/Controller.stories.ts`, and `scripts/smoke-package.mjs`.
+`stories/Controller.stories.ts`, and `scripts/checks/package.mjs`.
 
 Event listeners and activation callbacks run after their corresponding state is committed. District-style callbacks instead run during preparation, before commit. Consumer event callback
 exceptions are not transactional validation errors and do not roll back an already

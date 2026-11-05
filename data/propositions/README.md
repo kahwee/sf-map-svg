@@ -10,7 +10,7 @@ To regenerate the JSON, download the final workbook above and run:
 
 ```sh
 python -m pip install openpyxl
-python scripts/import-2024-propositions.py path/to/dsov.xlsx
+python scripts/data/import-2024-propositions.py path/to/dsov.xlsx
 ```
 
 The import script is a data preparation tool. The library and GitHub Pages example use the generated JSON without Python or `openpyxl` at runtime.

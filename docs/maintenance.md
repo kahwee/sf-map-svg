@@ -68,7 +68,7 @@ probe artifact. An unchanged feed's displayed check time remains its last publis
 
 1. Review compatibility. Use a patch for compatible fixes, a minor for additive API, and a major for breaks, including runtime requirements. Move the complete Unreleased notes into a dated `## <version> — YYYY-MM-DD` section. Align `package.json` and any version-bearing lock metadata.
 2. Run the library, package, Storybook coverage, Pages, and visual checks above. Review `git diff --check`, packed contents, and the final diff. Keep credentials, temporary reports, screenshots, and unrelated application code out of the archive.
-3. Generate the release body with `node scripts/release-notes.mjs > /tmp/sf-map-release-notes.md`. Review it: the publish workflow requires every item from the matching changelog section.
+3. Generate the release body with `node scripts/release/notes.mjs > /tmp/sf-map-release-notes.md`. Review it: the publish workflow requires every item from the matching changelog section.
 4. Push the reviewed commit to `main`. Create `v<version>` at that commit and publish the matching stable GitHub release using the reviewed body. Never replace an existing tag or force-push. Prereleases are rejected by the publisher.
 5. Inspect `.github/workflows/publish.yml`. It checks out the tag, verifies the package version, validates and tests the exact archive, then publishes publicly through npm trusted publishing. Normal pushes do not publish npm; do not substitute a local `npm publish`.
 6. Verify npm exposes the exact version and that a clean consumer can install it. Compare its tarball integrity to the archive recorded by the publishing job. A fresh registry 404 can be propagation delay: retry with bounded backoff before diagnosing failure.
@@ -108,16 +108,16 @@ Election code responsibilities:
   exact observation provenance and native dismissal.
 - `website/election/model.js` and `election-history.js` validate and reconcile snapshots and
   official history.
-- `scripts/update-election.mjs` orchestrates checks; `scripts/lib/sos-county-results.mjs`
+- `scripts/data/election/update.mjs` orchestrates checks; `scripts/data/election/sos-county-results.mjs`
   parses official county reports, and `previous-election.mjs` guards deployed recovery.
 
 Keep presentation-only adapters out of persisted history. Browser regressions in
-`scripts/pages-checks/` cover contest switching, chart/table selection, keyboard
-controls, failed/stale refreshes and phone layout; `test/election-*.test.mjs` covers
+`scripts/checks/pages/` cover contest switching, chart/table selection, keyboard
+controls, failed/stale refreshes and phone layout; `test/website/election-*.test.mjs` covers
 validation, history recovery, refresh coordination and chart geometry.
 
-The Pages gate entry point, `scripts/check-pages.mjs`, runs named scenarios from
-`scripts/pages-checks/`: artifact budgets/docs, page layouts, studio loading,
+The Pages gate entry point, `scripts/checks/pages.mjs`, runs named scenarios from
+`scripts/checks/pages/`: artifact budgets/docs, page layouts, studio loading,
 playground behavior, election navigation, refresh lifecycle, and popover bounds.
 Browser contexts use 10-second action and 20-second navigation timeouts; each
 scenario reports its name and retains its original assertions.

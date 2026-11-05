@@ -28,13 +28,13 @@ share is `votes[index] / totalVotes` when the total is positive. The
 workbook does not assign to a supervisorial district; the 2024 Treasurer
 contest has one such vote and two undervotes. These remain in citywide totals.
 
-`scripts/import-candidate-results.py` reads the official final Excel workbooks,
+`scripts/data/import-candidate-results.py` reads the official final Excel workbooks,
 records their SHA-256 digests, and checks candidate and district sums. Download
 the six workbook URLs in `SOURCES.md` as `2016.xlsx`, `2018.xlsx`,
 `2020.xlsx`, `2022.xlsx`, `2024.xlsx`, and `2026.xlsx` into a local folder, then run:
 
 ```sh
-uv run --with openpyxl python3 scripts/import-candidate-results.py /path/to/folder
+uv run --with openpyxl python3 scripts/data/import-candidate-results.py /path/to/folder
 ```
 
 This archive includes federal, statewide, and state legislative candidate

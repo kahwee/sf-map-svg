@@ -98,7 +98,7 @@ jobs:
           exit 1
       - run: pnpm build:pages:built --released
       - name: Check official election source and preserve last validated snapshot
-        run: node scripts/update-election.mjs
+        run: node scripts/data/election/update.mjs
       - run: pnpm test:visual
       - run: pnpm test:studio
       - run: pnpm test:pages

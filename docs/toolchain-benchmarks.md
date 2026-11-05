@@ -31,7 +31,7 @@ Install the pinned tools and dependencies, then run from the repository root:
 
 ```sh
 pnpm install --frozen-lockfile
-node scripts/benchmark-toolchain.mjs --samples=3 > /tmp/sf-map-toolchain.json
+node scripts/benchmarks/toolchain.mjs --samples=3 > /tmp/sf-map-toolchain.json
 ```
 
 The default is three samples per case. Odd samples run repeated builds first;

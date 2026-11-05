@@ -4,6 +4,8 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Organize scripts by build, checks, data, release and benchmarks; split tests into library, website and tooling domains while retaining stable pnpm commands and shared fixtures.
+
 - Group website code/styles by feature and browser-only library modules under `src/interactive`; preserve HTML URLs and public package entry points.
 
 - Separate playground preview lifecycle, undo/redo history and exports from form wiring; keep selection, camera restoration and versioned share links intact.

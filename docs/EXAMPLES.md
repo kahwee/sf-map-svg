@@ -89,7 +89,7 @@ Coordinates are WGS84 `[longitude, latitude]`. The overlay follows pan and zoom.
 
 [Open the interactive explorer](https://kahwee.github.io/sf-map-svg/propositions.html). It uses the public static renderer with only the 2022 district and coast datasets and colors each district from the [certified results JSON](../data/propositions/2024-11-05.json). The JSON includes all ten statewide propositions on the November 2024 ballot, with Yes and No counts for each of San Francisco's eleven supervisorial districts. Its scope is SF votes, not statewide totals or voter demographics.
 
-The [import script](../scripts/import-2024-propositions.py) checks each district sum against the official citywide count. [Geographic and election sources](../SOURCES.md) explain the provenance.
+The [import script](../scripts/data/import-2024-propositions.py) checks each district sum against the official citywide count. [Geographic and election sources](../SOURCES.md) explain the provenance.
 
 ## Motion and compact guide embeds
 

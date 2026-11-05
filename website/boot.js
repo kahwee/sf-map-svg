@@ -1,4 +1,4 @@
-// Inlined into every page's <head> by scripts/build-pages.mjs. It must run
+// Inlined into every page's <head> by scripts/build/pages.mjs. It must run
 // before first paint: it applies the saved theme without a flash and names the
 // shared title for cross-document View Transitions (pagereveal fires before
 // deferred module scripts run).
