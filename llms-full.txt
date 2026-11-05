@@ -1373,6 +1373,8 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Narrow the interactive engine with dedicated presentation transactions, layer composition and appearance rendering; preserve the public API and lifecycle behavior.
+
 - Split Pages validation into focused scenarios with named progress, bounded browser waits, and cleanup after failures.
 
 - Separate scheduled election checks from Pages builds; skip unchanged results and duplicate commit/package deployments while retaining daily freshness updates and full deployment validation.

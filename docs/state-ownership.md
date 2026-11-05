@@ -1,9 +1,8 @@
 # Interactive state ownership
 
 The public controller (`src/map.ts`) owns subscriptions and capabilities.
-`interactive/configuration-controller.ts` owns configuration snapshots and revisions. The engine (`src/interactive/map-engine.ts`)
-coordinates presentation commits across layers. Preparing a patch may invoke
-consumer callbacks. The engine returns a single-use prepared presentation; commit
+`interactive/configuration-controller.ts` owns configuration snapshots and revisions. `interactive/presentation-controller.ts` coordinates presentation commits across layers. Preparing a patch may invoke
+consumer callbacks. The presentation controller returns a single-use prepared presentation; commit
 checks both configuration and engine revisions before and after the configuration
 commit callback. A newer update, selection change or disposal invalidates stale work.
 
@@ -11,7 +10,10 @@ commit callback. A newer update, selection change or disposal invalidates stale 
 | --- | --- |
 | `interactive/configuration-controller.ts` | Configuration snapshot, update revision and prepare/commit coordination. |
 | `interactive/district-controller.ts` | Selected and hovered district, style callback and prepared styles, district revision, fill transitions and outline morphs. Selection and year callbacks check the revision before continuing. |
-| `interactive/map-engine.ts` | Active year, mode, appearance, feature switches and overall initialization/disposal. Supplies district camera, composition and label hooks. |
+| `interactive/map-engine.ts` | Active year, mode, appearance, feature switches and overall initialization/disposal. Wires typed camera, presentation, composition and label hooks. |
+| `interactive/presentation-controller.ts` | Presentation revision, preflight geometry/styles, single-use commit and reentrant/disposal guards across year, source, mode and labels. |
+| `interactive/layer-composition.ts` | Visibility, legend, neighborhood focusability and geographic accessibility descriptions from committed state. |
+| `interactive/appearance-renderer.ts` | Palette, typography, controls and retained feature-node styling; owns no selection or transaction state. |
 | `neighborhood-layer.ts` | Source-scoped lookup, prepared geometry, selection revisions and hover lifecycle. |
 | `interactive/marker-controller.ts` | Marker selection and revisions, activation, replacement and focus recovery. |
 | `interactive/label-coordinator.ts` | Label candidate cache, collision obstacles, zoom-dependent detail, metrics invalidation and redraw requests. |
