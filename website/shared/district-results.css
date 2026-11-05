@@ -1,0 +1,22 @@
+/* Shared only by district result pages: choropleths and ranking bars. */
+/* Choropleth colors ease between measures. */
+.choropleth [data-layer="district-fills"] path {
+  transition: fill 600ms var(--ease-out);
+}
+
+/* Bars grow with clip-path so rounded ends keep their shape. */
+.grow-bar {
+  clip-path: inset(0 calc((1 - var(--v, 0)) * 100%) 0 0);
+  transition: clip-path var(--dur-slow) var(--ease-out);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bars-enter .grow-bar {
+    animation: bar-grow var(--dur-slow) var(--ease-out) both;
+    animation-delay: calc(80ms + var(--i, 0) * 35ms);
+  }
+}
+@keyframes bar-grow {
+  from {
+    clip-path: inset(0 calc((1 - var(--from, 0)) * 100%) 0 0);
+  }
+}

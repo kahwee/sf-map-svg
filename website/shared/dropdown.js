@@ -1,4 +1,6 @@
+// @ts-check
 /** Apply the shared dropdown to dynamically supplied native single-selects.
+ * @param {ParentNode} root
  * Retains the original node, labels, listeners and selection. Safe to repeat.
  */
 export function enhanceDropdowns(root) {

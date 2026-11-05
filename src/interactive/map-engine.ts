@@ -17,12 +17,9 @@ import type {
   NeighborhoodExplorerElement,
   NeighborhoodExplorerOptions,
 } from '../types.js';
-import { validateExplorerOptions } from '../validation.js';
 import { fitViewport, validateViewport } from '../viewport.js';
 import { renderMapAppearance } from './appearance-renderer.js';
 import { createCamera, validateCameraOptions } from './camera.js';
-import { createClusterLayer } from './cluster-layer.js';
-import { clusterPoints } from './clusters.js';
 import type { PreparedPresentation } from './configuration-controller.js';
 import { createDistrictController } from './district-controller.js';
 import { element, svgElement } from './dom.js';
@@ -32,17 +29,14 @@ import { createLabelCoordinator } from './label-coordinator.js';
 import { renderLayerComposition } from './layer-composition.js';
 import { createLayerTransitions } from './layer-transition.js';
 import { createMapControls } from './map-controls.js';
+import { prepareMapOptions } from './map-options.js';
 import type { createMapShell } from './map-shell.js';
 import { createMarkerCatalog } from './marker-catalog.js';
-import { createMarkerChooser } from './marker-chooser.js';
+import { createMarkerClusters } from './marker-clusters.js';
 import { createMarkerController } from './marker-controller.js';
 import { createMarkerNavigation } from './marker-navigation.js';
-import { createMarkerRenderer, type MarkerItem, type MarkerVisual } from './marker-renderer.js';
-import {
-  createNeighborhoodLayer,
-  createNeighborhoodLookup,
-  formatSourceLabel,
-} from './neighborhood-layer.js';
+import { createMarkerRenderer, type MarkerItem } from './marker-renderer.js';
+import { createNeighborhoodLayer, formatSourceLabel } from './neighborhood-layer.js';
 import { createOverlayLayer } from './overlay-layer.js';
 import { createPresentationController } from './presentation-controller.js';
 
@@ -72,88 +66,42 @@ export function createMapEngine(
     createSidebar?: typeof createExplorerSidebar;
   },
 ): MapEngineElement {
-  validateExplorerOptions(options);
   let {
-    source = 'realtor',
-    mode = 'neighborhoods',
-    labels = true,
+    source,
+    mode,
+    labels,
     neighborhood,
-    year = 2022,
-    theme = 'transit',
-    colors = {},
-    labelStyle = {},
-    areaStyle = {},
-    districtStyle: initialDistrictStyle,
-    motion = false,
-    markerEntrance = false,
-    selectedMarkerRing,
-    clustering = false,
-    legend: legendOptions = {},
-    attribution: attributionMode = 'full',
-    northArrow = false,
-    scaleBar = false,
-    layerTransitions = false,
-    districtMorph: districtMorphOption = false,
-    interface: chrome = 'explorer',
-    layers = {},
-    selectableNeighborhoods = true,
-    labelSize = {},
-    fitPadding = 24,
-    markers: initialMarkers = [],
-    markerRadius = 6,
-    markerHitSize = 44,
-    markerColor = colors.marker ?? '#245b61',
-    selectedMarkerColor = colors.selected ?? '#f04f32',
+    year,
+    theme,
+    colors,
+    labelStyle,
+    areaStyle,
+    initialDistrictStyle,
+    legendOptions,
+    attributionMode,
+    chrome,
+    layers,
+    selectableNeighborhoods,
+    fitPadding,
+    initialMarkers,
+    markerRadius,
+    markerHitSize,
+    markerColor,
+    selectedMarkerColor,
     onMarkerActivate,
-    overlays: initialOverlays = [],
+    initialOverlays,
     onOverlayActivate,
-    style: styleOptions = {},
-    strings = {},
-    controls = {},
-  } = options;
-  if (!['neighborhoods', 'districts', 'basemap'].includes(mode))
-    throw new RangeError(`Unknown map mode: ${mode}`);
-  if (chrome !== 'explorer' && chrome !== 'map') throw new RangeError('Unknown interface.');
-  let minLabelSize = labelSize.min ?? 11,
-    maxLabelSize = labelSize.max ?? 12;
-  if (
-    ![minLabelSize, maxLabelSize, markerRadius, markerHitSize].every(Number.isFinite) ||
-    minLabelSize < 8 ||
-    maxLabelSize < minLabelSize ||
-    maxLabelSize > 32 ||
-    markerRadius <= 0 ||
-    markerHitSize < markerRadius * 2
-  )
-    throw new RangeError(
-      'Use label sizes from 8–32px and a positive marker radius inside its hit target.',
-    );
-  let features = normalizeFeatures({
-    motion,
-    markerEntrance,
-    clustering,
-    selectedMarkerRing,
-    northArrow,
-    scaleBar,
-    layerTransitions,
-    districtMorph: districtMorphOption,
-  });
-  if (
-    labelStyle.fontWeight !== undefined &&
-    (!Number.isFinite(labelStyle.fontWeight) ||
-      labelStyle.fontWeight < 1 ||
-      labelStyle.fontWeight > 1000)
-  )
-    throw new RangeError('Label font weight must be finite and between 1 and 1000.');
-  validateSwitchPatch(controls, controlKeys);
-  colors = { ...colors };
-  labelStyle = { ...labelStyle };
-  areaStyle = { ...areaStyle };
-  strings = { ...strings };
-  controls = { ...controls };
-  if (typeof fitPadding === 'object') fitPadding = { ...fitPadding };
-  validateSwitchPatch(layers, layerKeys);
-  validateSwitchPatch(controls, controlKeys);
-  layers = { ...layers };
+    styleOptions,
+    strings,
+    controls,
+    minLabelSize,
+    maxLabelSize,
+    features,
+    collections,
+    sources,
+    getNeighborhood,
+    searchNeighborhoods,
+  } = prepareMapOptions(options, data);
   const enabled = (layer: keyof NonNullable<NeighborhoodExplorerOptions['layers']>) =>
     layers[layer] ??
     (layer.startsWith('district')
@@ -161,21 +109,6 @@ export function createMapEngine(
       : layer.startsWith('neighborhood')
         ? mode === 'neighborhoods'
         : true);
-  if (typeof labels !== 'boolean') throw new TypeError('Labels must be a boolean.');
-  const collections = data.neighborhoods;
-  const sources = (['realtor', 'sf-find', 'analysis'] as const).filter((item) =>
-    Object.hasOwn(collections, item),
-  );
-  if (options.source === undefined && sources.length && !Object.hasOwn(collections, source))
-    source = sources[0];
-  if (!Object.hasOwn(collections, source) && (sources.length || options.source !== undefined))
-    throw new RangeError(`Unknown neighborhood source: ${source}`);
-  if (!sources.length && mode === 'neighborhoods')
-    throw new RangeError('No neighborhood dataset was supplied.');
-  if (neighborhood === '') neighborhood = undefined;
-  const { getNeighborhood, searchNeighborhoods } = createNeighborhoodLookup(collections);
-  if (neighborhood !== undefined && !getNeighborhood(neighborhood, source))
-    throw new RangeError(`Unknown neighborhood: ${neighborhood}`);
   if (typeof document === 'undefined')
     throw new Error('The neighborhood explorer requires a browser document.');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -545,16 +478,6 @@ export function createMapEngine(
     },
   });
   const { getSelectedMarker, selectMarker, setMarkers, activateMarker } = markers;
-  const markerChooser = createMarkerChooser(canvas, svg, (id) => {
-    if (destroyed) return;
-    selectMarker(id);
-    if (!destroyed && markers.selected === id)
-      markerCatalog.items
-        .find((item) => item.marker.id === id)
-        ?.visual?.node.focus({ preventScroll: true });
-  });
-  const clusterLayer = svgElement('g', { 'data-layer': 'marker-clusters' });
-  geography.insertBefore(clusterLayer, markerLayer);
   function materializeMarker(item: MarkerItem) {
     return Object.assign(item, {
       visual: markerRenderer.materialize(item, {
@@ -566,55 +489,42 @@ export function createMapEngine(
       }),
     });
   }
-  const clusters = createClusterLayer(
+  const markerClusters = createMarkerClusters({
+    root,
+    canvas,
     svg,
+    geography,
     markerLayer,
-    clusterLayer,
+    markerCatalog,
     markerNavigation,
+    markers,
     materializeMarker,
-    (group, node, signal) => {
-      if (destroyed || signal.aborted) return;
-      const markers = group.map((item) => ({
-        ...item.marker,
-        position: [...item.marker.position] as Position,
-      }));
-      const minimumUnit = 800 / 12 / Math.max(1, canvas.getBoundingClientRect().width);
-      if (
-        clusterPoints(group, minimumUnit, features.clustering ? features.clustering.radius : 36)
-          .length === 1
-      )
-        markerChooser.open(markers, node);
-      else
-        fitGeometry({
-          type: 'MultiPoint',
-          coordinates: markers.map((marker) => marker.position),
-        });
-      if (!destroyed && !signal.aborted)
-        root.dispatchEvent(
-          new CustomEvent('clusteractivate', { bubbles: true, detail: { markers } }),
-        );
+    fitGeometry,
+    get destroyed() {
+      return destroyed;
     },
-  );
-  let renderedMarkers: (MarkerItem & { visual: MarkerVisual })[] = [];
-  let renderedClusters: { point: [number, number] }[] = [];
+    get features() {
+      return features;
+    },
+    get view() {
+      return view;
+    },
+    get markerColor() {
+      return markerColor;
+    },
+    get markerRadius() {
+      return markerRadius;
+    },
+    get markerHitSize() {
+      return markerHitSize;
+    },
+  });
+  const markerChooser = markerClusters.chooser;
   function invalidateClusters() {
-    markerChooser.close();
-    clusters.invalidate();
+    markerClusters.invalidate();
   }
   function drawClusters(unit: number) {
-    const rendered = clusters.draw({
-      unit,
-      view,
-      items: markerCatalog.items,
-      revision: markers.revision,
-      selected: markers.selected,
-      features,
-      markerColor,
-      markerRadius,
-      markerHitSize,
-    });
-    renderedMarkers = rendered.markers;
-    renderedClusters = rendered.clusters;
+    markerClusters.draw(unit);
   }
   const overlays = createOverlayLayer({
     layer: overlayLayer,
@@ -752,10 +662,10 @@ export function createMapEngine(
       return labels;
     },
     get renderedMarkers() {
-      return renderedMarkers;
+      return markerClusters.renderedMarkers;
     },
     get renderedClusters() {
-      return renderedClusters;
+      return markerClusters.renderedClusters;
     },
   });
   function drawLabels() {
@@ -1096,7 +1006,7 @@ export function createMapEngine(
       cancelEntrances();
       controller.abort();
       overlays.destroy();
-      clusters.destroy();
+      markerClusters.destroy();
       canvas.style.touchAction = 'pan-y pinch-zoom';
       observer?.disconnect();
       frames.destroy();

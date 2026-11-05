@@ -12,6 +12,7 @@ See [interactive state ownership](docs/state-ownership.md) for state and disposa
 | ----------------- | ------------------------------------------------------- |
 | `src/api.ts`, `src/map.ts`, `src/static.ts` | Data-free exports, controller ownership, static rendering |
 | `src/configuration.ts`, `src/controller-types.ts` | Grouped API validation and public controller contracts |
+| `src/interactive/map-options.ts`, `src/interactive/marker-clusters.ts` | Initial option preparation and cluster activation/overlap ownership |
 | `src/interactive/map-engine.ts` | Interactive initialization, state wiring and disposal |
 | `src/interactive/presentation-controller.ts` | Guarded cross-layer preparation and commit |
 | `src/interactive/layer-composition.ts`, `src/interactive/appearance-renderer.ts` | Layer visibility/accessibility and committed appearance painting |

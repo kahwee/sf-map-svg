@@ -1,0 +1,111 @@
+/* biome-ignore-all lint/complexity/noImportantStyles: reduced-motion, print, and transition overrides must beat animations and inline styles. */
+/* biome-ignore-all lint/style/noDescendingSpecificity: rules are grouped by component; their selectors target unrelated elements. */
+/*
+ * SF Map SVG site design system. Shared by every page, loaded before page styles.
+ * A classic atlas: warm paper, ink, hairline and double rules, serif display and prose,
+ * sans for interface and data. Motion uses CSS first, native View Transitions for
+ * navigation, and motion.js only for what CSS cannot know.
+ */
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .section-head {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+  .colophon-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .colophon-mark {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 720px) {
+  body {
+    font-size: 17px;
+  }
+  .dateline span:last-child {
+    display: none;
+  }
+  .masthead-bar {
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    padding-block: 12px 10px;
+  }
+  .masthead nav {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    gap: 22px;
+    scrollbar-width: none;
+  }
+  .masthead-github {
+    display: none;
+  }
+  .segmented button {
+    padding-inline: 11px;
+  }
+  .brand-name {
+    font-size: 20px;
+  }
+  .brand-mark {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* ---------- Reduced motion: everything still ---------- */
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 1ms !important;
+    transition-delay: 0ms !important;
+  }
+}
+
+/* ---------- Print: all content, light colors ---------- */
+@media print {
+  :root {
+    color-scheme: light !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  [data-reveal].is-pending,
+  [data-reveal].is-pending > *,
+  .map-wait [data-layer] path,
+  .map-wait [data-layer] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .theme-toggle,
+  .skip,
+  body::after {
+    display: none !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .dateline {
+    font-size: 13px;
+  }
+  .dateline-tag {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .release-pill {
+    flex: none;
+    white-space: nowrap;
+  }
+}

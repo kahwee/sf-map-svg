@@ -51,10 +51,23 @@ components used by multiple pages: dropdowns, motion, map helpers and site styli
 - `export.ts`: full-precision geography loading/retry, SVG downloads and share URLs.
 - `model.ts`: validated design state, API adapters, share encoding and generated examples.
 
-`pnpm typecheck:website` checks the entry point and imported modules in strict mode.
+`pnpm typecheck:website` includes every website TypeScript file, including standalone
+helpers. Existing JavaScript stays supported; dropdown and election refresh helpers
+opt into strict checks with `@ts-check` and JSDoc. Add each newly checked JavaScript
+entry to `tsconfig.website.json`; imported dependencies are discovered automatically.
 Mode defaults follow the view while explicit layer overrides survive mode changes.
 Static previews render without creating an interactive controller. Mobile previews
 scroll with the page so controls cannot be covered by a tall pinned map.
 
 Pages references and snippets describe the package used by that build. Released
 builds require v6 or newer and use grouped static options directly.
+
+## Shared CSS ownership
+
+`shared/site.css` remains the stable entrypoint. Its ordered imports preserve the
+cascade: dropdown, foundation (tokens/base/type/layout), shell (masthead), components
+(controls/figures/cards/code/tables), footer, motion, then adaptations (responsive,
+reduced motion and print). Keep new rules with their owning component and retain
+accessibility overrides last. Feature-specific rules belong in feature stylesheets.
+`shared/district-results.css` is imported only by candidates, measures and propositions
+for their choropleth and ranking-bar presentation.

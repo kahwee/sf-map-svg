@@ -10,6 +10,8 @@ commit callback. A newer update, selection change or disposal invalidates stale 
 | --- | --- |
 | `interactive/configuration-controller.ts` | Configuration snapshot, update revision and prepare/commit coordination. |
 | `interactive/district-controller.ts` | Selected and hovered district, style callback and prepared styles, district revision, fill transitions and outline morphs. Selection and year callbacks check the revision before continuing. |
+| `interactive/map-options.ts` | Initial validation, default resolution and option copies before DOM creation; no live state. |
+| `interactive/marker-clusters.ts` | Cluster activation, overlap chooser and mounted marker/cluster snapshots; reads live engine state through getters. |
 | `interactive/map-engine.ts` | Active year, mode, appearance, feature switches and overall initialization/disposal. Wires typed camera, presentation, composition and label hooks. |
 | `interactive/presentation-controller.ts` | Presentation revision, preflight geometry/styles, single-use commit and reentrant/disposal guards across year, source, mode and labels. |
 | `interactive/layer-composition.ts` | Visibility, legend, neighborhood focusability and geographic accessibility descriptions from committed state. |

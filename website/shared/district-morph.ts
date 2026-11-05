@@ -33,6 +33,7 @@ function align(from: Point[], to: Point[]): Point[] {
       for (let index = 0; index < count; index += 4) {
         const a = from[index];
         const b = to[(offset + direction * index + count) % count];
+        if (!a || !b) throw new Error('Morph samples must have matching lengths.');
         score += (a.x - b.x) ** 2 + (a.y - b.y) ** 2;
       }
       if (score < bestScore) {
@@ -42,7 +43,11 @@ function align(from: Point[], to: Point[]): Point[] {
       }
     }
   }
-  return from.map((_, index) => to[(bestOffset + bestDirection * index + count) % count]);
+  return from.map((_, index) => {
+    const point = to[(bestOffset + bestDirection * index + count) % count];
+    if (!point) throw new Error('Morph samples must have matching lengths.');
+    return point;
+  });
 }
 
 function outline(svg: SVGSVGElement, district: number): Ring[] {
@@ -56,6 +61,7 @@ function outline(svg: SVGSVGElement, district: number): Ring[] {
 function pathData(from: Point[], to: Point[], progress: number): string {
   const coordinates = from.map((point, index) => {
     const target = to[index];
+    if (!target) throw new Error('Morph samples must have matching lengths.');
     const x = point.x + (target.x - point.x) * progress;
     const y = point.y + (target.y - point.y) * progress;
     return `${index ? 'L' : 'M'}${x.toFixed(2)},${y.toFixed(2)}`;
@@ -79,17 +85,18 @@ export function createDistrictMorph(fromSvg: SVGSVGElement, toSvg: SVGSVGElement
     for (let index = 0; index < count; index++) {
       const start = fromRings[index];
       const end = toRings[index];
-      if (!start && !end) continue;
+      const anchor = start ?? end;
+      if (!anchor) continue;
       const samples = Math.min(
         400,
         Math.max(64, Math.ceil(Math.max(start?.length ?? 0, end?.length ?? 0) / 3)),
       );
       const from = start
         ? sample(start, samples)
-        : Array.from({ length: samples }, () => ({ ...end.center }));
+        : Array.from({ length: samples }, () => ({ ...anchor.center }));
       const to = end
         ? sample(end, samples)
-        : Array.from({ length: samples }, () => ({ ...start.center }));
+        : Array.from({ length: samples }, () => ({ ...anchor.center }));
       const path = document.createElementNS(svgNamespace, 'path');
       path.setAttribute('fill', 'none');
       path.setAttribute('stroke', '#216c70');

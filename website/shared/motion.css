@@ -1,0 +1,250 @@
+/* biome-ignore-all lint/complexity/noImportantStyles: reduced-motion, print, and transition overrides must beat animations and inline styles. */
+/* biome-ignore-all lint/style/noDescendingSpecificity: rules are grouped by component; their selectors target unrelated elements. */
+/*
+ * SF Map SVG site design system. Shared by every page, loaded before page styles.
+ * A classic atlas: warm paper, ink, hairline and double rules, serif display and prose,
+ * sans for interface and data. Motion uses CSS first, native View Transitions for
+ * navigation, and motion.js only for what CSS cannot know.
+ */
+
+/* ---------- Motion: page transitions ---------- */
+@view-transition {
+  navigation: auto;
+}
+.masthead {
+  view-transition-name: site-masthead;
+}
+::view-transition-group(root) {
+  animation: none;
+}
+::view-transition-old(root) {
+  animation: vt-leave 240ms var(--ease-in) both;
+}
+::view-transition-new(root) {
+  animation: vt-enter var(--dur-base) var(--ease-out) 80ms both;
+}
+::view-transition-group(site-masthead),
+::view-transition-new(site-masthead) {
+  animation: none;
+}
+::view-transition-old(site-masthead) {
+  animation: none;
+  opacity: 0;
+}
+::view-transition-group(page-title) {
+  animation-duration: 640ms;
+  animation-timing-function: var(--ease-out);
+}
+::view-transition-old(page-title) {
+  animation: vt-fade-out 320ms var(--ease-out) both;
+}
+::view-transition-new(page-title) {
+  animation: vt-fade-in 520ms var(--ease-out) 60ms both;
+}
+@keyframes vt-leave {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes vt-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+@keyframes vt-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes vt-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+.vt-shared.split .w > span {
+  animation: none !important;
+}
+html.theme-wiping::view-transition-old(root),
+html.theme-wiping::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+html.theme-wiping * {
+  view-transition-name: none !important;
+}
+
+/* ---------- Motion: entrances ---------- */
+.split .w {
+  display: inline-block;
+  padding: 0.1em 0.14em 0.2em;
+  margin: -0.1em -0.14em -0.2em;
+  overflow: clip;
+  vertical-align: top;
+}
+.split .w > span {
+  display: inline-block;
+}
+.split > .sr-only {
+  user-select: none;
+}
+@property --n {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+.count {
+  display: inline-block;
+  min-width: calc(var(--d, 1) * 1ch);
+  font-variant-numeric: tabular-nums;
+  counter-reset: n var(--n);
+  --n: var(--to);
+}
+.count::after {
+  content: counter(n);
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-enter] {
+    animation: rise var(--dur-base) var(--ease-out) both;
+    animation-delay: calc(60ms + var(--i, 0) * var(--stagger));
+  }
+  [data-enter="fade"] {
+    animation-name: fade-in;
+    animation-duration: var(--dur-slow);
+  }
+  .split .w > span {
+    animation: word-rise var(--dur-slow) var(--ease-out) both;
+    animation-delay: calc(60ms + var(--i, 0) * 55ms);
+  }
+  .count {
+    animation: count-up 1400ms var(--ease-out) both;
+    animation-delay: calc(300ms + var(--i, 0) * 90ms);
+  }
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes word-rise {
+  from {
+    transform: translateY(140%) rotate(3deg);
+    transform-origin: 0 100%;
+  }
+}
+@keyframes count-up {
+  from {
+    --n: 0;
+  }
+}
+
+/* ---------- Motion: reveals below the fold (motion.js adds is-pending / is-in) ---------- */
+[data-reveal].is-pending:not([data-reveal="stagger"]) {
+  opacity: 0;
+  transform: translateY(28px);
+}
+[data-reveal="stagger"].is-pending > * {
+  opacity: 0;
+  transform: translateY(22px);
+}
+[data-reveal].is-in:not([data-reveal="stagger"]) {
+  animation: rise var(--dur-slow) var(--ease-out) both;
+}
+[data-reveal="stagger"].is-in > * {
+  animation: rise var(--dur-base) var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * var(--stagger));
+}
+.js [data-rule] {
+  position: relative;
+  border-top-color: transparent !important;
+}
+.js [data-rule]::before {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-block: 1px solid var(--rule-strong);
+  transform-origin: 0 50%;
+}
+.js [data-rule].is-pending::before {
+  transform: scaleX(0);
+}
+.js [data-rule].is-in::before {
+  animation: draw var(--dur-hero) var(--ease-out) both;
+}
+@keyframes draw {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* Maps grow in, district by district. */
+.map-wait [data-layer="district-fills"] path,
+.map-wait [data-layer="district-lines"],
+.map-wait [data-layer="district-labels"] {
+  opacity: 0;
+}
+.map-grow [data-layer="district-fills"] path {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: district-in var(--dur-slow) var(--spring-soft) both;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+.map-grow :is([data-layer="district-lines"], [data-layer="district-labels"]) {
+  animation: fade-in var(--dur-base) var(--ease-out) 520ms both;
+}
+@keyframes district-in {
+  from {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .swap-in > * {
+    animation: rise var(--dur-base) var(--ease-out) both;
+    animation-delay: calc(var(--i, 0) * 40ms);
+  }
+  .tick {
+    animation: tick var(--dur-base) var(--spring-soft);
+  }
+}
+@keyframes tick {
+  from {
+    opacity: 0;
+    transform: translateY(40%);
+  }
+}
+
+/* Scroll-linked progress (linear by design: it follows the scroll). */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .can-scroll body::after {
+      content: "";
+      position: fixed;
+      inset: 0 0 auto;
+      height: 2px;
+      z-index: 40;
+      background: var(--accent);
+      transform-origin: 0 50%;
+      pointer-events: none;
+      animation: progress linear both;
+      animation-timeline: scroll(root);
+    }
+  }
+}
+@keyframes progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}

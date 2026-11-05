@@ -1373,6 +1373,8 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Separate initial map option preparation and cluster interaction from engine wiring; organize shared CSS by ownership and check all website TypeScript plus selected JavaScript helpers without changing supported APIs.
+
 - Traverse geographic queries without flattened coordinate copies or recursive collection calls; preserve full-input validation and support deeply nested collections.
 
 - Organize scripts by build, checks, data, release and benchmarks; split tests into library, website and tooling domains while retaining stable pnpm commands and shared fixtures.
