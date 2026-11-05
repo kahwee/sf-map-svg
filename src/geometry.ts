@@ -23,22 +23,51 @@ export function rawProject([longitude, latitude]: Position): [number, number] {
     throw new RangeError('Coordinates are too close to a pole for Mercator projection.');
   return point;
 }
-export function positions(geometry: Geometry | null | undefined): Position[] {
-  if (!geometry) return [];
-  switch (geometry.type) {
-    case 'Point':
-      return [geometry.coordinates];
-    case 'LineString':
-    case 'MultiPoint':
-      return [...geometry.coordinates];
-    case 'Polygon':
-    case 'MultiLineString':
-      return geometry.coordinates.flat();
-    case 'MultiPolygon':
-      return geometry.coordinates.flat(2);
-    case 'GeometryCollection':
-      return geometry.geometries.flatMap(positions);
+/** Walk collections without recursion or copying their coordinate arrays. */
+function* geometryParts(geometry: Geometry | null | undefined): Generator<Geometry> {
+  if (!geometry) return;
+  const stack: Iterator<Geometry>[] = [[geometry][Symbol.iterator]()];
+  while (stack.length) {
+    const next = stack[stack.length - 1].next();
+    if (next.done) {
+      stack.pop();
+    } else if (next.value.type === 'GeometryCollection') {
+      stack.push(next.value.geometries[Symbol.iterator]());
+    } else {
+      yield next.value;
+    }
   }
+}
+
+function visitPositions(
+  geometry: Geometry | null | undefined,
+  visit: (position: Position) => void,
+): void {
+  for (const part of geometryParts(geometry)) {
+    switch (part.type) {
+      case 'Point':
+        visit(part.coordinates);
+        break;
+      case 'LineString':
+      case 'MultiPoint':
+        for (const point of part.coordinates) visit(point);
+        break;
+      case 'Polygon':
+      case 'MultiLineString':
+        for (const line of part.coordinates) for (const point of line) visit(point);
+        break;
+      case 'MultiPolygon':
+        for (const polygon of part.coordinates)
+          for (const ring of polygon) for (const point of ring) visit(point);
+        break;
+    }
+  }
+}
+
+export function positions(geometry: Geometry | null | undefined): Position[] {
+  const result: Position[] = [];
+  visitPositions(geometry, (point) => result.push(point));
+  return result;
 }
 export function geometryPath(geometry: Geometry | null | undefined, project: Project): string {
   if (!geometry) return '';
@@ -78,13 +107,13 @@ export function geometryBounds(geometry: Geometry | null | undefined): Bounds | 
   let south = Infinity;
   let east = -Infinity;
   let north = -Infinity;
-  for (const point of positions(geometry)) {
+  visitPositions(geometry, (point) => {
     validatePosition(point);
     west = Math.min(west, point[0]);
     south = Math.min(south, point[1]);
     east = Math.max(east, point[0]);
     north = Math.max(north, point[1]);
-  }
+  });
   return west === Infinity ? null : [west, south, east, north];
 }
 
@@ -117,7 +146,7 @@ export function geometryContainsPoint(
 ): boolean {
   validatePosition(point);
   // Validate the entire input, including parts not reached by the hit test.
-  geometryBounds(geometry);
+  visitPositions(geometry, validatePosition);
   const polygonContains = (rings: readonly (readonly Position[])[]) => {
     if (!rings.length) return false;
     const outer = ringLocation(point, rings[0]);
@@ -131,17 +160,9 @@ export function geometryContainsPoint(
     }
     return !inHole;
   };
-  const contains = (part: Geometry): boolean => {
-    switch (part.type) {
-      case 'Polygon':
-        return polygonContains(part.coordinates);
-      case 'MultiPolygon':
-        return part.coordinates.some(polygonContains);
-      case 'GeometryCollection':
-        return part.geometries.some(contains);
-      default:
-        return false;
-    }
-  };
-  return geometry ? contains(geometry) : false;
+  for (const part of geometryParts(geometry)) {
+    if (part.type === 'Polygon' && polygonContains(part.coordinates)) return true;
+    if (part.type === 'MultiPolygon' && part.coordinates.some(polygonContains)) return true;
+  }
+  return false;
 }

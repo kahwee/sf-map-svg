@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { geometryBounds, geometryContainsPoint } from '../../dist/src/geometry.js';
+import { geometryBounds, geometryContainsPoint, positions } from '../../dist/src/geometry.js';
 
 const ring = [
   [0, 0],
@@ -100,4 +100,41 @@ test('invalid coordinates fail even in unvisited collection members', () => {
       RangeError,
     );
   }
+});
+
+test('deep collections do not overflow and still validate members after a hit', () => {
+  let geometry = polygon;
+  for (let depth = 0; depth < 15000; depth++)
+    geometry = { type: 'GeometryCollection', geometries: [geometry] };
+  assert.deepEqual(geometryBounds(geometry), [0, 0, 10, 10]);
+  assert.equal(geometryContainsPoint(geometry, [1, 1]), true);
+  assert.equal(geometryContainsPoint(geometry, [5, 5]), false);
+  const invalid = {
+    type: 'GeometryCollection',
+    geometries: [geometry, { type: 'Point', coordinates: [NaN, 0] }],
+  };
+  assert.throws(() => geometryContainsPoint(invalid, [1, 1]), RangeError);
+});
+
+test('coordinate traversal preserves mixed collection order and coordinate references', () => {
+  const points = Array.from({ length: 8 }, (_, i) => [i, i + 1]);
+  const geometry = {
+    type: 'GeometryCollection',
+    geometries: [
+      { type: 'Point', coordinates: points[0] },
+      { type: 'MultiPoint', coordinates: [points[1], points[2]] },
+      { type: 'LineString', coordinates: [points[3]] },
+      { type: 'MultiLineString', coordinates: [[], [points[4]]] },
+      { type: 'Polygon', coordinates: [[points[5]]] },
+      {
+        type: 'GeometryCollection',
+        geometries: [{ type: 'MultiPolygon', coordinates: [[], [[points[6], points[7]]]] }],
+      },
+    ],
+  };
+  const result = positions(geometry);
+  assert.deepEqual(result, points);
+  for (let i = 0; i < points.length; i++) assert.equal(result[i], points[i]);
+  assert.deepEqual(geometryBounds(geometry), [0, 1, 7, 8]);
+  assert.deepEqual(positions(null), []);
 });
