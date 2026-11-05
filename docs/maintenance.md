@@ -112,6 +112,12 @@ Election code responsibilities:
   parses official county reports, and `previous-election.mjs` guards deployed recovery.
 
 Keep presentation-only adapters out of persisted history. Browser regressions in
-`scripts/check-pages.mjs` cover contest switching, chart/table selection, keyboard
+`scripts/pages-checks/` cover contest switching, chart/table selection, keyboard
 controls, failed/stale refreshes and phone layout; `test/election-*.test.mjs` covers
 validation, history recovery, refresh coordination and chart geometry.
+
+The Pages gate entry point, `scripts/check-pages.mjs`, runs named scenarios from
+`scripts/pages-checks/`: artifact budgets/docs, page layouts, studio loading,
+playground behavior, election navigation, refresh lifecycle, and popover bounds.
+Browser contexts use 10-second action and 20-second navigation timeouts; each
+scenario reports its name and retains its original assertions.
