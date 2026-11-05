@@ -1,4 +1,5 @@
 import catalog from '../../data/elections/catalog.json';
+import { createAsyncCache } from '../shared/async-cache.js';
 import { createDistrictMap } from '../shared/district-map.js';
 import { countTo, reorderList, staggerChildren, whenVisible } from '../shared/motion-kit.js';
 import { diverging, mix, sequential } from '../shared/palette.js';
@@ -12,18 +13,11 @@ const percent = (share) => (share === null ? 'No votes' : `${(share * 100).toFix
 const points = (value) => `${value > 0 ? '+' : ''}${(value * 100).toFixed(1)} pts`;
 enhanceCode();
 
-const cache = new Map();
-const load = (file) => {
-  if (!cache.has(file))
-    cache.set(
-      file,
-      fetch(`./data/elections/${file}`).then((response) => {
-        if (!response.ok) throw new Error(`Could not load ${file}`);
-        return response.json();
-      }),
-    );
-  return cache.get(file);
-};
+const load = createAsyncCache(async (file) => {
+  const response = await fetch(`./data/elections/${file}`);
+  if (!response.ok) throw new Error(`Could not load ${file}`);
+  return response.json();
+});
 
 const initial = new URLSearchParams(location.hash.slice(1));
 let choice;

@@ -1,15 +1,20 @@
+// @ts-check
 // The Pages build writes data/site-map.json: the library's fullMapData with every geometry
 // simplified for display (see scripts/build/site-data.mjs). It has the exact MapData shape, so it
 // goes straight into createMap and renderMap.
-let pending;
+import { createAsyncCache } from './async-cache.js';
 
-/** Fetch the display dataset once per page. */
+/** @returns {Promise<import('../../dist/src/map.js').MapData>} */
+async function fetchSiteMap() {
+  const response = await fetch('./data/site-map.json');
+  if (!response.ok) throw new Error('Could not load the map data.');
+  return response.json();
+}
+const load = createAsyncCache(fetchSiteMap);
+
+/** Fetch once per page, allowing a later call to retry a failed request. */
 export function loadSiteMapData() {
-  pending ??= fetch('./data/site-map.json').then((response) => {
-    if (!response.ok) throw new Error('Could not load the map data.');
-    return response.json();
-  });
-  return pending;
+  return load(undefined);
 }
 
 export const neighborhoodSources = [

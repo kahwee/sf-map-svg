@@ -1,4 +1,5 @@
 import catalog from '../../data/candidates/catalog.json';
+import { createAsyncCache } from '../shared/async-cache.js';
 import { createDistrictMap } from '../shared/district-map.js';
 import { countTo, reorderList, whenVisible } from '../shared/motion-kit.js';
 import { candidateInks, mix, sequential } from '../shared/palette.js';
@@ -13,7 +14,7 @@ const shownInks = candidateInks.length - 1;
 enhanceCode();
 
 const params = new URLSearchParams(location.hash.slice(1));
-const cache = new Map();
+
 let election;
 let contest;
 let view = params.get('view') === 'share' ? 'share' : 'leader';
@@ -34,17 +35,11 @@ function titleCase(name) {
       suffix === 'Jr' || suffix === 'Sr' ? suffix : suffix.toUpperCase(),
     );
 }
-const load = (file) => {
-  if (!cache.has(file))
-    cache.set(
-      file,
-      fetch(`./data/candidates/${file}`).then((response) => {
-        if (!response.ok) throw new Error(`Could not load ${file}`);
-        return response.json();
-      }),
-    );
-  return cache.get(file);
-};
+const load = createAsyncCache(async (file) => {
+  const response = await fetch(`./data/candidates/${file}`);
+  if (!response.ok) throw new Error(`Could not load ${file}`);
+  return response.json();
+});
 
 // ---------- Derived values ----------
 const share = (row, index) => (row?.totalVotes ? row.votes[index] / row.totalVotes : null);

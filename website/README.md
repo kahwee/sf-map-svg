@@ -71,3 +71,19 @@ reduced motion and print). Keep new rules with their owning component and retain
 accessibility overrides last. Feature-specific rules belong in feature stylesheets.
 `shared/district-results.css` is imported only by candidates, measures and propositions
 for their choropleth and ranking-bar presentation.
+
+## Data loading and checked JavaScript
+
+Use `shared/async-cache.js` for immutable map and historical result loads. It shares
+in-flight requests and successful values by key, and evicts rejected requests before
+callers retry. It does not retry automatically or cache live election refreshes.
+The shared SVG loader rejects malformed XML and non-SVG responses.
+
+The strict website project also checks the shared caches/loaders and historical
+measure calculations, URL selection and CSV export through JSDoc. JavaScript module
+paths remain unchanged. Dataset types come from the built package declarations,
+matching the website's consumer boundary.
+
+Playground component styles keep final declarations together, with responsive and
+reduced-motion rules at the end. Fold refinements into those rules instead of adding
+another override section.

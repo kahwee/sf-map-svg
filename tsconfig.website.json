@@ -13,5 +13,13 @@
     "types": [],
     "lib": ["ES2022", "DOM", "DOM.Iterable"]
   },
-  "include": ["website/**/*.ts", "website/shared/dropdown.js", "website/election/refresh.js"]
+  "include": [
+    "website/**/*.ts",
+    "website/shared/dropdown.js",
+    "website/election/refresh.js",
+    "website/shared/async-cache.js",
+    "website/shared/site-map-data.js",
+    "website/shared/display-map.js",
+    "website/measures/model.js"
+  ]
 }
