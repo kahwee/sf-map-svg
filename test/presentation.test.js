@@ -15,7 +15,7 @@ import {
   setMode,
   staticData,
   staticOptions,
-} from '../website/playground-model.ts';
+} from '../website/playground/model.ts';
 
 test('static presentation rejects removed flat keys and uses grouped layer switches', () => {
   for (const options of [

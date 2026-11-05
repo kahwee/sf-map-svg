@@ -1,8 +1,8 @@
 import type { MapAppearance } from '../controller-types.js';
 import type { normalizeFeatures } from '../features.js';
-import type { createNeighborhoodLayer } from '../neighborhood-layer.js';
 import { resolveMapColors } from '../rendering/svg-map-renderer.js';
 import type { MarkerItem } from './marker-renderer.js';
+import type { createNeighborhoodLayer } from './neighborhood-layer.js';
 
 type AppearanceView = {
   root: HTMLElement;

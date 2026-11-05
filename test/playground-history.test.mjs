@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createPlaygroundHistory } from '../website/playground-history.ts';
-import { initialState } from '../website/playground-model.ts';
+import { createPlaygroundHistory } from '../website/playground/history.ts';
+import { initialState } from '../website/playground/model.ts';
 
 test('history isolates snapshots and discards redo only after a new edit', () => {
   const initial = initialState();

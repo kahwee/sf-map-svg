@@ -1,8 +1,7 @@
 import type { Bounds } from '../../data/types.js';
-import { setAttributeIfChanged } from '../dom.js';
 import { layoutLabels } from '../explorer-layout.js';
-
 import type { RenderLabel } from '../label-candidates.js';
+import { setAttributeIfChanged } from './dom.js';
 
 /** Reuse text nodes and screen-space metrics throughout a camera animation. */
 export function createLabelRenderer(layer: SVGGElement) {

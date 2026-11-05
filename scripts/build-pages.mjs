@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { basename, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { build } from 'vite';
-import { candidateInks, diverging, sequential } from '../website/palette.js';
+import { candidateInks, diverging, sequential } from '../website/shared/palette.js';
 import { buildLlmDocs } from './build-llm-docs.mjs';
 import { checkPlaygroundCode } from './check-playground-code.mjs';
 import { simplifySvg } from './simplify-svg.mjs';
@@ -111,11 +111,11 @@ function addSiteChrome(html, boot, file) {
     );
   page = page.replace(
     '</head>',
-    `${socialTags(page)}<link rel="describedby" href="./llms.txt">${['docs.html', 'api.html', 'examples.html'].includes(file) ? `<link rel="alternate" type="text/markdown" href="./${file.replace('.html', '.md')}">` : ''}<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f3e9"><meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121816"><script>${boot}</script><link rel="expect" href="#page-end" blocking="render"><link rel="stylesheet" href="./site.css"></head>`,
+    `${socialTags(page)}<link rel="describedby" href="./llms.txt">${['docs.html', 'api.html', 'examples.html'].includes(file) ? `<link rel="alternate" type="text/markdown" href="./${file.replace('.html', '.md')}">` : ''}<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f3e9"><meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121816"><script>${boot}</script><link rel="expect" href="#page-end" blocking="render"><link rel="stylesheet" href="./shared/site.css"></head>`,
   );
   page = page.replace(
     '</body>',
-    '<span id="page-end" hidden></span><script type="module" src="./motion.js"></script></body>',
+    '<span id="page-end" hidden></span><script type="module" src="./shared/motion.js"></script></body>',
   );
   page = page.replace(
     / ([→▶↗↓←])(?=<\/)/g,

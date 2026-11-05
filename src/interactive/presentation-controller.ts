@@ -2,11 +2,11 @@ import type { NeighborhoodSource, Position } from '../../data/types.js';
 import type { MapAppearance, MapConfiguration } from '../controller-types.js';
 import { prepareDistrictStyles } from '../district-style.js';
 import type { InteractiveSFMapData } from '../explorer-data.js';
-import type { createNeighborhoodLayer } from '../neighborhood-layer.js';
 import { getLayerPathsWithData } from '../rendering/svg-map-renderer.js';
 import type { DistrictYear, ExplorerMode } from '../types.js';
 import type { PreparedPresentation } from './configuration-controller.js';
 import type { createDistrictController } from './district-controller.js';
+import type { createNeighborhoodLayer } from './neighborhood-layer.js';
 
 type DistrictController = ReturnType<typeof createDistrictController>;
 type PresentationHost = {

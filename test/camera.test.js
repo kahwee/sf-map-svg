@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createCamera } from '../dist/src/camera.js';
-import { clusterPoints } from '../dist/src/clusters.js';
 import { normalizeFeatures } from '../dist/src/features.js';
+import { createCamera } from '../dist/src/interactive/camera.js';
+import { clusterPoints } from '../dist/src/interactive/clusters.js';
 
 function rig(onWrite = () => {}) {
   let view = [0, 0, 800],

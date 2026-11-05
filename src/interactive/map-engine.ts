@@ -1,26 +1,11 @@
 import type { NeighborhoodSource, Position } from '../../data/types.js';
 import { copyAppearance } from '../appearance.js';
-import { createCamera, validateCameraOptions } from '../camera.js';
-import { createClusterLayer } from '../cluster-layer.js';
-import { clusterPoints } from '../clusters.js';
 import type { MapAppearance, MapConfiguration } from '../controller-types.js';
-import { element, svgElement } from '../dom.js';
 import type { InteractiveSFMapData } from '../explorer-data.js';
 import type { View } from '../explorer-layout.js';
 import { fitBounds, projectedBounds } from '../explorer-layout.js';
 import { controlKeys, layerKeys, normalizeFeatures, validateSwitchPatch } from '../features.js';
-import { createFrameScheduler } from '../frame-scheduler.js';
 import type { LabelItem } from '../label-candidates.js';
-import { createLayerTransitions } from '../layer-transition.js';
-import { createMarkerCatalog } from '../marker-catalog.js';
-import { createMarkerChooser } from '../marker-chooser.js';
-import { createMarkerNavigation } from '../marker-navigation.js';
-import {
-  createNeighborhoodLayer,
-  createNeighborhoodLookup,
-  formatSourceLabel,
-} from '../neighborhood-layer.js';
-import { createOverlayLayer } from '../overlay-layer.js';
 import { createSFMapWithData, districtColors } from '../rendering/svg-map-renderer.js';
 import type {
   CameraOptions,
@@ -35,15 +20,30 @@ import type {
 import { validateExplorerOptions } from '../validation.js';
 import { fitViewport, validateViewport } from '../viewport.js';
 import { renderMapAppearance } from './appearance-renderer.js';
+import { createCamera, validateCameraOptions } from './camera.js';
+import { createClusterLayer } from './cluster-layer.js';
+import { clusterPoints } from './clusters.js';
 import type { PreparedPresentation } from './configuration-controller.js';
 import { createDistrictController } from './district-controller.js';
+import { element, svgElement } from './dom.js';
 import type { createExplorerSidebar } from './explorer-sidebar.js';
+import { createFrameScheduler } from './frame-scheduler.js';
 import { createLabelCoordinator } from './label-coordinator.js';
 import { renderLayerComposition } from './layer-composition.js';
+import { createLayerTransitions } from './layer-transition.js';
 import { createMapControls } from './map-controls.js';
 import type { createMapShell } from './map-shell.js';
+import { createMarkerCatalog } from './marker-catalog.js';
+import { createMarkerChooser } from './marker-chooser.js';
 import { createMarkerController } from './marker-controller.js';
+import { createMarkerNavigation } from './marker-navigation.js';
 import { createMarkerRenderer, type MarkerItem, type MarkerVisual } from './marker-renderer.js';
+import {
+  createNeighborhoodLayer,
+  createNeighborhoodLookup,
+  formatSourceLabel,
+} from './neighborhood-layer.js';
+import { createOverlayLayer } from './overlay-layer.js';
 import { createPresentationController } from './presentation-controller.js';
 
 export type {

@@ -4,6 +4,8 @@ User-visible changes are recorded here. Unreleased entries describe changes on `
 
 ## Unreleased
 
+- Group website code/styles by feature and browser-only library modules under `src/interactive`; preserve HTML URLs and public package entry points.
+
 - Separate playground preview lifecycle, undo/redo history and exports from form wiring; keep selection, camera restoration and versioned share links intact.
 
 - Narrow the interactive engine with dedicated presentation transactions, layer composition and appearance rendering; preserve the public API and lifecycle behavior.

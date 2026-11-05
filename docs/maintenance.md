@@ -38,7 +38,7 @@ Inspect desktop (1440 × 900) and phone (390 × 844). For sticky controls, also 
 | --- | --- |
 | All changed pages | Long titles and artwork do not collide; text stays legible; no sideways scrolling, clipped focus, missing assets, browser errors or failed requests. |
 | Navigation and docs | Masthead, contents, anchors and cross-page links work; Copy buttons copy usable code; guide, API reference and Markdown links describe the same selected package. |
-| Dropdowns | Labels remain associated; chevrons have breathing room; long values fit; focus and native keyboard/mobile behavior survive enhancement. Reuse `website/dropdown.css` and `dropdown.js`. |
+| Dropdowns | Labels remain associated; chevrons have breathing room; long values fit; focus and native keyboard/mobile behavior survive enhancement. Reuse `website/shared/dropdown.css` and `dropdown.js`. |
 | Playground | Change mode, source, year, labels, layers and appearance; inspect the live preview and generated JS/TS. Explicit layer choices survive mode switches. Static mode works independently. Share links restore the design; undo/redo and export work. |
 | Interactive maps | Check selection, camera, keyboard focus and retained markers after appearance changes. Exercise rapid updates and disposal when their ownership changes. |
 | Data loading | Use the automated Pages/studio gates for delayed and failed geography, retries and downloads. Verify the affected recovery state manually if loading code changed. |
@@ -100,13 +100,13 @@ https://github.com/TanStack/charts/tree/v1.2.1/docs .
 
 Election code responsibilities:
 
-- `website/election.js` owns page state, filtering, refresh events and map selection.
-- `website/election-view.js` builds contest presentation, labels, tallies and source text.
-- `website/election-trend.js` owns observation controls and the exact-value table;
-  `website/election-chart.js` renders the TanStack SVG without owning feed state.
-  `website/election-chart-interaction.js` adds keyboard/touch point popovers with
+- `website/election/page.js` owns page state, filtering, refresh events and map selection.
+- `website/election/view.js` builds contest presentation, labels, tallies and source text.
+- `website/election/trend.js` owns observation controls and the exact-value table;
+  `website/election/chart.js` renders the TanStack SVG without owning feed state.
+  `website/election/chart-interaction.js` adds keyboard/touch point popovers with
   exact observation provenance and native dismissal.
-- `website/election-model.js` and `election-history.js` validate and reconcile snapshots and
+- `website/election/model.js` and `election-history.js` validate and reconcile snapshots and
   official history.
 - `scripts/update-election.mjs` orchestrates checks; `scripts/lib/sos-county-results.mjs`
   parses official county reports, and `previous-election.mjs` guards deployed recovery.

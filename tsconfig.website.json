@@ -13,5 +13,5 @@
     "types": [],
     "lib": ["ES2022", "DOM", "DOM.Iterable"]
   },
-  "include": ["website/playground.ts", "website/playground-model.ts"]
+  "include": ["website/playground/page.ts", "website/playground/model.ts"]
 }

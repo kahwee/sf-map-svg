@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { DOMParser } from '@xmldom/xmldom';
-import { renderElectionChart, reportSteps } from '../website/election-chart.js';
+import { renderElectionChart, reportSteps } from '../website/election/chart.js';
 
 test('release chart uses only actual snapshots and horizontal/vertical cumulative steps', () => {
   assert.equal(

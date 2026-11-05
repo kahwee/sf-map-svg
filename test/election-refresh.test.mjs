@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createRefreshController, isOlderSnapshot } from '../website/election-refresh.js';
+import { createRefreshController, isOlderSnapshot } from '../website/election/refresh.js';
 
 test('manual, due timer and visibility requests share one in-flight fetch', async () => {
   let release;

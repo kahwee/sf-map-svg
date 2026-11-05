@@ -14,12 +14,12 @@ commit callback. A newer update, selection change or disposal invalidates stale 
 | `interactive/presentation-controller.ts` | Presentation revision, preflight geometry/styles, single-use commit and reentrant/disposal guards across year, source, mode and labels. |
 | `interactive/layer-composition.ts` | Visibility, legend, neighborhood focusability and geographic accessibility descriptions from committed state. |
 | `interactive/appearance-renderer.ts` | Palette, typography, controls and retained feature-node styling; owns no selection or transaction state. |
-| `neighborhood-layer.ts` | Source-scoped lookup, prepared geometry, selection revisions and hover lifecycle. |
+| `interactive/neighborhood-layer.ts` | Source-scoped lookup, prepared geometry, selection revisions and hover lifecycle. |
 | `interactive/marker-controller.ts` | Marker selection and revisions, activation, replacement and focus recovery. |
 | `interactive/label-coordinator.ts` | Label candidate cache, collision obstacles, zoom-dependent detail, metrics invalidation and redraw requests. |
-| `marker-catalog.ts`, `interactive/marker-renderer.ts` | Catalog reconciliation and materialized marker visuals/entrances. |
-| `cluster-layer.ts`, `overlay-layer.ts` | Layer nodes and replaceable event scopes. |
-| `camera.ts`, `frame-scheduler.ts` | Camera animation and shared render scheduling. |
+| `interactive/marker-catalog.ts`, `interactive/marker-renderer.ts` | Catalog reconciliation and materialized marker visuals/entrances. |
+| `interactive/cluster-layer.ts`, `interactive/overlay-layer.ts` | Layer nodes and replaceable event scopes. |
+| `interactive/camera.ts`, `interactive/frame-scheduler.ts` | Camera animation and shared render scheduling. |
 | `interactive/label-renderer.ts` | Label nodes and cached screen-space metrics; font loading invalidates metrics. |
 | `interactive/map-controls.ts`, `interactive/explorer-sidebar.ts` | Controls/navigation and sidebar/download behavior. |
 

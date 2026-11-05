@@ -1,11 +1,11 @@
-import { element } from '../dom.js';
-import { attachNavigation } from '../navigation.js';
 import type {
   MapViewport,
   NeighborhoodExplorerElement,
   NeighborhoodExplorerOptions,
 } from '../types.js';
+import { element } from './dom.js';
 import type { createExplorerShell } from './map-shell.js';
+import { attachNavigation } from './navigation.js';
 
 type Controls = NonNullable<NeighborhoodExplorerOptions['controls']>;
 type Shell = Pick<

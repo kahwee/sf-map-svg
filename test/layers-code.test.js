@@ -3,7 +3,7 @@ import test from 'node:test';
 import { neighborhoodCollections } from '../dist/data/index.js';
 import { renderMap } from '../dist/src/static.js';
 import { staticMapData } from '../dist/src/static-data.js';
-import { interactiveCode, staticCode } from '../website/layers-code.js';
+import { interactiveCode, staticCode } from '../website/layers/code.js';
 
 const state = (patch = {}) => ({
   mode: 'neighborhoods',

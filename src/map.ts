@@ -1,5 +1,4 @@
 import { copyAppearance } from './appearance.js';
-import { validateCameraOptions } from './camera.js';
 import { configurationPatch, expandMapOptions, prepareConfiguration } from './configuration.js';
 import type {
   MapCapabilities,
@@ -11,6 +10,7 @@ import type {
 } from './controller-types.js';
 import type { InteractiveSFMapData } from './explorer-data.js';
 import { layerKeys } from './features.js';
+import { validateCameraOptions } from './interactive/camera.js';
 import { createConfigurationController } from './interactive/configuration-controller.js';
 import { createMapEngine } from './interactive/map-engine.js';
 import { createMapShell } from './interactive/map-shell.js';

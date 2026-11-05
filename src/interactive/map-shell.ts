@@ -1,7 +1,7 @@
 import type { NeighborhoodSource } from '../../data/types.js';
-import { element } from '../dom.js';
-import { sourceNames } from '../neighborhood-layer.js';
 import type { NeighborhoodExplorerOptions } from '../types.js';
+import { element } from './dom.js';
+import { sourceNames } from './neighborhood-layer.js';
 
 let explorerCount = 0;
 

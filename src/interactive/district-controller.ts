@@ -1,10 +1,5 @@
 import type { Geometry, Position } from '../../data/types.js';
-import { validateCameraOptions } from '../camera.js';
-import { renderDistrictAppearance } from '../district-layer.js';
-import { createDistrictMorph } from '../district-morph.js';
 import { prepareDistrictStyles } from '../district-style.js';
-import { createDistrictTransition } from '../district-transition.js';
-import { svgElement } from '../dom.js';
 import type { InteractiveSFMapData } from '../explorer-data.js';
 import type { normalizeFeatures } from '../features.js';
 import type { LabelItem } from '../label-candidates.js';
@@ -15,6 +10,11 @@ import type {
   DistrictYear,
   NeighborhoodExplorerOptions,
 } from '../types.js';
+import { validateCameraOptions } from './camera.js';
+import { renderDistrictAppearance } from './district-layer.js';
+import { createDistrictMorph } from './district-morph.js';
+import { createDistrictTransition } from './district-transition.js';
+import { svgElement } from './dom.js';
 
 type Host = {
   root: HTMLElement;

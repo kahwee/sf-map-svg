@@ -9,8 +9,8 @@ in released exports. Site navigation and layout can deploy independently.
 
 ## Dropdown
 
-Use the shared native dropdown for single-value choices. `site.css` imports
-`dropdown.css` for every Pages screen; the wrapper adds an inset, non-interactive
+Use the shared native dropdown for single-value choices. `shared/site.css` imports
+`shared/dropdown.css` for every Pages screen; the wrapper adds an inset, non-interactive
 chevron and reserves 44px at the end of the control for it. Native labels,
 keyboard navigation and mobile pickers remain intact.
 
@@ -26,7 +26,7 @@ keyboard navigation and mobile pickers remain intact.
 ```
 
 For existing controls supplied by the map, call `enhanceDropdowns(map.element)`
-from `dropdown.js` before mounting. It retains nodes and listeners, is safe to
+from `shared/dropdown.js` before mounting. It retains nodes and listeners, is safe to
 repeat, and leaves multiple selects and list boxes alone.
 
 Set `--dropdown-radius`, `--dropdown-font`, `--dropdown-padding-block`, and
@@ -34,16 +34,24 @@ Set `--dropdown-radius`, `--dropdown-font`, `--dropdown-padding-block`, and
 end gutter and chevron inset consistent. Logical spacing also supports RTL.
 Forced-colors mode uses the platform's native arrow for visibility.
 
+## Feature directories
+
+HTML entry points stay at the root to preserve public URLs. Each feature folder
+owns its page script, styles, models and supporting views. `page.js`/`page.ts` is
+the browser entry point; `style.css` holds that feature's styles. `shared/` contains
+components used by multiple pages: dropdowns, motion, map helpers and site styling.
+`boot.js` stays at the root because the build inlines it before first paint.
+
 ## Playground
 
-`playground.ts` connects form controls and rendering updates. Its focused modules are:
+`playground/page.ts` connects form controls and rendering updates:
 
-- `playground-preview.ts`: browser/static previews, camera and selection restoration, disposal.
-- `playground-history.ts`: detached undo/redo snapshots, branching and the 60-entry limit.
-- `playground-export.ts`: full-precision geography loading/retry, SVG downloads and share URLs.
-- `playground-model.ts`: validated design state, API adapters, versioned share encoding and generated examples.
+- `preview.ts`: browser/static previews, camera and selection restoration, disposal.
+- `history.ts`: detached undo/redo snapshots, branching and the 60-entry limit.
+- `export.ts`: full-precision geography loading/retry, SVG downloads and share URLs.
+- `model.ts`: validated design state, API adapters, share encoding and generated examples.
 
-`pnpm typecheck:website` checks the entry point and its imported modules in strict mode.
+`pnpm typecheck:website` checks the entry point and imported modules in strict mode.
 Mode defaults follow the view while explicit layer overrides survive mode changes.
 Static previews render without creating an interactive controller. Mobile previews
 scroll with the page so controls cannot be covered by a tall pinned map.

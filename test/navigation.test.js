@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { attachNavigation } from '../dist/src/navigation.js';
+import { attachNavigation } from '../dist/src/interactive/navigation.js';
 import { validateViewport } from '../dist/src/viewport.js';
 
 class Surface extends EventTarget {

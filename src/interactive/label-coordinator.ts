@@ -1,5 +1,4 @@
 import type { Bounds } from '../../data/types.js';
-import { setAttributeIfChanged } from '../dom.js';
 import type { View } from '../explorer-layout.js';
 import type { normalizeFeatures } from '../features.js';
 import {
@@ -8,12 +7,13 @@ import {
   type RenderLabel,
   styleLabels,
 } from '../label-candidates.js';
-import type { createMarkerCatalog } from '../marker-catalog.js';
-import type { createNeighborhoodLayer } from '../neighborhood-layer.js';
 import type { ExplorerMode, InteractiveLayers, NeighborhoodExplorerOptions } from '../types.js';
+import { setAttributeIfChanged } from './dom.js';
 import { createLabelRenderer } from './label-renderer.js';
+import type { createMarkerCatalog } from './marker-catalog.js';
 import type { createMarkerController } from './marker-controller.js';
 import type { MarkerItem, MarkerVisual } from './marker-renderer.js';
+import type { createNeighborhoodLayer } from './neighborhood-layer.js';
 
 interface LabelHost {
   root: HTMLElement;

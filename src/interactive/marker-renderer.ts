@@ -1,6 +1,6 @@
-import { svgElement } from '../dom.js';
 import type { normalizeFeatures } from '../features.js';
 import type { MapMarker } from '../types.js';
+import { svgElement } from './dom.js';
 
 export interface MarkerVisual {
   node: SVGGElement;

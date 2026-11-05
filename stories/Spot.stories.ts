@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/html-vite';
 import { expect } from 'storybook/test';
 import { fullMapData } from '../src/full-data.js';
-import { mountSpotExplorer } from '../website/spot-explorer.js';
+import { mountSpotExplorer } from '../website/spot/explorer.js';
 import { createStoryLifecycle } from './lifecycle.ts';
-import '../website/site.css';
-import '../website/spot.css';
+import '../website/shared/site.css';
+import '../website/spot/style.css';
 
 const lifecycle = createStoryLifecycle();
 const meta = {

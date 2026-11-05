@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import results from '../data/propositions/2024-11-05.json' with { type: 'json' };
-import { yesShare } from '../website/measures-model.js';
+import { yesShare } from '../website/measures/model.js';
 
 test('certified California proposition districts reconcile to San Francisco totals', () => {
   assert.equal(results.electionDate, '2024-11-05');

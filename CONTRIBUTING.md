@@ -15,16 +15,16 @@ See [interactive state ownership](docs/state-ownership.md) for state and disposa
 | `src/interactive/map-engine.ts` | Interactive initialization, state wiring and disposal |
 | `src/interactive/presentation-controller.ts` | Guarded cross-layer preparation and commit |
 | `src/interactive/layer-composition.ts`, `src/interactive/appearance-renderer.ts` | Layer visibility/accessibility and committed appearance painting |
-| `src/neighborhood-layer.ts` | Source-scoped lookup, prepared neighborhood geometry, selection revisions and hover lifecycle |
+| `src/interactive/neighborhood-layer.ts` | Source-scoped lookup, prepared neighborhood geometry, selection revisions and hover lifecycle |
 | `src/interactive/map-shell.ts`, `src/interactive/map-controls.ts`, `src/interactive/explorer-sidebar.ts` | Injectable map/explorer shells, toolbar/form behavior and optional sidebar download ownership |
-| `src/cluster-layer.ts`, `src/overlay-layer.ts` | Cluster and overlay nodes with replaceable event scopes |
+| `src/interactive/cluster-layer.ts`, `src/interactive/overlay-layer.ts` | Cluster and overlay nodes with replaceable event scopes |
 | `src/full-data.ts` | Explicit complete geographic preset (`/data/full`) |
 | `src/static-data.ts` | Explicit static geographic preset (`/data/static`) |
 | `src/geometry.ts` | Mercator projection, GeoJSON paths, bounds, and polygon queries         |
-| `src/district-style.ts`, `src/district-layer.ts`, `src/district-transition.ts` | Prepared district styles, interaction appearance, and cancellable year fades |
+| `src/district-style.ts`, `src/interactive/district-layer.ts`, `src/interactive/district-transition.ts` | Prepared district styles, interaction appearance, and cancellable year fades |
 | `src/interactive/label-renderer.ts`, `src/interactive/marker-renderer.ts` | Reusable label nodes/metrics and marker visual/entrance ownership |
-| `src/marker-catalog.ts`, `src/cluster-renderer.ts` | Prepared marker/picker reconciliation and cluster cache, viewport mounting, listener ownership |
-| `src/frame-scheduler.ts` | Shared camera and dependent screen-space render frame |
+| `src/interactive/marker-catalog.ts`, `src/interactive/cluster-renderer.ts` | Prepared marker/picker reconciliation and cluster cache, viewport mounting, listener ownership |
+| `src/interactive/frame-scheduler.ts` | Shared camera and dependent screen-space render frame |
 | `src/data.ts`     | Internal adapter over canonical JSON geometry           |
 | `src/types.ts`  | Public TypeScript declarations                          |
 | `test/`           | Rendering, XML, projection and input validation         |
@@ -37,6 +37,12 @@ Use `pnpm format` for Biome formatting, import organization, and safe lint fixes
 For rendering changes, inspect the example page on desktop and at 390 px. Run `pnpm check` and inspect `pnpm pack` contents before releasing. Never include credentials, node_modules, or source extraction credentials in the repository or archive.
 
 For camera or animation changes, exercise **Checks / Motion lifecycle** in Storybook with normal and reduced motion. Verify interruption, rapid year switches, marker replacement, destruction during callbacks, and font-load invalidation. Label metrics are cached in screen pixels; preserve collision rules and invalidate them when fonts change. District style preparation must finish before mutating state, and reentrant callbacks must not overwrite a newer update.
+
+Browser-only implementation lives under `src/interactive/`, including camera,
+DOM helpers, district/neighborhood layers and marker/cluster interaction. Public
+entry modules stay in `src/`; pure geometry, validation and label/layout helpers
+shared with static rendering remain outside `interactive/`. Do not route static
+rendering through browser modules just to share a directory.
 
 ## Geographic helper contracts
 

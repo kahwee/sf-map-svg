@@ -1,7 +1,7 @@
 import type { InteractiveSFMapData } from '../explorer-data.js';
-import type { createLayerTransitions } from '../layer-transition.js';
-import type { createNeighborhoodLayer } from '../neighborhood-layer.js';
 import type { DistrictYear, InteractiveLayers, NeighborhoodExplorerOptions } from '../types.js';
+import type { createLayerTransitions } from './layer-transition.js';
+import type { createNeighborhoodLayer } from './neighborhood-layer.js';
 
 type LayerCompositionHost = {
   svg: SVGSVGElement;

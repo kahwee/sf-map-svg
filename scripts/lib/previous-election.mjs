@@ -1,4 +1,4 @@
-import { chooseSnapshotSeed, validateSnapshot } from '../../website/election-model.js';
+import { chooseSnapshotSeed, validateSnapshot } from '../../website/election/model.js';
 
 const api = 'https://api.github.com/repos/kahwee/sf-map-svg/actions';
 // Log only fixed request labels and strictly typed, allowlisted response headers.

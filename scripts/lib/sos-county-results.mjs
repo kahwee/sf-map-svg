@@ -1,6 +1,6 @@
-import { appendResultHistory, sourceTimeOrder } from '../../website/election-history.js';
+import { appendResultHistory, sourceTimeOrder } from '../../website/election/history.js';
 
-export { sourceTimeOrder } from '../../website/election-history.js';
+export { sourceTimeOrder } from '../../website/election/history.js';
 
 const base = 'https://media.sos.ca.gov/media/';
 export const sosIndexUrl = `${base}json-endpoints.csv`;

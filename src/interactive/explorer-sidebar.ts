@@ -1,7 +1,7 @@
 import type { NeighborhoodFeature, NeighborhoodSource } from '../../data/types.js';
-import { element } from '../dom.js';
 import type { InteractiveSFMapData } from '../explorer-data.js';
 import type { DistrictYear, ExplorerMode } from '../types.js';
+import { element } from './dom.js';
 import type { createExplorerShell } from './map-shell.js';
 
 interface SidebarState {

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createCamera } from '../dist/src/camera.js';
-import { createFrameScheduler } from '../dist/src/frame-scheduler.js';
+import { createCamera } from '../dist/src/interactive/camera.js';
+import { createFrameScheduler } from '../dist/src/interactive/frame-scheduler.js';
 
 function rig(render = () => {}) {
   let id = 0;

@@ -7,7 +7,7 @@ import {
   retainLastGood,
   sosMappings,
 } from '../scripts/lib/sos-county-results.mjs';
-import { validateSnapshot } from '../website/election-model.js';
+import { validateSnapshot } from '../website/election/model.js';
 
 const seed = JSON.parse(
   await readFile(new URL('../elections/2026-11-03.json', import.meta.url), 'utf8'),

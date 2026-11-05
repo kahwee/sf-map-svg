@@ -1,12 +1,12 @@
 import type { Position } from '../../data/types.js';
-import { validateCameraOptions } from '../camera.js';
 import { fitBounds, type View } from '../explorer-layout.js';
 import type { normalizeFeatures } from '../features.js';
-import type { createMarkerCatalog } from '../marker-catalog.js';
-import type { createMarkerChooser } from '../marker-chooser.js';
-import type { createMarkerNavigation } from '../marker-navigation.js';
 import type { CameraOptions, MapMarker, NeighborhoodExplorerOptions } from '../types.js';
 import { fitViewport } from '../viewport.js';
+import { validateCameraOptions } from './camera.js';
+import type { createMarkerCatalog } from './marker-catalog.js';
+import type { createMarkerChooser } from './marker-chooser.js';
+import type { createMarkerNavigation } from './marker-navigation.js';
 import type { MarkerItem, MarkerVisual } from './marker-renderer.js';
 
 interface MarkerHost {

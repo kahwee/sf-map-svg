@@ -1,0 +1,213 @@
+@import "../shared/head-art.css";
+.spot-page {
+  padding-top: clamp(28px, 4vw, 48px);
+}
+.stage-loading {
+  display: grid;
+  place-items: center;
+  min-height: 320px;
+  margin: 0;
+  font: 500 14px var(--sans);
+  color: var(--muted);
+}
+.spot-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--ink);
+}
+.spot-toolbar .eyebrow {
+  margin: 0;
+}
+.spot-samples,
+.spot-years {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.spot-samples button,
+.spot-years button {
+  min-height: 38px;
+  padding: 6px 14px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font: 600 13px var(--sans);
+  cursor: pointer;
+  transition:
+    transform var(--dur-spring) var(--spring),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.spot-samples button:is(:hover, :focus-visible),
+.spot-years button:is(:hover, :focus-visible) {
+  transform: translateY(-2px);
+  border-color: var(--ink);
+}
+.spot-years button[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--on-ink);
+  border-color: var(--ink);
+}
+.spot-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+  gap: clamp(28px, 4vw, 56px);
+  margin-top: 28px;
+}
+.spot-map-panel {
+  margin: 0;
+}
+.spot-map {
+  aspect-ratio: 1;
+  cursor: crosshair;
+}
+.spot-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.spot-sidebar {
+  display: grid;
+  align-content: start;
+  gap: 22px;
+}
+.spot-step h2 {
+  margin-bottom: 10px;
+  font-size: clamp(26px, 2.6vw, 34px);
+}
+.spot-step h2 em {
+  color: var(--accent);
+}
+.spot-step p {
+  color: var(--ink-2);
+  font-size: 16px;
+}
+.spot-sources {
+  display: grid;
+  gap: 8px;
+}
+.spot-source-card {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--rule);
+  background: var(--card);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform var(--dur-spring) var(--spring-soft),
+    border-color var(--dur-fast) var(--ease-out);
+}
+.spot-source-card:is(:hover, :focus-visible) {
+  transform: translateX(3px);
+  border-color: var(--rule-strong);
+}
+.spot-source-card[aria-pressed="true"] {
+  border-color: var(--accent);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.spot-card-tag {
+  font: 600 12px var(--sans);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.spot-source-card strong {
+  font: 500 20px var(--serif);
+}
+.spot-source-card small {
+  font: 500 12px var(--sans);
+  color: var(--muted);
+}
+.spot-district-status {
+  margin-top: 12px;
+  font: 500 15px var(--sans);
+}
+.spot-note {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+  font-size: 15px;
+  color: var(--ink-2);
+  max-width: 70ch;
+}
+
+/* Overlays: the traced area draws itself; the pin drops with a spring. */
+.spot-district-outline {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-dasharray: 0.012 0.008;
+  vector-effect: non-scaling-stroke;
+}
+.spot-source-outline {
+  fill: color-mix(in srgb, var(--accent) 16%, transparent);
+  stroke: var(--accent);
+  stroke-width: 2.4;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.spot-pin-halo {
+  fill: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+.spot-pin {
+  fill: var(--accent);
+  stroke: #fff;
+  stroke-width: 2.5;
+}
+.spot-pin-core {
+  fill: #fff;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .spot-source-outline {
+    stroke-dasharray: 1;
+    animation:
+      spot-draw 900ms var(--ease-in-out) both,
+      spot-fill 700ms var(--ease-out) 350ms both;
+  }
+  .spot-pin-group > * {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: spot-pin 700ms var(--spring) both;
+  }
+  .spot-pin-group > .spot-pin-halo {
+    animation: spot-halo 1600ms var(--ease-out) both;
+  }
+}
+@keyframes spot-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+@keyframes spot-fill {
+  from {
+    fill-opacity: 0;
+  }
+}
+@keyframes spot-pin {
+  from {
+    transform: translateY(-18px) scale(0.4);
+    opacity: 0;
+  }
+}
+@keyframes spot-halo {
+  from {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 900px) {
+  .spot-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import election from '../data/elections/2026-06-02.json' with { type: 'json' };
-import { passed, yesShare } from '../website/measures-model.js';
+import { passed, yesShare } from '../website/measures/model.js';
 
 test('official district election counts reconcile to the certified citywide totals', () => {
   assert.deepEqual(
@@ -39,7 +39,7 @@ test('vote shares exclude blank responses and passage respects exact thresholds'
 });
 
 test('shared views validate URL input and preserve independent comparison controls', async () => {
-  const { readView } = await import('../website/measures-model.js');
+  const { readView } = await import('../website/measures/model.js');
   assert.deepEqual(
     readView('#measure=D&district=8&compare=B&mode=no&labels=0', ['A', 'B', 'C', 'D']),
     { measure: 'D', district: 8, compare: 'B', mode: 'no', labels: false },
@@ -50,7 +50,7 @@ test('shared views validate URL input and preserve independent comparison contro
   );
 });
 test('CSV exports include citywide and district totals for both selected measures', async () => {
-  const { resultsCsv } = await import('../website/measures-model.js');
+  const { resultsCsv } = await import('../website/measures/model.js');
   const csv = resultsCsv(election, election.measures.slice(0, 2));
   assert.equal(csv.trim().split('\r\n').length, 25);
   assert.match(csv, /"San Francisco","203479","48620","252099"/);

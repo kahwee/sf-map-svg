@@ -6,7 +6,7 @@ import {
   freshness,
   parseOfficialReport,
   validateSnapshot,
-} from '../website/election-model.js';
+} from '../website/election/model.js';
 
 const seed = JSON.parse(
   await readFile(new URL('../elections/2026-11-03.json', import.meta.url), 'utf8'),
