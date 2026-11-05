@@ -296,3 +296,44 @@ test('metadata jobs failure identifies the request and preserves canonical retry
   );
   assert.equal(requests, 2, 'no automatic retry of the failed jobs request');
 });
+
+test('election probes do not interpret their run number as a Pages run number', async (t) => {
+  const probe = process.env.ELECTION_PROBE;
+  const run = process.env.GITHUB_RUN_NUMBER;
+  t.after(() => {
+    if (probe === undefined) delete process.env.ELECTION_PROBE;
+    else process.env.ELECTION_PROBE = probe;
+    if (run === undefined) delete process.env.GITHUB_RUN_NUMBER;
+    else process.env.GITHUB_RUN_NUMBER = run;
+  });
+  process.env.ELECTION_PROBE = 'true';
+  process.env.GITHUB_RUN_NUMBER = '500';
+  let requested;
+  await assert.rejects(
+    loadPreviousSnapshot(
+      seed,
+      async () => {
+        throw new Error('offline');
+      },
+      async (_fetch, options) => {
+        requested = options.previousRunNumber;
+        return deployment;
+      },
+    ),
+  );
+  assert.equal(requested, null);
+  process.env.ELECTION_PROBE = 'false';
+  await assert.rejects(
+    loadPreviousSnapshot(
+      seed,
+      async () => {
+        throw new Error('offline');
+      },
+      async (_fetch, options) => {
+        requested = options.previousRunNumber;
+        return deployment;
+      },
+    ),
+  );
+  assert.equal(requested, 499);
+});

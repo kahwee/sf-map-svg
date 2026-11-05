@@ -126,9 +126,10 @@ export async function loadPreviousSnapshot(
 ) {
   try {
     const deployment = await deploymentReader(fetcher, {
-      previousRunNumber: process.env.GITHUB_RUN_NUMBER
-        ? Number(process.env.GITHUB_RUN_NUMBER) - 1
-        : null,
+      previousRunNumber:
+        process.env.ELECTION_PROBE !== 'true' && process.env.GITHUB_RUN_NUMBER
+          ? Number(process.env.GITHUB_RUN_NUMBER) - 1
+          : null,
     });
     const response = await fetcher(
       `https://kahwee.github.io/sf-map-svg/elections/2026-11-03.json?recovery=${Date.now()}`,

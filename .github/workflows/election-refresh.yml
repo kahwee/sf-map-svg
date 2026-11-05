@@ -27,8 +27,6 @@ jobs:
         id: election
         env:
           ELECTION_PROBE: 'true'
-          # This run belongs to election-refresh, not the Pages run sequence.
-          GITHUB_RUN_NUMBER: ''
         run: node scripts/update-election.mjs "$RUNNER_TEMP/election.json"
       - name: Deploy changed results or daily freshness update
         if: steps.election.outputs.changed == 'true'
