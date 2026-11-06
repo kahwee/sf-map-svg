@@ -8,6 +8,9 @@ const index = await json('../../data/elections/precincts-index.json');
 const aggregate = await json(`../../data/elections/${index.latest}`);
 const boundaries = await json('../../data/precincts-2022.json');
 const summary = await json('../fixtures/sfelections/summary-report-5.json');
+// The department summary fixture belongs to one report; reconcile the snapshot taken from that report.
+const reconciledStamp = '2026-11-04-143425';
+const reconciled = await json(`../../data/elections/precincts-${reconciledStamp}.json`);
 
 test('the index lists every snapshot in time order and latest is the newest', async () => {
   const stamps = index.snapshots.map((s) => s.reportStamp);
@@ -35,18 +38,19 @@ test('every aggregated precinct has a 2022 boundary and no ballot-level fields',
     'schemaVersion',
     'source',
   ]);
-  assert.equal(aggregate.source.sourceReportTime, '11/4/2026 2:34:25 PM');
-  assert.equal(aggregate.source.reportStamp, '2026-11-04-143425');
+  assert.equal(aggregate.source.reportStamp, index.snapshots.at(-1).reportStamp);
+  assert.equal(reconciled.source.sourceReportTime, '11/4/2026 2:34:25 PM');
+  assert.equal(reconciled.source.reportStamp, reconciledStamp);
 });
 
 test('precinct sums reconcile with the official summary report for every contest', () => {
   const names = Object.keys(summary.contests);
-  assert.equal(names.length, aggregate.contests.length);
-  for (const [index, contest] of aggregate.contests.entries()) {
+  assert.equal(names.length, reconciled.contests.length);
+  for (const [index, contest] of reconciled.contests.entries()) {
     const official = summary.contests[contest.id.trim()];
     assert.ok(official, contest.id);
     contest.options.forEach((option, i) => {
-      const total = Object.values(aggregate.precincts).reduce(
+      const total = Object.values(reconciled.precincts).reduce(
         (n, p) => n + (p.c[index]?.[2 + i] ?? 0),
         0,
       );
