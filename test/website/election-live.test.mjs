@@ -1,12 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
-import {
-  chooseSnapshotSeed,
-  freshness,
-  parseOfficialReport,
-  validateSnapshot,
-} from '../../website/election/model.js';
+import { chooseSnapshotSeed, freshness, validateSnapshot } from '../../website/election/model.js';
 
 const seed = JSON.parse(
   await readFile(new URL('../../elections/2026-11-03.json', import.meta.url), 'utf8'),
@@ -53,11 +48,6 @@ test('distinguishes stale checks, source errors and successful checks', () => {
   assert.equal(freshness({ ...copy, checkStatus: 'ok' }, now), 'current');
   assert.equal(freshness(copy, now + 31 * 60_000), 'stale');
 });
-test('official parser fails closed for challenge, wrong election and unverified format', () => {
-  for (const html of ['403 ERROR', 'June 2, 2026', 'November 3, 2026 — unknown format'])
-    assert.throws(() => parseOfficialReport(html));
-});
-
 test('displayed rosters include candidates without pamphlet statements and verified statewide candidates', () => {
   assert.equal(seed.ballotSource.displayedCandidateContestsComplete, true);
   assert.equal(seed.ballotSource.candidateRosterComplete, true);

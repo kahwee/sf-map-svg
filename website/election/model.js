@@ -108,13 +108,6 @@ export function freshness(data, now = Date.now()) {
       : 'source-error';
 }
 // Refuse to infer a live schema from historical reports or from a challenge/error page.
-export function parseOfficialReport(html) {
-  if (!/November\s+3,?\s+2026/i.test(html)) throw new Error('Election identity not verified');
-  throw new Error(
-    'Official November report format requires verification before importing vote totals',
-  );
-}
-
 export function chooseSnapshotSeed(seed, deployed) {
   validateSnapshot(seed);
   validateSnapshot(deployed);
