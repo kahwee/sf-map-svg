@@ -15,11 +15,7 @@ function renderStatus() {
   $('check-status').textContent =
     `${state === 'stale' ? 'Stale check · ' : ''}${snapshot.checkedAt ? `Official sources checked ${formatTime(snapshot.checkedAt)}` : 'Official sources not checked yet'}`;
   $('report-time').textContent = `Local SF report: ${formatTime(snapshot.sourceReportTimestamp)}.`;
-  const local = snapshot.sourceChecks?.find((source) => source.id === 'sf-local');
-  $('source-detail').textContent =
-    local?.status === 'error'
-      ? `Official local feed unavailable${local.message?.match(/HTTP \d{3}/)?.[0] ? ` (${local.message.match(/HTTP \d{3}/)[0]})` : ''}. County counts cannot decide statewide or regional outcomes.`
-      : 'County counts cannot decide statewide or regional outcomes.';
+  $('source-detail').textContent = 'County counts cannot decide statewide or regional outcomes.';
   if (feedFailed)
     $('check-status').textContent =
       'Feed unavailable · showing last loaded data, which may be stale.';

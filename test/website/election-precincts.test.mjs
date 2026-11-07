@@ -7,10 +7,12 @@ const json = async (path) => JSON.parse(await readFile(new URL(path, import.meta
 const index = await json('../../data/elections/precincts-index.json');
 const aggregate = await json(`../../data/elections/${index.latest}`);
 const boundaries = await json('../../data/precincts-2022.json');
-const summary = await json('../fixtures/sfelections/summary-report-5.json');
-// The department summary fixture belongs to one report; reconcile the snapshot taken from that report.
-const reconciledStamp = '2026-11-04-143425';
-const reconciled = await json(`../../data/elections/precincts-${reconciledStamp}.json`);
+// Each department summary report belongs to one snapshot; every snapshot is reconciled with its own report.
+const reports = [
+  { file: 'summary-report-5.json', stamp: '2026-11-04-143425', time: '11/4/2026 2:34:25 PM' },
+  { file: 'summary-report-6.json', stamp: '2026-11-05-142202', time: '11/5/2026 2:22:02 PM' },
+  { file: 'summary-report-7.json', stamp: '2026-11-06-135037', time: '11/6/2026 1:50:37 PM' },
+];
 
 test('the index lists every snapshot in time order and latest is the newest', async () => {
   const stamps = index.snapshots.map((s) => s.reportStamp);
@@ -39,25 +41,28 @@ test('every aggregated precinct has a 2022 boundary and no ballot-level fields',
     'source',
   ]);
   assert.equal(aggregate.source.reportStamp, index.snapshots.at(-1).reportStamp);
-  assert.equal(reconciled.source.sourceReportTime, '11/4/2026 2:34:25 PM');
-  assert.equal(reconciled.source.reportStamp, reconciledStamp);
 });
 
-test('precinct sums reconcile with the official summary report for every contest', () => {
-  const names = Object.keys(summary.contests);
-  assert.equal(names.length, reconciled.contests.length);
-  for (const [index, contest] of reconciled.contests.entries()) {
-    const official = summary.contests[contest.id.trim()];
-    assert.ok(official, contest.id);
-    contest.options.forEach((option, i) => {
-      const total = Object.values(reconciled.precincts).reduce(
-        (n, p) => n + (p.c[index]?.[2 + i] ?? 0),
-        0,
-      );
-      assert.equal(total, official[option.toUpperCase()] ?? 0, `${contest.id} / ${option}`);
-    });
-  }
-});
+for (const report of reports) {
+  test(`${report.time} precinct sums reconcile with its official summary report for every contest`, async () => {
+    const summary = await json(`../fixtures/sfelections/${report.file}`);
+    const snapshot = await json(`../../data/elections/precincts-${report.stamp}.json`);
+    assert.equal(snapshot.source.sourceReportTime, report.time);
+    assert.equal(snapshot.source.reportStamp, report.stamp);
+    assert.equal(Object.keys(summary.contests).length, snapshot.contests.length);
+    for (const [index, contest] of snapshot.contests.entries()) {
+      const official = summary.contests[contest.id.trim()];
+      assert.ok(official, contest.id);
+      contest.options.forEach((option, i) => {
+        const total = Object.values(snapshot.precincts).reduce(
+          (n, p) => n + (p.c[index]?.[2 + i] ?? 0),
+          0,
+        );
+        assert.equal(total, official[option.toUpperCase()] ?? 0, `${contest.id} / ${option}`);
+      });
+    }
+  });
+}
 
 test('the package exports the frozen 2022 precinct boundaries', () => {
   const collection = precinctMaps[2022];

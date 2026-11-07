@@ -1,6 +1,6 @@
 import { appendFile, mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
-import { parseOfficialReport, validateSnapshot } from '../../../website/election/model.js';
+import { validateSnapshot } from '../../../website/election/model.js';
 import { needsElectionDeployment } from './changes.mjs';
 import { loadPreviousSnapshot } from './previous-deployment.mjs';
 
@@ -23,29 +23,9 @@ let next = {
   generatedAt: now,
   buildCommit: process.env.GITHUB_SHA || null,
 };
-try {
-  const response = await fetch(seed.sourceUrl, {
-    signal: AbortSignal.timeout(25_000),
-    redirect: 'error',
-  });
-  if (!response.ok) throw new Error(`Official source HTTP ${response.status}`);
-  const html = await response.text();
-  if (html.length > 10_000_000) throw new Error('Official report too large');
-  next = { ...next, ...parseOfficialReport(html), checkStatus: 'ok', lastSuccessfulFetchAt: now };
-} catch (error) {
-  next.checkStatus = 'error';
-  next.message = `${error.message}. Vote totals retained only from a previously validated snapshot; missing totals are unknown, not zero.`;
-  console.warn(next.message);
-}
-next.sourceChecks = [
-  {
-    id: 'sf-local',
-    sourceUrl: seed.sourceUrl,
-    status: next.checkStatus,
-    checkedAt: now,
-    message: next.message,
-  },
-];
+// Local SF results come from the department's CVR exports (data/elections), reconciled with its
+// summary reports. Only the California SOS county reports are checked here.
+next.sourceChecks = [];
 try {
   async function download(url) {
     const response = await fetch(url, { signal: AbortSignal.timeout(20_000), redirect: 'error' });
@@ -98,9 +78,9 @@ try {
     errors,
   });
   if (verified) {
-    next.checkStatus = 'partial';
+    next.checkStatus = verified === sosMappings.length ? 'ok' : 'partial';
     next.lastSuccessfulFetchAt = fetchedAt;
-    next.message = `Verified SOS county reports for ${verified} state/federal and judicial contests. Zero/pre-election reports remain pending. Local SF and district/precinct results are unavailable. All counts are SF county portions; all contests remain uncalled.`;
+    next.message = `Verified SOS county reports for ${verified} state/federal and judicial contests. Zero/pre-election reports remain pending. All counts are SF county portions; all contests remain uncalled.`;
   }
 } catch (error) {
   next = markSosFailure(next, new Date().toISOString());
