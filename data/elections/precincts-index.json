@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "electionDate": "2026-11-03",
-  "latest": "precincts-2026-11-05-142202.json",
+  "latest": "precincts-2026-11-06-135037.json",
   "snapshots": [
     {
       "file": "precincts-2026-11-03-193412.json",
@@ -34,6 +34,14 @@
       "ballotCards": 1015754,
       "precinctsWithBallots": 509,
       "exportSha256": "33a54d68d325bbfcdce94aebde8c95112a2c31b8d6ae347511139c9204a58898"
+    },
+    {
+      "file": "precincts-2026-11-06-135037.json",
+      "reportStamp": "2026-11-06-135037",
+      "sourceReportTime": "11/6/2026 1:50:37 PM",
+      "ballotCards": 1222130,
+      "precinctsWithBallots": 509,
+      "exportSha256": "3e0e0ab733ae2686acae8ab57923a294c899fa3c616011999c0792d647fb3626"
     }
   ]
 }
