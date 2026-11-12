@@ -341,3 +341,117 @@ test('election probes do not interpret their run number as a Pages run number', 
   );
   assert.equal(requested, 499);
 });
+
+test('late cleanup cannot make an older deployment the recovery source', async () => {
+  const calls = [];
+  const fetcher = async (url) => {
+    calls.push(url);
+    if (url.includes('/workflows/'))
+      return {
+        ok: true,
+        json: async () => ({
+          workflow_runs: [
+            {
+              id: 1,
+              head_sha: deployment.headSha,
+              created_at: deployment.createdAt,
+              updated_at: '2026-11-04T05:00:00Z',
+            },
+            {
+              id: 2,
+              head_sha: 'b'.repeat(40),
+              created_at: '2026-11-04T04:10:00Z',
+              updated_at: '2026-11-04T04:20:00Z',
+            },
+            {
+              id: 3,
+              head_sha: 'c'.repeat(40),
+              created_at: '2026-11-04T03:00:00Z',
+              updated_at: '2026-11-04T03:20:00Z',
+            },
+          ],
+        }),
+      };
+    const newer = url.includes('/2/');
+    return {
+      ok: true,
+      json: async () => ({
+        total_count: 2,
+        jobs: [
+          {
+            name: 'build',
+            status: 'completed',
+            conclusion: 'success',
+            started_at: newer ? '2026-11-04T04:11:00Z' : deployment.startedAt,
+          },
+          {
+            name: 'deploy',
+            status: 'completed',
+            conclusion: 'success',
+            completed_at: newer ? '2026-11-04T04:19:00Z' : deployment.completedAt,
+          },
+        ],
+      }),
+    };
+  };
+  const latest = await latestSuccessfulDeployment(fetcher);
+  assert.equal(latest.id, 2);
+  assert.equal(
+    calls.length,
+    3,
+    'older metadata cannot beat selected completion; avoid unnecessary API requests',
+  );
+  assert.throws(
+    () =>
+      verifyDeploymentSnapshot(
+        {
+          ...seed,
+          buildCommit: deployment.headSha,
+          checkedAt: '2026-11-04T04:02:00Z',
+          generatedAt: '2026-11-04T04:03:00Z',
+        },
+        latest,
+      ),
+    /history rollback/,
+  );
+});
+
+test('inconsistent completion timestamps fail closed rather than select a candidate', async () => {
+  for (const completedAt of ['2026-11-04T05:00:00Z', '2026-11-04T04:00:30Z']) {
+    await assert.rejects(
+      latestSuccessfulDeployment(async (url) => ({
+        ok: true,
+        json: async () =>
+          url.includes('/workflows/')
+            ? {
+                workflow_runs: [
+                  {
+                    id: 1,
+                    head_sha: deployment.headSha,
+                    created_at: deployment.createdAt,
+                    updated_at: deployment.completedAt,
+                  },
+                ],
+              }
+            : {
+                total_count: 2,
+                jobs: [
+                  {
+                    name: 'build',
+                    status: 'completed',
+                    conclusion: 'success',
+                    started_at: deployment.startedAt,
+                  },
+                  {
+                    name: 'deploy',
+                    status: 'completed',
+                    conclusion: 'success',
+                    completed_at: completedAt,
+                  },
+                ],
+              },
+      })),
+      /Invalid deployment/,
+    );
+  }
+});
