@@ -40,7 +40,7 @@ function metadataFailure(response, request) {
 
 export async function latestSuccessfulDeployment(
   fetcher = fetch,
-  { previousRunNumber = null } = {},
+  { previousRunNumber = null, currentRunId = null } = {},
 ) {
   async function read(url, request) {
     const response = await fetcher(`${url}&recovery=${Date.now()}`, {
@@ -53,11 +53,14 @@ export async function latestSuccessfulDeployment(
   }
   // Include failed/cancelled overall runs: a deploy job could have succeeded
   // before a later cleanup failed. Skip only runs that did not publish Pages.
-  const runs = await read(
-    `${api}/workflows/pages.yml/runs?status=completed&per_page=20`,
-    'workflow-list',
-  );
+  const runs = await read(`${api}/workflows/pages.yml/runs?per_page=20`, 'workflow-list');
   if (!Array.isArray(runs.workflow_runs)) throw new Error('Invalid workflow metadata');
+  if (currentRunId !== null && (!Number.isSafeInteger(currentRunId) || currentRunId <= 0))
+    throw new Error('Invalid current workflow identity');
+  // The filtered completed-run index can omit a successful deployment. Read
+  // the unfiltered index and omit only this trusted Actions invocation. Other
+  // incomplete runs still fail the complete-jobs guard below.
+  runs.workflow_runs = runs.workflow_runs.filter((run) => run.id !== currentRunId);
   if (
     previousRunNumber !== null &&
     (!Number.isSafeInteger(previousRunNumber) ||
@@ -142,6 +145,7 @@ export async function loadPreviousSnapshot(
 ) {
   try {
     const deployment = await deploymentReader(fetcher, {
+      currentRunId: process.env.GITHUB_RUN_ID ? Number(process.env.GITHUB_RUN_ID) : null,
       previousRunNumber:
         process.env.ELECTION_PROBE !== 'true' && process.env.GITHUB_RUN_NUMBER
           ? Number(process.env.GITHUB_RUN_NUMBER) - 1
