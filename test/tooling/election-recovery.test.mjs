@@ -501,28 +501,80 @@ test('equal deployment completions remain ambiguous even at the metadata cutoff'
 
 test('unfiltered discovery recovers omitted completion without inspecting its own running job', async () => {
   const calls = [];
-  const recovered = await latestSuccessfulDeployment(async (url) => {
-    calls.push(url);
-    assert.ok(!url.includes('status=completed'), 'do not use incomplete filtered index');
-    if (url.includes('/workflows/')) return { ok: true, json: async () => ({ workflow_runs: [
-      { id: 3, run_number: 271, status: 'in_progress' },
-      { id: 2, run_number: 270, status: 'completed', head_sha: deployment.headSha,
-        created_at: deployment.createdAt, updated_at: deployment.completedAt },
-    ] }) };
-    assert.ok(url.includes('/2/'), 'only the verified prior run should be inspected');
-    return { ok: true, json: async () => ({ total_count: 2, jobs: [
-      { name: 'build', status: 'completed', conclusion: 'success', started_at: deployment.startedAt },
-      { name: 'deploy', status: 'completed', conclusion: 'success', completed_at: deployment.completedAt },
-    ] }) };
-  }, { previousRunNumber: 270, currentRunId: 3 });
+  const recovered = await latestSuccessfulDeployment(
+    async (url) => {
+      calls.push(url);
+      assert.ok(!url.includes('status=completed'), 'do not use incomplete filtered index');
+      if (url.includes('/workflows/'))
+        return {
+          ok: true,
+          json: async () => ({
+            workflow_runs: [
+              { id: 3, run_number: 271, status: 'in_progress' },
+              {
+                id: 2,
+                run_number: 270,
+                status: 'completed',
+                head_sha: deployment.headSha,
+                created_at: deployment.createdAt,
+                updated_at: deployment.completedAt,
+              },
+            ],
+          }),
+        };
+      assert.ok(url.includes('/2/'), 'only the verified prior run should be inspected');
+      return {
+        ok: true,
+        json: async () => ({
+          total_count: 2,
+          jobs: [
+            {
+              name: 'build',
+              status: 'completed',
+              conclusion: 'success',
+              started_at: deployment.startedAt,
+            },
+            {
+              name: 'deploy',
+              status: 'completed',
+              conclusion: 'success',
+              completed_at: deployment.completedAt,
+            },
+          ],
+        }),
+      };
+    },
+    { previousRunNumber: 270, currentRunId: 3 },
+  );
   assert.equal(recovered.id, 2);
   assert.equal(calls.length, 2);
 });
 
 test('unfiltered discovery still rejects another incomplete run', async () => {
-  await assert.rejects(latestSuccessfulDeployment(async (url) => ({ ok: true, json: async () =>
-    url.includes('/workflows/') ? { workflow_runs: [{ id: 2, run_number: 270,
-      head_sha: deployment.headSha, created_at: deployment.createdAt, updated_at: deployment.completedAt }] }
-      : { total_count: 1, jobs: [{ name: 'deploy', status: 'in_progress', conclusion: null }] }
-  }), { currentRunId: 3 }), /Incomplete deployment jobs/);
+  await assert.rejects(
+    latestSuccessfulDeployment(
+      async (url) => ({
+        ok: true,
+        json: async () =>
+          url.includes('/workflows/')
+            ? {
+                workflow_runs: [
+                  {
+                    id: 2,
+                    run_number: 270,
+                    head_sha: deployment.headSha,
+                    created_at: deployment.createdAt,
+                    updated_at: deployment.completedAt,
+                  },
+                ],
+              }
+            : {
+                total_count: 1,
+                jobs: [{ name: 'deploy', status: 'in_progress', conclusion: null }],
+              },
+      }),
+      { currentRunId: 3 },
+    ),
+    /Incomplete deployment jobs/,
+  );
 });
