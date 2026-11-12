@@ -53,10 +53,7 @@ export async function latestSuccessfulDeployment(
   }
   // Include failed/cancelled overall runs: a deploy job could have succeeded
   // before a later cleanup failed. Skip only runs that did not publish Pages.
-  const runs = await read(
-    `${api}/workflows/pages.yml/runs?per_page=20`,
-    'workflow-list',
-  );
+  const runs = await read(`${api}/workflows/pages.yml/runs?per_page=20`, 'workflow-list');
   if (!Array.isArray(runs.workflow_runs)) throw new Error('Invalid workflow metadata');
   if (currentRunId !== null && (!Number.isSafeInteger(currentRunId) || currentRunId <= 0))
     throw new Error('Invalid current workflow identity');
