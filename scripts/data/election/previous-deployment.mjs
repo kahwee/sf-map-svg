@@ -64,15 +64,22 @@ export async function latestSuccessfulDeployment(
       !runs.workflow_runs.some((run) => run.run_number === previousRunNumber))
   )
     throw new Error('Deployment metadata has not reached the preceding workflow run');
-  runs.workflow_runs.sort((a, b) => Date.parse(b.updated_at) - Date.parse(a.updated_at));
   for (const run of runs.workflow_runs) {
     if (
       !Number.isSafeInteger(run.id) ||
       !/^[a-f0-9]{40}$/.test(run.head_sha) ||
       !Number.isFinite(Date.parse(run.created_at)) ||
-      !Number.isFinite(Date.parse(run.updated_at))
+      !Number.isFinite(Date.parse(run.updated_at)) ||
+      Date.parse(run.updated_at) < Date.parse(run.created_at)
     )
       throw new Error('Invalid deployment identity');
+  }
+  runs.workflow_runs.sort((a, b) => Date.parse(b.updated_at) - Date.parse(a.updated_at));
+  let latest = null;
+  for (const run of runs.workflow_runs) {
+    // updated_at bounds completion but is not deployment order: cleanup can
+    // update an older run later. Inspect every run that could beat our candidate.
+    if (latest && Date.parse(run.updated_at) < Date.parse(latest.completedAt)) break;
     const jobs = await read(`${api}/runs/${run.id}/jobs?per_page=100`, 'run-jobs');
     if (
       !Array.isArray(jobs.jobs) ||
@@ -83,12 +90,20 @@ export async function latestSuccessfulDeployment(
       throw new Error('Incomplete deployment jobs');
     const deploy = jobs.jobs.find((job) => job.name === 'deploy' && job.conclusion === 'success');
     if (deploy) {
-      if (!Number.isFinite(Date.parse(deploy.completed_at)))
+      if (
+        !Number.isFinite(Date.parse(deploy.completed_at)) ||
+        Date.parse(deploy.completed_at) > Date.parse(run.updated_at)
+      )
         throw new Error('Invalid deployment completion');
       const build = jobs.jobs.find((job) => job.name === 'build' && job.conclusion === 'success');
       if (!build || !Number.isFinite(Date.parse(build.started_at)))
         throw new Error('Cannot verify deployed build start');
-      return {
+      if (Date.parse(build.started_at) > Date.parse(deploy.completed_at))
+        throw new Error('Invalid deployment chronology');
+      if (latest && Date.parse(deploy.completed_at) === Date.parse(latest.completedAt))
+        throw new Error('Ambiguous latest deployment completion');
+      if (latest && Date.parse(deploy.completed_at) < Date.parse(latest.completedAt)) continue;
+      latest = {
         startedAt: build.started_at,
         id: run.id,
         headSha: run.head_sha,
@@ -97,6 +112,7 @@ export async function latestSuccessfulDeployment(
       };
     }
   }
+  if (latest) return latest;
   throw new Error('No verified prior Pages deployment in recent runs');
 }
 export function verifyDeploymentSnapshot(snapshot, deployment) {
