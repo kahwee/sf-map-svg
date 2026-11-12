@@ -455,3 +455,46 @@ test('inconsistent completion timestamps fail closed rather than select a candid
     );
   }
 });
+
+test('equal deployment completions remain ambiguous even at the metadata cutoff', async () => {
+  let calls = 0;
+  await assert.rejects(
+    latestSuccessfulDeployment(async (url) => {
+      calls++;
+      if (url.includes('/workflows/'))
+        return {
+          ok: true,
+          json: async () => ({
+            workflow_runs: [1, 2].map((id) => ({
+              id,
+              head_sha: deployment.headSha,
+              created_at: deployment.createdAt,
+              updated_at: id === 1 ? '2026-11-04T05:00:00Z' : deployment.completedAt,
+            })),
+          }),
+        };
+      return {
+        ok: true,
+        json: async () => ({
+          total_count: 2,
+          jobs: [
+            {
+              name: 'build',
+              status: 'completed',
+              conclusion: 'success',
+              started_at: deployment.startedAt,
+            },
+            {
+              name: 'deploy',
+              status: 'completed',
+              conclusion: 'success',
+              completed_at: deployment.completedAt,
+            },
+          ],
+        }),
+      };
+    }),
+    /Ambiguous latest deployment completion/,
+  );
+  assert.equal(calls, 3, 'equal upper bound must still be inspected');
+});
