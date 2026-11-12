@@ -182,8 +182,8 @@ importers:
         specifier: 10.6.5
         version: 10.6.5(storybook@10.6.5(@types/react@19.3.0)(react@19.3.1))(vite@8.3.5(esbuild@0.28.2))
       '@tanstack/charts':
-        specifier: 1.2.1
-        version: 1.2.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        specifier: 1.3.0
+        version: 1.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@vitest/browser-playwright':
         specifier: 5.1.0
         version: 5.1.0(playwright@1.64.1)(vite@8.3.5(esbuild@0.28.2))(vitest@5.1.0)
@@ -933,8 +933,8 @@ packages:
       '@types/react-dom':
         optional: true
 
-  '@tanstack/charts@1.2.1':
-    resolution: {integrity: sha512-3y3uSrfpfOMm8fVVirLsp3qQCHhuuiPo+hHM1K8qcuHYhGNjpYgGPpavjqn0dI39e6eyKSgyS6bl4Ug+MpcApw==}
+  '@tanstack/charts@1.3.0':
+    resolution: {integrity: sha512-BLmeJqpykg0tCUYgZsp4d6mpKhYEyA2p7+8M5h6YVkp5u2FaZzcEziHgNKxfKut4am5O6A6L/7bUk6LbqRsvRA==}
     peerDependencies:
       '@angular/core': '>=19'
       '@angular/platform-browser': '>=19'
@@ -2364,7 +2364,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.3.0
 
-  '@tanstack/charts@1.2.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+  '@tanstack/charts@1.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
       '@types/d3-force': 3.0.10
       '@types/d3-geo': 3.1.1
